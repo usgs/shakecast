@@ -1,5 +1,5 @@
 import time
-from data_layer import Data_Layer
+import db.db_lite as database
 
 def loop1():
     print 'LOOP1'
@@ -43,7 +43,7 @@ def my_print(to_print=""):
     return data
 
 def ins_random(count=10):
-    dl = Data_Layer()
+    dl = database.Data_Layer()
     count = int(count)
     
     for i in range(count):
@@ -61,7 +61,7 @@ def ins_random(count=10):
     return data
 
 def db_query(sql=""):
-    dl = Data_Layer()
+    dl = database.Data_Layer()
     result = dl.query(sql)
     return_str = "%s\n%s" % (sql, str(result))
     
