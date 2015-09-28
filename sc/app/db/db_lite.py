@@ -3,6 +3,11 @@ import random
 import os
 
 class Data_Layer(object):
+    
+    """
+    Data Layer is used to abstract our choice of database    
+    """
+    
     def __init__(self):
         self.directory = ""
         self.get_path()
@@ -12,6 +17,8 @@ class Data_Layer(object):
         self.name = 'test.db'
         
     def get_path(self):
+        # get the path to the database
+        
         path = os.path.dirname(os.path.abspath(__file__))
         
         if os.name == 'nt':
@@ -27,10 +34,12 @@ class Data_Layer(object):
         self.directory = delim.join(path)
         
     def close(self):
+        # close connection to the database
         self.conn.commit()
         self.conn.close()
         
     def query(self, sql):
+        # SQL query to the DB
         try:
             self.cursor.execute(sql)
             result = self.cursor.fetchall()

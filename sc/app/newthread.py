@@ -3,6 +3,14 @@ import time
 
 class New_Thread(threading.Thread):
     
+    """
+    A New_Thread is almost just like a threading.thread with some added
+    functionality. It can be set to loop, which I don't think that we'll
+    use... we can even get rid of this... its main advantage is that we
+    determine how we pass variables into the function that is going to
+    run.
+    """
+    
     def __init__(self, func, args_in=None, loop=False, loop_time=5):
         super(New_Thread, self).__init__()
         self._stop = threading.Event()

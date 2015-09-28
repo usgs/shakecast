@@ -3,6 +3,12 @@ from pydispatch import dispatcher
 
 class Task(object):
     
+    """
+    Task objects are used to simplify running specific functions with
+    specific conditions. A Task is basically just a function that
+    remembers how it is supposed to run and can keep track of
+    its own inputs and outputs
+    """
     def __init__(self,
                  name="new_task",
                  task_id=None,
