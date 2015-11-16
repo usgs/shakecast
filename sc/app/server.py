@@ -1,5 +1,5 @@
 import socket
-import select
+import select as select_
 import time
 import os
 import sys
@@ -72,7 +72,7 @@ class Server(object):
     
     def socket_check(self):
         # check if any connections have been established
-        conns = select.select([self.socket], [], [], 0)[0]
+        conns = select_.select([self.socket], [], [], 0)[0]
         if len(conns) > 0:
             conn, addr = self.socket.accept()
             conn.setblocking(0)
@@ -83,7 +83,7 @@ class Server(object):
             
     def handle_client(self, conn=None, addr=None):
         # check for message
-        mess_check = select.select([conn], [], [], 60)[0]
+        mess_check = select_.select([conn], [], [], 60)[0]
         # get message from user
         if len(mess_check) > 0:
             data = ''
@@ -92,7 +92,7 @@ class Server(object):
                 part = conn.recv(4096)
                 data += part
                 
-                mess_check = select.select([conn], [], [], 0)[0]
+                mess_check = select_.select([conn], [], [], 0)[0]
             
             #print 'Got Data: %s' % data
             self.user_in(data, conn)
@@ -145,6 +145,8 @@ class Server(object):
             out_str = ''
             if task.output['status'] == 'finished':
                 out_str = task.output['message']
+            elif task.output['status'] == 'failed':
+                out_str = "FAILED: %s" % task.output['message']
             elif task.status == 'failed':
                 out_str = '%s failed to run...' % task.name
             

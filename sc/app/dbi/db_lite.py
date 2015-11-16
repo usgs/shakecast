@@ -10,13 +10,13 @@ class Data_Layer(object):
     
     def __init__(self):
         self.directory = ""
-        self.get_path()
+        self.get_db_path()
         
         self.conn = sqlite3.connect('%s/test.db' % self.directory)
         self.cursor = self.conn.cursor()
         self.name = 'test.db'
         
-    def get_path(self):
+    def get_db_path(self):
         # get the path to the database
         
         path = os.path.dirname(os.path.abspath(__file__))
