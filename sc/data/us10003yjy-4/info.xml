@@ -1,0 +1,55 @@
+<info evid="us10003yjy" tags="ShakeMap revision,grind_time,src_mech,faultfiles,fault_ref,Vs30default,directivity,median_dist,map_bound,latspan,lonspan,llratio,x_grid_interval,y_grid_interval,site_correction,sitecorr_source,pgm2mi,miscale,mi2pgm,GMPE,gmroi,gmdecay,bias_log_amp,bias_norm,bias_max_range,bias_min_stations,bias_max_mag,bias_max_bias,bias_min_bias,outlier_deviation_level,outlier_max_mag,bias,total_flagged_pgm,mmi_sitecorr_table,IPE,iroi,idecay,total_flagged_mi,mi_bias,pga_max_grid,pgv_max_grid,mi_max_grid,psa03_max_grid,psa10_max_grid,psa30_max_grid,pga_max,pgv_max,mi_max,psa03_max,psa10_max,psa30_max,mean_uncertainty,grade">
+  <tag name="ShakeMap revision" value="3.5.1470" desc="ShakeMap source code revision number" />
+  <tag name="grind_time" value="Mon Nov 16 02:39:59 UTC 2015" desc="Start time for event processing" />
+  <tag name="src_mech" value="NM" desc="Source mechanism (based on gmpe)" />
+  <tag name="faultfiles" value="" desc="Fault file(s)" />
+  <tag name="fault_ref" value="" desc="Fault reference(s)" />
+  <tag name="Vs30default" value="686" desc="Default Vs30 for 'rock' (m/s)" />
+  <tag name="directivity" value="no" desc="Directivity applied (yes|no)" />
+  <tag name="median_dist" value="yes" desc="Median distance used" />
+  <tag name="map_bound" value="-83.860200/-79.860200/15.928800/19.736800" desc="Boundary of event map" />
+  <tag name="latspan" value="3.808" desc="latitude span" />
+  <tag name="lonspan" value="4.0" desc="longitude span" />
+  <tag name="llratio" value="0.952" desc="latspan/lonspan ratio" />
+  <tag name="x_grid_interval" value="0.0166666666666667" desc="Grid spacing in longitude (degrees)" />
+  <tag name="y_grid_interval" value="0.0166666666666667" desc="Grid spacing in latitude (degrees)" />
+  <tag name="site_correction" value="GMPE native" desc="Site correction applied (none|disabled|Borcherdt table|old-style Borcherdt table|GMPE native" />
+  <tag name="sitecorr_source" value="/home/shake/ShakeMap_trunk/bin/../lib/sitecorr/global_vs30.grd" desc="Vs30 site file|&quot;from topography&quot;" />
+  <tag name="pgm2mi" value="Shake::GMICE::WGRW11 - Worden et al. (2012)" desc="Ground Motion/Intensity Conversion Equation" />
+  <tag name="miscale" value="scale_wgrw11.ps" desc="Intensity Scale" />
+  <tag name="mi2pgm" value="Shake::GMICE::WGRW11 - Worden et al. (2012)" desc="Inverse Ground Motion/Intensity Conversion Equation" />
+  <tag name="GMPE" value="Shake::GMPE::CY08" desc="GMPE type" />
+  <tag name="gmroi" value="10k" desc="Ground motion radius of influence (km)" />
+  <tag name="gmdecay" value="0.5" desc="Ground motion influence decay (fraction of gmroi)" />
+  <tag name="bias_log_amp" value="yes" desc="Used log amp to compute bias?" />
+  <tag name="bias_norm" value="l1" desc="Norm of the bias (l1|l2)" />
+  <tag name="bias_max_range" value="120" desc="Max distance to include station in bias (km)" />
+  <tag name="bias_min_stations" value="6" desc="Min # of stations necessary to compute bias" />
+  <tag name="bias_max_mag" value="7.0" desc="Max magnitude to compute bias" />
+  <tag name="bias_max_bias" value="2.0" desc="Max allowed bias" />
+  <tag name="bias_min_bias" value="-2.0" desc="Min allowed bias" />
+  <tag name="outlier_deviation_level" value="3" desc="Outlier level (# of std dev" />
+  <tag name="outlier_max_mag" value="7.0" desc="Maximum magnitude to flag outliers" />
+  <tag name="bias" value="0.00 0.00 0.00 0.00 0.00 " desc="magnitude bias (pga pgv psa03 psa10 psa30 )" />
+  <tag name="total_flagged_pgm" value="0" desc="Number of stations flagged for PGM bias" />
+  <tag name="mmi_sitecorr_table" value="/home/shake/ShakeMap_trunk/bin/../data/us10003yjy/output/RqhKgqBXMW.grd" desc="MMI site amplification table" />
+  <tag name="IPE" value="Shake::IPE::DefaultIPE" desc="IPE type" />
+  <tag name="iroi" value="10k" desc="Intensity observation radius of influence (km)" />
+  <tag name="idecay" value="0.5" desc="Intensity observation influence decay (fraction of iroi)" />
+  <tag name="total_flagged_mi" value="0" desc="Number of stations flagged for intensity bias" />
+  <tag name="mi_bias" value="0.00" desc="magnitude bias for Intensity" />
+  <tag name="pga_max_grid" value="14.17" desc="Max value of pga in grid" />
+  <tag name="pgv_max_grid" value="11.79" desc="Max value of pgv in grid" />
+  <tag name="mi_max_grid" value="6.11" desc="Max value of mi in grid" />
+  <tag name="psa03_max_grid" value="28.73" desc="Max value of psa03 in grid" />
+  <tag name="psa10_max_grid" value="9.54" desc="Max value of psa10 in grid" />
+  <tag name="psa30_max_grid" value="1.67" desc="Max value of psa30 in grid" />
+  <tag name="pga_max" value="0.39" desc="Max value of pga on land" />
+  <tag name="pgv_max" value="0.85" desc="Max value of pgv on land" />
+  <tag name="mi_max" value="3.43" desc="Max value of mi on land" />
+  <tag name="psa03_max" value="1.26" desc="Max value of psa03 on land" />
+  <tag name="psa10_max" value="0.92" desc="Max value of psa10 on land" />
+  <tag name="psa30_max" value="0.23" desc="Max value of psa30 on land" />
+  <tag name="mean_uncertainty" value="-" desc="Mean of map uncertainty" />
+  <tag name="grade" value="-" desc="Empirical ShakeMap Grade" />
+</info>

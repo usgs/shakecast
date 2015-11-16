@@ -31,23 +31,45 @@ def process_shakemaps(shakemaps = []):
         for group in groups_affected:
             # send off a new event message
             new_event(shakemap=shakemap,
+                      grid=grid,
                       group=group)
             
+            # get facilities we haven't seen yet
+            new_facs = set(group.facilities) - affected_facilities
+            
             # aggregate all affected facilities into a single list
-            affected_facilities = affected_facilities | set(group.facilities)
+            affected_facilities = affected_facilities | new_facs
             
-            notification = Notification(group = group,
-                                        shakemap = shakemap,
-                                        status = 'created',
-                                        notification_type = 'Inspection')
+            notification = Notification(group=group,
+                                        shakemap=shakemap,
+                                        status='created',
+                                        notification_type='Inspection')
             
-        # process facility inspection states
-        for facility in affected_facilities:
-            shaking_level = grid.max_shaking(facility=facility)
-            facility.make_alert_level(shaking_level=shaking_level,
-                                      notification=notification)
+            # make inspection priorities for the facilities only
+            # associated with this group. We only need to pass
+            # the notification in with the facilities, because we can
+            # get the shakemap from the notification
+            make_inspection_prios(facilities=new_facs,
+                                  notification=notification,
+                                  grid=grid)
             
-def new_event(shakemap=None, group=None):
+        session.add(shakemap)
+        session.commit()
+        
+def make_inspection_prios(facilities=[],
+                          notification=Notification(),
+                          grid=SM_Grid()):
+    # process facility inspection states
+    for facility in facilities:
+        shaking_level = grid.max_shaking(facility=facility)
+        facility.make_alert_level(shaking_level=shaking_level,
+                                  notification=notification)
+    
+    
+def new_event(shakemap=ShakeMap(),
+              grid=SM_Grid(),
+              group=Group()):
+    
     notification = Notification(group=group,
                                 shakemap=shakemap,
                                 notification_type='New Event')
@@ -60,7 +82,14 @@ def new_event(shakemap=None, group=None):
     
     body = '''
     EQ: %s
-    Version: %s''' % (shakemap.shakemap_id, shakemap.shakemap_version)
+    Version: %s
+    Magnitude: %s
+    Depth: %s KM
+    Description: %s''' % (shakemap.shakemap_id,
+                         shakemap.shakemap_version,
+                         grid.magnitude,
+                         grid.depth,
+                         grid.description)
     
     not_file.write('%s \n %s' % (preamble, body))
     not_file.close()
@@ -70,10 +99,10 @@ def new_event(shakemap=None, group=None):
     not_file.close()
     
     me = 'danielslosky@hotmail.com'
-    you = ', '.join([user.email for user in group.users])
+    you = [user.email for user in group.users]
     
     msg['Subject'] = 'ShakeCast -- New Event'
-    msg['To'] = you
+    msg['To'] = ', '.join(you)
     msg['From'] = me
     
     server = smtplib.SMTP('smtp.live.com', 587) #port 465 or 587
@@ -88,6 +117,10 @@ def new_event(shakemap=None, group=None):
     
     session.add(notification)
     session.commit()
+    
+def inspection_notification():
+    pass
+
     
 def send_notification(notification=None):
     template = notification.group.template

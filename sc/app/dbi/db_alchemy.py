@@ -57,6 +57,10 @@ class Facility(Base):
     orange_alpha = Column(Float)
     red_alpha = Column(Float)
     metric = Column(String(20))
+    
+    shaking_history = relationship('Facility_Shaking',
+                        backref='facility',
+                        cascade='save-update, delete')
 
     def make_alert_level(self, shaking_level=0, notification=None):
         # check if there is already shaking for this shakemap
@@ -199,11 +203,6 @@ class Facility_Shaking(Base):
                             foreign_keys=[shakemap_id],
                             cascade='all')
     
-    facility = relationship('Facility',
-                            backref='shaking_history',
-                            foreign_keys=[facility_id],
-                            cascade='all')
-    
     __table_args__ = (UniqueConstraint('facility_id', 'shakemap_id', name='shaking_uc'),
                      )
     
@@ -224,7 +223,8 @@ class Notification(Base):
     
     facility_shaking = relationship('Facility_Shaking',
                                     secondary='shaking_notification_connection',
-                                    backref='notifications')
+                                    backref='notifications',
+                                    cascade='save-update, delete')
     
     shakemap = relationship('ShakeMap',
                             backref = 'notifications',
@@ -421,7 +421,7 @@ class Product(Base):
     __tablename__ = 'product'
     shakecast_id = Column(Integer, primary_key=True)
     shakemap_id = Column(Integer,
-                          ForeignKey('shakemap.shakecast_id'))
+                         ForeignKey('shakemap.shakecast_id'))
     #shakemap_version = Column(Integer, ForeignKey('shakemap.version'), primary_key=True)
     product_type = Column(String(10))
     name = Column(String(32))
