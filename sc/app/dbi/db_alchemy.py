@@ -224,7 +224,7 @@ class Notification(Base):
     facility_shaking = relationship('Facility_Shaking',
                                     secondary='shaking_notification_connection',
                                     backref='notifications',
-                                    cascade='save-update, delete, delete-orphan')
+                                    cascade='save-update, delete')
     
     shakemap = relationship('ShakeMap',
                             backref = 'notifications',
