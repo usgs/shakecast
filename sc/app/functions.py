@@ -1,5 +1,6 @@
 import time
 import math
+import itertools
 from dbi.db_alchemy import *
 from objects import *
 from helper_functions import *
@@ -27,52 +28,72 @@ def process_shakemaps(shakemaps = []):
         grid = create_grid(shakemap)
         groups_affected = session.query(Group).filter(Group.in_grid(grid)).all()
         
-        affected_facilities = set()
+        # send out new events and create inspection notifications
         for group in groups_affected:
             # send off a new event message
-            new_event(shakemap=shakemap,
-                      grid=grid,
-                      group=group)
-            
-            # get facilities we haven't seen yet
-            new_facs = set(group.facilities) - affected_facilities
-            
-            # aggregate all affected facilities into a single list
-            affected_facilities = affected_facilities | new_facs
+            new_event_notification(shakemap=shakemap,
+                                   group=group,
+                                   grid=grid)
             
             notification = Notification(group=group,
                                         shakemap=shakemap,
-                                        status='created',
-                                        notification_type='Inspection')
+                                        notification_type='Inspection',
+                                        status='created')
             
-            # make inspection priorities for the facilities only
-            # associated with this group. We only need to pass
-            # the notification in with the facilities, because we can
-            # get the shakemap from the notification
-            make_inspection_prios(facilities=new_facs,
-                                  notification=notification,
+            session.add(notification)
+            session.commit()
+        
+        # make inspection priorities for affected facilities
+        affected_facilities = set(itertools.chain.from_iterable([g.facilities
+                                                                 for g in
+                                                                 groups_affected]))
+        for facility in affected_facilities:
+            make_inspection_prios(facility=facility,
+                                  shakemap=shakemap,
                                   grid=grid)
+        
+        session.commit()
+            
+        notifications = (session.query(Notification)
+                            .filter(Notification.shakemap == shakemap)
+                            .filter(Notification.notification_type == 'Inspection')
+                            .all())
+        
+        [inspection_notification(notification=n,
+                                 grid=grid) for n in notifications]
+            
             
         session.add(shakemap)
         session.commit()
         
-def make_inspection_prios(facilities=[],
-                          notification=Notification(),
+def make_inspection_prios(facility=Facility(),
+                          shakemap=ShakeMap(),
                           grid=SM_Grid()):
+    shaking_level = grid.max_shaking(facility=facility)
+    fac_shaking = facility.make_alert_level(shaking_level=shaking_level,
+                                            shakemap=shakemap)
+    
     # process facility inspection states
-    for facility in facilities:
-        shaking_level = grid.max_shaking(facility=facility)
-        facility.make_alert_level(shaking_level=shaking_level,
-                                  notification=notification)
+    for group in facility.groups:
+        notification = (session.query(Notification)
+                            .filter(Notification.group == group)
+                            .filter(Notification.shakemap == shakemap)
+                            .filter(Notification.notification_type == 'Inspection')
+                            .all())[0]
+        
+        notification.facility_shaking.append(fac_shaking)
     
-    
-def new_event(shakemap=ShakeMap(),
-              grid=SM_Grid(),
-              group=Group()):
+def new_event_notification(shakemap=ShakeMap(),
+                           grid=SM_Grid(),
+                           group=Group()):
     
     notification = Notification(group=group,
                                 shakemap=shakemap,
-                                notification_type='New Event')
+                                notification_type='New_Event',
+                                status='created')
+    
+    session.add(notification)
+    session.commit()
     
     notification.notification_file = notification.shakemap.directory_name + get_delim() + group.name + '_new_event.txt'
     not_file = open(notification.notification_file, 'w')
@@ -98,7 +119,7 @@ def new_event(shakemap=ShakeMap(),
     msg = MIMEText(not_file.read())
     not_file.close()
     
-    me = 'danielslosky@hotmail.com'
+    me = 'ShakeCast@outlook.com'
     you = [user.email for user in group.users]
     
     msg['Subject'] = 'ShakeCast -- New Event'
@@ -109,17 +130,90 @@ def new_event(shakemap=ShakeMap(),
     server.ehlo()
     server.starttls()
     server.ehlo()
-    server.login('danielslosky@hotmail.com', 'swAtleader159hot')
+    server.login(me, 'aaAA11!!')
     
     #s = smtplib.SMTP('localhost')
     server.sendmail(me, you, msg.as_string())
     server.quit()
     
+    notification.status = 'sent'
+
+    
+def inspection_notification(notification=Notification(),
+                            grid=SM_Grid()):
+    
+    shakemap = notification.shakemap
+    group = notification.group
+    
+    notification.notification_file = ('%s%s%s_Inspection.txt' %
+                                        (shakemap.directory_name,
+                                         get_delim(),
+                                         group.name))
+    
+    not_file = open(notification.notification_file, 'w')
+    
+    preamble = ('ShakeCast has processed your facilities...')
+    
+    body = '''
+    EQ: %s
+    Version: %s
+    Magnitude: %s
+    Depth: %s KM
+    Description: %s
+    
+    ''' % (shakemap.shakemap_id,
+           shakemap.shakemap_version,
+           grid.magnitude,
+           grid.depth,
+           grid.description)
+    
+    fac_header = '%s%s%s%s%s%s%s' % ('Facility_ID',
+                                    (' ' * (15 - len('Facility_ID'))),
+                                    'Facility_Name',
+                                    (' ' * (30 - len('Facility_Name'))),
+                                    'Facility_Type',
+                                    (' ' * (20 - len('Facility_Type'))),
+                                    'Alert_Level')
+
+    fac_str = '\n'.join(['%s%s%s%s%s%s%s' % (fs.facility.facility_id,
+                                    ' ' * (15 - len(fs.facility.facility_id)),
+                                    fs.facility.name,
+                                    ' ' * (30 - len(fs.facility.name)),
+                                    fs.facility.facility_type,
+                                    ' ' * (20 - len(fs.facility.facility_type)),
+                                    fs.alert_level
+                                   ) for fs in notification.facility_shaking])
+    
+    body += '%s\n%s' % (fac_header, fac_str)
+    
+    not_file.write('%s \n %s' % (preamble, body))
+    not_file.close()
+    
+    not_file = open(notification.notification_file, 'r')
+    msg = MIMEText(not_file.read())
+    not_file.close()
+    
+    me = 'ShakeCast@outlook.com'
+    you = [user.email for user in notification.group.users]
+    
+    msg['Subject'] = 'ShakeCast -- Inspection'
+    msg['To'] = ', '.join(you)
+    msg['From'] = me
+    
+    server = smtplib.SMTP('smtp.live.com', 587) #port 465 or 587
+    server.ehlo()
+    server.starttls()
+    server.ehlo()
+    server.login(me, 'aaAA11!!')
+    
+    #s = smtplib.SMTP('localhost')
+    server.sendmail(me, you, msg.as_string())
+    server.quit()
+    
+    notification.status = 'sent'
+    
     session.add(notification)
     session.commit()
-    
-def inspection_notification():
-    pass
 
     
 def send_notification(notification=None):
@@ -199,6 +293,16 @@ def create_group():
     session.commit()
     
     return group
+
+def check_nots():
+    while True:
+        nots = session.query(Notification).filter(Notification.notification_type == 'Inspection').all()
+        for n in nots:
+            print 'ID: %s \nSHAKING: %s' % (n.shakecast_id, n.facility_shaking)
+            time.sleep(1)
+            os.system('cls' if os.name == 'nt' else 'clear')
+        session.commit()
+        
     
 
 ########################## SERVER TESTING #############################

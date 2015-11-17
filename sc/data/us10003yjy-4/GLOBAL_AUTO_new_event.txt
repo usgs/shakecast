@@ -1,7 +1,0 @@
-There has been an earthquake and your ShakeCast instance is currently processing the information. 
- 
-    EQ: us10003yjy
-    Version: 4
-    Magnitude: 5.8
-    Depth: 9.98
-    Description CAYMAN ISLANDS REGION

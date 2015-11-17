@@ -62,10 +62,8 @@ class Facility(Base):
                         backref='facility',
                         cascade='save-update, delete')
 
-    def make_alert_level(self, shaking_level=0, notification=None):
-        # check if there is already shaking for this shakemap
-        #shaking = [sh for sh in self.shaking_history if sh.shakemap == shakemap]
-        shakemap = notification.shakemap
+    def make_alert_level(self, shaking_level=0, shakemap=None):
+        # check if there is already shaking for this shakemap and facility
         fac_shake = (session.query(Facility_Shaking)
                             .filter(Facility_Shaking.facility == self)
                             .filter(Facility_Shaking.shakemap == shakemap)
@@ -107,9 +105,11 @@ class Facility(Base):
         fac_shake.metric = self.metric
         fac_shake.alert_level = alert_level
         
-        notification.facility_shaking.append(fac_shake)
+        #notification.facility_shaking.append(fac_shake)
         session.merge(fac_shake)
         session.commit()
+        
+        return fac_shake
  
     @hybrid_method    
     def in_grid(self, grid):
@@ -224,7 +224,7 @@ class Notification(Base):
     facility_shaking = relationship('Facility_Shaking',
                                     secondary='shaking_notification_connection',
                                     backref='notifications',
-                                    cascade='save-update, delete')
+                                    cascade='save-update, delete, delete-orphan')
     
     shakemap = relationship('ShakeMap',
                             backref = 'notifications',

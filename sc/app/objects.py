@@ -71,12 +71,15 @@ class Product_Grabber(object):
             #eq_id = eq['id']
             
             # check if we've already downloaded this eq. If so, skip it
-            if eq['status'] != 'new':
-                continue
+            #if eq['status'] != 'new':
+            #    continue
             
             eq_url = eq['properties']['detail']
             
-            eq_str = urllib2.urlopen(eq_url)
+            try:
+                eq_str = urllib2.urlopen(eq_url)
+            except:
+                continue
             
             try:
                 eq_info = json.loads(eq_str.read())

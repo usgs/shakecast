@@ -1,7 +1,0 @@
-There has been an earthquake and your ShakeCast instance is currently processing the information. 
- 
-    EQ: us10003yr1
-    Version: 2
-    Magnitude: 5.8
-    Depth: 41.56
-    Description KURIL ISLANDS
