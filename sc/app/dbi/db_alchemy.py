@@ -60,7 +60,7 @@ class Facility(Base):
     
     shaking_history = relationship('Facility_Shaking',
                         backref='facility',
-                        cascade='save-update, delete')
+                        cascade='save-update, delete, delete-orphan')
 
     def make_alert_level(self, shaking_level=0, shakemap=None):
         # check if there is already shaking for this shakemap and facility
@@ -107,7 +107,6 @@ class Facility(Base):
         
         #notification.facility_shaking.append(fac_shake)
         session.merge(fac_shake)
-        session.commit()
         
         return fac_shake
  
@@ -197,14 +196,12 @@ class Facility_Shaking(Base):
     yellow = Column(Float)
     orange = Column(Float)
     red = Column(Float)
-    
-    shakemap = relationship('ShakeMap',
-                            backref='facilities_affected',
-                            foreign_keys=[shakemap_id],
-                            cascade='all')
-    
-    __table_args__ = (UniqueConstraint('facility_id', 'shakemap_id', name='shaking_uc'),
-                     )
+    pga = Column(Float)
+    pgv = Column(Float)
+    mmi = Column(Float)
+    psa03 = Column(Float)
+    psa10 = Column(Float)
+    psa30 = Column(Float)
     
 #######################################################################
 ######################## Notification Tables ##########################
@@ -218,22 +215,15 @@ class Notification(Base):
     status = Column(String(15))
     notification_file = Column(String(255))
     
-    group = relationship('Group',
-                         backref='past_notifications')
-    
     facility_shaking = relationship('Facility_Shaking',
                                     secondary='shaking_notification_connection',
-                                    backref='notifications',
-                                    cascade='save-update, delete')
-    
-    shakemap = relationship('ShakeMap',
-                            backref = 'notifications',
-                            foreign_keys=[shakemap_id])
+                                    backref='notifications')
     
     
 class User(Base):
     __tablename__ = 'user'
-    username = Column(String(32), primary_key=True)
+    shakecast_id = Column(Integer, primary_key=True)
+    username = Column(String(32))
     password = Column(String(64))
     email = Column(String(255))
     phone_number = Column(String(25))
@@ -247,7 +237,8 @@ class User(Base):
     
 class Group(Base):
     __tablename__ = 'group'
-    name = Column(String(25), primary_key=True)
+    shakecast_id = Column(Integer, primary_key=True)
+    name = Column(String(25))
     facility_type = Column(String(25))
     lon_min = Column(Integer)
     lon_max = Column(Integer)
@@ -259,6 +250,14 @@ class Group(Base):
     facilities = relationship('Facility',
                               secondary='facility_group_connection',
                               backref='groups')
+    
+    past_notifications = relationship('Notification',
+                                      backref='group',
+                                      cascade='save-update, delete')
+    
+    specs = relationship('Group_Specification',
+                                  backref='group',
+                                  cascade='save-update, delete, delete-orphan')
     
     @hybrid_method    
     def in_grid(self, grid):
@@ -332,38 +331,83 @@ class Group(Base):
                         cls.lat_min < grid.lat_max,
                         cls.lat_max > grid.lat_max))
     
-
-class Group_Specifications(Base):
-    __tablename__ = 'group_specifications'
-    group_specifications_id = Column(Integer, primary_key=True)
-    group_name = Column(String(25), ForeignKey('group.name'))
-    notifiation_type = Column(String(25))
+    
+    @hybrid_method    
+    def has_spec(self, not_type='', min_mag=0):
+        specs = [s.notification_type for s in self.specs]
+        if not_type in specs:
+            return True
+        else:
+            return False
+        
+    @has_spec.expression   
+    def has_spec(cls, not_type='', min_mag=0):
+        specs = [s.notification_type for s in cls.specs]
+        if not_type in specs:
+            return 1 == 1
+        else:
+            return 0 == 1
+        
+class Group_Specification(Base):
+    __tablename__ = 'group_specification'
+    shakecast_id = Column(Integer, primary_key=True)
+    group_id = Column(String(25), ForeignKey('group.shakecast_id'))
+    notification_type = Column(String(25))
     inspection_priority = Column(String(10))
     minimum_magnitude = Column(Integer)
     notification_format = Column(String(25))
     aggregate_name = Column(String(25))
-    
-    group = relationship('Group', backref='specifications', foreign_keys=[group_name])
 
 # Connection tables
 user_group_connection = Table('user_group_connection', Base.metadata,
-    Column('username', Integer, ForeignKey('user.username'), primary_key=True),
-    Column('group', Integer, ForeignKey('group.name'), primary_key=True)
+    Column('user',
+           Integer,
+           ForeignKey('user.shakecast_id',
+                      ondelete='cascade'),
+           primary_key=True),
+    Column('group',
+           Integer,
+           ForeignKey('group.shakecast_id',
+                      ondelete='cascade'),
+           primary_key=True)
 )
 
 facility_group_connection = Table('facility_group_connection', Base.metadata,
-    Column('facility', Integer, ForeignKey('facility.shakecast_id'), primary_key=True),
-    Column('group', Integer, ForeignKey('group.name'), primary_key=True)
+    Column('facility',
+           Integer, ForeignKey('facility.shakecast_id',
+                               ondelete='cascade'),
+           primary_key=True),
+    Column('group',
+           Integer,
+           ForeignKey('group.shakecast_id',
+                      ondelete='cascade'),
+           primary_key=True)
 )
 
 shaking_notification_connection = Table('shaking_notification_connection', Base.metadata,
-    Column('shaking', Integer, ForeignKey('facility_shaking.shakecast_id'), primary_key=True),
-    Column('notification', Integer, ForeignKey('notification.shakecast_id'), primary_key=True)
+    Column('facility_shaking',
+           Integer,
+           ForeignKey('facility_shaking.shakecast_id',
+                      ondelete='cascade'),
+           primary_key=True),
+    Column('notification',
+           Integer,
+           ForeignKey('notification.shakecast_id',
+                      ondelete='cascade'),
+           primary_key=True)
 )
 
 user_notification_connection = Table('user_notification_connection', Base.metadata,
-    Column('username', Integer, ForeignKey('user.username'), primary_key=True),
-    Column('notification', Integer, ForeignKey('notification.shakecast_id'), primary_key=True)
+    Column('user',
+           Integer,
+           ForeignKey('user.shakecast_id',
+                      ondelete='cascade'),
+           primary_key=True),
+    Column('notification',
+           Integer,
+           ForeignKey('notification.shakecast_id',
+                      ondelete='cascade'),
+           primary_key=True)
 )
 
 #######################################################################
@@ -393,6 +437,13 @@ class ShakeMap(Base):
     products = relationship('Product',
                         backref='shakemap',
                         cascade='save-update, delete')
+    
+    notifications = relationship('Notification',
+                                 backref = 'shakemap')
+
+    facility_shaking = relationship('Facility_Shaking',
+                                    backref='shakemap',
+                                    cascade='save-update, delete')
     
     @hybrid_method    
     def is_new(self):

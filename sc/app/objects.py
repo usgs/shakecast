@@ -3,12 +3,17 @@ This program holds all the non-database objects used necessary for
 ShakeCast to run. These objects are used in the functions.py program
 """
 
+#kMhmsd9g
+#shakecast.usgs@gmail.com
+#gscodenh01.cr.usgs.gov
+
 import urllib2
 import json
 import os
-from dbi.db_alchemy import *
 import time
 import xml.etree.ElementTree as ET
+import smtplib
+from dbi.db_alchemy import *
 
 class Product_Grabber(object):
     def __init__(self,
@@ -353,15 +358,42 @@ class SM_Grid(object):
                 return -1
             
         try:
-            shaking = [point.info[metric] for point in self.grid if
+            shaking = [point for point in self.grid if
                                         (point.info['LON'] > lon_min and
                                          point.info['LON'] < lon_max and
                                          point.info['LAT'] > lat_min and
                                          point.info['LAT'] < lat_max)]
             
-            return max(shaking)
+            Point.sort_by = metric
+            shaking = sorted(shaking)
+        
+            return shaking[-1].info
         except:
             return -1
+        
+class Mailer(object):
+    # kMhmsd9g
+    # shakecast.usgs@gmail.com
+    # pyCast.USGS@gmail.com
+    # USGS!Shake.Cast?V4.0
+    
+    def __init__(self):
+        self.me = 'pyCast.USGS@gmail.com'
+        self.password = 'USGS!Shake.Cast?V4.0'
+        self.server_name = 'smtp.gmail.com'
+        self.server_port = 587
+        
+    def send(self, msg=None, you=[], debug=False):
+        server = smtplib.SMTP(self.server_name, self.server_port) #port 465 or 587
+        server.ehlo()
+        server.starttls()
+        server.ehlo()
+        server.login(self.me, self.password)
+        
+        server.sendmail(self.me, you, msg.as_string())
+        server.quit()
+    
+    
             
     
     
