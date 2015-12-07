@@ -6,6 +6,7 @@ import sys
 from newthread import New_Thread
 from task import Task
 from functions import *
+from helper_functions import *
 
 class Server(object):
     
@@ -28,6 +29,15 @@ class Server(object):
         self.silent = False
         self.ui_open = False
         self.last_task = 0
+        
+        self.log_file = '%s%s%s%s' % (sc_dir(),
+                                    'logs',
+                                    get_delim(),
+                                    'server.log')
+        self.sc_log_file = '%s%s%s%s' % (sc_dir(),
+                                         'logs',
+                                         get_delim(),
+                                         'shakecast.log')
         
         self.socket_setup()
         
@@ -120,7 +130,8 @@ class Server(object):
                 
                 self.queue += [new_task]
                 
-                self.log('Task added to queue: %s' % new_task.name)
+                self.log(message='Task added to queue: %s' % new_task.name,
+                         which='server')
     
     def queue_check(self):
         # Check for tasks that are ready to be run
@@ -143,12 +154,21 @@ class Server(object):
         
         if task.loop is False:
             out_str = ''
+            server_log = ''
             if task.output['status'] == 'finished':
                 out_str = task.output['message']
+                server_log = 'Task: %s :: finished'
             elif task.output['status'] == 'failed':
                 out_str = "FAILED: %s" % task.output['message']
+                server_log = 'Task: %s :: failed to finish'
             elif task.status == 'failed':
                 out_str = '%s failed to run...' % task.name
+                server_log = 'Task: %s :: failed to run'
+                
+            self.log(message=task.output.get('log', ''),
+                     which='shakecast')
+            self.log(message=task.output.get('log', ''),
+                     which='server')
             
             conn = self.connections[task.id]    
             conn.send(out_str)
@@ -206,12 +226,16 @@ class Server(object):
         else:
             self.print_out = '\n' + add_str
         
-    def log(self, to_print):
-        # log the server's output in a specific location
-        #print to_print
-        # handle request
-        # return feedback
-        pass
+    def log(self, message='', which=''):
+        if which == 'shakecast':
+            log_file = self.sc_log_file
+        else:
+            log_file = self.log_file
+            
+        date_time = time.strftime('%c')    
+            
+        with open(log_file, 'a') as file_:
+            file_.write('%s%s%s\n' % (date_time, ':: ', message))
     
     def stop_task(self, task_name=None):
         # Sets a looping task's status to 'Finished'

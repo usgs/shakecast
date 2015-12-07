@@ -122,7 +122,7 @@ class Product_Grabber(object):
             
             
             # assign relevent information to shakemap
-            shakemap.status = shakemap.json['properties']['map-status']
+            shakemap.map_status = shakemap.json['properties']['map-status']
             shakemap.region = shakemap.json['properties']['eventsource']
             shakemap.lat_max = shakemap.json['properties']['maximum-latitude']
             shakemap.lat_min = shakemap.json['properties']['minimum-latitude']
@@ -130,6 +130,7 @@ class Product_Grabber(object):
             shakemap.lon_min = shakemap.json['properties']['minimum-longitude']
             shakemap.generation_timestamp = shakemap.json['properties']['process-timestamp']
             shakemap.recieve_timestamp = time.time()
+            shakemap.status = 'new'
             
             # make a directory for the new event
             shakemap.directory_name = '%s%s-%s' % (self.data_dir,
@@ -280,6 +281,8 @@ class SM_Grid(object):
             self.lon = float(all_atts.get('lon'))
             self.description = all_atts.get('event_description')
             
+            self.sorted_by = ''
+            
             self.fields = [child.attrib['name']
                            for child in root
                            if 'grid_field' in child.tag]
@@ -312,6 +315,7 @@ class SM_Grid(object):
         Point.sort_by = metric
         try:
             self.grid = sorted(self.grid)
+            self.sorted_by = metric
             return True
         except:
             return False
@@ -357,19 +361,41 @@ class SM_Grid(object):
             except:
                 return -1
             
-        try:
-            shaking = [point for point in self.grid if
-                                        (point.info['LON'] > lon_min and
-                                         point.info['LON'] < lon_max and
-                                         point.info['LAT'] > lat_min and
+        if not facility.in_grid(self):
+            return None
+        
+        # sort the grid in an attempt to speed up processing on
+        # many facilities
+        if self.sorted_by != 'LON':
+            self.sort_grid('LON')
+        
+        start = int((lon_min - self.grid[0].info['LON']) / self.nom_lon_spacing) - 1
+        end = int((lon_max - self.grid[0].info['LON']) / self.nom_lon_spacing) + 1
+        if start < 0:
+            start = 0
+        
+        shaking = []
+        while not shaking:
+            #shaking = [point for point in self.grid[start:end] if
+            ##                            (point.info['LON'] > lon_min and
+            #                             point.info['LON'] < lon_max and
+            #                             point.info['LAT'] > lat_min and
+            #                             point.info['LAT'] < lat_max)]
+            
+            shaking = [point for point in self.grid[start:end] if
+                                        (point.info['LAT'] > lat_min and
                                          point.info['LAT'] < lat_max)]
             
-            Point.sort_by = metric
-            shaking = sorted(shaking)
+            lon_min -= .01
+            lon_max += .01
+            lat_min -= .01
+            lat_max += .01
+            start -= 1
         
-            return shaking[-1].info
-        except:
-            return -1
+        Point.sort_by = metric
+        shaking = sorted(shaking)
+        return shaking[-1].info
+
         
 class Mailer(object):
     # kMhmsd9g
