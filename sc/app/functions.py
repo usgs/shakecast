@@ -6,6 +6,7 @@ from objects import *
 from helper_functions import *
 import xml.etree.ElementTree as ET
 from email.mime.text import MIMEText
+import pdb
 
 def geo_json():
     try:
@@ -24,22 +25,37 @@ def geo_json():
     return data
 
 def check_new_shakemaps():
+    # for debugging
+    #pdb.set_trace()
+    
     log_message = ''
-    try:
-        new_shakemaps = (session.query(ShakeMap)
-                                .filter(ShakeMap.status=='new')
-                                .all())
-    except:
-        log_message += 'failed to access database'
+    # get rid of stranded sessions...
+    #try:
+    Local_Session = scoped_session(Session)
+    session = Local_Session()
+    new_shakemaps = (session.query(ShakeMap)
+                            .filter(ShakeMap.status=='new')
+                            .all())
         
-    try:
-        if new_shakemaps:
-            process_shakemaps(new_shakemaps)
+    #except:
+    #    log_message += 'failed to access database'
+        
+    #try:
+    if new_shakemaps:
+        process_shakemaps(new_shakemaps, session=session)
         
         
         log_message += 'Processed ShakeMaps: '
-    except:
-        log_message += 'failed to process new shakemaps: '
+        
+    else:
+        log_message += 'No new shakemaps'
+    
+    session.close()
+    Local_Session.remove()
+        
+    #except:
+    #    log_message += 'failed to process new shakemaps: '
+
         
     data = {'status': 'finished',
         'message': 'Check for new earthquakes',
@@ -48,10 +64,9 @@ def check_new_shakemaps():
     return data
 
     
-def process_shakemaps(shakemaps = []):
-    
+def process_shakemaps(shakemaps=[], session=None):
+    db_conn = engine.connect()
     for shakemap in shakemaps:
-        
         shakemap.status = 'processing_started'
         
         grid = create_grid(shakemap)
@@ -66,16 +81,34 @@ def process_shakemaps(shakemaps = []):
             # send off a new event message
             if (group.has_spec(not_type='New_Event') and
                     (shakemap.shakemap_version == 1 or not old_sms)):
-                new_event_notification(shakemap=shakemap,
-                                       group=group,
-                                       grid=grid)
-            
-            # send updated event message
-            elif group.has_spec(not_type='Update') and shakemap.shakemap_version > 1:
+                
+                notification = Notification(group=group,
+                                shakemap=shakemap,
+                                notification_type='New_Event',
+                                status='created')
+    
+                session.add(notification)
+                
                 new_event_notification(shakemap=shakemap,
                                        group=group,
                                        grid=grid,
-                                       update=True)
+                                       notification=notification)
+    
+            # send updated event message
+            elif group.has_spec(not_type='Update') and shakemap.shakemap_version > 1:
+                
+                notification = Notification(group=group,
+                                shakemap=shakemap,
+                                notification_type='New_Event',
+                                status='created')
+                session.add(notification)
+                
+                new_event_notification(shakemap=shakemap,
+                                       group=group,
+                                       grid=grid,
+                                       update=True,
+                                       notification=notification)  
+            session.commit()    
                 
             # create an inspection notification
             if group.has_spec(not_type='Inspection'):
@@ -107,20 +140,20 @@ def process_shakemaps(shakemaps = []):
                                              for g in
                                              groups_affected]))
             
-            fac_shaking_lst = [{}] * len(affected_facilities)
-            relationships = [{}] * (len(affected_facilities) * len(notifications))
-            f_count = 0
-            r_count = 0
+            # find the largest shaking id
             shaking_id = (session
                             .query(Facility_Shaking.shakecast_id,
                                    func.max(Facility_Shaking.shakecast_id))
-                            .first()[0])
-            
+                                .first()[0])
             if shaking_id:
                 shaking_id += 1
             else:
                 shaking_id = 1
-            
+                
+            fac_shaking_lst = [{}] * len(affected_facilities)
+            relationships = [{}] * (len(affected_facilities) * len(notifications))
+            f_count = 0
+            r_count = 0
             for facility in affected_facilities:
                 fac_shaking = make_inspection_prios(facility=facility,
                                                 shakemap=shakemap,
@@ -162,25 +195,21 @@ def process_shakemaps(shakemaps = []):
                             .values(notification=bindparam('notification'),
                                     facility_shaking=bindparam('facility_shaking')))
             
+            #sqlite specific adjustment to overwrite existing records
             stmt = str(stmt).replace('INSERT', 'INSERT OR REPLACE')
             rel_stmt = str(rel_stmt).replace('INSERT', 'INSERT OR REPLACE')
             
-            db_conn.execute(stmt, fac_shaking_lst)
-            db_conn.execute(rel_stmt, relationships)
-
-            session.flush()
+            if fac_shaking_lst:
+                db_conn.execute(stmt, fac_shaking_lst)
+            if relationships:
+                db_conn.execute(rel_stmt, relationships)
             session.commit()
                 
-
-            
             [inspection_notification(notification=n,
                                      grid=grid) for n in notifications]
                 
             shakemap.status = 'processed'    
-            session.add(shakemap)
             session.commit()
-            
-        
         
 def make_inspection_prios(facility=Facility(),
                           shakemap=ShakeMap(),
@@ -201,18 +230,15 @@ def make_inspection_prios(facility=Facility(),
 def new_event_notification(shakemap=ShakeMap(),
                            grid=SM_Grid(),
                            group=Group(),
-                           update=False):
-    
-    notification = Notification(group=group,
-                                shakemap=shakemap,
-                                notification_type='New_Event',
-                                status='created')
-    
-    session.add(notification)
-    session.commit()
+                           update=False,
+                           notification=None):
     
     try:
-        notification.notification_file = notification.shakemap.directory_name + get_delim() + group.name + '_new_event.txt'
+        notification.notification_file = '%s%s%s_new_event.txt' % ((notification
+                                                                    .shakemap
+                                                                    .directory_name),
+                                                                   get_delim(),
+                                                                   group.name)
         not_file = open(notification.notification_file, 'w')
         
         if update is True:
@@ -269,6 +295,7 @@ processing the information.'''
     
 def inspection_notification(notification=Notification(),
                             grid=SM_Grid()):
+    db_conn = engine.connect()
     
     shakemap = notification.shakemap
     group = notification.group
@@ -312,8 +339,10 @@ Description: %s
                        Facility.__table__.c.name,
                        Facility.__table__.c.facility_type,
                        Facility_Shaking.__table__.c.alert_level
-                       ]).where(Facility_Shaking.__table__.c.facility_id ==
-                                Facility.__table__.c.shakecast_id)
+                       ]).where(and_(Facility_Shaking.__table__.c.facility_id ==
+                                        Facility.__table__.c.shakecast_id,
+                                        Facility_Shaking.__table__.c.shakemap_id ==
+                                        shakemap.shakecast_id))
         
         result = db_conn.execute(stmt)
         fac_str = '\n'.join(['%s%s%s%s%s%s%s' % (row[0],
@@ -353,9 +382,6 @@ Description: %s
             notification.status = 'sent'
         except:
             notification.status = 'send failed'
-            
-    session.add(notification)
-    session.commit()
 
     
 def send_notifications():

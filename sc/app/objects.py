@@ -67,17 +67,12 @@ class Product_Grabber(object):
                 continue
         
     def get_new_events(self):
+        Local_Session = scoped_session(Session)
+        session = Local_Session()
+        
         new_shakemaps = []
         for eq_id in self.earthquakes.keys():
             eq = self.earthquakes[eq_id]
-            
-            #print '\nchecking: %s' % eq_id
-            
-            #eq_id = eq['id']
-            
-            # check if we've already downloaded this eq. If so, skip it
-            #if eq['status'] != 'new':
-            #    continue
             
             eq_url = eq['properties']['detail']
             
@@ -175,7 +170,9 @@ class Product_Grabber(object):
             new_shakemaps += [shakemap]
             
             self.log += 'Wrote %s to disk.\n' % eq_id
-            
+        
+        
+        Local_Session.remove()
         print self.log
         return new_shakemaps, self.log
 
@@ -193,14 +190,19 @@ class Point(object):
         self.info = {}
 
     def __cmp__(self, other):
-        if hasattr(other, 'info'):
+        #if hasattr(other, 'info'):
             #return (int(self.shaking[self.sort_by]).
             #            __cmp__(int(other.shaking[self.sort_by])))
 
             
-            return (int(self.info[self.sort_by] * 10000).
-                        __cmp__(int(other.info[self.sort_by] * 10000)))
-
+        #return (int(self.info[self.sort_by] * 10000).
+        #            __cmp__(int(other.info[self.sort_by] * 10000)))
+        if int(self.info[self.sort_by] * 10000) > int(other.info[self.sort_by] * 10000):
+            return 1
+        elif int(self.info[self.sort_by] * 10000) < int(other.info[self.sort_by] * 10000):
+            return -1
+        else:
+            return 0
 
 class SM_Grid(object):
     
@@ -369,6 +371,7 @@ class SM_Grid(object):
         if self.sorted_by != 'LON':
             self.sort_grid('LON')
         
+        # figure out where in the point list we should look for shaking
         start = int((lon_min - self.grid[0].info['LON']) / self.nom_lon_spacing) - 1
         end = int((lon_max - self.grid[0].info['LON']) / self.nom_lon_spacing) + 1
         if start < 0:

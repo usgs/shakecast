@@ -116,6 +116,8 @@ class Facility(Base):
     
 
     def make_alert_level_old(self, shaking_level=0, shakemap=None):
+        session = Local_Session()
+        
         # check if there is already shaking for this shakemap and facility
         fac_shake = (session.query(Facility_Shaking)
                             .filter(Facility_Shaking.facility == self)
@@ -161,33 +163,22 @@ class Facility(Base):
         fac_shake.shakemap = shakemap
         fac_shake.metric = self.metric
         fac_shake.alert_level = alert_level
-        
-        #notification.facility_shaking.append(fac_shake)
+        #for notification in notifications:
+        #   notification.facility_shaking.append(fac_shake)
         #session.add(fac_shake)
         
         return fac_shake
     
     def make_alert_level(self, shaking_level=0, shakemap=None, notifications=[]):
-        # check if there is already shaking for this shakemap and facility
-        #fac_shake = (session.query(Facility_Shaking)
-        #                    .filter(Facility_Shaking.facility == self)
-        #                    .filter(Facility_Shaking.shakemap == shakemap)
-        #                    .first())
+        db_conn = engine.connect()
         
+        # check if there is already shaking for this shakemap and facility
         stmt = (select([Facility_Shaking.__table__.c.shakecast_id])
                         .where(and_(Facility_Shaking.__table__.c.facility_id == self.shakecast_id,
                                     Facility_Shaking.__table__.c.shakemap_id == shakemap.shakecast_id)))
-        
         result = db_conn.execute(stmt)
         fac_shake_id = [row for row in result]
         
-        #fac_shake_id = (session.query(Facility_Shaking.shakecast_id)
-        #                    .filter(Facility_Shaking.facility == self)
-        #                    .filter(Facility_Shaking
-        #                                .notifications
-        #                                .any(Notification.shakemap_id ==
-        #                                        shakemap.shakecast_id))
-        #                    .first())
         
         fac_shake = {'grey': 0,
                      'green': 0,
@@ -717,12 +708,14 @@ class ShakeMap(Base):
     
     @hybrid_method    
     def is_new(self):
-        shakemaps = (
-            session.query(ShakeMap)
-                   .filter(ShakeMap.shakemap_id == self.shakemap_id)
-                   .filter(ShakeMap.shakemap_version == self.shakemap_version)
-                   .all()
-        )
+        db_conn = engine.connect()
+        
+        stmt = (select([ShakeMap.__table__.c.shakecast_id])
+                    .where(and_(ShakeMap.__table__.c.shakemap_id == self.shakemap_id,
+                                ShakeMap.__table__.c.shakemap_version == self.shakemap_version)))
+        
+        result = db_conn.execute(stmt)
+        shakemaps = [row for row in result]
         
         if shakemaps:
             return False
@@ -787,6 +780,4 @@ db_sql = metadata.create_all(engine)
 # In SQLalchemy we always work with RELATED objects
 # all the objects we're working with are stored in a session
 Session = sessionmaker(bind=engine)
-session = Session()
-db_conn = engine.connect()
     

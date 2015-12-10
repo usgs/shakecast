@@ -18,7 +18,8 @@ class Task(object):
                  loop=False,
                  interval=100,
                  run_in = 0,
-                 kill_time=None):
+                 kill_time=None,
+                 db_use=False):
         self.name = name
         self.id = task_id
         self.func = func
@@ -30,6 +31,7 @@ class Task(object):
         self.status = 'stopped'
         self.next_run = time.time() + run_in
         self.kill_time = None
+        self.db_use = False
         self.output = {'status': '',
                        'messege': ''}
         

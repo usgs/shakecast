@@ -29,6 +29,7 @@ class Server(object):
         self.silent = False
         self.ui_open = False
         self.last_task = 0
+        self.db_open = True
         
         self.log_file = '%s%s%s%s' % (sc_dir(),
                                     'logs',
@@ -120,7 +121,12 @@ class Server(object):
         if good_data is True:    
             for key, value in new_task_dict.iteritems():
                 task_id = int(time.time() * 1000000)
-                new_task = Task(name=key, task_id=task_id, **value)
+                try:
+                    db_use = value.pop('db_use')
+                except:
+                    db_use = False
+                    
+                new_task = Task(name=key, task_id=task_id, db_use=db_use, **value)
                 
                 if new_task.loop is True:
                     conn.send('Received looping task. Closing connection...')
@@ -139,12 +145,17 @@ class Server(object):
         timestamp = time.time()
         for task in self.queue:
             # run tasks if it's their time and they aren't already running
-            if task.next_run < timestamp and task.status == 'stopped':
-                self.make_print('Running: %s' % task.name)
-                self.last_task = time.time()
-                
-                task_thread = New_Thread(func=task.run)
-                task_thread.start()
+            if ((task.next_run < timestamp and task.status == 'stopped') and
+                (task.db_use is False or self.db_open is True)):
+                    
+                    if task.db_use is True:
+                        self.db_open = False
+                    
+                    self.make_print('Running: %s' % task.name)
+                    self.last_task = time.time()
+                    
+                    task_thread = New_Thread(func=task.run)
+                    task_thread.start()
             
             elif task.status == 'finished' or task.status == 'failed':
                 self.check_task(task=task)
@@ -174,6 +185,9 @@ class Server(object):
             conn.send(out_str)
             conn.close()
             task.status = 'complete'
+            
+            if task.db_use is True:
+                self.db_open = True
 
         else:
             task.status = 'stopped'
