@@ -31,7 +31,7 @@ class Task(object):
         self.status = 'stopped'
         self.next_run = time.time() + run_in
         self.kill_time = None
-        self.db_use = False
+        self.db_use = db_use
         self.output = {'status': '',
                        'messege': ''}
         
@@ -42,11 +42,13 @@ class Task(object):
         return "\n\n%s(id: %s, \n\
                    arguments: %s, \n\
                    loop: %s, \n\
-                   interval: %s) status: %s" % (self.name,
+                   interval: %s,\n\
+                   db_use: %s) status: %s" % (self.name,
                                                 self.id,
                                                 self.args_in,
                                                 self.loop,
                                                 self.interval,
+                                                self.db_use,
                                                 self.status)        
         
     def run(self):

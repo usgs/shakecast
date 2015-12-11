@@ -143,7 +143,7 @@ class Server(object):
         # Check for tasks that are ready to be run
         # and finished tasks that can be removed
         timestamp = time.time()
-        for task in self.queue:
+        for i,task in enumerate(self.queue):
             # run tasks if it's their time and they aren't already running
             if ((task.next_run < timestamp and task.status == 'stopped') and
                 (task.db_use is False or self.db_open is True)):
@@ -156,7 +156,11 @@ class Server(object):
                     
                     task_thread = New_Thread(func=task.run)
                     task_thread.start()
-            
+                    
+                    # move task to the end of the list
+                    self.queue.pop(i)
+                    self.queue += [task]
+                    
             elif task.status == 'finished' or task.status == 'failed':
                 self.check_task(task=task)
             
@@ -185,12 +189,12 @@ class Server(object):
             conn.send(out_str)
             conn.close()
             task.status = 'complete'
-            
-            if task.db_use is True:
-                self.db_open = True
 
         else:
             task.status = 'stopped'
+            
+        if task.db_use is True:
+            self.db_open = True
             
     def cleanup(self):
         # Remove tasks that have completed their work and the

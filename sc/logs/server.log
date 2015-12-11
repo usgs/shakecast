@@ -55,3 +55,23 @@ Thu Dec 10 10:51:42 2015::
 Thu Dec 10 10:53:23 2015:: Task added to queue: check_new_shakemaps
 Thu Dec 10 10:54:19 2015:: Task added to queue: shutdown
 Thu Dec 10 10:54:19 2015:: 
+Thu Dec 10 10:59:13 2015:: Task added to queue: ui_exit
+Thu Dec 10 10:59:14 2015:: 
+Thu Dec 10 11:00:22 2015:: Task added to queue: <function geo_json at 0x10bec45f0>
+Thu Dec 10 11:00:59 2015:: Task added to queue: check_new_shakemaps
+Thu Dec 10 11:02:13 2015:: Task added to queue: <function geo_json at 0x10f7165f0>
+Thu Dec 10 11:02:25 2015:: Task added to queue: check_new_shakemaps
+Thu Dec 10 11:05:58 2015:: Task added to queue: shutdown
+Thu Dec 10 11:05:58 2015:: 
+Thu Dec 10 11:06:13 2015:: Task added to queue: <function geo_json at 0x1094c45f0>
+Thu Dec 10 11:06:34 2015:: Task added to queue: check_new_shakemaps
+Thu Dec 10 11:10:26 2015:: Task added to queue: shutdown
+Thu Dec 10 11:10:27 2015:: 
+Thu Dec 10 11:11:43 2015:: Task added to queue: <function geo_json at 0x107b765f0>
+Thu Dec 10 11:11:51 2015:: Task added to queue: check_new_shakemaps
+Fri Dec 11 09:16:56 2015:: Task added to queue: shutdown
+Fri Dec 11 09:16:57 2015:: 
+Fri Dec 11 09:20:25 2015:: Task added to queue: check_new_shakemaps
+Fri Dec 11 09:21:28 2015:: Task added to queue: <function geo_json at 0x10f0a45f0>
+Fri Dec 11 09:24:01 2015:: Task added to queue: shutdown
+Fri Dec 11 09:24:02 2015:: 
