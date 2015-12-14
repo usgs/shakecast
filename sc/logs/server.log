@@ -75,3 +75,9 @@ Fri Dec 11 09:20:25 2015:: Task added to queue: check_new_shakemaps
 Fri Dec 11 09:21:28 2015:: Task added to queue: <function geo_json at 0x10f0a45f0>
 Fri Dec 11 09:24:01 2015:: Task added to queue: shutdown
 Fri Dec 11 09:24:02 2015:: 
+Fri Dec 11 15:13:44 2015:: Task added to queue: shutdown
+Fri Dec 11 15:13:44 2015:: 
+Fri Dec 11 15:33:59 2015:: Task added to queue: geo_json
+Fri Dec 11 15:34:48 2015:: Task added to queue: check_new_shakemaps
+Fri Dec 11 15:36:39 2015:: Task added to queue: shutdown
+Fri Dec 11 15:36:39 2015:: 

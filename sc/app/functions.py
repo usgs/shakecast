@@ -6,7 +6,6 @@ from objects import *
 from helper_functions import *
 import xml.etree.ElementTree as ET
 from email.mime.text import MIMEText
-import pdb
 
 def geo_json():
     try:
@@ -26,6 +25,7 @@ def geo_json():
 
 def check_new_shakemaps():
     # for debugging
+    #import pdb
     #pdb.set_trace()
     
     log_message = ''

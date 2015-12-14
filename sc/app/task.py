@@ -1,5 +1,4 @@
 import time
-from pydispatch import dispatcher
 
 class Task(object):
     
