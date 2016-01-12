@@ -80,6 +80,10 @@ def process_shakemaps(shakemaps=[], session=None):
                                     .filter(Group.in_grid(grid))
                                     .all())
         
+        if not groups_affected:
+            shakemap.status = 'no groups'
+            continue
+        
         # send out new events and create inspection notifications
         for group in groups_affected:
             old_sms = (session.query(ShakeMap)
@@ -87,12 +91,12 @@ def process_shakemaps(shakemaps=[], session=None):
                         .all())
             
             # send off a new event message
-            if (group.has_spec(not_type='New_Event') and
+            if (group.has_spec(not_type='NEW_EVENT') and
                     (shakemap.shakemap_version == 1 or not old_sms)):
                 
                 notification = Notification(group=group,
                                 shakemap=shakemap,
-                                notification_type='New_Event',
+                                notification_type='NEW_EVENT',
                                 status='created')
     
                 session.add(notification)
@@ -107,7 +111,7 @@ def process_shakemaps(shakemaps=[], session=None):
                 
                 notification = Notification(group=group,
                                 shakemap=shakemap,
-                                notification_type='New_Event',
+                                notification_type='Update',
                                 status='created')
                 session.add(notification)
                 
@@ -119,10 +123,10 @@ def process_shakemaps(shakemaps=[], session=None):
             session.commit()    
                 
             # create an inspection notification
-            if group.has_spec(not_type='Inspection'):
+            if group.has_spec(not_type='DAMAGE'):
                 notification = Notification(group=group,
                                             shakemap=shakemap,
-                                            notification_type='Inspection',
+                                            notification_type='DAMAGE',
                                             status='created')
                 
                 session.add(notification)
@@ -130,7 +134,7 @@ def process_shakemaps(shakemaps=[], session=None):
         
         notifications = (session.query(Notification)
                     .filter(Notification.shakemap == shakemap)
-                    .filter(Notification.notification_type == 'Inspection')
+                    .filter(Notification.notification_type == 'DAMAGE')
                     .filter(Notification.status != 'sent')
                     .all())
         
@@ -696,6 +700,7 @@ def import_group_xml(xml_file=''):
         
         # split up the monitoring region
         split_poly = re.split('\s|;|,', poly)
+        split_poly = filter(None, split_poly)
         
         # try to get the group
         g = session.query(Group).filter(Group.name == name).all()
@@ -750,13 +755,13 @@ def import_group_xml(xml_file=''):
                 # Check requirements for group specification
                 
                 # look for existing spec
-                if notification_type == 'New_Event':
+                if notification_type == 'NEW_EVENT':
                     spec = (session.query(Group_Specification)
-                                .filter(Group_Specification.notification_type == 'New_Event')
+                                .filter(Group_Specification.notification_type == notification_type)
                                 .filter(Group_Specification.group == g)).all()
                 else:
                     spec = (session.query(Group_Specification)
-                                .filter(Group_Specification.notification_type == 'Inspection')
+                                .filter(Group_Specification.notification_type == notification_type)
                                 .filter(Group_Specification.inspection_priority == damage_level)
                                 .filter(Group_Specification.group == g)).all()
                 if spec:
