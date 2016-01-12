@@ -1,1 +1,6 @@
 data/
+tmp/
+.DS_Store
+*.pyc
+*~
+*.db
