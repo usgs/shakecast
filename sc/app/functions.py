@@ -722,7 +722,7 @@ def import_group_xml(xml_file=''):
         
         # split up the poly and save lat/lon min/max if the monitoring
         # region is being updated
-        if split_poly != ['']:
+        if split_poly:
             lats = []
             lons = []
             for num, lat_lon in enumerate(split_poly):
