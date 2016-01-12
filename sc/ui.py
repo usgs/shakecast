@@ -31,9 +31,6 @@ class UI(object):
                 sent = self.send(user_in)
                 print "\nShakeCast> ",
                 sys.stdout.flush()
-            #if sent is True:
-            #    self.get_message()
-            #    self.conn.close()
             time.sleep(.1)
         
     def get_input(self):

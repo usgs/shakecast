@@ -6,8 +6,13 @@ from objects import *
 from helper_functions import *
 import xml.etree.ElementTree as ET
 from email.mime.text import MIMEText
+import re
 
 def geo_json():
+    '''
+    Get earthquake feed from USGS and check for new earthquakes
+    '''
+    
     try:
         pg = Product_Grabber()
         pg.get_json_feed()
@@ -24,53 +29,56 @@ def geo_json():
     return data
 
 def check_new_shakemaps():
+    '''
+    Search database for unprocessed shakemaps
+    '''
+    
     # for debugging
     #import pdb
     #pdb.set_trace()
     
     log_message = ''
-    # get rid of stranded sessions...
-    #try:
-    Local_Session = scoped_session(Session)
-    session = Local_Session()
-    new_shakemaps = (session.query(ShakeMap)
-                            .filter(ShakeMap.status=='new')
-                            .all())
+    try:
+        Local_Session = scoped_session(Session)
+        session = Local_Session()
+        new_shakemaps = (session.query(ShakeMap)
+                                .filter(ShakeMap.status=='new')
+                                .all())
         
-    #except:
-    #    log_message += 'failed to access database'
+    except:
+        log_message += 'failed to access database'
         
-    #try:
-    if new_shakemaps:
-        process_shakemaps(new_shakemaps, session=session)
-        
-        
-        log_message += 'Processed ShakeMaps: '
-        
-    else:
-        log_message += 'No new shakemaps'
+    try:
+        if new_shakemaps:
+            process_shakemaps(new_shakemaps, session=session)
+            log_message += 'Processed ShakeMaps: '
+        else:
+            log_message += 'No new shakemaps'
     
-    session.close()
-    Local_Session.remove()
-        
-    #except:
-    #    log_message += 'failed to process new shakemaps: '
+        Local_Session.remove()
+    except:
+        log_message += 'failed to process new shakemaps: '
 
-        
     data = {'status': 'finished',
-        'message': 'Check for new earthquakes',
-        'log': log_message}
+            'message': 'Check for new earthquakes',
+            'log': log_message}
     
     return data
-
     
 def process_shakemaps(shakemaps=[], session=None):
+    '''
+    Process or reprocess the shakemaps passed into the function
+    '''
+    
     db_conn = engine.connect()
     for shakemap in shakemaps:
         shakemap.status = 'processing_started'
         
+        # open the grid.xml file and find groups affected by event
         grid = create_grid(shakemap)
-        groups_affected = session.query(Group).filter(Group.in_grid(grid)).all()
+        groups_affected = (session.query(Group)
+                                    .filter(Group.in_grid(grid))
+                                    .all())
         
         # send out new events and create inspection notifications
         for group in groups_affected:
@@ -128,7 +136,7 @@ def process_shakemaps(shakemaps=[], session=None):
         
         if notifications:
         #if group.has_spec(not_type='Inspection'):
-            # make inspection priorities for affected facilities
+            # get a set of all affected facilities
             affected_facilities = set(itertools
                                         .chain
                                         .from_iterable(
@@ -156,9 +164,9 @@ def process_shakemaps(shakemaps=[], session=None):
             r_count = 0
             for facility in affected_facilities:
                 fac_shaking = make_inspection_prios(facility=facility,
-                                                shakemap=shakemap,
-                                                grid=grid,
-                                                notifications=notifications)
+                                                    shakemap=shakemap,
+                                                    grid=grid,
+                                                    notifications=notifications)
                 if not fac_shaking['update']:
                     fac_shaking['_shakecast_id'] = shaking_id
                     shaking_id += 1
@@ -177,7 +185,7 @@ def process_shakemaps(shakemaps=[], session=None):
             # get rid of empty dictionaries in relationships
             relationships = filter(None, relationships)
                 
-            # insert fac_shaking_list into database
+            # create a statement to insert fac_shaking_list into database
             stmt = (Facility_Shaking.__table__.insert()
                         .values(grey=bindparam('grey'),
                                 green=bindparam('green'),
@@ -191,6 +199,8 @@ def process_shakemaps(shakemaps=[], session=None):
                                 shakecast_id=bindparam('_shakecast_id')
                                 ))
             
+            # create a seperate statement containing the relationships
+            # of these shaking levels with their facilities
             rel_stmt = (shaking_notification_connection.insert()
                             .values(notification=bindparam('notification'),
                                     facility_shaking=bindparam('facility_shaking')))
@@ -199,12 +209,19 @@ def process_shakemaps(shakemaps=[], session=None):
             stmt = str(stmt).replace('INSERT', 'INSERT OR REPLACE')
             rel_stmt = str(rel_stmt).replace('INSERT', 'INSERT OR REPLACE')
             
+            # if there are facilities affected, send shaking data to
+            # database
             if fac_shaking_lst:
                 db_conn.execute(stmt, fac_shaking_lst)
+            # quick check for relationships before inserting into
+            # database in order to avoid errors in strange
+            # circumstances... probably not necessary
             if relationships:
                 db_conn.execute(rel_stmt, relationships)
             session.commit()
-                
+            
+            # send inspection notifications for the shaking levels we
+            # just computed
             [inspection_notification(notification=n,
                                      grid=grid) for n in notifications]
                 
@@ -215,13 +232,19 @@ def make_inspection_prios(facility=Facility(),
                           shakemap=ShakeMap(),
                           grid=SM_Grid(),
                           notifications=[]):
+    '''
+    Determines inspection priorities for the input facility
+    '''
     
+    # get the largest shaking level affecting the facility
     facility_shaking = grid.max_shaking(facility=facility)
     if facility_shaking is not None:
         shaking_level = facility_shaking[facility.metric]
     else:
         shaking_level = 0
-        
+    
+    # use the max shaking value to create fragility curves for the
+    # damage states
     fac_shaking = facility.make_alert_level(shaking_level=shaking_level,
                                             shakemap=shakemap,
                                             notifications=notifications)
@@ -295,24 +318,29 @@ processing the information.'''
     
 def inspection_notification(notification=Notification(),
                             grid=SM_Grid()):
-    db_conn = engine.connect()
+    '''
+    Using an existing notificaiton and shakemap grid, create an email
+    notification and send it: inspection notification
+    '''
     
+    db_conn = engine.connect()
     shakemap = notification.shakemap
     group = notification.group
     
+    # save the file location for this notification
     notification.notification_file = ('%s%s%s_Inspection.txt' %
                                         (shakemap.directory_name,
                                          get_delim(),
                                          group.name))
 
     try:
+        # open the notification file and write the preamble and
+        # heading information
         not_file = open(notification.notification_file, 'w')
-        
         preamble = '''
 ShakeCast has processed your facilities. You are recieving this notification
 because you are a part of the %s notification group
                    ''' % group.name
-        
         body = '''
 EQ: %s
 Version: %s
@@ -334,7 +362,7 @@ Description: %s
                                         (' ' * (20 - len('Facility_Type'))),
                                         'Alert_Level')
         
-        # get necessary shaking info
+        # get necessary shaking info from database
         stmt = select([Facility.__table__.c.facility_id,
                        Facility.__table__.c.name,
                        Facility.__table__.c.facility_type,
@@ -343,8 +371,10 @@ Description: %s
                                         Facility.__table__.c.shakecast_id,
                                         Facility_Shaking.__table__.c.shakemap_id ==
                                         shakemap.shakecast_id))
-        
         result = db_conn.execute(stmt)
+        
+        # create a string that includes the shaking information queried
+        # above
         fac_str = '\n'.join(['%s%s%s%s%s%s%s' % (row[0],
                                         ' ' * (15 - len(str(row[0]))),
                                         row[1],
@@ -354,36 +384,40 @@ Description: %s
                                         row[3]
                                        ) for row in result])
         
+        # add shaking information to the header string to create the
+        # body of the notification
         body += '%s\n%s' % (fac_header, fac_str)
-        
+        # write both the preamble and body to the file
         not_file.write('%s \n %s' % (preamble, body))
+        
         not_file.close()
         notification.status = 'file success'
     except:
         notification.status = 'file failed'
     
+    # if the file was created successfully, try sending it
     if notification.status != 'file failed':
         try:
+            # open notification file and write its contents into MIME
+            # text for the email server
             not_file = open(notification.notification_file, 'r')
             msg = MIMEText(not_file.read())
             not_file.close()
-            mailer = Mailer()
             
+            # create a mailer object and determine who is sending and
+            # receiving these notifications
+            mailer = Mailer()
             me = mailer.me
             you = [user.email for user in notification.group.users]
-            
             msg['Subject'] = 'ShakeCast -- Inspection'
             msg['To'] = ', '.join(you)
             msg['From'] = me
             
-            
             mailer.send(msg=msg, you=you)
-            
             notification.status = 'sent'
         except:
             notification.status = 'send failed'
 
-    
 def send_notifications():
     '''
     Resend notifications that failed for some reason before
@@ -392,14 +426,47 @@ def send_notifications():
                         .filter(Notification.status != 'sent')
                         .all())
     
-    shakemaps = [n.shakemap for n in notifications]
+    shakemaps = set([n.shakemap for n in notifications])
     process_shakemaps(shakemaps)
+    
+
+#######################################################################
+############################## Scenarios ##############################
+def run_scenario(eq='', version=0):
+    '''
+    Have pyCast process a specific event, submitted by a user
+    '''
+    
+    session = Local_Session()
+    # check in db
+    if version:
+        shakemap = session.query(ShakeMap).filter(and_(ShakeMap.shakemap_id == eq,
+                                                       ShakeMap.shakemap_version == version)).first()
+    else:
+        shakemap = session.query(ShakeMap).filter(ShakeMap.shakemap_id == eq).first()
+        
+    if shakemap:
+        process_shakemaps([shakemap])
+        
+    else:
+        # check for file
+        pass
+    
+    # get files from web
+    
+    Local_Session.remove()
 
 
 #######################################################################
-###################### Import Inventory Data ##########################
+######################## Import Inventory Data ########################
 
 def import_facility_xml(xml_file=''):
+    '''
+    Import an XML file created by the ShakeCast workbook; Facilities
+    '''
+    Local_Session = scoped_session(Session)
+    session = Local_Session()
+    
     groups = session.query(Group).all()
     
     tree = ET.parse(xml_file)
@@ -501,6 +568,7 @@ def import_facility_xml(xml_file=''):
                             elif child3.tag == 'BETA':
                                 red_beta = float(child3.text)
         
+        # check for an existing facility with this ID
         existing = (session.query(Facility)
                             .filter(Facility.facility_id == facility_id)
                             .filter(Facility.component == component)
@@ -549,8 +617,6 @@ def import_facility_xml(xml_file=''):
         f.red_metric = red_metric
         f.metric = metric
         
-        
-        
         if geom_type and geom:
             # manipulate geometry
             if geom_type == 'POINT':
@@ -579,18 +645,276 @@ def import_facility_xml(xml_file=''):
                 pass
             
         session.add(f)
-        
-    add_facs_to_groups()
+    add_facs_to_groups(session=session)
     session.commit()
     
-def add_facs_to_groups():
-    groups = session.query(Group).all()
+    Local_Session.remove()
     
+    log_message = ''
+    status = 'finished'
+    data = {'status': status,
+            'message': 'Imported Facilities',
+            'log': log_message}
+    
+    return data
+    
+def import_group_xml(xml_file=''):
+    '''
+    Import an XML file created by the ShakeCast workbook; Groups
+    '''
+    
+    Local_Session = scoped_session(Session)
+    session = Local_Session()
+    
+    tree = ET.parse(xml_file)
+    root = tree.getroot()
+    groups = [child for child in root]
+    
+    for group in groups:
+        name = ''
+        facility_type = ''
+        lon_min = 0
+        lon_max = 0
+        lat_min = 0
+        lat_max = 0
+        notification_type = ''
+        inspection_priority = ''
+        minimum_magnitude = 0
+        notification_format = ''
+        aggregate_name = 'Default'
+        damage_level = ''
+        template = ''
+        poly = ''
+        
+        for child in group:
+            if child.tag == 'GROUP_NAME':
+                name = child.text
+            elif child.tag == 'FACILITY_TYPE':
+                facility_type = child.text
+            elif child.tag == 'POLY':
+                poly = child.text
+        
+        # split up the monitoring region
+        split_poly = re.split('\s|;|,', poly)
+        
+        # try to get the group
+        g = session.query(Group).filter(Group.name == name).all()
+        if g:
+            g = g[0]
+        else:
+            g = Group()
+            g.name = name
+            
+            # check requirements for group and exit if not met
+            if (name == '' or
+                    len(split_poly) % 2 != 0 or
+                    len(split_poly) < 6):
+                continue
+        
+            session.add(g)
+        
+        g.facility_type = facility_type
+        
+        # split up the poly and save lat/lon min/max if the monitoring
+        # region is being updated
+        if split_poly != ['']:
+            lats = []
+            lons = []
+            for num, lat_lon in enumerate(split_poly):
+                if num % 2 == 0:
+                    lats += [float(lat_lon)]
+                else:
+                    lons += [float(lat_lon)]
+                    
+            g.lat_min = min(lats)
+            g.lat_max = max(lats)
+            g.lon_min = min(lons)
+            g.lon_max = max(lons)
+        
+        for child in group:
+            if child.tag == 'NOTIFICATION':
+                for child2 in child:
+                    if child2.tag == 'NOTIFICATION_TYPE':
+                        notification_type = child2.text
+                    elif child2.tag == 'LIMIT_VALUE':
+                        minimum_magnitude = child2.text
+                    elif child2.tag == 'EVENT_TYPE':
+                        event_type = child2.text
+                    elif child2.tag == 'DELIVERY_METHOD':
+                        notification_format = child2.text
+                    elif child2.tag == 'AGGREGATE_GROUP':
+                        aggregate_name = child2.text
+                    elif child2.tag == 'DAMAGE_LEVEL':
+                        damage_level = child2.text
+            
+                # Check requirements for group specification
+                
+                # look for existing spec
+                if notification_type == 'New_Event':
+                    spec = (session.query(Group_Specification)
+                                .filter(Group_Specification.notification_type == 'New_Event')
+                                .filter(Group_Specification.group == g)).all()
+                else:
+                    spec = (session.query(Group_Specification)
+                                .filter(Group_Specification.notification_type == 'Inspection')
+                                .filter(Group_Specification.inspection_priority == damage_level)
+                                .filter(Group_Specification.group == g)).all()
+                if spec:
+                    spec = spec[0]
+
+                else:
+                    spec = Group_Specification()
+                    spec.notification_type = notification_type
+                    if damage_level:
+                        spec.damage_level= damage_level
+                        
+                    g.specs += [spec]
+                
+                if damage_level:    
+                    spec.inspection_priority = damage_level
+                         
+                spec.minimum_magnitude = minimum_magnitude
+                spec.notification_format = notification_format
+                spec.aggregate_group = aggregate_name
+    
+    add_facs_to_groups(session=session)
+    add_users_to_groups(session=session)
+    session.commit()
+    Local_Session.remove()
+    
+    log_message = ''
+    status = 'finished'
+    data = {'status': status,
+            'message': 'Imported Groups',
+            'log': log_message}
+    
+    return data
+
+def import_user_xml(xml_file=''):
+    '''
+    Import an XML file created by the ShakeCast workbook; Users
+    '''
+    
+    Local_Session = scoped_session(Session)
+    session = Local_Session()
+    
+    tree = ET.parse(xml_file)
+    root = tree.getroot()
+    users = [child for child in root]
+    
+    for user in users:
+        username = None
+        password = None
+        user_type = 'USER'
+        full_name = None
+        phone_number = ''
+        email = ''
+        email_text = ''
+        email_html = ''
+        email_pager = ''
+        group_lst = []
+        group_string = ''
+        
+        for child in user:
+            if child.tag == 'USERNAME':
+                username = child.text
+            elif child.tag == 'PASSWORD':
+                password = child.text
+            elif child.tag == 'USER_TYPE':
+                user_type = child.text
+            elif child.tag == 'FULL_NAME':
+                full_name = child.text
+            elif child.tag == 'EMAIL_ADDRESS':
+                email = child.text
+            elif child.tag == 'PHONE_NUMBER':
+                phone_number = child.text
+            
+            elif child.tag == 'GROUP':
+                if child.text:
+                    group_lst = re.split('\s|,|;|:', child.text)
+                    group_string = child.text
+                else:
+                    group_lst = []
+
+            elif child.tag == 'DELIVERY':
+                for child2 in child:
+                    if child2.tag == 'EMAIL_HTML':
+                        email_html = child2.text
+                    if child2.tag == 'EMAIL_TEXT':
+                        email_text = child2.text
+                    if child2.tag == 'EMAIL_PAGER':
+                        email_pager = child2.text
+        
+        # input validation
+        if not username:
+            continue
+        
+        # get existing user
+        u = session.query(User).filter(User.username == username).all()
+        if u:
+            u = u[0]
+        else:
+            u = User()
+        
+        #if group_lst:                
+        #    u.groups = [(session.query(Group)
+        #                    .filter(Group.name == group_name)
+        #                    .first())
+        #                        for group_name in group_lst]
+        
+        u.group_string = group_string   
+        u.username = username
+        u.password = password
+        u.email = email
+        u.user_type = user_type
+        u.full_name = full_name
+        u.phone_number = phone_number
+        
+        session.add(u)
+        
+    add_users_to_groups(session=session)
+    session.commit()
+    Local_Session.remove()
+    
+    log_message = ''
+    status = 'finished'
+    data = {'status': status,
+            'message': 'Imported users',
+            'log': log_message}
+    
+    return data
+              
+def add_facs_to_groups(session=None):
+    '''
+    Associate all groups with the facilities that fall inside their
+    monitoring region
+    '''
+    
+    groups = session.query(Group).all()
     for group in groups:
         group.facilities = (session.query(Facility)
                                 .filter(Facility.in_grid(group))
                                 .all())
-
+            
+def add_users_to_groups(session=None):
+    '''
+    Connect all existing groups to users who have joined that group.
+    This info is saved in the user's group_string, so we can add
+    groups after users have already been uploaded
+    '''
+    
+    users = session.query(User).all()
+    for user in users:
+        user.groups = []
+        if user.group_string:
+            group_lst = re.split('\s|,|;|:', user.group_string)
+            if group_lst != ['']:
+                for group_name in group_lst:
+                    group = (session.query(Group)
+                                        .filter(Group.name == group_name)
+                                        .all())
+                    if group:
+                        user.groups.append(group[0])
             
 #######################################################################
 ########################## Manual Testing #############################
@@ -692,8 +1016,7 @@ def check_nots():
             time.sleep(1)
             os.system('cls' if os.name == 'nt' else 'clear')
         session.commit()
-        
-    
+
 
 ########################## SERVER TESTING #############################
 # functions used to test server
@@ -702,6 +1025,7 @@ def loop1():
     #dispatcher.send('to-server', task_name='loop1', data={'mydata': 'here it is!'})
     data={'status': 'finished', 'message': 'here it is, loop1!'}
     return data
+
 def loop2():
     print 'LOOP2'
     #dispatcher.send('to-server', task_name='loop2', data={'mydata': 'here it is!'})
@@ -723,7 +1047,6 @@ def short():
     data={'status': 'finished',
           'message': 'Looped through 10 numbers! One second at a time!!'}
     return data
-
 
 def manual(to_print=""):
     print 'Manual: %s' % to_print
@@ -755,10 +1078,6 @@ def ins_random(count=10):
     
     data={'status': 'finished', 'message': return_str}
     return data
-
-#######################################################################
-
-
 
 
 #######################################################################

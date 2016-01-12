@@ -16,7 +16,7 @@ path[-2] = 'db'
 del path[-1]
 directory = delim.join(path) + delim
 
-db_name = 'shakecast_test_db.db'
+db_name = 'shakecast.db'
 
 # logging from DB
 #logging.basicConfig(level=logging.DEBUG)
@@ -411,6 +411,7 @@ class User(Base):
     phone_number = Column(String(25))
     full_name = Column(String(32))
     user_type = Column(String(10))
+    group_string = Column(String())
     
     groups = relationship('Group',
                           secondary='user_group_connection',
@@ -560,6 +561,7 @@ class Group_Specification(Base):
     shakecast_id = Column(Integer, primary_key=True)
     group_id = Column(String(25), ForeignKey('group.shakecast_id'))
     notification_type = Column(String(25))
+    event_type = Column(String(25))
     inspection_priority = Column(String(10))
     minimum_magnitude = Column(Integer)
     notification_format = Column(String(25))
