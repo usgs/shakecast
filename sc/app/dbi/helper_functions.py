@@ -30,64 +30,9 @@ def lognorm(med=0, spread=0, step=.01, just_norm=False):
         return p_sums, x_coords
     
 def lognorm_opt(med=0, spread=0, step=.01, just_norm=False, shaking=False):
-    start = med - (10 * spread)
-    end = med + (10 * spread)
-    
-    arr_len = int(((end - start) / step))
-    
-    #p_norm = [0] * arr_len
-    p_sums = [0] * arr_len
-    x_coords = [0] * arr_len
-    x = start
-    p_sum = 0
-    
-    i = 0
-    if shaking is False:
-        while p_sum < 99.999:
-    
-            norm_dist = ((1 /
-                            (spread * math.sqrt(2 * math.pi))) *
-                            (math.e ** (-((x - med) ** 2) /
-                            (2 * (spread ** 2)))))
-            
-            p_sum += norm_dist
-            p_sums[i] = p_sum
-        #    p_norm += [norm_dist]
-            
-            x_coords[i] = x
-            x += step
-            
-            i += 1
-            
-        if just_norm is True:
-            return p_norm, x_coords
-        else:    
-            return p_sums, x_coords
-    else:
-        while p_sum < 99.999:
-    
-            norm_dist = ((1 /
-                            (spread * math.sqrt(2 * math.pi))) *
-                            (math.e ** (-((x - med) ** 2) /
-                            (2 * (spread ** 2)))))
-            
-            p_sum += norm_dist
-            p_sums[i] = p_sum
-        #    p_norm += [norm_dist]
-            
-            x_coords[i] = x
-            
-            if x > shaking:
-                return p_sum
-            
-            x += step
-            
-            i += 1
-        return 99.999    
-        #if just_norm is True:
-        #    return p_norm, x_coords
-        #else:    
-        #    return p_sums, x_coords
+    p_norm = (math.erf((shaking-med)/(math.sqrt(2) * spread)) + 1)/2
+    return p_norm * 100
+        
     
 def closest(lst = [], Number = 0):
     '''
