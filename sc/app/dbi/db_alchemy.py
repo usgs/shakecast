@@ -207,9 +207,9 @@ class Facility(Base):
         fragility = [{'med': self.red, 'spread': self.red_beta, 'level': 'red'},
                      {'med': self.orange, 'spread': self.orange_beta, 'level': 'orange'},
                      {'med': self.yellow, 'spread': self.yellow_beta, 'level': 'yellow'},
-                     {'med': self.green, 'spread': self.green_beta, 'level': 'green'},
-                     {'med': self.grey, 'spread': self.grey_beta, 'level': 'grey'}]
-        
+                     {'med': self.green, 'spread': self.green_beta, 'level': 'green'}]
+                    #{'med': self.grey, 'spread': self.grey_beta, 'level': 'grey'}
+                    
         prob_sum = 0
         large_prob = 0
         alert_level = 'None'
@@ -228,12 +228,15 @@ class Facility(Base):
             
             if p > large_prob:
                 large_prob = p
-                alert_level = level['level']
+                fac_shake['alert_level'] = level['level']
+                
+        fac_shake['grey'] = 100 - prob_sum
+        if fac_shake['grey'] > large_prob:
+            fac_shake['alert_level'] = 'grey'
             
         fac_shake['facility_id'] = self.shakecast_id
         fac_shake['metric'] = self.metric
         fac_shake['shakemap_id'] = shakemap.shakecast_id
-        fac_shake['alert_level'] = alert_level
         
         not_count = 0
         for notification in notifications:

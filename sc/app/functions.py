@@ -932,9 +932,9 @@ def create_fac(grid=None, fac_id='AUTO_GENERATED'):
     facility = Facility()
     if grid:
         facility.lat_min = grid.lat_min + 1
-        facility.lat_max = grid.lat_max - 1
+        facility.lat_max = facility.lat_min + .1
         facility.lon_min = grid.lon_min + 1
-        facility.lon_max = grid.lon_max - 1
+        facility.lon_max = facility.lon_min + .1
     
     facility.facility_id = fac_id
     facility.facility_type = 'Bridge'
