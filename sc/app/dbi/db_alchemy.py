@@ -6,7 +6,7 @@ from sqlalchemy.orm import *
 from sqlalchemy.sql import and_, or_, not_
 import os
 import time
-from helper_functions import *
+from db_util import *
 
 # Get directory location for database
 path = os.path.dirname(os.path.abspath(__file__))

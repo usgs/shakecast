@@ -16,6 +16,12 @@ import smtplib
 from dbi.db_alchemy import *
 
 class Product_Grabber(object):
+    
+    """
+    Able to access the USGS web, download products, and make entries
+    in the database
+    """
+    
     def __init__(self,
                  req_products=['grid.xml',
                                'stationlist.xml',
