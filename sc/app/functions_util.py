@@ -18,7 +18,7 @@ def closest(lst = [], Number = 0):
 
 def get_delim():
     """
-    Figure out which delimiter to use in filepaths
+    Returns which delimeter is appropriate for the operating system
     """
     if os.name == 'nt':
         delim = '\\'

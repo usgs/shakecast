@@ -12,9 +12,18 @@ class Server(object):
     
     """
     The ShakeCast server is essentially the "conductor" of the system.
-    It keeps track of which functions (tasks) are supposed to run and
-    when. It also provides API that can be used for the UI to ask
-    specific tasks to be run with specific inputs
+    It keeps track of which functions (Tasks) are supposed to run and
+    when. It provides an API that can be utilized through the CLI
+    and eventually the GUI.
+    
+    API: {'name_of_task': {'func': name_of_function,
+                           'loop': True/False,
+                           'interval': int (duration between looping runs),
+                           'args_in': kwargs,
+                           'db_use': True/False}}
+                           
+    name_of_function must be a function in the functions module or a
+    method of the Server
     """
     
     def __init__(self):
@@ -43,7 +52,9 @@ class Server(object):
         self.socket_setup()
         
     def socket_setup(self):
-        # connects the server to a specific socket
+        """
+        Connects the server to a specific socket
+        """
         
         self.make_print('Setting up socket...')
         connected = False
@@ -63,7 +74,10 @@ class Server(object):
             attempts += 1
     
     def loop(self):
-        # start the server loop
+        """
+        Starts the server loop, and contains the code that is looped by
+        the server
+        """
         
         self.last_task = time.time()
         while self.stop_loop is not True:
@@ -82,7 +96,9 @@ class Server(object):
         self.socket.close()
     
     def socket_check(self):
-        # check if any connections have been established
+        """
+        Check if any connections have been established
+        """
         conns = select_.select([self.socket], [], [], 0)[0]
         if len(conns) > 0:
             conn, addr = self.socket.accept()
@@ -93,7 +109,10 @@ class Server(object):
             client_thread.start()
             
     def handle_client(self, conn=None, addr=None):
-        # check for message
+        """
+        Run when a connection has been extablished. Looking for a
+        message through the connected socket
+        """
         mess_check = select_.select([conn], [], [], 60)[0]
         # get message from user
         if len(mess_check) > 0:
@@ -109,8 +128,9 @@ class Server(object):
             self.user_in(data, conn)
     
     def user_in(self, data=None, conn=None):
-        # Get command from user input through socket
-        
+        """
+        Interpret the message that is received by the server
+        """
         try:
             new_task_dict = eval(data)
             good_data = True
@@ -140,8 +160,10 @@ class Server(object):
                          which='server')
     
     def queue_check(self):
-        # Check for tasks that are ready to be run
-        # and finished tasks that can be removed
+        """
+        Check for tasks that are ready to be run and finished tasks
+        that can be removed
+        """
         timestamp = time.time()
         for i,task in enumerate(self.queue):
             # run tasks if it's their time and they aren't already running
@@ -165,8 +187,10 @@ class Server(object):
                 self.check_task(task=task)
             
     def check_task(self, task=Task()):
-        # Check the output from a finished task
-        
+        """
+        Check the output from a finished task and determines whether
+        the task should be removed from the queue
+        """
         if task.loop is False:
             out_str = ''
             server_log = ''
@@ -197,8 +221,10 @@ class Server(object):
             self.db_open = True
             
     def cleanup(self):
-        # Remove tasks that have completed their work and the
-        # connections associated with them
+        """
+        Remove tasks that have completed their work and the connections
+        associated with them
+        """
         
         new_conns = {}
         new_queue = []
@@ -215,16 +241,20 @@ class Server(object):
         self.queue = new_queue
         
     def info(self):
-        # send info back to the UI about what the server is doing
+        """
+        Returns what the server is 'doing'. Can be used to send the UI
+        info about the server
+        """
         return {'status': 'finished',
                 'message': "{'queue': %s, \
                               'connections': %s}" % (self.queue,
                                                     self.connections)}
     
     def talk(self):
-        # send print statements to terminal or log
-        # This should be updated to be __str__
-            
+        """
+        Prints a monitoring message from the server
+        """
+        
         # print information to the terminal... we'll change change
         # this to print to a log most likely...
         os.system('cls' if os.name == 'nt' else 'clear')
@@ -236,8 +266,10 @@ class Server(object):
         print '\n%s' % self.print_out
         
     def make_print(self, add_str):
-        # Add a new string onto the output string from the server
-        # it loops at 15 lines for the print statement
+        """
+        Add a new string onto the output string from the server. It
+        loops at 15 lines for the print statement
+        """
         
         if len(self.print_out.splitlines()) < 15:
             self.print_out += '\n' + add_str
@@ -245,6 +277,9 @@ class Server(object):
             self.print_out = '\n' + add_str
         
     def log(self, message='', which=''):
+        """
+        Logs a message to either the shakecast or server log
+        """
         if which == 'shakecast':
             log_file = self.sc_log_file
         else:
@@ -256,7 +291,9 @@ class Server(object):
             file_.write('%s%s%s\n' % (date_time, ':: ', message))
     
     def stop_task(self, task_name=None):
-        # Sets a looping task's status to 'Finished'
+        """
+        Sets a looping task's status to 'Finished'
+        """
         
         new_queue = []
         task_stopped = 'None'
@@ -271,17 +308,11 @@ class Server(object):
         return {'status': 'finished',
                 'message': 'Stopped %s...' % task_stopped}
     
-    def check_conn(self):
-        # check if the server should still be running. If it was not
-        # started by opening the UI, and hasn't run a task in 10 minutes
-        # shut it down
-        
-        if (time.time() - self.last_task > 600 and
-                self.ui_open is False):
-            self.shutdown()
             
     def ui_exit(self):
-        # Determine if the server should shutdown when the UI exits
+        """
+        Determine if the server should shutdown when the UI exits
+        """
         
         if self.ui_open is True:
             self.shutdown()
@@ -293,15 +324,22 @@ class Server(object):
                 'message': msg}
     
     def stop(self):
-        # Stop server loop. It will be restarted immediately
+        """
+        Stop server loop; It will be restarted immediately. This
+        functionality could be used to reload functions in the event
+        of an update
+        """
+        
         self.stop_loop = True
         return {'status': 'finished',
                 'message': 'Stopping loop...'}
     
     def shutdown(self):
-        # Stops the server
-        # we should do something here if there are non-looping tasks in
-        # the queue
+        """
+        Shuts down the server allowing currently running tasks to
+        finish
+        """
+        
         self.stop_server = True
         self.stop()
         self.make_print('Shutting down server...')

@@ -43,7 +43,10 @@ class Product_Grabber(object):
             self.get_data_path()
     
     def get_data_path(self):
-        # get the path to the data folder
+        """
+        Gets the path to the data folder and sets the self.data_dir
+        property
+        """
         path = os.path.dirname(os.path.abspath(__file__))
         if os.name == 'nt':
             self.delim = '\\'
@@ -54,7 +57,10 @@ class Product_Grabber(object):
         self.data_dir = self.delim.join(path) + self.delim
         
     def get_json_feed(self):
-        # get json feed
+        """
+        Pulls json feed from USGS web and sets the self.json_feed
+        variable. Also makes a list of the earthquakes' IDs
+        """
         json_str = urllib2.urlopen(self.json_feed_url)
         self.json_feed = json.loads(json_str.read())
         json_str.close()
@@ -73,6 +79,11 @@ class Product_Grabber(object):
                 continue
         
     def get_new_events(self):
+        """
+        Checks the json feed for new earthquakes. Currently only looks
+        for earthquakes with ShakeMaps, but this behavior may want want
+        to be changed
+        """
         Local_Session = scoped_session(Session)
         session = Local_Session()
         
@@ -188,7 +199,7 @@ class Point(object):
     '''
     Keeps track of shaking data associated with a location. A list of
     these is made in the SM_Grid class and can be sorted by a metric
-    specified by sort_by
+    using the SM_Grid.sort_by method
     '''
     
     sort_by = ''
@@ -258,6 +269,10 @@ class SM_Grid(object):
         self.points = []
     
     def load(self, file_ = ''):
+        """
+        Loads data from a specified grid.xml file into the object
+        """
+        
         if file_ == '':
             file_ = self.xml_file
         else:
@@ -320,6 +335,9 @@ class SM_Grid(object):
             return False
         
     def sort_grid(self, metric= ''):
+        """
+        Sorts the grid by a specified metric
+        """
         Point.sort_by = metric
         try:
             self.grid = sorted(self.grid)
@@ -329,7 +347,9 @@ class SM_Grid(object):
             return False
     
     def in_grid(self, lon_min=0, lon_max=0, lat_min=0, lat_max=0):
-        # check if a point is within the boundaries of the grid
+        """
+        Check if a point is within the boundaries of the grid
+        """
         return ((lon_min > self.lon_min and
                     lon_min < self.lon_max and
                     lat_min > self.lat_min and
@@ -356,7 +376,9 @@ class SM_Grid(object):
                     facility=None):
         
         '''
-        Will return a float with the largest shaking 
+        Will return a float with the largest shaking in a specified
+        region. If no grid points are found within the region, the
+        region is made larger until a point is present
         '''
     
         if facility is not None:
@@ -407,6 +429,9 @@ class SM_Grid(object):
 
         
 class Mailer(object):
+    """
+    Keeps track of information used to send emails
+    """
     # kMhmsd9g
     # shakecast.usgs@gmail.com
     # pyCast.USGS@gmail.com
@@ -419,6 +444,10 @@ class Mailer(object):
         self.server_port = 587
         
     def send(self, msg=None, you=[], debug=False):
+        """
+        Send an email (msg) to specified addresses (you) using SMTP
+        server details associated with the object
+        """
         server = smtplib.SMTP(self.server_name, self.server_port) #port 465 or 587
         server.ehlo()
         server.starttls()

@@ -20,6 +20,9 @@ def closest(lst = [], Number = 0):
     return aux.index(min(aux))
 
 def get_delim():
+    """
+    Returns which delimeter is appropriate for the operating system
+    """
     if os.name == 'nt':
         delim = '\\'
     else:

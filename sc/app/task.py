@@ -4,9 +4,9 @@ class Task(object):
     
     """
     Task objects are used to simplify running specific functions with
-    specific conditions. A Task is basically just a function that
-    remembers how it is supposed to run and can keep track of
-    its own inputs and outputs
+    specific conditions. A Task is an object that track of a function
+    and the parameters under which it should be run. This is an easy
+    way to put functions in a queue and let them run later.
     """
     def __init__(self,
                  name="new_task",

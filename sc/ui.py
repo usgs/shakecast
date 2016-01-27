@@ -6,6 +6,25 @@ from app.server import Server
 from app.newthread import New_Thread
 
 class UI(object):
+    """
+    A command line interface to interact with the ShakeCast server.
+    
+    Commands:
+    info        Usage: info
+                    Gets information from the server about the Tasks it's
+                    currently running
+                    
+    stop_task   Usage: stop_task <task_name>
+                    Sets the specified Task status to 'Finished' to
+                    remove it from the Server's queue
+                    
+    exit        Usage: exit
+                    Exits the CLI; this will not shutdown the Server unless
+                    the Server was started within the UI
+    
+    shutdown    Usage: shutdown
+                    Shuts the server down allowing running tasks to finish
+    """
     def __init__(self):
         self.stop_ui = False
         self.conn = socket.socket()
@@ -14,6 +33,9 @@ class UI(object):
         self.print_queue = []
         
     def start(self):
+        """
+        Starts the CLI loop
+        """
         self.server_check()
         
         message_thread = New_Thread(self.get_message_loop)
@@ -34,6 +56,10 @@ class UI(object):
             time.sleep(.1)
         
     def get_input(self):
+        """
+        Checks for input from the user and determines when to send
+        input to the server
+        """
         try:
             input_check = select.select([sys.stdin], [], [], 0)[0]
         except:
@@ -52,6 +78,11 @@ class UI(object):
     
         
     def send(self, msg):
+        """
+        Sends an input message to the Server. This is where the
+        hard-wired commands are translated into the Server API
+        """
+        
         sent = False
         while sent is False:
             try:
@@ -99,10 +130,16 @@ class UI(object):
         return sent
 
     def connect_to_server(self):
+        """
+        Attempt to connect to the server
+        """
         self.conn = socket.socket()
         self.conn.connect(('', 1981))
         
     def get_message(self):
+        """
+        Receive a message from the server
+        """
         data = ''
         part = None
         while part != '':
@@ -112,6 +149,9 @@ class UI(object):
         print data
         
     def get_message_loop(self):
+        """
+        Build and print a message from the Server
+        """
         while self._get_message is not False:
             new_conns = []
             for conn in self.conns:
@@ -147,6 +187,9 @@ class UI(object):
             time.sleep(.1)
     
     def server_check(self):
+        """
+        Check our connection to the Server
+        """
         print 'Checking for server... ',
         try:
             self.connect_to_server()
@@ -157,6 +200,9 @@ class UI(object):
     
         
     def start_server(self):
+        """
+        Starts a Server if there isn't one running
+        """
         print 'Starting server...'
         try:
             sc_server = Server()
