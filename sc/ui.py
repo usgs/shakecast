@@ -10,20 +10,20 @@ class UI(object):
     A command line interface to interact with the ShakeCast server.
     
     Commands:
-    info        Usage: info
-                    Gets information from the server about the Tasks it's
-                    currently running
-                    
-    stop_task   Usage: stop_task <task_name>
-                    Sets the specified Task status to 'Finished' to
-                    remove it from the Server's queue
-                    
-    exit        Usage: exit
-                    Exits the CLI; this will not shutdown the Server unless
-                    the Server was started within the UI
-    
-    shutdown    Usage: shutdown
-                    Shuts the server down allowing running tasks to finish
+        info
+            Gets information from the server about the Tasks it's
+            currently running
+                        
+        stop_task <task_name>
+            Sets the specified Task status to 'Finished' to
+            remove it from the Server's queue
+                        
+        exit
+            Exits the CLI; this will not shutdown the Server unless
+            the Server was started within the UI
+        
+        shutdown
+            Shuts the server down allowing running tasks to finish
     """
     def __init__(self):
         self.stop_ui = False
