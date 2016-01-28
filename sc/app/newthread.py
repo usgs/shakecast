@@ -9,8 +9,8 @@ class New_Thread(threading.Thread):
     functionality of looping and intuitive argument passing
     
     Usage:
-    new_thread = New_Thread(func=func, args_in=kwargs)
-    new_thread.start()
+        >>>new_thread = New_Thread(func=func, args_in=kwargs)
+        >>>new_thread.start()
     """
     
     def __init__(self, func, args_in=None, loop=False, loop_time=5, use_pdb=False):
