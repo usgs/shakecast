@@ -772,7 +772,51 @@ class Product(Base):
                                                      self.update_username,
                                                      self.update_timestamp)
     
+class Plugins(Base):
+    """
+    Keeps track of the available plugins and whether or not the user
+    wants the ShakeCast system to utilize them
+    """
+    __tablename__ = 'sc'
+    shakecast_id = Column(Integer, primary_key=True)
+    plugin_name = Column(String(100))
+    use = Column(String(10))
     
+class Personalization(Base):
+    """
+    Stores information that determines how the application runs
+    """
+    __tablename__ = 'personalization'
+    shakecast_id = Column(Integer, primary_key=True)
+    check_json = Column(Integer)
+    use_pdl = Column(Integer)
+    eq_lifetime = Column(Integer)
+    sm_lifetime = Column(Integer)
+    
+class New_Event_Template(Base):
+    """
+    Defines how the NEW_EVENT message is structured
+    """
+    __tablename__ = 'new_event_templace'
+    shakecast_id = Column(Integer, primary_key=True)
+    name = Column(String(30))
+    
+    
+class Inspection_Template(Base):
+    """
+    Defines how the Inspection notification is structured
+    """
+    __tablename__ = 'inspection_template'
+    shakecast_id = Column(Integer, primary_key=True)
+    name = Column(String(30))
+    
+class PDF_Template(Base):
+    """
+    Defines the structure of the Inspection PDF
+    """
+    __tablename__ = 'pdf_template'
+    shakecast_id = Column(Integer, primary_key=True)
+    name = Column(String(30))
     
 #######################################################################
 
