@@ -114,61 +114,6 @@ class Facility(Base):
                                             self.red_beta,
                                             self.metric)
     
-
-    def make_alert_level_old(self, shaking_level=0, shakemap=None):
-        session = Local_Session()
-        
-        # check if there is already shaking for this shakemap and facility
-        fac_shake = (session.query(Facility_Shaking)
-                            .filter(Facility_Shaking.facility == self)
-                            .filter(Facility_Shaking.shakemap == shakemap)
-                            .all())
-        
-        # if the query has results, assign them to shaking, otherwise,
-        # create a new instance
-        if fac_shake:
-            fac_shake = fac_shake[0]
-        else:
-            fac_shake = Facility_Shaking()
-            
-        # get_exceedence green
-        fragility = [{'med': self.red, 'spread': self.red_beta, 'level': 'red'},
-                     {'med': self.orange, 'spread': self.orange_beta, 'level': 'orange'},
-                     {'med': self.yellow, 'spread': self.yellow_beta, 'level': 'yellow'},
-                     {'med': self.green, 'spread': self.green_beta, 'level': 'green'},
-                     {'med': self.grey, 'spread': self.grey_beta, 'level': 'grey'}]
-        
-        prob_sum = 0
-        large_prob = 0
-        alert_level = 'None'
-        for level in fragility:
-            
-            if level['med'] < 0 or level['spread'] < 0:
-                continue
-            
-            p = lognorm_opt(med=level['med'],
-                            spread=level['spread'],
-                            shaking=shaking_level)
-            
-            p -= prob_sum
-            prob_sum += p
-            
-            setattr(fac_shake, level['level'], p)
-            
-            if p > large_prob:
-                large_prob = p
-                alert_level = level['level']
-            
-        fac_shake.facility = self
-        fac_shake.shakemap = shakemap
-        fac_shake.metric = self.metric
-        fac_shake.alert_level = alert_level
-        #for notification in notifications:
-        #   notification.facility_shaking.append(fac_shake)
-        #session.add(fac_shake)
-        
-        return fac_shake
-    
     def make_alert_level(self, shaking_level=0, shakemap=None, notifications=[]):
         db_conn = engine.connect()
         
@@ -204,11 +149,10 @@ class Facility(Base):
             fac_shake['_shakecast_id'] = 0
             
         # get_exceedence green
-        fragility = [{'med': self.red, 'spread': self.red_beta, 'level': 'red'},
-                     {'med': self.orange, 'spread': self.orange_beta, 'level': 'orange'},
-                     {'med': self.yellow, 'spread': self.yellow_beta, 'level': 'yellow'},
-                     {'med': self.green, 'spread': self.green_beta, 'level': 'green'}]
-                    #{'med': self.grey, 'spread': self.grey_beta, 'level': 'grey'}
+        fragility = [{'med': self.red, 'spread': self.red_beta, 'level': 'red', 'rank': 4},
+                     {'med': self.orange, 'spread': self.orange_beta, 'level': 'orange', 'rank': 3},
+                     {'med': self.yellow, 'spread': self.yellow_beta, 'level': 'yellow', 'rank': 2},
+                     {'med': self.green, 'spread': self.green_beta, 'level': 'green', 'rank': 1}]
                     
         prob_sum = 0
         large_prob = 0
@@ -229,10 +173,12 @@ class Facility(Base):
             if p > large_prob:
                 large_prob = p
                 fac_shake['alert_level'] = level['level']
+                fac_shake['weight'] = level['rank'] + (p / 100)
                 
         fac_shake['grey'] = 100 - prob_sum
         if fac_shake['grey'] > large_prob:
             fac_shake['alert_level'] = 'grey'
+            fac_shake['weight'] = (fac_shake['grey'] / 100)
             
         fac_shake['facility_id'] = self.shakecast_id
         fac_shake['metric'] = self.metric

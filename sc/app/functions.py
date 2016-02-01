@@ -197,6 +197,7 @@ def process_shakemaps(shakemaps=[], session=None):
                                 orange=bindparam('orange'),
                                 red=bindparam('red'),
                                 alert_level=bindparam('alert_level'),
+                                weight=bindparam('weight'),
                                 facility_id=bindparam('facility_id'),
                                 shakemap_id=bindparam('shakemap_id'),
                                 metric=bindparam('metric'),
@@ -367,7 +368,7 @@ Description: %s
                                         'Alert_Level')
         
         # get necessary shaking info from database
-        stmt = select([Facility.__table__.c.facility_id,
+        stmt = (select([Facility.__table__.c.facility_id,
                        Facility.__table__.c.name,
                        Facility.__table__.c.facility_type,
                        Facility_Shaking.__table__.c.alert_level
@@ -375,6 +376,7 @@ Description: %s
                                         Facility.__table__.c.shakecast_id,
                                         Facility_Shaking.__table__.c.shakemap_id ==
                                         shakemap.shakecast_id))
+                         .order_by(desc('weight')))
         result = db_conn.execute(stmt)
         
         # create a string that includes the shaking information queried
