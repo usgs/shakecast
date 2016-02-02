@@ -197,6 +197,9 @@ class Server(object):
             if task.output['status'] == 'finished':
                 out_str = task.output['message']
                 server_log = 'Task: %s :: finished'
+            elif task.output['status'] == 'force_stop':
+                out_str = task.output.get('message', 'No Message')
+                server_log = 'Task: %s :: force stopped'
             elif task.output['status'] == 'failed':
                 out_str = "FAILED: %s" % task.output['message']
                 server_log = 'Task: %s :: failed to finish'
@@ -209,10 +212,14 @@ class Server(object):
             self.log(message=task.output.get('log', ''),
                      which='server')
             
-            conn = self.connections[task.id]    
-            conn.send(out_str)
-            conn.close()
-            task.status = 'complete'
+            try:
+                conn = self.connections[task.id]    
+                conn.send(out_str)
+                conn.close()
+                
+            except:
+                pass # There is not connection for this task
+                task.status = 'complete'
 
         else:
             task.status = 'stopped'
@@ -294,19 +301,20 @@ class Server(object):
         """
         Sets a looping task's status to 'Finished'
         """
-        
-        new_queue = []
-        task_stopped = 'None'
+        message = ''
+        status = ''
         for task in self.queue:
-            if task.name != task_name:
-                new_queue += [task]
-            else:
-                task_stopped = task.name
-        
-        self.make_print('Stopped %s...' % task_stopped)
-        self.queue = new_queue
+            if task.name == task_name:
+                task.loop = False
+                if task.status == 'stopped':
+                    task.status = 'finished'
+                    message += 'Stopped %s' % task.name
+                else:
+                    message += '%s is currently running, but will stop when finished' % task.name
+                
+        self.make_print(message)
         return {'status': 'finished',
-                'message': 'Stopped %s...' % task_stopped}
+                'message': message}
     
             
     def ui_exit(self):
@@ -322,6 +330,76 @@ class Server(object):
             
         return {'status': 'finished',
                 'message': msg}
+    
+    def start_shakecast(self):
+        try:
+            status = ''
+            message = ''
+            task_names = [task.name for task in self.queue]
+            if 'geo_json' not in task_names:
+                task = Task()
+                task.id = int(time.time() * 1000000)
+                task.func = geo_json
+                task.loop = True
+                task.interval = 60
+                task.db_use = True
+                task.name = 'geo_json'
+            
+                self.queue += [task]
+                message += 'Started monitoring earthquake feed \n'
+            else:
+                pass
+            
+            if 'check_new' not in task_names:
+                task = Task()
+                task.id = int(time.time() * 1000000)
+                task.func = check_new_shakemaps
+                task.loop = True
+                task.interval = 3
+                task.db_use = True
+                task.name = 'check_new'
+                
+                self.queue += [task]
+                message += "Waiting for new events"
+            else:
+                pass
+            status = 'finished'
+        except:
+            status = 'failed'
+        
+        
+        return {'status': status,
+                'message': message}
+    
+    def stop_shakecast(self):
+        """
+        Removes the Tasks associated with ShakeCast services from the
+        queue if they are stopped and stops them from running again if
+        they are currently running
+        """
+        status = ''
+        message = ''
+        
+        try:
+            stop_geo = self.stop_task('geo_json')
+            stop_check = self.stop_task('check_new')
+            
+            status = 'finished'
+            
+            if stop_geo['status'] == 'finished':
+                message += '%s \n' % stop_geo['message']
+            else:
+                message += 'Failed to stop json monitoring. Either ShakeCast is \n\
+                            not responding or json monitoring was not running'
+            if stop_check['status'] == 'finished':
+                message += '%s \n' % stop_check['message']
+            else:
+                message += 'Failed to stop waiting for events. Either ShakeCast \n\
+                            is not responding or monitoring was not running'
+        except:
+            status = 'failed'
+        return {'status': status,
+                'message': message}
     
     def stop(self):
         """
