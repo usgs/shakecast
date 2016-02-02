@@ -287,20 +287,21 @@ def make_inspection_prios(facility=Facility(),
         notifications (list): List of Notification objects which should be associated with the shaking
         
     Returns:
-    ::
-        dict: fac_shaking = {'grey': PDF Value,
-                            'green': PDF Value,
-                            'yellow': PDF Value,
-                            'orange': PDF Value,
-                            'red': PDF Value,
-                            'metric': which metric is used to compute PDF values,
-                            'facility_id': shakecast_id of the facility that's shaking,
-                            'shakemap_id': shakecast_id of the associated ShakeMap,
-                            '_shakecast_id': ID for the Facility_Shaking entry that will be created,
-                            'update': bool -- True if an ID already exists for this Facility_Shaking,
-                            'alert_level': string ('grey', 'green', 'yellow' ...),
-                            'weight': float that determines inspection priority,
-                            'notifications': list of notifications associated with this shaking}
+        dict: A dictionary with all the parameters needed to make a Facility_Shaking entry in the database
+        ::
+            fac_shaking = {'grey': PDF Value,
+                           'green': PDF Value,
+                           'yellow': PDF Value,
+                           'orange': PDF Value,
+                           'red': PDF Value,
+                           'metric': which metric is used to compute PDF values,
+                           'facility_id': shakecast_id of the facility that's shaking,
+                           'shakemap_id': shakecast_id of the associated ShakeMap,
+                           '_shakecast_id': ID for the Facility_Shaking entry that will be created,
+                           'update': bool -- True if an ID already exists for this Facility_Shaking,
+                           'alert_level': string ('grey', 'green', 'yellow' ...),
+                           'weight': float that determines inspection priority,
+                           'notifications': list of notifications associated with this shaking}
     '''
     
     # get the largest shaking level affecting the facility
