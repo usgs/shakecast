@@ -14,13 +14,12 @@ def geo_json():
     Gets new earthquakes from the JSON feed and logs them in the DB
     
     Returns:
-        dict: a dictionary that contains information about the function
-            run
-            ::
-                data = {'status': either 'finished' or 'failed',
-                        'message': message to be returned to the UI,
-                        'log': message to be added to ShakeCast log
-                               and should contain info on error}
+        dict: a dictionary that contains information about the function run
+        ::
+            data = {'status': either 'finished' or 'failed',
+                    'message': message to be returned to the UI,
+                    'log': message to be added to ShakeCast log
+                           and should contain info on error}
     '''
     
     try:
@@ -41,6 +40,14 @@ def geo_json():
 def check_new_shakemaps():
     '''
     Search database for unprocessed shakemaps
+    
+    Returns:
+        dict: a dictionary that contains information about the function run
+        ::
+            data = {'status': either 'finished' or 'failed',
+                    'message': message to be returned to the UI,
+                    'log': message to be added to ShakeCast log
+                           and should contain info on error}
     '''
     
     # for debugging
@@ -78,6 +85,18 @@ def check_new_shakemaps():
 def process_shakemaps(shakemaps=[], session=None):
     '''
     Process or reprocess the shakemaps passed into the function
+    
+    Args:
+        shakemaps (list): List of ShakeMap objects to process
+        session (Session()): SQLAlchemy session
+    
+    Returns:
+        dict: a dictionary that contains information about the function run
+        ::
+            data = {'status': either 'finished' or 'failed',
+                    'message': message to be returned to the UI,
+                    'log': message to be added to ShakeCast log
+                           and should contain info on error}
     '''
     
     db_conn = engine.connect()
@@ -260,6 +279,28 @@ def make_inspection_prios(facility=Facility(),
                           notifications=[]):
     '''
     Determines inspection priorities for the input facility
+    
+    Args:
+        facility (Facility): A facility to be processed
+        shakemap (ShakeMap): The ShakeMap which is associated with the shaking
+        grid (SM_Grid): The grid built from the ShakeMap
+        notifications (list): List of Notification objects which should be associated with the shaking
+        
+    Returns:
+    ::
+        dict: fac_shaking = {'grey': PDF Value,
+                            'green': PDF Value,
+                            'yellow': PDF Value,
+                            'orange': PDF Value,
+                            'red': PDF Value,
+                            'metric': which metric is used to compute PDF values,
+                            'facility_id': shakecast_id of the facility that's shaking,
+                            'shakemap_id': shakecast_id of the associated ShakeMap,
+                            '_shakecast_id': ID for the Facility_Shaking entry that will be created,
+                            'update': bool -- True if an ID already exists for this Facility_Shaking,
+                            'alert_level': string ('grey', 'green', 'yellow' ...),
+                            'weight': float that determines inspection priority,
+                            'notifications': list of notifications associated with this shaking}
     '''
     
     # get the largest shaking level affecting the facility
@@ -281,6 +322,19 @@ def new_event_notification(shakemap=ShakeMap(),
                            group=Group(),
                            update=False,
                            notification=None):
+    """
+    Create local products for NEW_EVENT notification and send it
+    
+    Args:
+        shakemap (ShakeMap): which ShakeMap the Notification is attached to
+        grid (SM_Grid): create from the ShakeMap
+        group (Group): The Group that this Notification is being send to
+        update (bool): True if this is an Update instead of NEW_EVENT
+        notification (Notification): The Notification that will be sent
+        
+    Returns:
+        None
+    """
     
     try:
         notification.notification_file = '%s%s%s_new_event.txt' % ((notification
@@ -345,8 +399,14 @@ processing the information.'''
 def inspection_notification(notification=Notification(),
                             grid=SM_Grid()):
     '''
-    Using an existing notificaiton and shakemap grid, create an email
-    notification and send it: inspection notification
+    Create local products and send inspection notification
+    
+    Args:
+        notification (Notification): The Notification that will be sent
+        grid (SM_Grid): create from the ShakeMap
+
+    Returns:
+        None
     '''
     
     db_conn = engine.connect()
@@ -445,43 +505,43 @@ Description: %s
         except:
             notification.status = 'send failed'
 
-def send_notifications():
-    '''
-    Resend notifications that failed for some reason before
-    '''
-    notifications = (session.query(Notification)
-                        .filter(Notification.status != 'sent')
-                        .all())
-    
-    shakemaps = set([n.shakemap for n in notifications])
-    process_shakemaps(shakemaps)
+#def send_notifications():
+##    '''
+#    Resend notifications that failed for some reason before
+#    '''
+#    notifications = (session.query(Notification)
+#                        .filter(Notification.status != 'sent')
+#                        .all())
+#    
+#    shakemaps = set([n.shakemap for n in notifications])
+#    process_shakemaps(shakemaps)
     
 
 #######################################################################
 ############################## Scenarios ##############################
-def run_scenario(eq='', version=0):
-    '''
-    Have pyCast process a specific event, submitted by a user
-    '''
-    
-    session = Local_Session()
-    # check in db
-    if version:
-        shakemap = session.query(ShakeMap).filter(and_(ShakeMap.shakemap_id == eq,
-                                                       ShakeMap.shakemap_version == version)).first()
-    else:
-        shakemap = session.query(ShakeMap).filter(ShakeMap.shakemap_id == eq).first()
-        
-    if shakemap:
-        process_shakemaps([shakemap])
-        
-    else:
-        # check for file
-        pass
-    
-    # get files from web
-    
-    Local_Session.remove()
+#def run_scenario(eq='', version=0):
+#    '''
+#    Have pyCast process a specific event, submitted by a user
+#    '''
+#    
+#    session = Local_Session()
+#    # check in db
+#    if version:
+#        shakemap = session.query(ShakeMap).filter(and_(ShakeMap.shakemap_id == eq,
+#                                                       ShakeMap.shakemap_version == version)).first()
+#    else:
+#        shakemap = session.query(ShakeMap).filter(ShakeMap.shakemap_id == eq).first()
+#        
+#    if shakemap:
+#        process_shakemaps([shakemap])
+#        
+#    else:
+#        # check for file
+#        pass
+#    
+#    # get files from web
+#    
+#    Local_Session.remove()
 
 
 #######################################################################
@@ -490,6 +550,17 @@ def run_scenario(eq='', version=0):
 def import_facility_xml(xml_file=''):
     '''
     Import an XML file created by the ShakeCast workbook; Facilities
+    
+    Args:
+        xml_file (string): The filepath to the xml_file that will be uploaded
+        
+    Returns:
+        dict: a dictionary that contains information about the function run
+        ::
+            data = {'status': either 'finished' or 'failed',
+                    'message': message to be returned to the UI,
+                    'log': message to be added to ShakeCast log
+                           and should contain info on error}
     '''
     Local_Session = scoped_session(Session)
     session = Local_Session()
@@ -688,6 +759,17 @@ def import_facility_xml(xml_file=''):
 def import_group_xml(xml_file=''):
     '''
     Import an XML file created by the ShakeCast workbook; Groups
+    
+    Args:
+        xml_file (string): The filepath to the xml_file that will be uploaded
+        
+    Returns:
+        dict: a dictionary that contains information about the function run
+        ::
+            data = {'status': either 'finished' or 'failed',
+                    'message': message to be returned to the UI,
+                    'log': message to be added to ShakeCast log
+                           and should contain info on error}
     '''
     
     Local_Session = scoped_session(Session)
@@ -821,6 +903,17 @@ def import_group_xml(xml_file=''):
 def import_user_xml(xml_file=''):
     '''
     Import an XML file created by the ShakeCast workbook; Users
+    
+    Args:
+        xml_file (string): The filepath to the xml_file that will be uploaded
+        
+    Returns:
+        dict: a dictionary that contains information about the function run
+        ::
+            data = {'status': either 'finished' or 'failed',
+                    'message': message to be returned to the UI,
+                    'log': message to be added to ShakeCast log
+                           and should contain info on error}
     '''
     
     Local_Session = scoped_session(Session)
@@ -916,6 +1009,11 @@ def add_facs_to_groups(session=None):
     '''
     Associate all groups with the facilities that fall inside their
     monitoring region
+    
+    Args:
+        session (Session): A SQLAlchemy session
+    Returns:
+        None
     '''
     
     groups = session.query(Group).all()
@@ -929,6 +1027,11 @@ def add_users_to_groups(session=None):
     Connect all existing groups to users who have joined that group.
     This info is saved in the user's group_string, so we can add
     groups after users have already been uploaded
+    
+    Args:
+        session (Session): A SQLAlchemy session
+    Returns:
+        None
     '''
     
     users = session.query(User).all()
@@ -943,12 +1046,30 @@ def add_users_to_groups(session=None):
                                         .all())
                     if group:
                         user.groups.append(group[0])
+
+def create_grid(shakemap=None):
+    """
+    Creates a grid object from a specific ShakeMap
+    
+    Args:
+        shakemap (ShakeMap): A ShakeMap with a grid.xml to laod
+    
+    Returns:
+        SM_Grid: With loaded grid.xml
+    """
+    grid = SM_Grid()
+    grid.load(shakemap.directory_name + get_delim() + 'grid.xml')
+    
+    return grid
             
 #######################################################################
 ########################## Manual Testing #############################
 
 def create_fac(grid=None, fac_id='AUTO_GENERATED'):
     '''
+    **ONLY TO BE USED WHEN TESTING**
+    **THIS FUNCTION MAY NOT BE UPDATED**
+    
     Create a facility that is inside of a grid with generic fragility
     '''
     
@@ -976,13 +1097,11 @@ def create_fac(grid=None, fac_id='AUTO_GENERATED'):
     
     return facility
 
-def create_grid(shakemap=None):
-    grid = SM_Grid()
-    grid.load(shakemap.directory_name + get_delim() + 'grid.xml')
-    
-    return grid
-
 def create_user():
+    """
+    **ONLY TO BE USED WHEN TESTING**
+    **THIS FUNCTION MAY NOT BE UPDATED**
+    """
     get_user = session.query(User).filter(User.username=='USER_AUTO').all()
     
     if get_user:
@@ -999,6 +1118,10 @@ def create_user():
     return user
 
 def create_group():
+    """
+    **ONLY TO BE USED WHEN TESTING**
+    **THIS FUNCTION MAY NOT BE UPDATED**
+    """
     get_group = session.query(Group).filter(Group.name=='GLOBAL_AUTO').all()
     
     if get_group:
@@ -1037,6 +1160,10 @@ def create_group():
     return group
 
 def check_nots():
+    """
+    **ONLY TO BE USED WHEN TESTING**
+    **THIS FUNCTION MAY NOT BE UPDATED**
+    """
     while True:
         nots = session.query(Notification).filter(Notification.notification_type == 'Inspection').all()
         for n in nots:
@@ -1044,69 +1171,6 @@ def check_nots():
             time.sleep(1)
             os.system('cls' if os.name == 'nt' else 'clear')
         session.commit()
-
-
-########################## SERVER TESTING #############################
-# functions used to test server
-def loop1():
-    print 'LOOP1'
-    #dispatcher.send('to-server', task_name='loop1', data={'mydata': 'here it is!'})
-    data={'status': 'finished', 'message': 'here it is, loop1!'}
-    return data
-
-def loop2():
-    print 'LOOP2'
-    #dispatcher.send('to-server', task_name='loop2', data={'mydata': 'here it is!'})
-    data={'status': 'finished', 'message': 'here it is, loop2!'}
-    return data
-
-def long():
-    for i in xrange(100):
-        print i
-        time.sleep(1)
-    data={'status': 'finished',
-          'message': 'Looped through 100 numbers! One second at a time!!'}
-    return data
-
-def short():
-    for i in xrange(10):
-        print i
-        time.sleep(1)
-    data={'status': 'finished',
-          'message': 'Looped through 10 numbers! One second at a time!!'}
-    return data
-
-def manual(to_print=""):
-    print 'Manual: %s' % to_print
-    
-    data={'status': 'finished', 'message': 'printed: %s' % to_print}
-    return data
-    
-def my_print(to_print=""):
-    print 'my_print'
-    print 'Printing: %s' % to_print
-    #dispatcher.send('to-server', task_name='my_print', data={'mydata': 'here it is!'})
-    data={'status': 'finished', 'message': 'here it is!, manual!'}
-    return data
-
-def ins_random(count=10):
-    dl = db.Data_Layer()
-    count = int(count)
-    
-    for i in range(count):
-        dl.query("INSERT INTO data (num, val) VALUES ('" + str(i) + "', 'aaSDasd');")
-
-    # Uncomment the line below to mess with connections blocking
-    # eachother
-    #time.sleep(2)
-
-    dl.close()
-    
-    return_str = 'Created ' + str(count) + ' new records'
-    
-    data={'status': 'finished', 'message': return_str}
-    return data
-
 
 #######################################################################
 ########################## TEST FUNCTIONS #############################

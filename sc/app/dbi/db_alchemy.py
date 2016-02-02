@@ -136,6 +136,7 @@ class Facility(Base):
                      '_shakecast_id': 0,
                      'update': '',
                      'alert_level': '',
+                     'weight': 0,
                      'notifications': [''] * len(notifications)}
         
         # if the query has results, assign them to shaking, otherwise,
