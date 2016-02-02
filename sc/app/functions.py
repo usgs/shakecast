@@ -9,8 +9,18 @@ from email.mime.text import MIMEText
 import re
 
 def geo_json():
-    '''
-    Get earthquake feed from USGS and check for new earthquakes
+    '''Get earthquake feed from USGS and check for new earthquakes
+    
+    Gets new earthquakes from the JSON feed and logs them in the DB
+    
+    Returns:
+        dict: a dictionary that contains information about the function
+            run
+            ::
+                data = {'status': either 'finished' or 'failed',
+                        'message': message to be returned to the UI,
+                        'log': message to be added to ShakeCast log
+                               and should contain info on error}
     '''
     
     try:
