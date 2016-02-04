@@ -2,6 +2,11 @@
 This app package contains all the code written for pyCast
 (ShakeCast V4).
 
+Required packages:
+    1. SQLAlchemy
+    ::
+        pip install sqlalchemy
+
 Start the application after pulling from source:
     1. Start the server
     ::
@@ -22,6 +27,5 @@ Start the application after pulling from source:
         ShakeCast> import_facility_xml /full/path/to/facility_file.xml
         ShakeCast> import_group_xml /full/path/to/group_file.xml
         ShakeCast> import_user_xml /full/path/to/user_file.xml
-        
-        
+
 """

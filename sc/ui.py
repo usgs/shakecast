@@ -86,6 +86,10 @@ class UI(object):
         sent = False
         while sent is False:
             try:
+                
+                #######################################################
+                ################### API Translation ###################
+                
                 if msg == 'shutdown':
                     to_server = "{'shutdown': {'func': self.shutdown}}"
                 elif msg == 'info':
@@ -100,6 +104,10 @@ class UI(object):
                                         {'func': self.stop_task, \
                                          'args_in': {'task_name': '%s'}}}" % (msg[1],
                                                                               msg[1])
+                elif msg == 'start':
+                    to_server = "{'start_shakecast': {'func': self.start_shakecast}}"
+                elif msg == 'stop':
+                    to_server = "{'stop_shakecast': {'func': self.stop_shakecast}}"
                 else:
                     to_server = msg
                     
