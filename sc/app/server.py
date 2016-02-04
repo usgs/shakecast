@@ -15,12 +15,12 @@ class Server(object):
     It keeps track of which functions (Tasks) are supposed to run and
     when. It provides an API that can be utilized through the CLI
     and eventually the GUI.
-    
-    API: {'name_of_task': {'func': name_of_function,
-                           'loop': True/False,
-                           'interval': int (duration between looping runs),
-                           'args_in': kwargs,
-                           'db_use': True/False}}
+    ::
+        API: {'name_of_task': {'func': name_of_function,
+                               'loop': True/False,
+                               'interval': int (duration between looping runs),
+                               'args_in': kwargs,
+                               'db_use': True/False}}
                            
     name_of_function must be a function in the functions module or a
     method of the Server
