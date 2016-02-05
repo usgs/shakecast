@@ -1,0 +1,50 @@
+{
+    "timezone": 0,
+    "Logging": {
+        "log_file": "sc.log",
+        "log_level": "normal",
+        "log_rotate": 3
+    },
+    "Services": {
+        "use_geo_json": true,
+        "geo_json_web": "http://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/1.0_day.geojson",
+        "geo_json_int": 60,
+        "check_new_int": 3,
+        "archive_mag": 5,
+        "keep_eq_for": 60,
+        "new_eq_mag_cutoff": 3,
+        "eq_req_products": ["grid.xml",
+                            "stationlist.xml",
+                            "intensity.jpg",
+                            "info.xml",
+                            "ii_overlay.png"]
+    },
+    "DBConnection": {
+        "type": "sqlite",
+        "username": "",
+        "password": "",
+        "retry_count": 0,
+        "retry_interval": 0
+    },
+    "SMTP": {
+        "server": "smtp.gmail.com",
+        "security": "TLS",
+        "port": 587,
+        "password": "",
+        "username": "",
+        "envelope_from": "",
+        "from": ""
+    },
+    "Notification": {
+        "default_template_new_event": "default_ne.xml",
+        "default_template_inspection": "default_insp.xml",
+        "default_template_pdf": "default_pdf.xml"
+    },
+    "Proxy": {
+        "use": false,
+        "username": "",
+        "password": "",
+        "server": "",
+        "port": 0
+    }
+}

@@ -13,6 +13,7 @@ import os
 import time
 import xml.etree.ElementTree as ET
 import smtplib
+from functions_util import *
 from dbi.db_alchemy import *
 
 class Product_Grabber(object):
@@ -456,6 +457,159 @@ class Mailer(object):
         
         server.sendmail(self.me, you, msg.as_string())
         server.quit()
+        
+class SC(object):
+    """
+    Holds application custimization settings
+    
+    Attributes:
+        timezone (int): How many hours to offset from UTC 
+        new_eq_mag_cutoff (float): Lowest magnitude earthquake app stores
+        check_new_int (int): how often to check db for new eqs
+        use_geo_json (bool): False if using PDL
+        geo_json_int (int): How many seconds between running geo_json
+        archive_mag (float): Min mag that is auto-archived
+        keep_eq_for (int): Days before eq is deleted
+        eq_req_products (list): Which products should be downloaded from web
+        log_rotate (int): Days between log rotations
+        log_file (str): Name of the log file
+        log_level (str): Low, Normal, or High
+        db_type (str): sqlite, mysql, ... (only tested with sqlite)
+        db_password (str): For access to database
+        db_username (str): For access to database
+        db_retry_count (int): Attempts to access db
+        db_retry_interval (int): Wait time between attempts to access db
+        smtp_server (str): Name of smtp (smtp.gmail.com)
+        smtp_security (str): SSL, TLS
+        smtp_port (int): Default 587 for SMTP
+        smtp_password (str): for SMTP access
+        smtp_username (str): for SMTP access
+        smtp_envelope_from (str): Mail to be sent from
+        smtp_from (str): Mail to be sent from
+        default_template_new_event (str): New event notification template name
+        default_template_inspection (str): Inspection notificaiton template name
+        default_template_pdf (str): PDF template name
+        use_proxy (bool): Whether or not to traffic through proxy
+        proxy_username (str): For proxy access
+        proxy_password (str): For proxy access
+        proxy_server (str): Name of proxy server
+        proxy_port (int): Which port to use for proxy
+    """
+    
+    def __init__(self):
+        self.timezone = 0
+        self.new_eq_mag_cutoff = 0.0
+        self.check_new_int = 0
+        self.use_geo_json = False
+        self.geo_json_int = 0
+        self.archive_mag = 0.0
+        self.keep_eq_for = 0
+        self.eq_req_products = []
+        self.log_rotate = 0
+        self.log_file = ''
+        self.log_level = 0
+        self.db_type = ''
+        self.db_password = ''
+        self.db_username = ''
+        self.db_retry_count = 0
+        self.db_retry_interval = 0
+        self.smtp_server = ''
+        self.smtp_security = ''
+        self.smtp_port = 0
+        self.smtp_password = ''
+        self.smtp_username = ''
+        self.smtp_envelope_from = ''
+        self.smtp_from = ''
+        self.default_template_new_event = ''
+        self.default_template_inspection = ''
+        self.default_template_pdf = ''
+        self.use_proxy = False
+        self.proxy_username = ''
+        self.proxy_password = ''
+        self.proxy_server = ''
+        self.proxy_port = 0
+    
+        self.load()
+    
+    def load(self):
+        """
+        Load information from database to the SC object
+        
+        Returns:
+            None
+        """
+        
+        conf_dir = self.get_conf_dir()
+        conf_file = open(conf_dir + 'sc.json', 'r')
+        conf_str = conf_file.read()
+        conf_json = json.loads(conf_str)
+        
+        # timezone
+        self.timezone = conf_json['timezone']
+        
+        # Services
+        self.new_eq_mag_cutoff = conf_json['Services']['new_eq_mag_cutoff']
+        self.check_new_int = conf_json['Services']['check_new_int']
+        self.use_geo_json = conf_json['Services']['use_geo_json']
+        self.geo_json_int = conf_json['Services']['geo_json_int']
+        self.archive_mag = conf_json['Services']['archive_mag']
+        self.keep_eq_for = conf_json['Services']['keep_eq_for']
+        self.geo_json_web = conf_json['Services']['geo_json_web']
+        self.eq_req_products = conf_json['Services']['eq_req_products']
+        
+        # Logging
+        self.log_rotate = conf_json['Logging']['log_rotate']
+        self.log_file = conf_json['Logging']['log_file']
+        self.log_level = conf_json['Logging']['log_level']
+        
+        # DBConnection
+        self.db_type = conf_json['DBConnection']['type']
+        self.db_password = conf_json['DBConnection']['password']
+        self.db_username = conf_json['DBConnection']['username']
+        self.db_retry_count = conf_json['DBConnection']['retry_count']
+        self.db_retry_interval = conf_json['DBConnection']['retry_interval']
+        
+        # SMTP
+        self.smtp_server = conf_json['SMTP']['server']
+        self.smtp_security = conf_json['SMTP']['security']
+        self.smtp_port = conf_json['SMTP']['port']
+        self.smtp_password = conf_json['SMTP']['password']
+        self.smtp_username = conf_json['SMTP']['username']
+        self.smtp_envelope_from = conf_json['SMTP']['envelope_from']
+        self.smtp_from = conf_json['SMTP']['from']
+        
+        # Notification
+        self.default_template_new_event = conf_json['Notification']['default_template_new_event']
+        self.default_template_inspection = conf_json['Notification']['default_template_inspection']
+        self.default_template_pdf = conf_json['Notification']['default_template_pdf']
+        
+        # Proxy
+        self.use_proxy = conf_json['Proxy']['use']
+        self.proxy_username = conf_json['Proxy']['username']
+        self.proxy_password = conf_json['Proxy']['password']
+        self.proxy_server = conf_json['Proxy']['server']
+        self.proxy_port = conf_json['Proxy']['port']
+        
+        
+        
+    def get_conf_dir(self):
+        """
+        Determine where the conf directory is
+        
+        Returns:
+            string: The absolute path the the conf directory
+        """
+        
+        # Get directory location for database
+        path = os.path.dirname(os.path.abspath(__file__))
+        delim = get_delim()
+        path = path.split(delim)
+        path[-1] = 'conf'
+        directory = delim.join(path) + delim
+        
+        return directory
+        
+
     
     
             
