@@ -24,21 +24,22 @@ class Product_Grabber(object):
     """
     
     def __init__(self,
-                 req_products=['grid.xml',
-                               'stationlist.xml',
-                               'intensity.jpg',
-                               'info.xml',
-                               'ii_overlay.png'],
+                 req_products=[],
                  data_dir=''):
         
+        sc = SC()
+        
         self.req_products = req_products
-        self.server_address = 'http://earthquake.usgs.gov'
-        self.json_feed_url = self.server_address + '/earthquakes/feed/v1.0/summary/1.0_day.geojson'
+        self.server_address = ''
+        self.json_feed_url = sc.geo_json_web
         self.json_feed = ''
         self.earthquakes = {}
         self.data_dir = ''
         self.delim = ''
         self.log = ''
+        
+        if not self.req_products:
+            self.req_products = sc.eq_req_products
         
         if data_dir == '':
             self.get_data_path()
@@ -433,16 +434,16 @@ class Mailer(object):
     """
     Keeps track of information used to send emails
     """
-    # kMhmsd9g
-    # shakecast.usgs@gmail.com
-    # pyCast.USGS@gmail.com
-    # USGS!Shake.Cast?V4.0
     
     def __init__(self):
-        self.me = 'pyCast.USGS@gmail.com'
-        self.password = 'USGS!Shake.Cast?V4.0'
-        self.server_name = 'smtp.gmail.com'
-        self.server_port = 587
+        # get info from the config
+        sc = SC()
+        
+        self.me = sc.smtp_from
+        self.username = sc.smtp_username
+        self.password = sc.smtp_password
+        self.server_name = sc.smtp_server
+        self.server_port = sc.smtp_port
         
     def send(self, msg=None, you=[], debug=False):
         """
@@ -467,6 +468,7 @@ class SC(object):
         new_eq_mag_cutoff (float): Lowest magnitude earthquake app stores
         check_new_int (int): how often to check db for new eqs
         use_geo_json (bool): False if using PDL
+        geo_json_web (str): The web address where app gets json feed
         geo_json_int (int): How many seconds between running geo_json
         archive_mag (float): Min mag that is auto-archived
         keep_eq_for (int): Days before eq is deleted
@@ -501,6 +503,7 @@ class SC(object):
         self.new_eq_mag_cutoff = 0.0
         self.check_new_int = 0
         self.use_geo_json = False
+        self.geo_json_web = ''
         self.geo_json_int = 0
         self.archive_mag = 0.0
         self.keep_eq_for = 0
