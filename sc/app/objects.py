@@ -63,7 +63,13 @@ class Product_Grabber(object):
         Pulls json feed from USGS web and sets the self.json_feed
         variable. Also makes a list of the earthquakes' IDs
         """
-        json_str = urllib2.urlopen(self.json_feed_url)
+        
+        try:
+            json_str = urllib2.urlopen(self.json_feed_url, timeout=60)
+        except:
+            self.log += 'Unable to access JSON -- check internet connection'
+            return
+        
         self.json_feed = json.loads(json_str.read())
         json_str.close()
         
