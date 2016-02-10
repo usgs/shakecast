@@ -10,6 +10,7 @@ ShakeCast to run. These objects are used in the functions.py program
 import urllib2
 import json
 import os
+import sys
 import time
 import xml.etree.ElementTree as ET
 import smtplib
@@ -67,7 +68,8 @@ class Product_Grabber(object):
         try:
             json_str = urllib2.urlopen(self.json_feed_url, timeout=60)
         except:
-            self.log += 'Unable to access JSON -- check internet connection'
+            self.log += 'Unable to access JSON -- check internet connection\n'
+            self.log += 'Error: %s' % sys.exc_info()[1]
             return
         
         self.json_feed = json.loads(json_str.read())
