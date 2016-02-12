@@ -353,7 +353,7 @@ class Server(object):
             if 'check_new' not in task_names:
                 task = Task()
                 task.id = int(time.time() * 1000000)
-                task.func = check_new_shakemaps
+                task.func = check_new
                 task.loop = True
                 task.interval = 3
                 task.db_use = True

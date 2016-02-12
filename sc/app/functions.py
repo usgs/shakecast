@@ -1,12 +1,13 @@
+import re
+import sys
 import time
 import math
 import itertools
+import xml.etree.ElementTree as ET
+from email.mime.text import MIMEText
 from dbi.db_alchemy import *
 from objects import *
 from functions_util import *
-import xml.etree.ElementTree as ET
-from email.mime.text import MIMEText
-import re
 
 def geo_json():
     '''Get earthquake feed from USGS and check for new earthquakes
@@ -25,19 +26,23 @@ def geo_json():
     try:
         pg = Product_Grabber()
         pg.get_json_feed()
-    
-        new_shakemaps, log_message = pg.get_new_events()
-        
-    except:
+        new_event_log = ''
+        new_shakemaps_log = ''
+        new_events, log_message = pg.get_new_events()
+        new_shakemaps, log_message = pg.get_new_shakemaps()
+    except Exception:
         log_message = 'Failed to download ShakeMap products: Check internet connection and firewall settings'
-        
+        log_message += '\nError: %s' % sys.exc_info()[1]
+    
+    log_message = pg.log
+    
     data = {'status': 'finished',
             'message': 'Check for new earthquakes',
             'log': log_message}
     
     return data
 
-def check_new_shakemaps():
+def check_new():
     '''
     Search database for unprocessed shakemaps
     
@@ -50,14 +55,14 @@ def check_new_shakemaps():
                            and should contain info on error}
     '''
     
-    # for debugging
-    #import pdb
-    #pdb.set_trace()
-    
     log_message = ''
     try:
         Local_Session = scoped_session(Session)
         session = Local_Session()
+        
+        new_events = (session.query(Event)
+                             .filter(Event.status=='new')
+                             .all())
         new_shakemaps = (session.query(ShakeMap)
                                 .filter(ShakeMap.status=='new')
                                 .all())
@@ -66,11 +71,14 @@ def check_new_shakemaps():
         log_message += 'failed to access database'
         
     try:
+        if new_events:
+            process_new_events(new_events, session=session)
+            log_message += '\nProcessed Events: %s' % [str(ne) for ne in new_events]
         if new_shakemaps:
             process_shakemaps(new_shakemaps, session=session)
-            log_message += 'Processed ShakeMaps: '
+            log_message += '\nProcessed ShakeMaps: %s' % [str(sm) for sm in new_shakemaps]
         else:
-            log_message += 'No new shakemaps'
+            log_message += '\nNo new shakemaps'
     
         Local_Session.remove()
     except:
@@ -81,6 +89,51 @@ def check_new_shakemaps():
             'log': log_message}
     
     return data
+
+def process_new_events(new_events=[], session=None):
+    '''
+    Process or reprocess events passed into the function. Will send
+    NEW_EVENT and UPDATE emails
+    
+    Args:
+        new_events (list): List of Event objects to process
+        session (Session()): SQLAlchemy session
+    
+    Returns:
+        dict: a dictionary that contains information about the function run
+        ::
+            data = {'status': either 'finished' or 'failed',
+                    'message': message to be returned to the UI,
+                    'log': message to be added to ShakeCast log
+                           and should contain info on error}
+    '''
+    db_conn = engine.connect()
+    for new_event in new_events:
+        new_event.status = 'processing_started'
+        
+        groups_affected = (session.query(Group)
+                                    .filter(Group.point_inside(new_event))
+                                    .all())
+        if not groups_affected:
+            new_event.status = 'no groups'
+            session.commit()
+            continue
+        
+        for group in groups_affected:
+            # Check if the group gets NEW_EVENT messages
+            if group.has_spec(not_type='NEW_EVENT'):
+                
+                notification = Notification(group=group,
+                                            event=new_event,
+                                            notification_type='NEW_EVENT',
+                                            status='created')
+                session.add(notification)
+                
+                new_event_notification(event=new_event,
+                                       group=group,
+                                       notification=notification)
+        new_event.status = 'processed'
+        session.commit() 
     
 def process_shakemaps(shakemaps=[], session=None):
     '''
@@ -120,39 +173,11 @@ def process_shakemaps(shakemaps=[], session=None):
                         .filter(ShakeMap.shakemap_id == shakemap.shakemap_id)
                         .all())
             
-            # send off a new event message
+            # determine whether it is a new event or not
             new_event = False
             if (group.has_spec(not_type='NEW_EVENT') and
                     (shakemap.shakemap_version == 1 or not old_sms)):
-                
-                notification = Notification(group=group,
-                                shakemap=shakemap,
-                                notification_type='NEW_EVENT',
-                                status='created')
-    
-                session.add(notification)
-                
-                new_event_notification(shakemap=shakemap,
-                                       group=group,
-                                       grid=grid,
-                                       notification=notification)
-                
                 new_event = True
-            # send updated event message
-            elif group.has_spec(not_type='Update') and shakemap.shakemap_version > 1:
-                
-                notification = Notification(group=group,
-                                shakemap=shakemap,
-                                notification_type='Update',
-                                status='created')
-                session.add(notification)
-                
-                new_event_notification(shakemap=shakemap,
-                                       group=group,
-                                       grid=grid,
-                                       update=True,
-                                       notification=notification)  
-            session.commit()    
                 
             # create an inspection notification
             if group.has_spec(not_type='DAMAGE'):
@@ -318,11 +343,10 @@ def make_inspection_prios(facility=Facility(),
                                             notifications=notifications)
     return fac_shaking
     
-def new_event_notification(shakemap=ShakeMap(),
-                           grid=SM_Grid(),
+def new_event_notification(event=None,
                            group=Group(),
-                           update=False,
-                           notification=None):
+                           notification=None,
+                           update=False):
     """
     Create local products for NEW_EVENT notification and send it
     
@@ -338,8 +362,7 @@ def new_event_notification(shakemap=ShakeMap(),
     """
     
     try:
-        notification.notification_file = '%s%s%s_new_event.txt' % ((notification
-                                                                    .shakemap
+        notification.notification_file = '%s%s%s_new_event.txt' % ((event
                                                                     .directory_name),
                                                                    get_delim(),
                                                                    group.name)
@@ -357,14 +380,12 @@ processing the information.'''
         
         body = '''
         EQ: %s
-        Version: %s
         Magnitude: %s
         Depth: %s KM
-        Description: %s''' % (shakemap.shakemap_id,
-                             shakemap.shakemap_version,
-                             grid.magnitude,
-                             grid.depth,
-                             grid.description)
+        Description: %s''' % (event.event_id,
+                              event.magnitude,
+                              event.depth,
+                              event.place)
         
         not_file.write('%s \n %s' % (preamble, body))
         not_file.close()

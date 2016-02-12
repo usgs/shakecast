@@ -3,10 +3,6 @@ This program holds all the non-database objects used necessary for
 ShakeCast to run. These objects are used in the functions.py program
 """
 
-#kMhmsd9g
-#shakecast.usgs@gmail.com
-#gscodenh01.cr.usgs.gov
-
 import urllib2
 import json
 import os
@@ -90,30 +86,103 @@ class Product_Grabber(object):
         
     def get_new_events(self):
         """
-        Checks the json feed for new earthquakes. Currently only looks
-        for earthquakes with ShakeMaps, but this behavior may want want
-        to be changed
+        Checks the json feed for new earthquakes
         """
         Local_Session = scoped_session(Session)
         session = Local_Session()
+        sc = SC()
         
+        event_str = ''
+        new_events = []
+        for eq_id in self.earthquakes.keys():
+            eq = self.earthquakes[eq_id]
+            
+            # get event id and all ids
+            event = Event()
+            event.all_event_ids = self.earthquakes[eq_id]['properties']['ids']
+            event.magnitude = self.earthquakes[eq_id]['properties']['mag']
+            if event.magnitude < sc.new_eq_mag_cutoff:
+                continue
+            
+            event.directory_name = '%s%s' % (self.data_dir,
+                                             eq_id)
+            if not os.path.exists(event.directory_name):
+                os.makedirs(event.directory_name)
+            
+            # use id and all ids to determine if the event is new and
+            # query the old event if necessary
+            old_shakemaps = []
+            if event.is_new() is False:
+                ids = event.all_event_ids.strip(',').split(',')
+                old_events = [(session.query(Event)
+                                .filter(Event.event_id == each_id)
+                                .first())
+                                    for each_id in ids]
+                
+                for old_event in old_events:
+                    if old_event is not None:
+                        if (event.magnitude < (old_event.magnitude * .9) or
+                                event.magnitude > (old_event.magnitude * 1.1)):
+                            old_shakemaps += old_event.shakemaps
+                            session.delete(old_event)
+                            event.status = 'Update'
+                            
+                            # move all folder contents from previous events to current folder
+                        else:
+                            event.status = 'ignore'
+            else:
+                event.status = 'new'
+                
+            if event.status == 'ignore':
+                continue
+                        
+            # Fill the rest of the event info
+            event.event_id = eq_id
+            event.title = self.earthquakes[eq_id]['properties']['title']
+            event.place = self.earthquakes[eq_id]['properties']['place']
+            event.time = self.earthquakes[eq_id]['properties']['time']
+            
+            event_coords = self.earthquakes[eq_id]['geometry']['coordinates']
+            event.lon = event_coords[0]
+            event.lat = event_coords[1]
+            event.depth = event_coords[2]
+            
+            if old_shakemaps:
+                event.shakemaps = old_shakemaps
+            session.add(event)
+            session.commit()
+            
+            new_events += [event]
+            event_str += 'Event: %s\n' % event.event_id
+        
+        Local_Session.remove()
+        print event_str
+        return new_events, event_str
+            
+    def get_new_shakemaps(self):
+        """
+        Checks the json feed for new earthquakes
+        """
+        Local_Session = scoped_session(Session)
+        session = Local_Session()
+        sc = SC()
+        
+        shakemap_str = ''
         new_shakemaps = []
         for eq_id in self.earthquakes.keys():
             eq = self.earthquakes[eq_id]
             
             eq_url = eq['properties']['detail']
-            
             try:
-                eq_str = urllib2.urlopen(eq_url)
+                eq_str = urllib2.urlopen(eq_url, timeout=60)
             except:
                 continue
-            
             try:
                 eq_info = json.loads(eq_str.read())
             except e:
-                eq_info = e.partial
-                        
+                eq_info = e.partial       
             eq_str.close()
+            
             # check if the event has a shakemap
             if 'shakemap' not in eq_info['properties']['products'].keys():
                 continue
@@ -127,21 +196,16 @@ class Product_Grabber(object):
             # check if we already have the shakemap
             if shakemap.is_new() is False:
                 shakemap = (
-                    session.query(ShakeMap)
-                        .filter(
-                            ShakeMap.shakemap_id == shakemap.shakemap_id
-                               )
-                        .filter(
-                            ShakeMap.shakemap_version == shakemap.shakemap_version
-                               )
-                        .all()[0]
+                  session.query(ShakeMap)
+                    .filter(ShakeMap.shakemap_id == shakemap.shakemap_id)
+                    .filter(ShakeMap.shakemap_version == shakemap.shakemap_version)
+                    .first()
                 )
             
             # check if the shakemap has required products. If it does,
             # it is not a new map, and can be skipped
             if (shakemap.has_products(self.req_products)):
                 continue
-            
             
             # assign relevent information to shakemap
             shakemap.map_status = shakemap.json['properties']['map-status']
@@ -155,7 +219,8 @@ class Product_Grabber(object):
             shakemap.status = 'new'
             
             # make a directory for the new event
-            shakemap.directory_name = '%s%s-%s' % (self.data_dir,
+            shakemap.directory_name = '%s%s/%s-%s' % (self.data_dir,
+                                                   shakemap.shakemap_id,
                                                    shakemap.shakemap_id,
                                                    shakemap.shakemap_version)
             if not os.path.exists(shakemap.directory_name):
@@ -174,7 +239,7 @@ class Product_Grabber(object):
                     
                     # download and allow partial products
                     try:
-                        product.web = urllib2.urlopen(product.url)
+                        product.web = urllib2.urlopen(product.url, timeout=60)
                         eq['status'] = 'downloaded'
                     except httplib.IncompleteRead as e:
                         product.web = e.partial
@@ -190,18 +255,20 @@ class Product_Grabber(object):
                     product.file_.close()
                 except:
                     print 'Failed to download: %s %s' % (eq_id, product_name)
-                            
-            session.add(shakemap)
+            
+            event = session.query(Event).filter(Event.event_id == shakemap.shakemap_id).all()
+            if event:
+                event = event[0]
+                event.shakemaps.append(shakemap)
             session.commit()
             
             new_shakemaps += [shakemap]
-            
-            self.log += 'Wrote %s to disk.\n' % eq_id
-        
-        
+            shakemap_str += 'Wrote %s to disk.\n' % eq_id
+    
+        self.log += shakemap_str
         Local_Session.remove()
-        print self.log
-        return new_shakemaps, self.log
+        print shakemap_str
+        return new_shakemaps, shakemap_str
 
 
 class Point(object):

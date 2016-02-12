@@ -330,6 +330,7 @@ class Notification(Base):
     __tablename__ = 'notification'
     shakecast_id = Column(Integer, primary_key=True)
     shakemap_id = Column(Integer, ForeignKey('shakemap.shakecast_id'))
+    event_id = Column(Integer, ForeignKey('event.event_id'))
     group_name = Column(String(25), ForeignKey('group.name'))
     notification_type = Column(String(25))
     status = Column(String(15))
@@ -489,6 +490,19 @@ class Group(Base):
                         cls.lat_min < grid.lat_max,
                         cls.lat_max > grid.lat_max))
     
+    @hybrid_method
+    def point_inside(self, point):
+        return (self.lat_min <= point.lat and
+                self.lat_max >= point.lat and
+                self.lon_min <= point.lon and
+                self.lon_max >= point.lon)
+    
+    @point_inside.expression
+    def point_inside(cls, point):
+        return and_(cls.lat_min <= point.lat,
+                    cls.lat_max >= point.lat,
+                    cls.lon_min <= point.lon,
+                    cls.lon_max >= point.lon)
     
     @hybrid_method    
     def has_spec(self, not_type='', min_mag=0):
@@ -587,16 +601,79 @@ user_notification_connection = Table('user_notification_connection', Base.metada
 )
 
 #######################################################################
-########################## ShakeMap Tables ############################
+######################### Earthquake Tables ###########################
+
+class Event(Base):
+    __tablename__ = 'event'
+    shakecast_id = Column(Integer, primary_key=True)
+    event_id = Column(String(20))
+    status = Column(String(20))
+    all_event_ids = Column(String(20))
+    lat = Column(Float)
+    lon = Column(Float)
+    depth = Column(Float)
+    magnitude = Column(Float)
+    title = Column(String)
+    place = Column(String)
+    time = Column(Integer)
+    directory_name = Column(String)
+    
+    shakemaps = relationship('ShakeMap',
+                             backref='event')
+    
+    notifications = relationship('Notification',
+                                 backref='event')
+    
+    def __repr__(self):
+        return '''Event(event_id=%s,
+                        all_event_ids=%s,
+                        lat=%s,
+                        lon=%s,
+                        magnitude=%s,
+                        title=%s,
+                        place=%s,
+                        time=%s)''' % (self.event_id,
+                                       self.all_event_ids,
+                                       self.lat,
+                                       self.lon,
+                                       self.magnitude,
+                                       self.title,
+                                       self.place,
+                                       self.time)
+    
+    def __str__(self):
+        return self.event_id
+    
+    def is_new(self):
+        """
+        Check if this Event is new
+        """
+        db_conn = engine.connect()
+        
+        # Get all ids associated with this event
+        ids = self.all_event_ids.strip(',').split(',')
+        events = []
+        
+        for each_id in ids:
+            stmt = (select([Event.__table__.c.event_id])
+                        .where(Event.__table__.c.event_id == each_id))
+            result = db_conn.execute(stmt)
+            events += [row for row in result]
+        
+        if events:
+            return False
+        else:
+            return True
 
 class ShakeMap(Base):
     __tablename__ = 'shakemap'
     shakecast_id = Column(Integer, primary_key=True)
     shakemap_id = Column(String(80))
+    event_id = Column(Integer,
+                      ForeignKey('event.shakecast_id'))
     shakemap_version = Column(Integer)
     status = Column(String(10))
     map_status = Column(String(10))
-    event_id = Column(String(80))
     event_version = Column(Integer)
     generating_server = Column(Integer)
     region = Column(String(2))
@@ -612,8 +689,8 @@ class ShakeMap(Base):
     directory_name = Column(String(255))
     
     products = relationship('Product',
-                        backref='shakemap',
-                        cascade='save-update, delete')
+                            backref='shakemap',
+                            cascade='save-update, delete')
     
     notifications = relationship('Notification',
                                  backref = 'shakemap')
@@ -640,23 +717,25 @@ class ShakeMap(Base):
                            end_timestamp=%s,
                            superceded_timestamp=%s,
                            directory_name=%s)''' % (self.shakemap_id,
-                                                 self.status,
-                                                 self.map_status,
-                                                 self.event_id,
-                                                 self.event_version,
-                                                 self.generating_server,
-                                                 self.region,
-                                                 self.lat_min,
-                                                 self.lat_max,
-                                                 self.lon_min,
-                                                 self.lon_max,
-                                                 self.generation_timestamp,
-                                                 self.recieve_timestamp,
-                                                 self.begin_timestamp,
-                                                 self.end_timestamp,
-                                                 self.superceded_timestamp,
-                                                 self.directory_name)
+                                                    self.status,
+                                                    self.map_status,
+                                                    self.event_id,
+                                                    self.event_version,
+                                                    self.generating_server,
+                                                    self.region,
+                                                    self.lat_min,
+                                                    self.lat_max,
+                                                    self.lon_min,
+                                                    self.lon_max,
+                                                    self.generation_timestamp,
+                                                    self.recieve_timestamp,
+                                                    self.begin_timestamp,
+                                                    self.end_timestamp,
+                                                    self.superceded_timestamp,
+                                                    self.directory_name)
     
+    def __str__(self):
+        return self.shakemap_id
     
     @hybrid_method    
     def is_new(self):
@@ -688,7 +767,6 @@ class Product(Base):
     shakecast_id = Column(Integer, primary_key=True)
     shakemap_id = Column(Integer,
                          ForeignKey('shakemap.shakecast_id'))
-    #shakemap_version = Column(Integer, ForeignKey('shakemap.version'), primary_key=True)
     product_type = Column(String(10))
     name = Column(String(32))
     description = Column(String(255))
