@@ -83,7 +83,8 @@ def check_new():
         Local_Session.remove()
     except:
         log_message += 'failed to process new shakemaps: '
-
+        raise
+    
     data = {'status': 'finished',
             'message': 'Check for new earthquakes',
             'log': log_message}
@@ -122,6 +123,12 @@ def process_new_events(new_events=[], session=None):
         for group in groups_affected:
             # Check if the group gets NEW_EVENT messages
             if group.has_spec(not_type='NEW_EVENT'):
+                
+                # check new_event magnitude to make sure the group wants a notificaiton
+                new_event_spec = [s for s in group.specs
+                                    if s.notification_type == 'NEW_EVENT'][0]
+                if new_event_spec.minimum_magnitude > new_event.magnitude:
+                    continue
                 
                 notification = Notification(group=group,
                                             event=new_event,
@@ -174,9 +181,9 @@ def process_shakemaps(shakemaps=[], session=None):
                         .all())
             
             # determine whether it is a new event or not
-            new_event = False
-            if (group.has_spec(not_type='NEW_EVENT') and
-                    (shakemap.shakemap_version == 1 or not old_sms)):
+            if shakemap.shakemap_version > 1:
+                new_event = False
+            else:
                 new_event = True
                 
             # create an inspection notification
