@@ -26,7 +26,6 @@ db_name = 'shakecast.db'
 engine = create_engine('sqlite:///%s%s' % (directory, db_name))
 connection = engine.connect()
 
-
 # create a metadata object
 metadata = MetaData()
 
@@ -114,14 +113,18 @@ class Facility(Base):
                                             self.red_beta,
                                             self.metric)
     
-    def make_alert_level(self, shaking_level=0, shakemap=None, notifications=[]):
-        db_conn = engine.connect()
+    def make_alert_level(self, shaking_point=None, shakemap=None, notifications=[]):
+        '''
+        Create a dictionary that contains all the information for a
+        Facility_Shaking entry in the database
+        '''
+        shaking_level = shaking_point[self.metric]
         
         # check if there is already shaking for this shakemap and facility
         stmt = (select([Facility_Shaking.__table__.c.shakecast_id])
                         .where(and_(Facility_Shaking.__table__.c.facility_id == self.shakecast_id,
                                     Facility_Shaking.__table__.c.shakemap_id == shakemap.shakecast_id)))
-        result = db_conn.execute(stmt)
+        result = engine.execute(stmt)
         fac_shake_id = [row for row in result]
         
         
@@ -139,48 +142,53 @@ class Facility(Base):
                      'weight': 0,
                      'notifications': [''] * len(notifications)}
         
-        # if the query has results, assign them to shaking, otherwise,
-        # create a new instance
-        if fac_shake_id:
-            #fac_shake = Facility_Shaking()
-            fac_shake['update'] = True
-            fac_shake['_shakecast_id'] = fac_shake_id[0][0]
+        if shaking_level is None:
+            fac_shake['alert_level'] = None
+        
         else:
-            fac_shake['update'] = False
-            fac_shake['_shakecast_id'] = 0
-            
-        # get_exceedence green
-        fragility = [{'med': self.red, 'spread': self.red_beta, 'level': 'red', 'rank': 4},
-                     {'med': self.orange, 'spread': self.orange_beta, 'level': 'orange', 'rank': 3},
-                     {'med': self.yellow, 'spread': self.yellow_beta, 'level': 'yellow', 'rank': 2},
-                     {'med': self.green, 'spread': self.green_beta, 'level': 'green', 'rank': 1}]
-                    
-        prob_sum = 0
-        large_prob = 0
-        alert_level = 'None'
-        for level in fragility:
-            
-            if level['med'] < 0 or level['spread'] < 0:
-                continue
-            
-            p = lognorm_opt(med=level['med'],
-                            spread=level['spread'],
-                            shaking=shaking_level)
-            
-            p -= prob_sum
-            prob_sum += p
-            fac_shake[level['level']] = p
-            
-            if p > large_prob:
-                large_prob = p
-                fac_shake['alert_level'] = level['level']
-                fac_shake['weight'] = level['rank'] + (p / 100)
+            # if shaking exists for this facility for this shakemap
+            # assign it's shakecast_id, otherwise it will get assigned
+            # later
+            if fac_shake_id:
+                #fac_shake = Facility_Shaking()
+                fac_shake['update'] = True
+                fac_shake['_shakecast_id'] = fac_shake_id[0][0]
+            else:
+                fac_shake['update'] = False
+                fac_shake['_shakecast_id'] = 0
                 
-        fac_shake['grey'] = 100 - prob_sum
-        if fac_shake['grey'] > large_prob:
-            fac_shake['alert_level'] = 'grey'
-            fac_shake['weight'] = (fac_shake['grey'] / 100)
-            
+            # get_exceedence green
+            fragility = [{'med': self.red, 'spread': self.red_beta, 'level': 'red', 'rank': 4},
+                         {'med': self.orange, 'spread': self.orange_beta, 'level': 'orange', 'rank': 3},
+                         {'med': self.yellow, 'spread': self.yellow_beta, 'level': 'yellow', 'rank': 2},
+                         {'med': self.green, 'spread': self.green_beta, 'level': 'green', 'rank': 1}]
+                        
+            prob_sum = 0
+            large_prob = 0
+            alert_level = 'None'
+            for level in fragility:
+                
+                if level['med'] < 0 or level['spread'] < 0:
+                    continue
+                
+                p = lognorm_opt(med=level['med'],
+                                spread=level['spread'],
+                                shaking=shaking_level)
+                
+                p -= prob_sum
+                prob_sum += p
+                fac_shake[level['level']] = p
+                
+                if p > large_prob:
+                    large_prob = p
+                    fac_shake['alert_level'] = level['level']
+                    fac_shake['weight'] = level['rank'] + (p / 100)
+                    
+            fac_shake['grey'] = 100 - prob_sum
+            if fac_shake['grey'] > large_prob:
+                fac_shake['alert_level'] = 'grey'
+                fac_shake['weight'] = (fac_shake['grey'] / 100)
+                
         fac_shake['facility_id'] = self.shakecast_id
         fac_shake['metric'] = self.metric
         fac_shake['shakemap_id'] = shakemap.shakecast_id
@@ -648,7 +656,6 @@ class Event(Base):
         """
         Check if this Event is new
         """
-        db_conn = engine.connect()
         
         # Get all ids associated with this event
         ids = self.all_event_ids.strip(',').split(',')
@@ -657,7 +664,7 @@ class Event(Base):
         for each_id in ids:
             stmt = (select([Event.__table__.c.event_id])
                         .where(Event.__table__.c.event_id == each_id))
-            result = db_conn.execute(stmt)
+            result = engine.execute(stmt)
             events += [row for row in result]
         
         if events:
@@ -739,13 +746,11 @@ class ShakeMap(Base):
     
     @hybrid_method    
     def is_new(self):
-        db_conn = engine.connect()
-        
         stmt = (select([ShakeMap.__table__.c.shakecast_id])
                     .where(and_(ShakeMap.__table__.c.shakemap_id == self.shakemap_id,
                                 ShakeMap.__table__.c.shakemap_version == self.shakemap_version)))
         
-        result = db_conn.execute(stmt)
+        result = engine.execute(stmt)
         shakemaps = [row for row in result]
         
         if shakemaps:

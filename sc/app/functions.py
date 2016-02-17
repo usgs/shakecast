@@ -108,7 +108,7 @@ def process_new_events(new_events=[], session=None):
                     'log': message to be added to ShakeCast log
                            and should contain info on error}
     '''
-    db_conn = engine.connect()
+    
     for new_event in new_events:
         new_event.status = 'processing_started'
         
@@ -159,7 +159,6 @@ def process_shakemaps(shakemaps=[], session=None):
                            and should contain info on error}
     '''
     
-    db_conn = engine.connect()
     for shakemap in shakemaps:
         shakemap.status = 'processing_started'
         
@@ -211,7 +210,6 @@ def process_shakemaps(shakemaps=[], session=None):
                     .all())
         
         if notifications:
-        #if group.has_spec(not_type='Inspection'):
             # get a set of all affected facilities
             affected_facilities = set(itertools
                                         .chain
@@ -228,7 +226,7 @@ def process_shakemaps(shakemaps=[], session=None):
             shaking_id = (session
                             .query(Facility_Shaking.shakecast_id,
                                    func.max(Facility_Shaking.shakecast_id))
-                                .first()[0])
+                            .first()[0])
             if shaking_id:
                 shaking_id += 1
             else:
@@ -243,6 +241,9 @@ def process_shakemaps(shakemaps=[], session=None):
                                                     shakemap=shakemap,
                                                     grid=grid,
                                                     notifications=notifications)
+                if fac_shaking is False:
+                    continue
+
                 if not fac_shaking['update']:
                     fac_shaking['_shakecast_id'] = shaking_id
                     shaking_id += 1
@@ -289,12 +290,12 @@ def process_shakemaps(shakemaps=[], session=None):
             # if there are facilities affected, send shaking data to
             # database
             if fac_shaking_lst:
-                db_conn.execute(stmt, fac_shaking_lst)
+                engine.execute(stmt, fac_shaking_lst)
             # quick check for relationships before inserting into
             # database in order to avoid errors in strange
             # circumstances... probably not necessary
             if relationships:
-                db_conn.execute(rel_stmt, relationships)
+                engine.execute(rel_stmt, relationships)
             session.commit()
             
             # send inspection notifications for the shaking levels we
@@ -337,15 +338,13 @@ def make_inspection_prios(facility=Facility(),
     '''
     
     # get the largest shaking level affecting the facility
-    facility_shaking = grid.max_shaking(facility=facility)
-    if facility_shaking is not None:
-        shaking_level = facility_shaking[facility.metric]
-    else:
-        shaking_level = 0
+    shaking_point = grid.max_shaking(facility=facility)
+    if shaking_point is None:
+        return False
     
     # use the max shaking value to create fragility curves for the
     # damage states
-    fac_shaking = facility.make_alert_level(shaking_level=shaking_level,
+    fac_shaking = facility.make_alert_level(shaking_point=shaking_point,
                                             shakemap=shakemap,
                                             notifications=notifications)
     return fac_shaking
@@ -438,7 +437,6 @@ def inspection_notification(notification=Notification(),
         None
     '''
     
-    db_conn = engine.connect()
     shakemap = notification.shakemap
     group = notification.group
     
@@ -487,7 +485,7 @@ Description: %s
                                         Facility_Shaking.__table__.c.shakemap_id ==
                                         shakemap.shakecast_id))
                          .order_by(desc('weight')))
-        result = db_conn.execute(stmt)
+        result = engine.execute(stmt)
         
         # create a string that includes the shaking information queried
         # above

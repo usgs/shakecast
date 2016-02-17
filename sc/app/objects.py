@@ -219,8 +219,9 @@ class Product_Grabber(object):
             shakemap.status = 'new'
             
             # make a directory for the new event
-            shakemap.directory_name = '%s%s/%s-%s' % (self.data_dir,
+            shakemap.directory_name = '%s%s%s%s-%s' % (self.data_dir,
                                                    shakemap.shakemap_id,
+                                                   get_delim(),
                                                    shakemap.shakemap_id,
                                                    shakemap.shakemap_version)
             if not os.path.exists(shakemap.directory_name):
@@ -456,6 +457,9 @@ class SM_Grid(object):
         Will return a float with the largest shaking in a specified
         region. If no grid points are found within the region, the
         region is made larger until a point is present
+        
+        Returns:
+            int: -1 if max shaking can't be determined, otherwise shaking level
         '''
     
         if facility is not None:
@@ -468,8 +472,16 @@ class SM_Grid(object):
             except:
                 return -1
             
-        if not facility.in_grid(self):
+        if not self.grid:
             return None
+        
+        # check if the facility lies in the grid    
+        if not facility.in_grid(self):
+            return {facility.metric: 0}
+        
+        # check if the facility's metric exists in the grid
+        if not self.grid[0].info.get(facility.metric, None):
+            return {facility.metric: None}
         
         # sort the grid in an attempt to speed up processing on
         # many facilities
@@ -484,16 +496,12 @@ class SM_Grid(object):
         
         shaking = []
         while not shaking:
-            #shaking = [point for point in self.grid[start:end] if
-            ##                            (point.info['LON'] > lon_min and
-            #                             point.info['LON'] < lon_max and
-            #                             point.info['LAT'] > lat_min and
-            #                             point.info['LAT'] < lat_max)]
-            
             shaking = [point for point in self.grid[start:end] if
                                         (point.info['LAT'] > lat_min and
                                          point.info['LAT'] < lat_max)]
             
+            # make the rectangle we're searching in larger to encompass
+            # more points
             lon_min -= .01
             lon_max += .01
             lat_min -= .01
