@@ -822,5 +822,5 @@ db_sql = metadata.create_all(engine)
 
 # In SQLalchemy we always work with RELATED objects
 # all the objects we're working with are stored in a session
-Session = sessionmaker(bind=engine)
-    
+session_maker = sessionmaker(bind=engine)
+Session = scoped_session(session_maker)

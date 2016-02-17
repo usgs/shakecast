@@ -88,8 +88,7 @@ class Product_Grabber(object):
         """
         Checks the json feed for new earthquakes
         """
-        Local_Session = scoped_session(Session)
-        session = Local_Session()
+        session = Session()
         sc = SC()
         
         event_str = ''
@@ -155,7 +154,7 @@ class Product_Grabber(object):
             new_events += [event]
             event_str += 'Event: %s\n' % event.event_id
         
-        Local_Session.remove()
+        Session.remove()
         print event_str
         return new_events, event_str
             
@@ -163,8 +162,7 @@ class Product_Grabber(object):
         """
         Checks the json feed for new earthquakes
         """
-        Local_Session = scoped_session(Session)
-        session = Local_Session()
+        session = Session()
         sc = SC()
         
         shakemap_str = ''
@@ -267,7 +265,7 @@ class Product_Grabber(object):
             shakemap_str += 'Wrote %s to disk.\n' % eq_id
     
         self.log += shakemap_str
-        Local_Session.remove()
+        Session.remove()
         print shakemap_str
         return new_shakemaps, shakemap_str
 

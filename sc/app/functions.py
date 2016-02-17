@@ -57,8 +57,7 @@ def check_new():
     
     log_message = ''
     try:
-        Local_Session = scoped_session(Session)
-        session = Local_Session()
+        session = Session()
         
         new_events = (session.query(Event)
                              .filter(Event.status=='new')
@@ -80,7 +79,7 @@ def check_new():
         else:
             log_message += '\nNo new shakemaps'
     
-        Local_Session.remove()
+        Session.remove()
     except:
         log_message += 'failed to process new shakemaps: '
         raise
@@ -589,8 +588,7 @@ def import_facility_xml(xml_file=''):
                     'log': message to be added to ShakeCast log
                            and should contain info on error}
     '''
-    Local_Session = scoped_session(Session)
-    session = Local_Session()
+    session = Session()
     
     groups = session.query(Group).all()
     
@@ -773,7 +771,7 @@ def import_facility_xml(xml_file=''):
     add_facs_to_groups(session=session)
     session.commit()
     
-    Local_Session.remove()
+    Session.remove()
     
     log_message = ''
     status = 'finished'
@@ -798,9 +796,7 @@ def import_group_xml(xml_file=''):
                     'log': message to be added to ShakeCast log
                            and should contain info on error}
     '''
-    
-    Local_Session = scoped_session(Session)
-    session = Local_Session()
+    session = Session()
     
     tree = ET.parse(xml_file)
     root = tree.getroot()
@@ -917,7 +913,7 @@ def import_group_xml(xml_file=''):
     add_facs_to_groups(session=session)
     add_users_to_groups(session=session)
     session.commit()
-    Local_Session.remove()
+    Session.remove()
     
     log_message = ''
     status = 'finished'
@@ -942,9 +938,7 @@ def import_user_xml(xml_file=''):
                     'log': message to be added to ShakeCast log
                            and should contain info on error}
     '''
-    
-    Local_Session = scoped_session(Session)
-    session = Local_Session()
+    session = Session()
     
     tree = ET.parse(xml_file)
     root = tree.getroot()
@@ -1022,7 +1016,7 @@ def import_user_xml(xml_file=''):
         
     add_users_to_groups(session=session)
     session.commit()
-    Local_Session.remove()
+    Session.remove()
     
     log_message = ''
     status = 'finished'
