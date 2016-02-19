@@ -36,9 +36,9 @@
         "from": ""
     },
     "Notification": {
-        "default_template_new_event": "default_ne.xml",
-        "default_template_inspection": "default_insp.xml",
-        "default_template_pdf": "default_pdf.xml"
+        "default_template_new_event": "default_ne.json",
+        "default_template_inspection": "default_insp.json",
+        "default_template_pdf": "default_pdf.json"
     },
     "Proxy": {
         "use": false,
@@ -46,5 +46,10 @@
         "password": "",
         "server": "",
         "port": 0
+    },
+    "Server": {
+        "name": "ShakeCast",
+        "DNS": "https://localhost",
+        "software_version": "1.0"
     }
 }
