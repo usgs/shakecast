@@ -690,7 +690,7 @@ class SC(object):
         Determine where the conf directory is
         
         Returns:
-            string: The absolute path the the conf directory
+            str: The absolute path the the conf directory
         """
         
         # Get directory location for database
@@ -703,236 +703,133 @@ class SC(object):
         return directory
         
 
-class NewEvent(object):
+class NewEventNotBuilder(object):
     """
-    Holds HTML shell as well as notification configuration settings
-    for a new event message
+    Holds HTML shell for new events as well as notification configuration
+    settings for a new event message
+    
+    Attributes:
+        html (str): generated HTML new event notification
+        html_shell (str): HTML before it is filled in with info for notification and user specifications
     """
     
     def __init__(self):
-        self.sc_link = ''
-        self.body_color = ''
-        self.sh_back_color = ''
-        self.sh_font_color = ''
-        self.second_head_border_color = ''
-        self.second_head_font_color = ''
-        self.intro_back_color = ''
-        self.intro_font_color = ''
-        self.intro_text = ''
-        self.fh_color = ''
-        self.footer_font_color = ''
-        self.table_border_color = ''
-        self.admin_email = ''
-        
         self.html = ''
         self.html_shell = """
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
-    <style>
-        body {
-            background-color: %s;
-        }
-
-        .row {
-            display: block;
-            width: 100%%;
-            margin-top: 5px;
-        }
-
-        .section_header {
-            height: 60px;
-            background-color: %s;
-            width: 95%%;
-            margin-left: auto;
-            margin-right: auto;
-        }
-        
-        .section_header h2 {
-            color: %s;
-            font-family: Arial;
-            width: 95%%;
-            margin-left: auto;
-            margin-right: auto;
-            top: 50%%;
-            transform: translateY(-50%%);
-            position: relative;
-        }
-        
-        .second_header {
-            height: 40px;
-            width: 250px;
-            border-bottom: 2px solid %s;
-            margin-left: auto;
-            margin-right: auto;
-            text-align: center;
-        }
-        
-        .second_header h2 {
-            color: %s;
-            font-family: Arial;
-            top: 50%%;
-            transform: translateY(-50%%);
-            position: relative;
-            margin-top: 20px;
-        }
-        
-        .image_header {
-            height: 72px;
-            background-color: #ffffff;
-            margin-left: 10px;
-            margin-bottom: 20px;
-        }
-        
-        .image_header h1 {
-            color: #444444;
-            display: inline-block;
-            font-size: 55px;
-            position: relative;
-            line-height: 30px;
-            padding-top: 10px;
-            margin-left: 10px;
-            margin-top: 0px;
-            margin-bottom: 0px;    
-            float: left;
-            top: 50%%;
-            transform: translateY(-50%%);
-            font-family: Arial
-        }
-        
-        .rounded_sc {
-            border-radius: 50%%;
-            display: inline-block;
-            position: relative;
-            float: left;
-        }
-        
-        .intro_container {
-            background-color: %s;
-            width: 90%%;
-            margin-left: auto;
-            margin-right: auto;
-        }
-        
-        .intro_container p {
-            font-family: Arial;
-        }
-        
-        .intro {
-            font-size: 2;
-            font-family: Arial;
-            color: %s;
-        }
-        
-        .eq_info_table {
-            margin-top: 20px;
-            margin-left: auto;
-            margin-right: auto;
-            position: relative;
-        }
-        
-                
-        table, th, td {
-            border: 1px solid %s;
-            border-collapse: collapse;
-            font-family: Arial;
-            padding: 5px;
-            text-align: center;
-        }
-        
-        .footer {
-            top: 30px;
-            position: relative;
-        }
-        
-        .footer_header {
-            height: 20px;
-            margin-left: 0px;
-            text-align: left;
-            font-family: Arial;
-            color: %s;
-        }
-        
-        .footer p {
-            margin-top: 2px;
-            margin-bottom: 0px;
-            font-size: small;
-            font-family: Arial;
-            color: %s;
-        }
-        
-        .server_info {
-            margin-left: 10px;
-        }
-        
-    </style>
 </head>
-<body>
-
-    <div class="image_header">
-        <img src="sc_logo.png" class="rounded_sc">
-        <h1>ShakeCast Alert</h1>
-    </div>
-
-    <div class="section_header">
-        <h2>Preliminary Earthquake Notification</h2>
-    </div>
-    
-    <div class="row intro_container">
-        <p class="intro">%s%s</p>
-    </div>
-
-    <div class="row second_header">
-        <h2>Earthquake Details</h2>
-    </div>
-
-        <table class="eq_info_table">
-            <tbody style="position: relative">
-                <tr>
-                    <th>Map</th>
-                    <th>ID</th>
-                    <th>Time</th>
-                    <th>Mag</th>
-                    <th>Lat</th>
-                    <th>Lon</th>
-                    <th>Location</th>
-                </tr>
-                <tr>
-                    <td>
-                        <img src="https://maps.googleapis.com/maps/api/staticmap?center=%s,%s&zoom=5&size=200x200&sensor=false&maptype=terrain&markers=icon:http://earthquake.usgs.gov/research/software/shakecast/icons/epicenter.png|%s,%s">
-                    </td>
-                    <td>%s</td>
-                    <td>%s</td>
-                    <td>%s</td>
-                    <td>%s</td>
-                    <td>%s</td>
-                    <td>%s</td>
-                </tr>
-            </tbody>
-        </table>
-    
-    <div class="footer">
-        <div class="footer_header">
-            <h3>ShakeCast Server:</h3>
-        </div>
-        <div class="server_info">
-            <p>ShakeCast Web: <a href="%s" target="_blank">%s</a></p>
-            <p>Software: pyCast %s</p>
-            <p>Notification Generated: %s</p>
-            <p>Reported by: %s</p>
-            <p>Template Type: %s</p>
-        </div>
+<body style="background-color:%s;width:700px">
+    <table style="table-layout:fixed;width:100%%">
+        <tr>
+            <td>
+                <table>
+                    <tr>
+                        <td>
+                            <div style="width: 80px">
+                                <img style="border-radius:50%%" src="cid:sc_logo"
+                            </div>
+                        </td>
+                        <td>
+                            <h1 style="color:#444444;font-size:50px;font-family:Arial;margin:0px">ShakeCast Alert</h1>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <table style="width:95%%;margin-left:2.5%%">
+                    <tr>
+                        <td>
+                            <h2 style="font-family:Arial;color:%s;background-color:%s;padding:10px;margin-top:20px;margin-bottom:5px">Preliminary Earthquake Notification</h2>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+        <tr style="background-color:%s">
+            <td>
+                <table style="width:90%%;margin-left:5%%">
+                    <tr>
+                        <td>
+                            <p style="font-family:Arial;color:%s;margin:0px">%s %s</p>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
         
-        <br>
-        <p style="font-size: medium">Questions about ShakeCast?  Contact Administrator at <a href="mailto:%s?subject=ShakeCast+V3+Inquiry" target="_blank">%s</a>.
-        </p> 
-    </div>
+
+        <tr style="text-align:center">
+            <td>
+                <h2 style="color:%s;border-bottom:2px solid %s;width:250px;margin-left:auto;margin-right:auto;font-family:Arial">Earthquake Details</h2>
+            </td>
+        </tr>
+        <tr>
+        
+            <td>
+                <table style="text-align:center;border: 2px solid #444444;border-collapse: collapse;padding: 5px;font-family:Arial; width:100%%">
+                    <tbody style="position: relative">
+                        <tr style="border: 2px solid #444444">
+                            <th style="border: 2px solid #444444;padding: 5px;">Map</th>
+                            <th style="border: 2px solid #444444;padding: 5px;">ID</th>
+                            <th style="border: 2px solid #444444;padding: 5px;">Time</th>
+                            <th style="border: 2px solid #444444;padding: 5px;">Mag</th>
+                            <th style="border: 2px solid #444444;padding: 5px;">Lat</th>
+                            <th style="border: 2px solid #444444;padding: 5px;">Lon</th>
+                            <th style="border: 2px solid #444444;padding: 5px;">Location</th>
+                        </tr>
+                        <tr>
+                            <td style="border: 2px solid #444444">
+                                <img src="https://maps.googleapis.com/maps/api/staticmap?center=%s,%s&zoom=5&size=200x200&sensor=false&maptype=terrain&markers=icon:http://earthquake.usgs.gov/research/software/shakecast/icons/epicenter.png|%s,%s">
+                            </td>
+                            <td style="border: 2px solid #444444;padding: 5px;">%s</td>
+                            <td style="border: 2px solid #444444;padding: 5px;">%s</td>
+                            <td style="border: 2px solid #444444;padding: 5px;">%s</td>
+                            <td style="border: 2px solid #444444;padding: 5px;">%s</td>
+                            <td style="border: 2px solid #444444;padding: 5px;">%s</td>
+                            <td style="border: 2px solid #444444;padding: 5px;">%s</td>
+                        </tr>
+                        </tbody>
+                </table>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <h3 style="color:%s;font-family:Arial;margin-top:50px;margin-bottom:0px">ShakeCast Server:</h3>
+            </td>
+        </tr>
+        
+        <tr>
+            <td>
+                <table style="color:%s;margin-left:10px">
+                    <tr>
+                        <td>
+                            <p style="margin-bottom:2px;margin-top:0px;font-size: small;font-family: Arial;">ShakeCast Web: <a href="%s" target="_blank">%s</a></p>
+                            <p style="margin-bottom:2px;margin-top:0px;font-size: small;font-family: Arial;">Software: %s</p>
+                            <p style="margin-bottom:2px;margin-top:0px;font-size: small;font-family: Arial;">Notification Generated: %s</p>
+                            <p style="margin-bottom:2px;margin-top:0px;font-size: small;font-family: Arial;">Reported by: %s</p>
+                            <p style="margin-bottom:2px;margin-top:0px;font-size: small;font-family: Arial;">Template Type: %s</p>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <p style="font-size: medium;font-family: Arial;">Questions about ShakeCast?  Contact Administrator at <a href="mailto:%s?subject=ShakeCast+V3+Inquiry" target="_blank">%s</a>.</p> 
+            </td>
+        </tr>
+
+    </table>
 
 </body>
 </html>
 """
 
-    def buildHTML(self, event):
+    def buildHTML(self,event):
         """
         Builds the HTML notification using the html_shell.
         
@@ -946,20 +843,16 @@ class NewEvent(object):
         temp_json = json.loads(temp_str)
 
         sc_link = temp_json['intro']['sc_link'] % sc.server_dns
-
+        
         self.html = self.html_shell % (
             temp_json['body_color'],
-            temp_json['section_head']['back_color'],
             temp_json['section_head']['font_color'],
-            temp_json['second_head']['border_color'],
-            temp_json['second_head']['font_color'],
+            temp_json['section_head']['back_color'],
             temp_json['intro']['back_color'],
             temp_json['intro']['font_color'],
-            temp_json['table']['border_color'],
-            temp_json['footer']['header_color'],
-            temp_json['footer']['font_color'],
-            temp_json['intro']['text'],
-            sc_link,
+            temp_json['intro']['text'], sc_link,
+            temp_json['second_head']['font_color'],
+            temp_json['second_head']['border_color'],
             event.lat, event.lon ,event.lat, event.lon,
             event.event_id,
             event.time,
@@ -967,6 +860,8 @@ class NewEvent(object):
             event.lat,
             event.lon,
             event.place,
+            temp_json['footer']['header_color'],
+            temp_json['footer']['font_color'],
             sc.server_dns, sc.server_dns,
             sc.software_version,
             '',
@@ -974,6 +869,7 @@ class NewEvent(object):
             '',
             temp_json['admin_email'], temp_json['admin_email']
         )
+
     
     def get_temp_dir(self):
         """

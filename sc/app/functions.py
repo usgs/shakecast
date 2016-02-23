@@ -5,6 +5,8 @@ import math
 import itertools
 import xml.etree.ElementTree as ET
 from email.mime.text import MIMEText
+from email.MIMEImage import MIMEImage
+from email.MIMEMultipart import MIMEMultipart
 from dbi.db_alchemy import *
 from objects import *
 from functions_util import *
@@ -367,32 +369,18 @@ def new_event_notification(event=None,
     """
     
     try:
-        notification.notification_file = '%s%s%s_new_event.txt' % ((event
+        notification.notification_file = '%s%s%s_new_event.html' % ((event
                                                                     .directory_name),
                                                                    get_delim(),
                                                                    group.name)
+        
         not_file = open(notification.notification_file, 'w')
         
-        if update is True:
-            preamble = '''A previous ShakeMap has been updated. Depending on your notification group
-specifications, your ShakeCast instance may be processing a new inspection
-priority message.'''
-        else:
-            preamble = '''There has been an earthquake and your ShakeCast instance is currently
-processing the information.'''
+        not_builder = NewEventNotBuilder()
+        not_builder.buildHTML(event)
         
-        preamble += '\nYou are receiving this message as part of the %s notification group.' % group.name
-        
-        body = '''
-        EQ: %s
-        Magnitude: %s
-        Depth: %s KM
-        Description: %s''' % (event.event_id,
-                              event.magnitude,
-                              event.depth,
-                              event.place)
-        
-        not_file.write('%s \n %s' % (preamble, body))
+        #not_file.write('%s \n %s' % (preamble, body))
+        not_file.write('%s' % not_builder.html)
         not_file.close()
         notification.status = 'file success'
     except:
@@ -400,20 +388,30 @@ processing the information.'''
     
     if notification.status != 'file failed':
         try:
+            msg = MIMEMultipart()
+            
             not_file = open(notification.notification_file, 'r')
-            msg = MIMEText(not_file.read())
+            msg_html = MIMEText(not_file.read(), 'html')
             not_file.close()
-
+            msg.attach(msg_html)
+            
+            logo_str = "%s%s%s%s" % (sc_dir(),
+                                     'images',
+                                     get_delim(),
+                                     'sc_logo.png')
+            
+            logo_file = open(logo_str, 'rb')
+            msg_image = MIMEImage(logo_file.read())
+            logo_file.close()
+            msg_image.add_header('Content-ID', '<sc_logo>')
+            
+            msg.attach(msg_image)
             mailer = Mailer()
             
             me = mailer.me
             you = [user.email for user in group.users]
             
-            if update is False:
-                msg['Subject'] = 'ShakeCast -- New Event'
-            else:
-                msg['Subject'] = 'ShakeCast -- Update'
-                
+            msg['Subject'] = event.title
             msg['To'] = ', '.join(you)
             msg['From'] = me
             
