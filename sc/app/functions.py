@@ -395,6 +395,12 @@ def new_event_notification(event=None,
             not_file.close()
             msg.attach(msg_html)
             
+            # get map
+            gmap = urllib2.urlopen("https://maps.googleapis.com/maps/api/staticmap?center=%s,%s&zoom=5&size=200x200&sensor=false&maptype=terrain&markers=icon:http://earthquake.usgs.gov/research/software/shakecast/icons/epicenter.png|%s,%s" % (event.lat, event.lon ,event.lat, event.lon))
+            msg_gmap = MIMEImage(gmap.read())
+            msg_gmap.add_header('Content-ID', '<gmap>')
+            msg.attach(msg_gmap)
+            
             logo_str = "%s%s%s%s" % (sc_dir(),
                                      'images',
                                      get_delim(),

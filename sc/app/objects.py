@@ -728,7 +728,7 @@ class NewEventNotBuilder(object):
                     <tr>
                         <td>
                             <div style="width: 80px">
-                                <img style="border-radius:50%%" src="cid:sc_logo"
+                                <img style="border-radius:50%%" src="cid:sc_logo">
                             </div>
                         </td>
                         <td>
@@ -783,7 +783,7 @@ class NewEventNotBuilder(object):
                         </tr>
                         <tr>
                             <td style="border: 2px solid #444444">
-                                <img src="https://maps.googleapis.com/maps/api/staticmap?center=%s,%s&zoom=5&size=200x200&sensor=false&maptype=terrain&markers=icon:http://earthquake.usgs.gov/research/software/shakecast/icons/epicenter.png|%s,%s">
+                                <img src="cid:gmap">
                             </td>
                             <td style="border: 2px solid #444444;padding: 5px;">%s</td>
                             <td style="border: 2px solid #444444;padding: 5px;">%s</td>
@@ -853,7 +853,6 @@ class NewEventNotBuilder(object):
             temp_json['intro']['text'], sc_link,
             temp_json['second_head']['font_color'],
             temp_json['second_head']['border_color'],
-            event.lat, event.lon ,event.lat, event.lon,
             event.event_id,
             event.time,
             event.magnitude,
