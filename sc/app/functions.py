@@ -353,67 +353,60 @@ def make_inspection_prios(facility=Facility(),
 def new_event_notification(event=None,
                            group=Group(),
                            notification=None,
-                           update=False):
+                           scenario=False):
     """
-    Create local products for NEW_EVENT notification and send it
+    Build and send HTML email for a new event or scenario
     
     Args:
-        shakemap (ShakeMap): which ShakeMap the Notification is attached to
-        grid (SM_Grid): create from the ShakeMap
+        event (ShakeMap): which ShakeMap the Notification is attached to
         group (Group): The Group that this Notification is being send to
-        update (bool): True if this is an Update instead of NEW_EVENT
         notification (Notification): The Notification that will be sent
+        scenario (bool): True if the user is running a scenario
         
     Returns:
         None
     """
     
     try:
-        notification.notification_file = '%s%s%s_new_event.html' % ((event
-                                                                    .directory_name),
-                                                                   get_delim(),
-                                                                   group.name)
-        
-        not_file = open(notification.notification_file, 'w')
-        
+        # create HTML for the event email
         not_builder = NewEventNotBuilder()
         not_builder.buildHTML(event)
         
-        #not_file.write('%s \n %s' % (preamble, body))
-        not_file.write('%s' % not_builder.html)
-        not_file.close()
-        notification.status = 'file success'
+        notification.status = 'HTML success'
     except:
-        notification.status = 'file failed'
+        notification.status = 'HTML failed'
     
-    if notification.status != 'file failed':
+    if notification.status != 'HTML failed':
         try:
+            #initiate message
             msg = MIMEMultipart()
             
-            not_file = open(notification.notification_file, 'r')
-            msg_html = MIMEText(not_file.read(), 'html')
-            not_file.close()
+            # attach html
+            msg_html = MIMEText(not_builder.html, 'html')
             msg.attach(msg_html)
             
-            # get map
+            # get and attach map
             gmap = urllib2.urlopen("https://maps.googleapis.com/maps/api/staticmap?center=%s,%s&zoom=5&size=200x200&sensor=false&maptype=terrain&markers=icon:http://earthquake.usgs.gov/research/software/shakecast/icons/epicenter.png|%s,%s" % (event.lat, event.lon ,event.lat, event.lon))
             msg_gmap = MIMEImage(gmap.read())
             msg_gmap.add_header('Content-ID', '<gmap>')
+            msg_gmap.add_header('Content-Disposition', 'inline')
             msg.attach(msg_gmap)
             
+            # find the ShakeCast logo
             logo_str = "%s%s%s%s" % (sc_dir(),
                                      'images',
                                      get_delim(),
                                      'sc_logo.png')
             
+            # open logo and attach it to the message
             logo_file = open(logo_str, 'rb')
             msg_image = MIMEImage(logo_file.read())
             logo_file.close()
             msg_image.add_header('Content-ID', '<sc_logo>')
-            
+            msg_image.add_header('Content-Disposition', 'inline')
             msg.attach(msg_image)
-            mailer = Mailer()
             
+            mailer = Mailer()
             me = mailer.me
             you = [user.email for user in group.users]
             

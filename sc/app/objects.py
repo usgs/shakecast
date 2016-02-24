@@ -764,7 +764,7 @@ class NewEventNotBuilder(object):
 
         <tr style="text-align:center">
             <td>
-                <h2 style="color:%s;border-bottom:2px solid %s;width:250px;margin-left:auto;margin-right:auto;font-family:Arial">Earthquake Details</h2>
+                <h2 style="color:%s;border-bottom:2px solid %s;width:200px;margin-left:auto;margin-right:auto;font-family:Arial">Earthquake Details</h2>
             </td>
         </tr>
         <tr>
