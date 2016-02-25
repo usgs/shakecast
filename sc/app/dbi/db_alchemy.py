@@ -140,12 +140,22 @@ class Facility(Base):
                      'update': '',
                      'alert_level': '',
                      'weight': 0,
+                     'MMI': 0,
+                     'PGA': 0,
+                     'PSA03': 0,
+                     'PSA10': 0,
+                     'PSA30': 0,
+                     'PGV': 0,
                      'notifications': [''] * len(notifications)}
         
         if shaking_level is None:
             fac_shake['alert_level'] = None
         
         else:
+            # add shaking levels to fac_shake:
+            for metric in shaking_point.keys():
+                fac_shake[metric] = shaking_point[metric]
+            
             # if shaking exists for this facility for this shakemap
             # assign it's shakecast_id, otherwise it will get assigned
             # later

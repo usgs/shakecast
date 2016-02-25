@@ -920,7 +920,7 @@ class Notification_Builder(object):
                         <th style="border: 2px solid #444444;padding: 5px;">Facility</th>
                         <th style="border: 2px solid #444444;padding: 5px;">Inspection Priority</th>
                         <th style="border: 2px solid #444444;padding: 5px;">Metric</th>
-                        <th style="border: 2px solid #444444;padding: 5px;">Value</th>
+                        <th style="border: 2px solid #444444;padding: 5px;">Shaking Value</th>
                     </tr>
                     {11}
                 </table>
@@ -1019,7 +1019,13 @@ class Notification_Builder(object):
                        Facility.__table__.c.name,
                        Facility.__table__.c.facility_type,
                        Facility_Shaking.__table__.c.alert_level,
-                       Facility_Shaking.__table__.c.metric
+                       Facility_Shaking.__table__.c.metric,
+                       Facility_Shaking.__table__.c.mmi,
+                       Facility_Shaking.__table__.c.pga,
+                       Facility_Shaking.__table__.c.pgv,
+                       Facility_Shaking.__table__.c.psa03,
+                       Facility_Shaking.__table__.c.psa10,
+                       Facility_Shaking.__table__.c.psa30,
                        ]).where(and_(Facility_Shaking.__table__.c.facility_id ==
                                         Facility.__table__.c.shakecast_id,
                                         Facility_Shaking.__table__.c.shakemap_id ==
@@ -1031,7 +1037,7 @@ class Notification_Builder(object):
                         <td style="border: 2px solid #444444;padding: 5px;">{0}</td>
                         <td style="border: 2px solid #444444;padding: 5px;background-color:{1}">{2}</td>
                         <td style="border: 2px solid #444444;padding: 5px;">{3}</td>
-                        <td style="border: 2px solid #444444;padding: 5px;">{3}</td>
+                        <td style="border: 2px solid #444444;padding: 5px;">{4}</td>
                     </tr>
 """
         fac_str = ''
@@ -1061,8 +1067,16 @@ class Notification_Builder(object):
                 color = '#dddddd'
                 grey_count += 1
                 impact = 'None'
-                
-            fac_str += fac_row.format(row[1], color, impact, row[4], row[4])
+            
+            shaking_dict = {'MMI': row[5],
+                            'PGA': row[6],
+                            'PGV': row[7],
+                            'PSA03': row[8],
+                            'PSA10': row[9],
+                            'PSA30': row[10]}
+            shaking = shaking_dict[row[4]]
+            
+            fac_str += fac_row.format(row[1], color, impact, row[4], row[5])
             
         result.close()
         

@@ -275,6 +275,12 @@ def process_shakemaps(shakemaps=[], session=None):
                                 facility_id=bindparam('facility_id'),
                                 shakemap_id=bindparam('shakemap_id'),
                                 metric=bindparam('metric'),
+                                mmi=bindparam('MMI'),
+                                pga=bindparam('PGA'),
+                                psa03=bindparam('PSA03'),
+                                psa10=bindparam('PSA10'),
+                                psa30=bindparam('PSA30'),
+                                pgv=bindparam('PGV'),
                                 shakecast_id=bindparam('_shakecast_id')
                                 ))
             
