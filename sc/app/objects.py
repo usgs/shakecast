@@ -833,15 +833,15 @@ class Notification_Builder(object):
 <html>
 <head>
 </head>
-<body style="background-color:{0};width:700px">
-    <table style="table-layout:fixed;width:100%;font-family:Arial">
+<body style="background-color:{0};width:700px;font-family:Arial">
+    <table style="table-layout:fixed;width:100%%">
         <tr>
             <td>
                 <table>
                     <tr>
                         <td>
                             <div style="width: 80px">
-                                <img src="cid:sc_logo" style="border-radius: 50%">
+                                <img style="border-radius:50%" src="cid:sc_logo">
                             </div>
                         </td>
                         <td>
@@ -853,10 +853,10 @@ class Notification_Builder(object):
         </tr>
         <tr>
             <td>
-                <table style="width:95%;margin-left:2.5%;">
+                <table style="width:95%;margin-left:2.5%">
                     <tr>
                         <td>
-                            <h2 style="font-family:Arial;color:{1};background-color:{2};padding:10px;margin-top:20px;margin-bottom:5px;width:100%">Inspection Notification</h2>
+                            <h2 style="font-family:Arial;color:{1};background-color:{2};padding:10px;margin-top:20px;margin-bottom:5px">Inspection Notification</h2>
                         </td>
                     </tr>
                 </table>
@@ -916,12 +916,7 @@ class Notification_Builder(object):
         <tr>
             <td>
                 <table style="text-align:center;border: 2px solid #444444;border-collapse:collapse;padding:5px;margin-left:5%">
-                    <tr>
-                        <th style="border: 2px solid #444444;padding: 5px;">Facility</th>
-                        <th style="border: 2px solid #444444;padding: 5px;">Inspection Priority</th>
-                        <th style="border: 2px solid #444444;padding: 5px;">Metric</th>
-                        <th style="border: 2px solid #444444;padding: 5px;">Shaking Value</th>
-                    </tr>
+                    {20}
                     {11}
                 </table>
             </td>
@@ -1032,14 +1027,41 @@ class Notification_Builder(object):
                                         shakemap.shakecast_id))
                          .order_by(desc('weight')))
         result = engine.execute(stmt)
-        fac_row = """        
+        
+        
+        # load header from template and create html
+        head_lst = temp_json['table_head']
+        table_header = """
                     <tr>
-                        <td style="border: 2px solid #444444;padding: 5px;">{0}</td>
-                        <td style="border: 2px solid #444444;padding: 5px;background-color:{1}">{2}</td>
-                        <td style="border: 2px solid #444444;padding: 5px;">{3}</td>
-                        <td style="border: 2px solid #444444;padding: 5px;">{4}</td>
-                    </tr>
-"""
+                        """
+        if 'name' in head_lst:
+            table_header += '<th style="border: 2px solid #444444;padding: 5px;">Facility</th>'
+        if 'facility_id' in head_lst:
+            table_header += '<th style="border: 2px solid #444444;padding: 5px;">ID</th>'
+        if 'facility_type' in head_lst:
+            table_header += '<th style="border: 2px solid #444444;padding: 5px;">Facility_Type</th>'
+        if 'inspection_priority' in head_lst:
+            table_header += '<th style="border: 2px solid #444444;padding: 5px;">Inspection Priority</th>'
+        if 'MMI' in head_lst:
+            table_header += '<th style="border: 2px solid #444444;padding: 5px;">MMI</th>'
+        if 'PGA' in head_lst:
+            table_header += '<th style="border: 2px solid #444444;padding: 5px;">PGA</th>'
+        if 'PGV' in head_lst:
+            table_header += '<th style="border: 2px solid #444444;padding: 5px;">PGV</th>'
+        if 'PSA03' in head_lst:
+            table_header += '<th style="border: 2px solid #444444;padding: 5px;">PSA03</th>'
+        if 'PSA10' in head_lst:
+            table_header += '<th style="border: 2px solid #444444;padding: 5px;">PSA10</th>'
+        if 'PSA30' in head_lst:
+            table_header += '<th style="border: 2px solid #444444;padding: 5px;">PSA30</th>'
+        if 'metric' in head_lst:
+            table_header += '<th style="border: 2px solid #444444;padding: 5px;">Metric</th>'
+        if 'shaking_value' in head_lst:
+            table_header += '<th style="border: 2px solid #444444;padding: 5px;">Shaking Value</th>'
+
+        table_header += """
+                    </tr>"""
+
         fac_str = ''
         grey_count = 0
         green_count = 0
@@ -1067,6 +1089,37 @@ class Notification_Builder(object):
                 color = '#dddddd'
                 grey_count += 1
                 impact = 'None'
+                
+            fac_row = """
+                    <tr>
+                        """
+            if 'name' in head_lst:
+                fac_row += '<td style="border: 2px solid #444444;padding: 5px;">{1}</td>'
+            if 'facility_id' in head_lst:
+                fac_row += '<td style="border: 2px solid #444444;padding: 5px;">{0}</td>'
+            if 'facility_type' in head_lst:
+                fac_row += '<td style="border: 2px solid #444444;padding: 5px;">{2}</td>'
+            if 'inspection_priority' in head_lst:
+                fac_row += '<td style="border: 2px solid #444444;padding: 5px;background-color:{11}">{12}</td>'
+            if 'MMI' in head_lst:
+                fac_row += '<td style="border: 2px solid #444444;padding: 5px;">{5}</td>'
+            if 'PGA' in head_lst:
+                fac_row += '<td style="border: 2px solid #444444;padding: 5px;">{6}</td>'
+            if 'PGV' in head_lst:
+                fac_row += '<td style="border: 2px solid #444444;padding: 5px;">{7}</td>'
+            if 'PSA03' in head_lst:
+                fac_row += '<td style="border: 2px solid #444444;padding: 5px;">{8}</td>'
+            if 'PSA10' in head_lst:
+                fac_row += '<td style="border: 2px solid #444444;padding: 5px;">{9}</td>'
+            if 'PSA30' in head_lst:
+                fac_row += '<td style="border: 2px solid #444444;padding: 5px;">{10}</td>'
+            if 'metric' in head_lst:
+                fac_row += '<td style="border: 2px solid #444444;padding: 5px;">{4}</td>'
+            if 'shaking_value' in head_lst:
+                fac_row += '<td style="border: 2px solid #444444;padding: 5px;">{13}</td>'
+
+            fac_row += """
+                        </tr>"""
             
             shaking_dict = {'MMI': row[5],
                             'PGA': row[6],
@@ -1076,7 +1129,10 @@ class Notification_Builder(object):
                             'PSA30': row[10]}
             shaking = shaking_dict[row[4]]
             
-            fac_str += fac_row.format(row[1], color, impact, row[4], row[5])
+            fac_str += fac_row.format(row[0], row[1], row[2],
+                                        row[3], row[4], row[5],
+                                        row[6], row[7], row[8], row[9],
+                                        row[10], color, impact, shaking)
             
         result.close()
         
@@ -1100,7 +1156,8 @@ class Notification_Builder(object):
             '',
             sc.server_name,
             '',
-            temp_json['admin_email']
+            temp_json['admin_email'],
+            table_header
         )
     
     def get_temp_dir(self):
