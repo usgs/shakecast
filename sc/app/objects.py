@@ -833,7 +833,7 @@ class Notification_Builder(object):
 <html>
 <head>
 </head>
-<body style="background-color:{0};width:95%">
+<body style="background-color:{0};width:700px">
     <table style="table-layout:fixed;width:100%;font-family:Arial">
         <tr>
             <td>
