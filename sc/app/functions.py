@@ -369,8 +369,8 @@ def new_event_notification(event=None,
     
     try:
         # create HTML for the event email
-        not_builder = NewEventNotBuilder()
-        not_builder.buildHTML(event)
+        not_builder = Notification_Builder()
+        not_builder.buildNewEventHTML(event)
         
         notification.status = 'HTML success'
     except:
@@ -432,75 +432,12 @@ def inspection_notification(notification=Notification(),
     Returns:
         None
     '''
-    
     shakemap = notification.shakemap
     group = notification.group
-    
-    # save the file location for this notification
-    notification.notification_file = ('%s%s%s_Inspection.txt' %
-                                        (shakemap.directory_name,
-                                         get_delim(),
-                                         group.name))
-
     try:
-        # open the notification file and write the preamble and
-        # heading information
-        not_file = open(notification.notification_file, 'w')
-        preamble = '''
-ShakeCast has processed your facilities. You are recieving this notification
-because you are a part of the %s notification group
-                   ''' % group.name
-        body = '''
-EQ: %s
-Version: %s
-Magnitude: %s
-Depth: %s KM
-Description: %s
-        
-               ''' % (shakemap.shakemap_id,
-                      shakemap.shakemap_version,
-                      grid.magnitude,
-                      grid.depth,
-                      grid.description)
-        
-        fac_header = '%s%s%s%s%s%s%s' % ('Facility_ID',
-                                        (' ' * (15 - len('Facility_ID'))),
-                                        'Facility_Name',
-                                        (' ' * (30 - len('Facility_Name'))),
-                                        'Facility_Type',
-                                        (' ' * (20 - len('Facility_Type'))),
-                                        'Alert_Level')
-        
-        # get necessary shaking info from database
-        stmt = (select([Facility.__table__.c.facility_id,
-                       Facility.__table__.c.name,
-                       Facility.__table__.c.facility_type,
-                       Facility_Shaking.__table__.c.alert_level
-                       ]).where(and_(Facility_Shaking.__table__.c.facility_id ==
-                                        Facility.__table__.c.shakecast_id,
-                                        Facility_Shaking.__table__.c.shakemap_id ==
-                                        shakemap.shakecast_id))
-                         .order_by(desc('weight')))
-        result = engine.execute(stmt)
-        
-        # create a string that includes the shaking information queried
-        # above
-        fac_str = '\n'.join(['%s%s%s%s%s%s%s' % (row[0],
-                                        ' ' * (15 - len(str(row[0]))),
-                                        row[1],
-                                        ' ' * (30 - len(str(row[1]))),
-                                        row[2],
-                                        ' ' * (20 - len(str(row[2]))),
-                                        row[3]
-                                       ) for row in result])
-        
-        # add shaking information to the header string to create the
-        # body of the notification
-        body += '%s\n%s' % (fac_header, fac_str)
-        # write both the preamble and body to the file
-        not_file.write('%s \n %s' % (preamble, body))
-        
-        not_file.close()
+        not_builder = Notification_Builder()
+        not_builder.buildInspHTML(shakemap)
+    
         notification.status = 'file success'
     except:
         notification.status = 'file failed'
@@ -508,22 +445,48 @@ Description: %s
     # if the file was created successfully, try sending it
     if notification.status != 'file failed':
         try:
-            # open notification file and write its contents into MIME
-            # text for the email server
-            not_file = open(notification.notification_file, 'r')
-            msg = MIMEText(not_file.read())
-            not_file.close()
+            #initiate message
+            msg = MIMEMultipart()
             
-            # create a mailer object and determine who is sending and
-            # receiving these notifications
+            # attach html
+            msg_html = MIMEText(not_builder.html, 'html')
+            msg.attach(msg_html)
+            
+            # get and attach shakemap
+            shakemap_file = '{0}{1}{2}'.format(shakemap.directory_name,
+                                                        get_delim(),
+                                                        'intensity.jpg')
+            shakemap_image = open(shakemap_file, 'r')
+            msg_shakemap = MIMEImage(shakemap_image.read())
+            shakemap_image.close()
+            msg_shakemap.add_header('Content-ID', '<shakemap>')
+            msg_shakemap.add_header('Content-Disposition', 'inline')
+            msg.attach(msg_shakemap)
+            
+            # find the ShakeCast logo
+            logo_str = "%s%s%s%s" % (sc_dir(),
+                                     'images',
+                                     get_delim(),
+                                     'sc_logo.png')
+            
+            # open logo and attach it to the message
+            logo_file = open(logo_str, 'rb')
+            msg_image = MIMEImage(logo_file.read())
+            logo_file.close()
+            msg_image.add_header('Content-ID', '<sc_logo>')
+            msg_image.add_header('Content-Disposition', 'inline')
+            msg.attach(msg_image)
+            
             mailer = Mailer()
             me = mailer.me
-            you = [user.email for user in notification.group.users]
-            msg['Subject'] = 'ShakeCast -- Inspection'
+            you = [user.email for user in group.users]
+            
+            msg['Subject'] = '{0} {1}'.format('Inspection - ', shakemap.event.title)
             msg['To'] = ', '.join(you)
             msg['From'] = me
             
             mailer.send(msg=msg, you=you)
+            
             notification.status = 'sent'
         except:
             notification.status = 'send failed'

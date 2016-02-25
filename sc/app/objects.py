@@ -703,7 +703,7 @@ class SC(object):
         return directory
         
 
-class NewEventNotBuilder(object):
+class Notification_Builder(object):
     """
     Holds HTML shell for new events as well as notification configuration
     settings for a new event message
@@ -715,7 +715,7 @@ class NewEventNotBuilder(object):
     
     def __init__(self):
         self.html = ''
-        self.html_shell = """
+        self.html_shell_ne = """
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
@@ -828,8 +828,139 @@ class NewEventNotBuilder(object):
 </body>
 </html>
 """
+        self.html_shell_insp = """
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+</head>
+<body style="background-color:{0};width:95%">
+    <table style="table-layout:fixed;width:100%;font-family:Arial">
+        <tr>
+            <td>
+                <table>
+                    <tr>
+                        <td>
+                            <div style="width: 80px">
+                                <img src="cid:sc_logo" style="border-radius: 50%">
+                            </div>
+                        </td>
+                        <td>
+                            <h1 style="color:#444444;font-size:50px;font-family:Arial;margin:0px">ShakeCast Alert</h1>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <table style="width:95%;margin-left:2.5%;">
+                    <tr>
+                        <td>
+                            <h2 style="font-family:Arial;color:{1};background-color:{2};padding:10px;margin-top:20px;margin-bottom:5px;width:100%">Inspection Notification</h2>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <table style="width:90%;margin-left:5%;font-family:Arial;color:#444444;font-weight:bold">
+                    <tr>
+                        <td>
+                            <h2 style="background-color:#ffffff;margin-top:20px;margin-bottom:0px">Magnitude {3}</h2>
+                            <h2 style="background-color:#ffffff;margin-top:5px;margin-bottom:5px;border-bottom:2px solid #444444">{4}</h2>
+                            <table>
+                                <tr>
+                                    <td>Number of Facilities Evaluated</td>
+                                    <td>: {5}</td>
+                                </tr>
+                                <tr>
+                                    <td style="color:red">High Impact</td>
+                                    <td>: {6}</td>
+                                </tr>
+                                <tr>
+                                    <td style="color:orange">Moderate-High Impact</td>
+                                    <td>: {7}</td>
+                                </tr>
+                                <tr>
+                                    <td style="color:gold">Moderate Impact</td>
+                                    <td>: {8}</td>
+                                </tr>
+                                <tr>
+                                    <td style="color:green">Low Impact</td>
+                                    <td>: {9}</td>
+                                </tr>
+                                <tr>
+                                    <td style="color:grey">No Impact</td>
+                                    <td>: {10}</td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+        
+        <tr>
+            <td style="text-align:center;padding-top:20px">
+                <img src="cid:shakemap">
+            </td>
+        </tr>
+        
+        <tr>
+            <td>
+                <h2 style="color:#444444;margin-top:20px;margin-bottom:15px;border-bottom:2px solid #444444;margin-left:2.5%;width:90%">Impact Estimates:</h2>
+            </td>
+        </tr>
+        
+        <tr>
+            <td>
+                <table style="text-align:center;border: 2px solid #444444;border-collapse:collapse;padding:5px;margin-left:5%">
+                    <tr>
+                        <th style="border: 2px solid #444444;padding: 5px;">Facility</th>
+                        <th style="border: 2px solid #444444;padding: 5px;">Inspection Priority</th>
+                        <th style="border: 2px solid #444444;padding: 5px;">Metric</th>
+                        <th style="border: 2px solid #444444;padding: 5px;">Value</th>
+                    </tr>
+                    {11}
+                </table>
+            </td>
+        </tr>
+        
+        <tr>
+            <td>
+                <h3 style="color:{12};font-family:Arial;margin-top:50px;margin-bottom:0px">ShakeCast Server:</h3>
+            </td>
+        </tr>
+        
+        <tr>
+            <td>
+                <table style="color:{13};margin-left:10px">
+                    <tr>
+                        <td>
+                            <p style="margin-bottom:2px;margin-top:0px;font-size: small;font-family: Arial;">ShakeCast Web: <a href="{14}" target="_blank">{14}</a></p>
+                            <p style="margin-bottom:2px;margin-top:0px;font-size: small;font-family: Arial;">Software: {15}</p>
+                            <p style="margin-bottom:2px;margin-top:0px;font-size: small;font-family: Arial;">Notification Generated: {16}</p>
+                            <p style="margin-bottom:2px;margin-top:0px;font-size: small;font-family: Arial;">Reported by: {17}</p>
+                            <p style="margin-bottom:2px;margin-top:0px;font-size: small;font-family: Arial;">Template Type: {18}</p>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <p style="font-size: medium;font-family: Arial;">Questions about ShakeCast?  Contact Administrator at <a href="mailto:{19}?subject=ShakeCast+V3+Inquiry" target="_blank">{19}</a>.</p> 
+            </td>
+        </tr>
 
-    def buildHTML(self,event):
+    </table>
+
+</body>
+</html>
+"""
+
+    def buildNewEventHTML(self, event):
         """
         Builds the HTML notification using the html_shell.
         
@@ -837,14 +968,14 @@ class NewEventNotBuilder(object):
             event (Event): Event object for the notification being created
         """
         sc = SC()
-        temp_dir = self.get_temp_dir()
+        temp_dir = self.get_temp_dir()  + 'new_event' + get_delim()
         temp_file = open(temp_dir + sc.default_template_new_event, 'r')
         temp_str = temp_file.read()
         temp_json = json.loads(temp_str)
 
         sc_link = temp_json['intro']['sc_link'] % sc.server_dns
         
-        self.html = self.html_shell % (
+        self.html = self.html_shell_ne % (
             temp_json['body_color'],
             temp_json['section_head']['font_color'],
             temp_json['section_head']['back_color'],
@@ -868,7 +999,95 @@ class NewEventNotBuilder(object):
             '',
             temp_json['admin_email'], temp_json['admin_email']
         )
-
+        
+    def buildInspHTML(self, shakemap):
+        """
+        Builds the HTML notification using the html_shell_insp.
+        
+        Args:
+            shakemap (ShakeMap): ShakeMap object for the notification being created
+        """
+        
+        sc = SC()
+        temp_dir = self.get_temp_dir()  + 'inspection' + get_delim()
+        temp_file = open(temp_dir + sc.default_template_inspection, 'r')
+        temp_str = temp_file.read()
+        temp_json = json.loads(temp_str)
+        
+        # make facility string
+        stmt = (select([Facility.__table__.c.facility_id,
+                       Facility.__table__.c.name,
+                       Facility.__table__.c.facility_type,
+                       Facility_Shaking.__table__.c.alert_level,
+                       Facility_Shaking.__table__.c.metric
+                       ]).where(and_(Facility_Shaking.__table__.c.facility_id ==
+                                        Facility.__table__.c.shakecast_id,
+                                        Facility_Shaking.__table__.c.shakemap_id ==
+                                        shakemap.shakecast_id))
+                         .order_by(desc('weight')))
+        result = engine.execute(stmt)
+        fac_row = """        
+                    <tr>
+                        <td style="border: 2px solid #444444;padding: 5px;">{0}</td>
+                        <td style="border: 2px solid #444444;padding: 5px;background-color:{1}">{2}</td>
+                        <td style="border: 2px solid #444444;padding: 5px;">{3}</td>
+                        <td style="border: 2px solid #444444;padding: 5px;">{3}</td>
+                    </tr>
+"""
+        fac_str = ''
+        grey_count = 0
+        green_count = 0
+        yellow_count = 0
+        orange_count = 0
+        red_count = 0
+        for row in result:
+            if row[3] == 'green':
+                color = '#44dd66'
+                green_count += 1
+                impact = 'Low'
+            elif row[3] == 'yellow':
+                color = 'yellow'
+                impact = 'Moderate'
+                yellow_count += 1
+            elif row[3] == 'orange':
+                color = 'orange'
+                impact = 'Moderate - High'
+                orange_count += 1
+            elif row[3] == 'red':
+                color = '#ff4444'
+                red_count += 1
+                impact = 'High'
+            else:
+                color = '#dddddd'
+                grey_count += 1
+                impact = 'None'
+                
+            fac_str += fac_row.format(row[1], color, impact, row[4], row[4])
+            
+        result.close()
+        
+        self.html = self.html_shell_insp.format(
+            temp_json['body_color'],
+            temp_json['section_head']['font_color'],
+            temp_json['section_head']['back_color'],
+            shakemap.event.magnitude,
+            shakemap.event.place,
+            str(grey_count + green_count + yellow_count + orange_count + red_count),
+            red_count,
+            orange_count,
+            yellow_count,
+            green_count,
+            grey_count,
+            fac_str,
+            temp_json['footer']['header_color'],
+            temp_json['footer']['font_color'],
+            sc.server_dns,
+            sc.software_version,
+            '',
+            sc.server_name,
+            '',
+            temp_json['admin_email']
+        )
     
     def get_temp_dir(self):
         """
@@ -883,6 +1102,6 @@ class NewEventNotBuilder(object):
         delim = get_delim()
         path = path.split(delim)
         path[-1] = 'templates'
-        directory = delim.join(path) + delim + 'new_event' + delim
+        directory = delim.join(path) + delim
         
         return directory

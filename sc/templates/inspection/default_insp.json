@@ -1,0 +1,19 @@
+{
+    "body_color": "#ffffff",
+    "admin_email": "sc.admin@gmail.com",
+    "section_head": {
+        "back_color": "#444444",
+        "font_color": "#ffffff"
+    },
+    "second_head": {
+        "border_color": "#444444",
+        "font_color": "#444444"
+    },
+    "footer": {
+        "header_color": "#444444",
+        "font_color": "#444444"
+    },
+    "table": {
+        "border_color": "#444444"
+    }
+}
