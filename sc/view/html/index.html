@@ -46,11 +46,14 @@
     <body>
         <div class="image_header">
             <img src="{{ url_for('static', filename='sc_logo.png') }}" class="rounded_sc">
-        <h1>ShakeCast</h1>
+            <h1>ShakeCast</h1>
+        </div>
+        
         <div class="eqs">
             {% for eq in eqs %}
-<p class="eq">{{ eq }}</p>{% endfor %}
+            <p class="eq">{{ eq.shakemap_id }} -- {{ eq.generation_timestamp }}</p>
+            {% endfor %}
         </div>
-    </div>
+        
     </body>
 </html>

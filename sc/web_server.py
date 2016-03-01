@@ -11,8 +11,8 @@ def index():
     session = Session()
     
     eqs = session.query(ShakeMap).all()
-    eq_lst = [str(eq) for eq in eqs]
-    return render_template('index.html', eqs=eq_lst)
+    #eq_lst = [str(eq) for eq in eqs]
+    return render_template('index.html', eqs=eqs)
 
 @app.route('/dbtest')
 def db_test():
@@ -26,4 +26,4 @@ def db_test():
 
     return return_str
 if __name__ == '__main__':
-    app.run(debug=True, host='0.0.0.0')
+    app.run(host='0.0.0.0', port=80)
