@@ -50,8 +50,8 @@
         </div>
         
         <div class="eqs">
-            {% for eq in eqs %}
-            <p class="eq">{{ eq.shakemap_id }} -- {{ eq.generation_timestamp }}</p>
+            {% for eq,time in eqs_times %}
+            <p class="eq">{{ eq.event_id }} -- {{ time }}</p>
             {% endfor %}
         </div>
         
