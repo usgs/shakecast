@@ -372,6 +372,7 @@ def new_event_notification(event=None,
     Returns:
         None
     """
+    url_opener = URLOpener()
     
     try:
         # create HTML for the event email
@@ -392,8 +393,8 @@ def new_event_notification(event=None,
             msg.attach(msg_html)
             
             # get and attach map
-            gmap = urllib2.urlopen("https://maps.googleapis.com/maps/api/staticmap?center=%s,%s&zoom=5&size=200x200&sensor=false&maptype=terrain&markers=icon:http://earthquake.usgs.gov/research/software/shakecast/icons/epicenter.png|%s,%s" % (event.lat, event.lon ,event.lat, event.lon))
-            msg_gmap = MIMEImage(gmap.read())
+            gmap = url_opener.open("https://maps.googleapis.com/maps/api/staticmap?center=%s,%s&zoom=5&size=200x200&sensor=false&maptype=terrain&markers=icon:http://earthquake.usgs.gov/research/software/shakecast/icons/epicenter.png|%s,%s" % (event.lat, event.lon ,event.lat, event.lon))
+            msg_gmap = MIMEImage(gmap)
             msg_gmap.add_header('Content-ID', '<gmap>')
             msg_gmap.add_header('Content-Disposition', 'inline')
             msg.attach(msg_gmap)

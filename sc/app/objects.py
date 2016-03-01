@@ -13,6 +13,9 @@ import smtplib
 from functions_util import *
 from dbi.db_alchemy import *
 
+sys.path += [sc_dir() + 'modules']
+import socks
+
 class Product_Grabber(object):
     
     """
@@ -62,14 +65,14 @@ class Product_Grabber(object):
         """
         
         try:
-            json_str = urllib2.urlopen(self.json_feed_url, timeout=60)
+            url_opener = URLOpener()
+            json_str = url_opener.open(self.json_feed_url)
         except:
             self.log += 'Unable to access JSON -- check internet connection\n'
             self.log += 'Error: %s' % sys.exc_info()[1]
             return
         
-        self.json_feed = json.loads(json_str.read())
-        json_str.close()
+        self.json_feed = json.loads(json_str)
         
         #self.earthquakes = self.json_feed['features']
         
@@ -164,6 +167,7 @@ class Product_Grabber(object):
         """
         session = Session()
         sc = SC()
+        url_opener = URLOpener()
         
         shakemap_str = ''
         new_shakemaps = []
@@ -172,14 +176,13 @@ class Product_Grabber(object):
             
             eq_url = eq['properties']['detail']
             try:
-                eq_str = urllib2.urlopen(eq_url, timeout=60)
+                eq_str = url_opener.open(eq_url)
             except:
                 continue
             try:
-                eq_info = json.loads(eq_str.read())
+                eq_info = json.loads(eq_str)
             except e:
-                eq_info = e.partial       
-            eq_str.close()
+                eq_info = e.partial
             
             # check if the event has a shakemap
             if 'shakemap' not in eq_info['properties']['products'].keys():
@@ -238,14 +241,11 @@ class Product_Grabber(object):
                     
                     # download and allow partial products
                     try:
-                        product.web = urllib2.urlopen(product.url, timeout=60)
+                        product.str_ = url_opener.open(product.url)
                         eq['status'] = 'downloaded'
                     except httplib.IncompleteRead as e:
                         product.web = e.partial
                         eq['status'] = 'incomplete'
-                        
-                    product.str_ = product.web.read()
-                    product.web.close()
                         
                     product.file_ = open('%s%s%s' % (shakemap.directory_name,
                                                       self.delim,
@@ -514,6 +514,9 @@ class SM_Grid(object):
 class Mailer(object):
     """
     Keeps track of information used to send emails
+    
+    If a proxy is setup, Mailer will try to wrap the smtplib module
+    to access the smtp through the proxy
     """
     
     def __init__(self):
@@ -525,6 +528,55 @@ class Mailer(object):
         self.password = sc.smtp_password
         self.server_name = sc.smtp_server
         self.server_port = sc.smtp_port
+        self.log = ''
+        
+        if sc.use_proxy is True:
+            # try to wrap the smtplib library with the socks module
+            if sc.proxy_username and sc.proxy_password:
+                try:
+                    socks.set_default_proxy('socks.PROXY_TYPE_SOCKS4',
+                                            sc.proxy_server,
+                                            sc.proxy_port,
+                                            username=sc.proxy_username,
+                                            password=sc.proxy_password)
+                    socks.wrap_module(smtplib)
+                except:
+                    try:
+                        socks.set_default_proxy('socks.PROXY_TYPE_SOCKS5',
+                                            sc.proxy_server,
+                                            sc.proxy_port,
+                                            username=sc.proxy_username,
+                                            password=sc.proxy_password)
+                        socks.wrap_module(smtplib)
+                    except:
+                        try:
+                            socks.set_default_proxy('socks.PROXY_TYPE_SOCKS4',
+                                            sc.proxy_server,
+                                            sc.proxy_port)
+                            socks.wrap_module(smtplib)
+                        except:
+                            try:
+                                socks.set_default_proxy('socks.PROXY_TYPE_SOCKS5',
+                                                sc.proxy_server,
+                                                sc.proxy_port)
+                                socks.wrap_module(smtplib)
+                            except:
+                                self.log += 'Unable to access SMTP through proxy'
+                                
+            else:
+                try:
+                    socks.set_default_proxy('socks.PROXY_TYPE_SOCKS4',
+                                    sc.proxy_server,
+                                    sc.proxy_port)
+                    socks.wrap_module(smtplib)
+                except:
+                    try:
+                        socks.set_default_proxy('socks.PROXY_TYPE_SOCKS5',
+                                        sc.proxy_server,
+                                        sc.proxy_port)
+                        socks.wrap_module(smtplib)
+                    except:
+                        self.log += 'Unable to access SMTP through proxy'
         
     def send(self, msg=None, you=[], debug=False):
         """
@@ -1176,3 +1228,44 @@ class Notification_Builder(object):
         directory = delim.join(path) + delim
         
         return directory
+    
+    
+class URLOpener(object):
+    """
+    Either uses urllib2 standard opener to open a URL or returns an
+    opener that can run through a proxy
+    """
+    
+    def open(self, url):
+        """
+        Args:
+            url (str): a string url that will be opened and read by urllib2
+            
+        Returns:
+            str: the string read from the webpage
+        """
+        sc = SC()
+        if sc.use_proxy is True:
+            proxy = urllib2.ProxyHandler({
+                        'http': "http://{1}:{2}@{3}:{4}".format(sc.proxy_username,
+                                                                sc.proxy_password,
+                                                                sc.proxy_server,
+                                                                sc.proxy_port),
+                        'https': "http://{1}:{2}@{3}:{4}".format(sc.proxy_username,
+                                                                 sc.proxy_password,
+                                                                 sc.proxy_server,
+                                                                 sc.proxy_port)})
+            auth = urllib2.HTTPBasicAuthHandler()
+            opener = urllib2.build_opener(proxy, auth, urllib2.HTTPHandler)
+            
+            url_obj = opener.open(url, timeout=60)
+            url_read = url_obj.read()
+            url_obj.close()
+            return url_read
+
+        else:
+            url_obj = urllib2.urlopen(url, timeout=60)
+            url_read = url_obj.read()
+            url_obj.close()
+            return url_read
+
