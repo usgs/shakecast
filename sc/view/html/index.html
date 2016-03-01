@@ -1,0 +1,59 @@
+<html>
+    <head>
+        <style>
+        .image_header {
+            height: 72px;
+            background-color: #ffffff;
+            margin-left: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .image_header h1 {
+            color: #444444;
+            display: inline-block;
+            font-size: 55px;
+            position: relative;
+            line-height: 30px;
+            padding-top: 10px;
+            margin-left: 10px;
+            margin-top: 0px;
+            margin-bottom: 0px;    
+            float: left;
+            top: 50%;
+            transform: translateY(-50%);
+            font-family: Arial
+        }
+        
+        .rounded_sc {
+            border-radius: 50%;
+            display: inline-block;
+            position: relative;
+            float: left;
+        }
+        
+        .eqs {
+            display: block;
+            position: relative;
+            top: 50px;
+        }
+        
+        .eq {
+            display: block;
+            position: relative;
+        }
+        </style>
+    </head>
+    <body>
+        <div class="image_header">
+            <img src="{{ url_for('static', filename='sc_logo.png') }}" class="rounded_sc">
+            <h1>ShakeCast</h1>
+        </div>
+        
+        <div class="eqs">
+            {% for eq in eqs %}
+            <p class="eq">{{ eq.shakemap_id }} -- {{ eq.generation_timestamp }}</p>
+            {% endfor %}
+        </div>
+        
+    </body>
+</html>
