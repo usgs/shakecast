@@ -781,17 +781,7 @@ class Notification_Builder(object):
                             <th style="border: 2px solid #444444;padding: 5px;">Lon</th>
                             <th style="border: 2px solid #444444;padding: 5px;">Location</th>
                         </tr>
-                        <tr>
-                            <td style="border: 2px solid #444444">
-                                <img src="cid:gmap">
-                            </td>
-                            <td style="border: 2px solid #444444;padding: 5px;">%s</td>
-                            <td style="border: 2px solid #444444;padding: 5px;">%s</td>
-                            <td style="border: 2px solid #444444;padding: 5px;">%s</td>
-                            <td style="border: 2px solid #444444;padding: 5px;">%s</td>
-                            <td style="border: 2px solid #444444;padding: 5px;">%s</td>
-                            <td style="border: 2px solid #444444;padding: 5px;">%s</td>
-                        </tr>
+                        %s
                         </tbody>
                 </table>
             </td>
@@ -955,12 +945,12 @@ class Notification_Builder(object):
 </html>
 """
 
-    def buildNewEventHTML(self, event):
+    def buildNewEventHTML(self, events=[]):
         """
         Builds the HTML notification using the html_shell.
         
         Args:
-            event (Event): Event object for the notification being created
+            events (list): List of Event objects for the notification being created
         """
         sc = SC()
         temp_dir = self.get_temp_dir()  + 'new_event' + get_delim()
@@ -969,6 +959,28 @@ class Notification_Builder(object):
         temp_json = json.loads(temp_str)
 
         sc_link = temp_json['intro']['sc_link'] % sc.server_dns
+        
+        table_str = ''' <tr>
+                            <td style="border: 2px solid #444444">
+                                <img src="cid:gmap{0}">
+                            </td>
+                            <td style="border: 2px solid #444444;padding: 5px;">{1}</td>
+                            <td style="border: 2px solid #444444;padding: 5px;">{2}</td>
+                            <td style="border: 2px solid #444444;padding: 5px;">{3}</td>
+                            <td style="border: 2px solid #444444;padding: 5px;">{4}</td>
+                            <td style="border: 2px solid #444444;padding: 5px;">{5}</td>
+                            <td style="border: 2px solid #444444;padding: 5px;">{6}</td>
+                        </tr>
+                '''
+        table = ''        
+        for count,event in enumerate(events):
+            table += table_str.format(count,
+                                      event.event_id,
+                                      event.time,
+                                      event.magnitude,
+                                      event.lat,
+                                      event.lon,
+                                      event.place)
         
         self.html = self.html_shell_ne % (
             temp_json['body_color'],
@@ -979,12 +991,7 @@ class Notification_Builder(object):
             temp_json['intro']['text'], sc_link,
             temp_json['second_head']['font_color'],
             temp_json['second_head']['border_color'],
-            event.event_id,
-            event.time,
-            event.magnitude,
-            event.lat,
-            event.lon,
-            event.place,
+            table,
             temp_json['footer']['header_color'],
             temp_json['footer']['font_color'],
             sc.server_dns, sc.server_dns,
