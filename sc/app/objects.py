@@ -10,6 +10,7 @@ import sys
 import time
 import xml.etree.ElementTree as ET
 import smtplib
+import datetime
 from functions_util import *
 from dbi.db_alchemy import *
 
@@ -974,9 +975,13 @@ class Notification_Builder(object):
                 '''
         table = ''        
         for count,event in enumerate(events):
+            timestamp = (datetime.datetime
+                            .fromtimestamp(event.time/1000 + (sc.timezone * 60*60))
+                            .strftime('%Y-%m-%d %H:%M:%S'))
+            
             table += table_str.format(count,
                                       event.event_id,
-                                      event.time,
+                                      timestamp,
                                       event.magnitude,
                                       event.lat,
                                       event.lon,
