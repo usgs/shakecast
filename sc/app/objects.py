@@ -270,7 +270,34 @@ class Product_Grabber(object):
         print shakemap_str
         return new_shakemaps, shakemap_str
 
-
+    def make_heartbeat(self):
+        '''
+        Make an Event row that will only trigger a notification for
+        groups with a heartbeat group_specification
+        '''
+        session = Session()
+        last_hb = session.query(Event).filter(Event.event_id == 'heartbeat').all()
+        if last_hb:
+            if time.time() > (last_hb[-1].time/1000) + 24*60*60:
+                make_hb = True
+        else:
+            make_hb = True
+                
+        if make_hb is True:
+            e = Event()
+            e.time = time.time() * 1000
+            e.event_id = 'heartbeat'
+            e.magnitude = 10
+            e.lat = 1000
+            e.lon = 1000
+            e.title = 'ShakeCast Heartbeat'
+            e.place = 'ShakeCast is running'
+            e.status = 'new'
+            session.add(e)
+            session.commit()
+            
+        Session.remove()
+        
 class Point(object):
     
     '''
@@ -648,6 +675,7 @@ class SC(object):
         self.geo_json_web = conf_json['Services']['geo_json_web']
         self.eq_req_products = conf_json['Services']['eq_req_products']
         
+        
         # Logging
         self.log_rotate = conf_json['Logging']['log_rotate']
         self.log_file = conf_json['Logging']['log_file']
@@ -979,10 +1007,15 @@ class Notification_Builder(object):
                             .fromtimestamp(event.time/1000 + (sc.timezone * 60*60))
                             .strftime('%Y-%m-%d %H:%M:%S'))
             
+            if event.event_id == 'heartbeat':
+                magnitude = 'None'
+            else:
+                magnitude = event.magnitude
+            
             table += table_str.format(count,
                                       event.event_id,
                                       timestamp,
-                                      event.magnitude,
+                                      magnitude,
                                       event.lat,
                                       event.lon,
                                       event.place)

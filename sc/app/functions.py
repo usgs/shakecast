@@ -32,6 +32,7 @@ def geo_json():
         new_shakemaps_log = ''
         new_events, log_message = pg.get_new_events()
         new_shakemaps, log_message = pg.get_new_shakemaps()
+        pg.make_heartbeat()
     except Exception:
         log_message = 'Failed to download ShakeMap products: Check internet connection and firewall settings'
         log_message += '\nError: %s' % sys.exc_info()[1]
@@ -73,26 +74,26 @@ def check_new():
         
     try:
         if new_events:
-            process_new_events(new_events, session=session)
+            process_events(new_events, session=session)
             log_message += '\nProcessed Events: %s' % [str(ne) for ne in new_events]
         if new_shakemaps:
             process_shakemaps(new_shakemaps, session=session)
             log_message += '\nProcessed ShakeMaps: %s' % [str(sm) for sm in new_shakemaps]
         else:
             log_message += '\nNo new shakemaps'
-    
-        Session.remove()
+     
     except:
         log_message += 'failed to process new shakemaps: '
         raise
     
+    Session.remove()
     data = {'status': 'finished',
             'message': 'Check for new earthquakes',
             'log': log_message}
     
     return data
 
-def process_new_events(new_events=[], session=None):
+def process_events(events=[], session=None):
     '''
     Process or reprocess events passed into the function. Will send
     NEW_EVENT and UPDATE emails
@@ -110,14 +111,20 @@ def process_new_events(new_events=[], session=None):
                            and should contain info on error}
     '''
     
-    for new_event in new_events:
-        new_event.status = 'processing_started'
+    for event in events:
+        event.status = 'processing_started'
         
-        groups_affected = (session.query(Group)
-                                    .filter(Group.point_inside(new_event))
-                                    .all())
+        if event.event_id != 'heartbeat':
+            groups_affected = (session.query(Group)
+                                        .filter(Group.point_inside(event))
+                                        .all())
+        else:
+            all_groups = session.query(Group).all()
+            groups_affected = [group for group in all_groups
+                                    if group.has_spec(not_type='heartbeat')]
+            
         if not groups_affected:
-            new_event.status = 'no groups'
+            event.status = 'no groups'
             session.commit()
             continue
         
@@ -126,13 +133,13 @@ def process_new_events(new_events=[], session=None):
             if group.has_spec(not_type='NEW_EVENT'):
                 
                 # check new_event magnitude to make sure the group wants a notificaiton
-                new_event_spec = [s for s in group.specs
+                event_spec = [s for s in group.specs
                                     if s.notification_type == 'NEW_EVENT'][0]
-                if new_event_spec.minimum_magnitude > new_event.magnitude:
+                if event_spec.minimum_magnitude > event.magnitude:
                     continue
                 
                 notification = Notification(group=group,
-                                            event=new_event,
+                                            event=event,
                                             notification_type='NEW_EVENT',
                                             status='created')
                 session.add(notification)
@@ -145,7 +152,7 @@ def process_new_events(new_events=[], session=None):
                     .all())
             
         new_event_notification(notifications=nots)
-        new_event.status = 'processed'
+        event.status = 'processed'
         session.commit() 
     
 def process_shakemaps(shakemaps=[], session=None):
@@ -510,7 +517,7 @@ def inspection_notification(notification=Notification(),
             notification.status = 'sent'
         except:
             notification.status = 'send failed'
-
+            
 #def send_notifications():
 ##    '''
 #    Resend notifications that failed for some reason before
@@ -548,7 +555,6 @@ def inspection_notification(notification=Notification(),
 #    # get files from web
 #    
 #    Local_Session.remove()
-
 
 #######################################################################
 ######################## Import Inventory Data ########################
