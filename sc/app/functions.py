@@ -375,17 +375,14 @@ def new_event_notification(notifications = [],
     Returns:
         None
     """
-<<<<<<< HEAD
     url_opener = URLOpener()
-    
-=======
+
     events = [n.event for n in notifications]
     group = notifications[0].group
     notification = notifications[0]
     for n in notifications[1:]:
         n.status = 'agregated'
         
->>>>>>> master
     try:
         # create HTML for the event email
         not_builder = Notification_Builder()
@@ -403,23 +400,14 @@ def new_event_notification(notifications = [],
             # attach html
             msg_html = MIMEText(not_builder.html, 'html')
             msg.attach(msg_html)
-            
-<<<<<<< HEAD
+
             # get and attach map
-            gmap = url_opener.open("https://maps.googleapis.com/maps/api/staticmap?center=%s,%s&zoom=5&size=200x200&sensor=false&maptype=terrain&markers=icon:http://earthquake.usgs.gov/research/software/shakecast/icons/epicenter.png|%s,%s" % (event.lat, event.lon ,event.lat, event.lon))
-            msg_gmap = MIMEImage(gmap)
-            msg_gmap.add_header('Content-ID', '<gmap>')
-            msg_gmap.add_header('Content-Disposition', 'inline')
-            msg.attach(msg_gmap)
-=======
-            # get and attach maps
             for count,event in enumerate(events):
-                gmap = urllib2.urlopen("https://maps.googleapis.com/maps/api/staticmap?center=%s,%s&zoom=5&size=200x200&sensor=false&maptype=terrain&markers=icon:http://earthquake.usgs.gov/research/software/shakecast/icons/epicenter.png|%s,%s" % (event.lat, event.lon ,event.lat, event.lon))
-                msg_gmap = MIMEImage(gmap.read())
-                msg_gmap.add_header('Content-ID', '<gmap{0}>'.format(count))
+                gmap = url_opener.open("https://maps.googleapis.com/maps/api/staticmap?center=%s,%s&zoom=5&size=200x200&sensor=false&maptype=terrain&markers=icon:http://earthquake.usgs.gov/research/software/shakecast/icons/epicenter.png|%s,%s" % (event.lat, event.lon ,event.lat, event.lon))
+                msg_gmap = MIMEImage(gmap)
+                msg_gmap.add_header('Content-ID', '<gmap>')
                 msg_gmap.add_header('Content-Disposition', 'inline')
                 msg.attach(msg_gmap)
->>>>>>> master
             
             # find the ShakeCast logo
             logo_str = "%s%s%s%s" % (sc_dir(),
