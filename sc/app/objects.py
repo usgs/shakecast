@@ -297,6 +297,7 @@ class Product_Grabber(object):
             session.commit()
             
         Session.remove()
+
         
 class Point(object):
     
@@ -324,6 +325,7 @@ class Point(object):
             return -1
         else:
             return 0
+
 
 class SM_Grid(object):
     
@@ -538,7 +540,7 @@ class SM_Grid(object):
         shaking = sorted(shaking)
         return shaking[-1].info
 
-        
+       
 class Mailer(object):
     """
     Keeps track of information used to send emails
@@ -613,6 +615,9 @@ class SC(object):
     def __init__(self):
         self.timezone = 0
         self.new_eq_mag_cutoff = 0.0
+        self.night_eq_mag_cutoff = 0.0
+        self.nighttime = 0
+        self.morning = 0
         self.check_new_int = 0
         self.use_geo_json = False
         self.geo_json_web = ''
@@ -667,6 +672,9 @@ class SC(object):
         
         # Services
         self.new_eq_mag_cutoff = conf_json['Services']['new_eq_mag_cutoff']
+        self.night_eq_mag_cutoff = conf_json['Services']['night_eq_mag_cutoff']
+        self.nighttime = conf_json['Services']['nighttime']
+        self.morning = conf_json['Services']['morning']
         self.check_new_int = conf_json['Services']['check_new_int']
         self.use_geo_json = conf_json['Services']['use_geo_json']
         self.geo_json_int = conf_json['Services']['geo_json_int']
@@ -1221,3 +1229,40 @@ class Notification_Builder(object):
         directory = delim.join(path) + delim
         
         return directory
+    
+
+class Clock(object):
+    '''
+    Keeps track of utc and application time as well as night and day
+    
+    Attributes:
+        utc_time (str): current utc_time
+        app_time (str): current time for application users
+    '''
+    def __init__(self):
+        self.utc_time = ''
+        self.app_time = ''
+        
+    def nighttime(self):
+        '''
+        Determine if it's nighttime
+        
+        Returns:
+            bool: True if nighttime
+        '''
+        sc = SC()
+        
+        # get app time
+        self.get_time()
+        # compare to night time setting
+        hour = int(self.app_time.strftime('%H'))
+        if ((hour >= sc.nighttime)
+            or hour < sc.morning):
+            return True
+        else:
+            return False
+        
+    def get_time(self):
+        sc = SC()
+        self.utc_time = datetime.datetime.utcfromtimestamp(time.time())
+        self.app_time = self.utc_time + datetime.timedelta(hours=sc.timezone)

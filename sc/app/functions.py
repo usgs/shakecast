@@ -57,7 +57,6 @@ def check_new():
                     'log': message to be added to ShakeCast log
                            and should contain info on error}
     '''
-    
     log_message = ''
     try:
         session = Session()
@@ -93,7 +92,7 @@ def check_new():
     
     return data
 
-def process_events(events=[], session=None):
+def process_events(events=[], session=None, scenario=False):
     '''
     Process or reprocess events passed into the function. Will send
     NEW_EVENT and UPDATE emails
@@ -110,8 +109,15 @@ def process_events(events=[], session=None):
                     'log': message to be added to ShakeCast log
                            and should contain info on error}
     '''
-    
+    clock = Clock()
+    sc = SC()
+    groups_affected = []
     for event in events:
+        # check if we should wait until daytime to process
+        if (clock.nighttime() is True) and (scenario is False):
+            if event.magnitude < sc.night_eq_mag_cutoff:
+                continue
+            
         event.status = 'processing_started'
         
         if event.event_id != 'heartbeat':
@@ -143,19 +149,20 @@ def process_events(events=[], session=None):
                                             notification_type='NEW_EVENT',
                                             status='created')
                 session.add(notification)
-        
-    for group in groups_affected:
-            # get new notifications
-        nots = (session.query(Notification)
-                    .filter(Notification.notification_type == 'NEW_EVENT')
-                    .filter(Notification.status == 'created')
-                    .all())
-            
-        new_event_notification(notifications=nots)
-        event.status = 'processed'
-        session.commit() 
     
-def process_shakemaps(shakemaps=[], session=None):
+    if groups_affected:    
+        for group in groups_affected:
+            # get new notifications
+            nots = (session.query(Notification)
+                        .filter(Notification.notification_type == 'NEW_EVENT')
+                        .filter(Notification.status == 'created')
+                        .all())
+                
+            new_event_notification(notifications=nots)
+            event.status = 'processed'
+            session.commit() 
+    
+def process_shakemaps(shakemaps=[], session=None, scenario=False):
     '''
     Process or reprocess the shakemaps passed into the function
     
@@ -171,10 +178,15 @@ def process_shakemaps(shakemaps=[], session=None):
                     'log': message to be added to ShakeCast log
                            and should contain info on error}
     '''
-    
+    clock = Clock()
+    sc = SC()
     for shakemap in shakemaps:
+        # check if we should wait until daytime to process
+        if (clock.nighttime()) is True and scenario is False:
+            if shakemap.event.magnitude < sc.night_eq_mag_cutoff:
+                continue
+            
         shakemap.status = 'processing_started'
-        
         # open the grid.xml file and find groups affected by event
         grid = create_grid(shakemap)
         groups_affected = (session.query(Group)
@@ -1068,7 +1080,8 @@ def create_grid(shakemap=None):
     grid.load(shakemap.directory_name + get_delim() + 'grid.xml')
     
     return grid
-            
+
+
 #######################################################################
 ########################## Manual Testing #############################
 
