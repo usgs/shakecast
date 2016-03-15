@@ -136,10 +136,15 @@ def process_new_events(new_events=[], session=None):
                                             notification_type='NEW_EVENT',
                                             status='created')
                 session.add(notification)
-                
-                new_event_notification(event=new_event,
-                                       group=group,
-                                       notification=notification)
+        
+    for group in groups_affected:
+            # get new notifications
+        nots = (session.query(Notification)
+                    .filter(Notification.notification_type == 'NEW_EVENT')
+                    .filter(Notification.status == 'created')
+                    .all())
+            
+        new_event_notification(notifications=nots)
         new_event.status = 'processed'
         session.commit() 
     
@@ -356,9 +361,7 @@ def make_inspection_prios(facility=Facility(),
                                             notifications=notifications)
     return fac_shaking
     
-def new_event_notification(event=None,
-                           group=Group(),
-                           notification=None,
+def new_event_notification(notifications = [],
                            scenario=False):
     """
     Build and send HTML email for a new event or scenario
@@ -372,12 +375,21 @@ def new_event_notification(event=None,
     Returns:
         None
     """
+<<<<<<< HEAD
     url_opener = URLOpener()
     
+=======
+    events = [n.event for n in notifications]
+    group = notifications[0].group
+    notification = notifications[0]
+    for n in notifications[1:]:
+        n.status = 'agregated'
+        
+>>>>>>> master
     try:
         # create HTML for the event email
         not_builder = Notification_Builder()
-        not_builder.buildNewEventHTML(event)
+        not_builder.buildNewEventHTML(events)
         
         notification.status = 'HTML success'
     except:
@@ -392,12 +404,22 @@ def new_event_notification(event=None,
             msg_html = MIMEText(not_builder.html, 'html')
             msg.attach(msg_html)
             
+<<<<<<< HEAD
             # get and attach map
             gmap = url_opener.open("https://maps.googleapis.com/maps/api/staticmap?center=%s,%s&zoom=5&size=200x200&sensor=false&maptype=terrain&markers=icon:http://earthquake.usgs.gov/research/software/shakecast/icons/epicenter.png|%s,%s" % (event.lat, event.lon ,event.lat, event.lon))
             msg_gmap = MIMEImage(gmap)
             msg_gmap.add_header('Content-ID', '<gmap>')
             msg_gmap.add_header('Content-Disposition', 'inline')
             msg.attach(msg_gmap)
+=======
+            # get and attach maps
+            for count,event in enumerate(events):
+                gmap = urllib2.urlopen("https://maps.googleapis.com/maps/api/staticmap?center=%s,%s&zoom=5&size=200x200&sensor=false&maptype=terrain&markers=icon:http://earthquake.usgs.gov/research/software/shakecast/icons/epicenter.png|%s,%s" % (event.lat, event.lon ,event.lat, event.lon))
+                msg_gmap = MIMEImage(gmap.read())
+                msg_gmap.add_header('Content-ID', '<gmap{0}>'.format(count))
+                msg_gmap.add_header('Content-Disposition', 'inline')
+                msg.attach(msg_gmap)
+>>>>>>> master
             
             # find the ShakeCast logo
             logo_str = "%s%s%s%s" % (sc_dir(),
@@ -417,7 +439,12 @@ def new_event_notification(event=None,
             me = mailer.me
             you = [user.email for user in group.users]
             
-            msg['Subject'] = event.title
+            if len(events) == 1:
+                msg['Subject'] = event.title
+            else:
+                msg['Subject'] = '{0} New Events -- Magnitudes: {1}'.format(len(events),
+                                                                            [e.magnitude for e in events])
+                
             msg['To'] = ', '.join(you)
             msg['From'] = me
             
