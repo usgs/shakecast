@@ -297,8 +297,76 @@ class Product_Grabber(object):
             session.commit()
             
         Session.remove()
-
         
+    def get_scenario(self, eq_id='', region=''):
+        # make the event directory and append database
+        session = Session()
+        shakemap = ShakeMap()
+        shakemap.shakemap_id = '{0}{1}'.format(region, eq_id)
+        shakemap.shakemap_version = 0
+        
+        # check if we already have the shakemap
+        if shakemap.is_new() is False:
+            shakemap = (
+              session.query(ShakeMap)
+                .filter(ShakeMap.shakemap_id == shakemap.shakemap_id)
+                .filter(ShakeMap.shakemap_version == shakemap.shakemap_version)
+                .first()
+            )
+        
+        # assign relevent information to shakemap
+        shakemap.region = region
+        shakemap.recieve_timestamp = time.time()
+        shakemap.status = 'scenario'
+        
+        # make a directory for the new event
+        shakemap.directory_name = '{0}{1}{2}{1}-{3}'.format(self.data_dir,
+                                                            shakemap.shakemap_id,
+                                                            get_delim(),
+                                                            shakemap.shakemap_version)
+        if not os.path.exists(shakemap.directory_name):
+            os.makedirs(shakemap.directory_name)
+        
+        # download the products
+        shakemap_url = 'http://earthquake.usgs.gov/earthquakes/shakemap/{0}/shake/{1}/download/'.format(region,
+                                                                                                       eq_id)
+        # download products
+        for product_name in self.req_products:
+            product = Product(shakemap = shakemap,
+                              product_type = product_name)
+            
+            try:
+                product.url = '{0}{1}'.format(shakemap_url,
+                                              product_name)
+                
+                # download and allow partial products
+                try:
+                    product.web = urllib2.urlopen(product.url, timeout=60)
+                except httplib.IncompleteRead as e:
+                    product.web = e.partial
+                    
+                product.str_ = product.web.read()
+                product.web.close()
+                    
+                product.file_ = open('{0}{1}{2}'.format(shakemap.directory_name,
+                                                        self.delim,
+                                                        product_name), 'wt')
+                product.file_.write(product.str_)
+                product.file_.close()
+            except:
+                print 'Failed to download: %s %s' % (eq_id, product_name)
+        
+        session.add(shakemap)
+        session.commit()
+        
+        if len(shakemap.products) == len(self.req_products):
+            scenario_ready = True
+        else:
+            scenario_ready = False
+        
+        Session.remove()
+        return scenario_ready
+    
 class Point(object):
     
     '''
