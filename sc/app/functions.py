@@ -117,10 +117,14 @@ def process_events(events=[], session=None, scenario=False):
         if (clock.nighttime() is True) and (scenario is False):
             if event.magnitude < sc.night_eq_mag_cutoff:
                 continue
-            
-        event.status = 'processing_started'
         
-        if event.event_id != 'heartbeat':
+        if scenario is True:
+            in_region = (session.query(Group)
+                                        .filter(Group.point_inside(event))
+                                        .all())
+            groups_affected = [group for group in in_region
+                                    if group.has_spec(not_type='scenario')]
+        elif event.event_id != 'heartbeat':
             groups_affected = (session.query(Group)
                                         .filter(Group.point_inside(event))
                                         .all())
@@ -128,7 +132,8 @@ def process_events(events=[], session=None, scenario=False):
             all_groups = session.query(Group).all()
             groups_affected = [group for group in all_groups
                                     if group.has_spec(not_type='heartbeat')]
-            
+        
+        event.status = 'processing_started'    
         if not groups_affected:
             event.status = 'no groups'
             session.commit()
@@ -189,9 +194,16 @@ def process_shakemaps(shakemaps=[], session=None, scenario=False):
         shakemap.status = 'processing_started'
         # open the grid.xml file and find groups affected by event
         grid = create_grid(shakemap)
-        groups_affected = (session.query(Group)
+        if scenario is True:
+            in_region = (session.query(Group)
                                     .filter(Group.in_grid(grid))
                                     .all())
+            groups_affected = [group for group in in_region
+                                    if group.has_spec(not_type='scenario')]
+        else:
+            groups_affected = (session.query(Group)
+                                        .filter(Group.in_grid(grid))
+                                        .all())
         
         if not groups_affected:
             shakemap.status = 'no groups'
