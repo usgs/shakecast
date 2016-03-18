@@ -530,18 +530,54 @@ def inspection_notification(notification=Notification(),
         except:
             notification.status = 'send failed'
             
-#def send_notifications():
-##    '''
-#    Resend notifications that failed for some reason before
-#    '''
-#    notifications = (session.query(Notification)
-#                        .filter(Notification.status != 'sent')
-#                        .all())
-#    
-#    shakemaps = set([n.shakemap for n in notifications])
-#    process_shakemaps(shakemaps)
+def run_scenario(eq_id='', region=''):
+    '''
+    Processes a shakemap as if it were new
+    '''
     
-
+    session = Session()
+    # Check if we have the eq in db
+    full_id = '{0}{1}'.format(region, eq_id)
+    
+    event = session.query(Event).filter(Event.event_id == full_id).all()
+    shakemap = session.query(ShakeMap).filter(ShakeMap.shakemap_id == full_id).all()
+    
+    processed_event = False
+    processed_shakemap = False
+    if event:
+        try:
+            process_events(events=[event[0]],
+                           session=session,
+                           scenario=True)
+            processed_event = True
+        except:
+            pass
+    if shakemap:
+        try:
+            process_shakemaps(shakemaps=[shakemap[0]],
+                              session=session,
+                              scenario=True)
+            processed_shakemap = True
+        except:
+            pass
+        
+    return processed_event, processed_shakemap
+    
+    
+def create_grid(shakemap=None):
+    """
+    Creates a grid object from a specific ShakeMap
+    
+    Args:
+        shakemap (ShakeMap): A ShakeMap with a grid.xml to laod
+    
+    Returns:
+        SM_Grid: With loaded grid.xml
+    """
+    grid = SM_Grid()
+    grid.load(shakemap.directory_name + get_delim() + 'grid.xml')
+    
+    return grid    
 #######################################################################
 ############################## Scenarios ##############################
 #def run_scenario(eq='', version=0):
@@ -1066,20 +1102,7 @@ def add_users_to_groups(session=None):
                     if group:
                         user.groups.append(group[0])
 
-def create_grid(shakemap=None):
-    """
-    Creates a grid object from a specific ShakeMap
-    
-    Args:
-        shakemap (ShakeMap): A ShakeMap with a grid.xml to laod
-    
-    Returns:
-        SM_Grid: With loaded grid.xml
-    """
-    grid = SM_Grid()
-    grid.load(shakemap.directory_name + get_delim() + 'grid.xml')
-    
-    return grid
+
 
 
 #######################################################################

@@ -11,6 +11,7 @@ import time
 import xml.etree.ElementTree as ET
 import smtplib
 import datetime
+import time
 from functions_util import *
 from dbi.db_alchemy import *
 
@@ -299,6 +300,11 @@ class Product_Grabber(object):
         Session.remove()
         
     def get_scenario(self, eq_id='', region=''):
+        '''
+        Grab a shakemap from the USGS web and stick it in the db so
+        it can be run as a scenario
+        '''
+        
         # make the event directory and append database
         session = Session()
         shakemap = ShakeMap()
@@ -332,9 +338,7 @@ class Product_Grabber(object):
                                                                                                        eq_id)
         # download products
         for product_name in self.req_products:
-            product = Product(shakemap = shakemap,
-                              product_type = product_name)
-            
+            product = Product(product_type = product_name)
             try:
                 product.url = '{0}{1}'.format(shakemap_url,
                                               product_name)
@@ -353,10 +357,45 @@ class Product_Grabber(object):
                                                         product_name), 'wt')
                 product.file_.write(product.str_)
                 product.file_.close()
+                
+                if shakemap.has_products([product_name]):
+                    continue
+                product.shakemap = shakemap
+                
             except:
                 print 'Failed to download: %s %s' % (eq_id, product_name)
         
         session.add(shakemap)
+        session.commit()
+        
+        # create event from shakemap's grid.xml
+        grid = SM_Grid()
+        grid.load(shakemap.directory_name + get_delim() + 'grid.xml')
+  
+        shakemap.lat_min = grid.lat_min
+        shakemap.lat_max = grid.lat_max
+        shakemap.lon_min = grid.lon_min
+        shakemap.lon_max = grid.lon_max
+        
+        event = Event()
+        event.event_id = shakemap.shakemap_id
+        event.all_event_ids = event.event_id
+        
+        if event.is_new() is False:
+            event = session.query(Event).filter(Event.event_id == event.event_id).first()
+        
+        shakemap.event = event
+        event.magnitude = grid.magnitude
+        event.depth = grid.depth
+        event.directory_name = '{0}{1}'.format(self.data_dir,
+                                               event.event_id)
+        event.lat = grid.lat
+        event.lon = grid.lon
+        event.place = grid.description
+        event.title = 'M {0} - {1}'.format(event.magnitude, event.place)
+        event.time = time.time() * 1000
+        event.status = 'scenario'
+        
         session.commit()
         
         if len(shakemap.products) == len(self.req_products):
