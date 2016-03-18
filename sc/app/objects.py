@@ -141,7 +141,7 @@ class Product_Grabber(object):
             event.event_id = eq_id
             event.title = self.earthquakes[eq_id]['properties']['title']
             event.place = self.earthquakes[eq_id]['properties']['place']
-            event.time = self.earthquakes[eq_id]['properties']['time']
+            event.time = self.earthquakes[eq_id]['properties']['time']/1000.0
             
             event_coords = self.earthquakes[eq_id]['geometry']['coordinates']
             event.lon = event_coords[0]
@@ -279,14 +279,14 @@ class Product_Grabber(object):
         session = Session()
         last_hb = session.query(Event).filter(Event.event_id == 'heartbeat').all()
         if last_hb:
-            if time.time() > (last_hb[-1].time/1000) + 24*60*60:
+            if time.time() > (last_hb[-1].time) + 24*60*60:
                 make_hb = True
         else:
             make_hb = True
                 
         if make_hb is True:
             e = Event()
-            e.time = time.time() * 1000
+            e.time = time.time()
             e.event_id = 'heartbeat'
             e.magnitude = 10
             e.lat = 1000
@@ -393,7 +393,7 @@ class Product_Grabber(object):
         event.lon = grid.lon
         event.place = grid.description
         event.title = 'M {0} - {1}'.format(event.magnitude, event.place)
-        event.time = time.time() * 1000
+        event.time = time.time()
         event.status = 'scenario'
         
         session.commit()
@@ -1116,10 +1116,12 @@ class Notification_Builder(object):
                             <td style="border: 2px solid #444444;padding: 5px;">{6}</td>
                         </tr>
                 '''
-        table = ''        
+        table = ''
+        
+        clock = Clock()
         for count,event in enumerate(events):
-            timestamp = (datetime.datetime
-                            .fromtimestamp(event.time/1000 + (sc.timezone * 60*60))
+            
+            timestamp = (clock.from_time(event.time)
                             .strftime('%Y-%m-%d %H:%M:%S'))
             
             if event.event_id == 'heartbeat':
@@ -1373,3 +1375,11 @@ class Clock(object):
         sc = SC()
         self.utc_time = datetime.datetime.utcfromtimestamp(time.time())
         self.app_time = self.utc_time + datetime.timedelta(hours=sc.timezone)
+        
+    def from_time(self, time):
+        sc = SC()
+        utc_time = datetime.datetime.utcfromtimestamp(time)
+        app_time = utc_time + datetime.timedelta(hours=sc.timezone)
+        
+        return app_time
+        
