@@ -345,12 +345,10 @@ class Product_Grabber(object):
                 
                 # download and allow partial products
                 try:
-                    product.web = urllib2.urlopen(product.url, timeout=60)
+                    url_opener = URLOpener()
+                    product.str_ = url_opener.open(product.url)
                 except httplib.IncompleteRead as e:
-                    product.web = e.partial
-                    
-                product.str_ = product.web.read()
-                product.web.close()
+                    self.log += 'Unable to get product for scenario: {0}'.format(product_name)
                     
                 product.file_ = open('{0}{1}{2}'.format(shakemap.directory_name,
                                                         self.delim,
@@ -1408,22 +1406,33 @@ class URLOpener(object):
         """
         sc = SC()
         if sc.use_proxy is True:
-            proxy = urllib2.ProxyHandler({
-                        'http': "http://{1}:{2}@{3}:{4}".format(sc.proxy_username,
-                                                                sc.proxy_password,
-                                                                sc.proxy_server,
-                                                                sc.proxy_port),
-                        'https': "http://{1}:{2}@{3}:{4}".format(sc.proxy_username,
-                                                                 sc.proxy_password,
-                                                                 sc.proxy_server,
-                                                                 sc.proxy_port)})
-            auth = urllib2.HTTPBasicAuthHandler()
-            opener = urllib2.build_opener(proxy, auth, urllib2.HTTPHandler)
-            
-            url_obj = opener.open(url, timeout=60)
-            url_read = url_obj.read()
-            url_obj.close()
-            return url_read
+            if sc.proxy_username and sc.proxy_password:
+                proxy = urllib2.ProxyHandler({
+                            'http': "http://{1}:{2}@{3}:{4}".format(sc.proxy_username,
+                                                                    sc.proxy_password,
+                                                                    sc.proxy_server,
+                                                                    sc.proxy_port),
+                            'https': "http://{1}:{2}@{3}:{4}".format(sc.proxy_username,
+                                                                     sc.proxy_password,
+                                                                     sc.proxy_server,
+                                                                     sc.proxy_port)})
+                auth = urllib2.HTTPBasicAuthHandler()
+                opener = urllib2.build_opener(proxy, auth, urllib2.HTTPHandler)
+                
+                url_obj = opener.open(url, timeout=60)
+                url_read = url_obj.read()
+                url_obj.close()
+                return url_read
+                
+            else:
+                proxy = urllib2.ProxyHandler({'http': sc.proxy_server,
+                                              'https': sc.proxy_server})
+                opener = urllib2.build_opener(proxy)
+                
+                url_obj = opener.open(url, timeout=60)
+                url_read = url_obj.read()
+                url_obj.close()
+                return url_read
 
         else:
             url_obj = urllib2.urlopen(url, timeout=60)
