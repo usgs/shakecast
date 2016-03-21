@@ -32,6 +32,7 @@ def geo_json():
         new_shakemaps_log = ''
         new_events, log_message = pg.get_new_events()
         new_shakemaps, log_message = pg.get_new_shakemaps()
+        pg.make_heartbeat()
     except Exception:
         log_message = 'Failed to download ShakeMap products: Check internet connection and firewall settings'
         log_message += '\nError: %s' % sys.exc_info()[1]
@@ -56,7 +57,6 @@ def check_new():
                     'log': message to be added to ShakeCast log
                            and should contain info on error}
     '''
-    
     log_message = ''
     try:
         session = Session()
@@ -73,26 +73,26 @@ def check_new():
         
     try:
         if new_events:
-            process_new_events(new_events, session=session)
+            process_events(new_events, session=session)
             log_message += '\nProcessed Events: %s' % [str(ne) for ne in new_events]
         if new_shakemaps:
             process_shakemaps(new_shakemaps, session=session)
             log_message += '\nProcessed ShakeMaps: %s' % [str(sm) for sm in new_shakemaps]
         else:
             log_message += '\nNo new shakemaps'
-    
-        Session.remove()
+     
     except:
         log_message += 'failed to process new shakemaps: '
         raise
     
+    Session.remove()
     data = {'status': 'finished',
             'message': 'Check for new earthquakes',
             'log': log_message}
     
     return data
 
-def process_new_events(new_events=[], session=None):
+def process_events(events=[], session=None, scenario=False):
     '''
     Process or reprocess events passed into the function. Will send
     NEW_EVENT and UPDATE emails
@@ -109,15 +109,33 @@ def process_new_events(new_events=[], session=None):
                     'log': message to be added to ShakeCast log
                            and should contain info on error}
     '''
-    
-    for new_event in new_events:
-        new_event.status = 'processing_started'
+    clock = Clock()
+    sc = SC()
+    groups_affected = []
+    for event in events:
+        # check if we should wait until daytime to process
+        if (clock.nighttime() is True) and (scenario is False):
+            if event.magnitude < sc.night_eq_mag_cutoff:
+                continue
         
-        groups_affected = (session.query(Group)
-                                    .filter(Group.point_inside(new_event))
-                                    .all())
+        if scenario is True:
+            in_region = (session.query(Group)
+                                        .filter(Group.point_inside(event))
+                                        .all())
+            groups_affected = [group for group in in_region
+                                    if group.has_spec(not_type='scenario')]
+        elif event.event_id != 'heartbeat':
+            groups_affected = (session.query(Group)
+                                        .filter(Group.point_inside(event))
+                                        .all())
+        else:
+            all_groups = session.query(Group).all()
+            groups_affected = [group for group in all_groups
+                                    if group.has_spec(not_type='heartbeat')]
+        
+        event.status = 'processing_started'    
         if not groups_affected:
-            new_event.status = 'no groups'
+            event.status = 'no groups'
             session.commit()
             continue
         
@@ -126,29 +144,30 @@ def process_new_events(new_events=[], session=None):
             if group.has_spec(not_type='NEW_EVENT'):
                 
                 # check new_event magnitude to make sure the group wants a notificaiton
-                new_event_spec = [s for s in group.specs
+                event_spec = [s for s in group.specs
                                     if s.notification_type == 'NEW_EVENT'][0]
-                if new_event_spec.minimum_magnitude > new_event.magnitude:
+                if event_spec.minimum_magnitude > event.magnitude:
                     continue
                 
                 notification = Notification(group=group,
-                                            event=new_event,
+                                            event=event,
                                             notification_type='NEW_EVENT',
                                             status='created')
                 session.add(notification)
-        
-    for group in groups_affected:
-            # get new notifications
-        nots = (session.query(Notification)
-                    .filter(Notification.notification_type == 'NEW_EVENT')
-                    .filter(Notification.status == 'created')
-                    .all())
-            
-        new_event_notification(notifications=nots)
-        new_event.status = 'processed'
-        session.commit() 
     
-def process_shakemaps(shakemaps=[], session=None):
+    if groups_affected:    
+        for group in groups_affected:
+            # get new notifications
+            nots = (session.query(Notification)
+                        .filter(Notification.notification_type == 'NEW_EVENT')
+                        .filter(Notification.status == 'created')
+                        .all())
+                
+            new_event_notification(notifications=nots)
+            event.status = 'processed'
+            session.commit() 
+    
+def process_shakemaps(shakemaps=[], session=None, scenario=False):
     '''
     Process or reprocess the shakemaps passed into the function
     
@@ -164,15 +183,27 @@ def process_shakemaps(shakemaps=[], session=None):
                     'log': message to be added to ShakeCast log
                            and should contain info on error}
     '''
-    
+    clock = Clock()
+    sc = SC()
     for shakemap in shakemaps:
+        # check if we should wait until daytime to process
+        if (clock.nighttime()) is True and scenario is False:
+            if shakemap.event.magnitude < sc.night_eq_mag_cutoff:
+                continue
+            
         shakemap.status = 'processing_started'
-        
         # open the grid.xml file and find groups affected by event
         grid = create_grid(shakemap)
-        groups_affected = (session.query(Group)
+        if scenario is True:
+            in_region = (session.query(Group)
                                     .filter(Group.in_grid(grid))
                                     .all())
+            groups_affected = [group for group in in_region
+                                    if group.has_spec(not_type='scenario')]
+        else:
+            groups_affected = (session.query(Group)
+                                        .filter(Group.in_grid(grid))
+                                        .all())
         
         if not groups_affected:
             shakemap.status = 'no groups'
@@ -512,19 +543,55 @@ def inspection_notification(notification=Notification(),
             notification.status = 'sent'
         except:
             notification.status = 'send failed'
-
-#def send_notifications():
-##    '''
-#    Resend notifications that failed for some reason before
-#    '''
-#    notifications = (session.query(Notification)
-#                        .filter(Notification.status != 'sent')
-#                        .all())
-#    
-#    shakemaps = set([n.shakemap for n in notifications])
-#    process_shakemaps(shakemaps)
+            
+def run_scenario(eq_id='', region=''):
+    '''
+    Processes a shakemap as if it were new
+    '''
     
-
+    session = Session()
+    # Check if we have the eq in db
+    full_id = '{0}{1}'.format(region, eq_id)
+    
+    event = session.query(Event).filter(Event.event_id == full_id).all()
+    shakemap = session.query(ShakeMap).filter(ShakeMap.shakemap_id == full_id).all()
+    
+    processed_event = False
+    processed_shakemap = False
+    if event:
+        try:
+            process_events(events=[event[0]],
+                           session=session,
+                           scenario=True)
+            processed_event = True
+        except:
+            pass
+    if shakemap:
+        try:
+            process_shakemaps(shakemaps=[shakemap[0]],
+                              session=session,
+                              scenario=True)
+            processed_shakemap = True
+        except:
+            pass
+        
+    return processed_event, processed_shakemap
+    
+    
+def create_grid(shakemap=None):
+    """
+    Creates a grid object from a specific ShakeMap
+    
+    Args:
+        shakemap (ShakeMap): A ShakeMap with a grid.xml to laod
+    
+    Returns:
+        SM_Grid: With loaded grid.xml
+    """
+    grid = SM_Grid()
+    grid.load(shakemap.directory_name + get_delim() + 'grid.xml')
+    
+    return grid    
 #######################################################################
 ############################## Scenarios ##############################
 #def run_scenario(eq='', version=0):
@@ -550,7 +617,6 @@ def inspection_notification(notification=Notification(),
 #    # get files from web
 #    
 #    Local_Session.remove()
-
 
 #######################################################################
 ######################## Import Inventory Data ########################
@@ -1050,21 +1116,9 @@ def add_users_to_groups(session=None):
                     if group:
                         user.groups.append(group[0])
 
-def create_grid(shakemap=None):
-    """
-    Creates a grid object from a specific ShakeMap
-    
-    Args:
-        shakemap (ShakeMap): A ShakeMap with a grid.xml to laod
-    
-    Returns:
-        SM_Grid: With loaded grid.xml
-    """
-    grid = SM_Grid()
-    grid.load(shakemap.directory_name + get_delim() + 'grid.xml')
-    
-    return grid
-            
+
+
+
 #######################################################################
 ########################## Manual Testing #############################
 

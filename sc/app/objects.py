@@ -11,6 +11,7 @@ import time
 import xml.etree.ElementTree as ET
 import smtplib
 import datetime
+import time
 from functions_util import *
 from dbi.db_alchemy import *
 
@@ -143,7 +144,7 @@ class Product_Grabber(object):
             event.event_id = eq_id
             event.title = self.earthquakes[eq_id]['properties']['title']
             event.place = self.earthquakes[eq_id]['properties']['place']
-            event.time = self.earthquakes[eq_id]['properties']['time']
+            event.time = self.earthquakes[eq_id]['properties']['time']/1000.0
             
             event_coords = self.earthquakes[eq_id]['geometry']['coordinates']
             event.lon = event_coords[0]
@@ -270,7 +271,141 @@ class Product_Grabber(object):
         print shakemap_str
         return new_shakemaps, shakemap_str
 
-
+    def make_heartbeat(self):
+        '''
+        Make an Event row that will only trigger a notification for
+        groups with a heartbeat group_specification
+        '''
+        session = Session()
+        last_hb = session.query(Event).filter(Event.event_id == 'heartbeat').all()
+        if last_hb:
+            if time.time() > (last_hb[-1].time) + 24*60*60:
+                make_hb = True
+        else:
+            make_hb = True
+                
+        if make_hb is True:
+            e = Event()
+            e.time = time.time()
+            e.event_id = 'heartbeat'
+            e.magnitude = 10
+            e.lat = 1000
+            e.lon = 1000
+            e.title = 'ShakeCast Heartbeat'
+            e.place = 'ShakeCast is running'
+            e.status = 'new'
+            session.add(e)
+            session.commit()
+            
+        Session.remove()
+        
+    def get_scenario(self, eq_id='', region=''):
+        '''
+        Grab a shakemap from the USGS web and stick it in the db so
+        it can be run as a scenario
+        '''
+        
+        # make the event directory and append database
+        session = Session()
+        shakemap = ShakeMap()
+        shakemap.shakemap_id = '{0}{1}'.format(region, eq_id)
+        shakemap.shakemap_version = 0
+        
+        # check if we already have the shakemap
+        if shakemap.is_new() is False:
+            shakemap = (
+              session.query(ShakeMap)
+                .filter(ShakeMap.shakemap_id == shakemap.shakemap_id)
+                .filter(ShakeMap.shakemap_version == shakemap.shakemap_version)
+                .first()
+            )
+        
+        # assign relevent information to shakemap
+        shakemap.region = region
+        shakemap.recieve_timestamp = time.time()
+        shakemap.status = 'scenario'
+        
+        # make a directory for the new event
+        shakemap.directory_name = '{0}{1}{2}{1}-{3}'.format(self.data_dir,
+                                                            shakemap.shakemap_id,
+                                                            get_delim(),
+                                                            shakemap.shakemap_version)
+        if not os.path.exists(shakemap.directory_name):
+            os.makedirs(shakemap.directory_name)
+        
+        # download the products
+        shakemap_url = 'http://earthquake.usgs.gov/earthquakes/shakemap/{0}/shake/{1}/download/'.format(region,
+                                                                                                       eq_id)
+        # download products
+        for product_name in self.req_products:
+            product = Product(product_type = product_name)
+            try:
+                product.url = '{0}{1}'.format(shakemap_url,
+                                              product_name)
+                
+                # download and allow partial products
+                try:
+                    product.web = urllib2.urlopen(product.url, timeout=60)
+                except httplib.IncompleteRead as e:
+                    product.web = e.partial
+                    
+                product.str_ = product.web.read()
+                product.web.close()
+                    
+                product.file_ = open('{0}{1}{2}'.format(shakemap.directory_name,
+                                                        self.delim,
+                                                        product_name), 'wt')
+                product.file_.write(product.str_)
+                product.file_.close()
+                
+                if shakemap.has_products([product_name]):
+                    continue
+                product.shakemap = shakemap
+                
+            except:
+                print 'Failed to download: %s %s' % (eq_id, product_name)
+        
+        session.add(shakemap)
+        session.commit()
+        
+        # create event from shakemap's grid.xml
+        grid = SM_Grid()
+        grid.load(shakemap.directory_name + get_delim() + 'grid.xml')
+  
+        shakemap.lat_min = grid.lat_min
+        shakemap.lat_max = grid.lat_max
+        shakemap.lon_min = grid.lon_min
+        shakemap.lon_max = grid.lon_max
+        
+        event = Event()
+        event.event_id = shakemap.shakemap_id
+        event.all_event_ids = event.event_id
+        
+        if event.is_new() is False:
+            event = session.query(Event).filter(Event.event_id == event.event_id).first()
+        
+        shakemap.event = event
+        event.magnitude = grid.magnitude
+        event.depth = grid.depth
+        event.directory_name = '{0}{1}'.format(self.data_dir,
+                                               event.event_id)
+        event.lat = grid.lat
+        event.lon = grid.lon
+        event.place = grid.description
+        event.title = 'M {0} - {1}'.format(event.magnitude, event.place)
+        event.time = time.time()
+        event.status = 'scenario'
+        
+        session.commit()
+        
+        if len(shakemap.products) == len(self.req_products):
+            scenario_ready = True
+        else:
+            scenario_ready = False
+        
+        Session.remove()
+        return scenario_ready
+    
 class Point(object):
     
     '''
@@ -297,6 +432,7 @@ class Point(object):
             return -1
         else:
             return 0
+
 
 class SM_Grid(object):
     
@@ -511,7 +647,7 @@ class SM_Grid(object):
         shaking = sorted(shaking)
         return shaking[-1].info
 
-        
+       
 class Mailer(object):
     """
     Keeps track of information used to send emails
@@ -638,6 +774,9 @@ class SC(object):
     def __init__(self):
         self.timezone = 0
         self.new_eq_mag_cutoff = 0.0
+        self.night_eq_mag_cutoff = 0.0
+        self.nighttime = 0
+        self.morning = 0
         self.check_new_int = 0
         self.use_geo_json = False
         self.geo_json_web = ''
@@ -692,6 +831,9 @@ class SC(object):
         
         # Services
         self.new_eq_mag_cutoff = conf_json['Services']['new_eq_mag_cutoff']
+        self.night_eq_mag_cutoff = conf_json['Services']['night_eq_mag_cutoff']
+        self.nighttime = conf_json['Services']['nighttime']
+        self.morning = conf_json['Services']['morning']
         self.check_new_int = conf_json['Services']['check_new_int']
         self.use_geo_json = conf_json['Services']['use_geo_json']
         self.geo_json_int = conf_json['Services']['geo_json_int']
@@ -699,6 +841,7 @@ class SC(object):
         self.keep_eq_for = conf_json['Services']['keep_eq_for']
         self.geo_json_web = conf_json['Services']['geo_json_web']
         self.eq_req_products = conf_json['Services']['eq_req_products']
+        
         
         # Logging
         self.log_rotate = conf_json['Logging']['log_rotate']
@@ -1025,16 +1168,23 @@ class Notification_Builder(object):
                             <td style="border: 2px solid #444444;padding: 5px;">{6}</td>
                         </tr>
                 '''
-        table = ''        
+        table = ''
+        
+        clock = Clock()
         for count,event in enumerate(events):
-            timestamp = (datetime.datetime
-                            .fromtimestamp(event.time/1000 + (sc.timezone * 60*60))
+            
+            timestamp = (clock.from_time(event.time)
                             .strftime('%Y-%m-%d %H:%M:%S'))
+            
+            if event.event_id == 'heartbeat':
+                magnitude = 'None'
+            else:
+                magnitude = event.magnitude
             
             table += table_str.format(count,
                                       event.event_id,
                                       timestamp,
-                                      event.magnitude,
+                                      magnitude,
                                       event.lat,
                                       event.lon,
                                       event.place)
@@ -1240,7 +1390,7 @@ class Notification_Builder(object):
         directory = delim.join(path) + delim
         
         return directory
-    
+
     
 class URLOpener(object):
     """
@@ -1280,4 +1430,48 @@ class URLOpener(object):
             url_read = url_obj.read()
             url_obj.close()
             return url_read
+        
+
+class Clock(object):
+    '''
+    Keeps track of utc and application time as well as night and day
+    
+    Attributes:
+        utc_time (str): current utc_time
+        app_time (str): current time for application users
+    '''
+    def __init__(self):
+        self.utc_time = ''
+        self.app_time = ''
+        
+    def nighttime(self):
+        '''
+        Determine if it's nighttime
+        
+        Returns:
+            bool: True if nighttime
+        '''
+        sc = SC()
+        
+        # get app time
+        self.get_time()
+        # compare to night time setting
+        hour = int(self.app_time.strftime('%H'))
+        if ((hour >= sc.nighttime)
+            or hour < sc.morning):
+            return True
+        else:
+            return False
+        
+    def get_time(self):
+        sc = SC()
+        self.utc_time = datetime.datetime.utcfromtimestamp(time.time())
+        self.app_time = self.utc_time + datetime.timedelta(hours=sc.timezone)
+        
+    def from_time(self, time):
+        sc = SC()
+        utc_time = datetime.datetime.utcfromtimestamp(time)
+        app_time = utc_time + datetime.timedelta(hours=sc.timezone)
+        
+        return app_time
 

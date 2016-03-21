@@ -693,7 +693,7 @@ class ShakeMap(Base):
     map_status = Column(String(10))
     event_version = Column(Integer)
     generating_server = Column(Integer)
-    region = Column(String(2))
+    region = Column(String(10))
     lat_min = Column(Float)
     lat_max = Column(Float)
     lon_min = Column(Float)
