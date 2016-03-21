@@ -28,3 +28,16 @@ def get_delim():
     else:
         delim = '/'
     return delim
+
+def db_sc_dir():
+    """
+    Returns the path of the sc directory for the shakecast application
+    """
+    path = os.path.dirname(os.path.abspath(__file__))
+    delim = get_delim()
+    path = path.split(delim)
+    del path[-1]
+    del path[-2]
+    directory = delim.join(path) + delim
+    
+    return directory
