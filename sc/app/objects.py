@@ -403,6 +403,7 @@ class Product_Grabber(object):
         
         Session.remove()
         return scenario_ready
+
     
 class Point(object):
     
@@ -726,7 +727,8 @@ class Mailer(object):
         
         server.sendmail(self.me, you, msg.as_string())
         server.quit()
-        
+
+
 class SC(object):
     """
     Holds application custimization settings
@@ -895,7 +897,7 @@ class SC(object):
         directory = delim.join(path) + delim
         
         return directory
-        
+
 
 class Notification_Builder(object):
     """
