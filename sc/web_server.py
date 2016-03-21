@@ -6,7 +6,7 @@ from app.server import Server
 from app.functions_util import *
 app = Flask(__name__,
             template_folder=sc_dir()+'view'+get_delim()+'html',
-            static_folder=sc_dir()+'images')
+            static_folder=sc_dir()+'view'+get_delim()+'static')
 
 @app.route('/')
 def index():

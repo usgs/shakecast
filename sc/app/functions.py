@@ -441,10 +441,8 @@ def new_event_notification(notifications = [],
                 msg.attach(msg_gmap)
             
             # find the ShakeCast logo
-            logo_str = "%s%s%s%s" % (sc_dir(),
-                                     'images',
-                                     get_delim(),
-                                     'sc_logo.png')
+            logo_str = '{0}view{1}static{1}sc_logo.png'.format(sc_dir(),
+                                                               get_delim())
             
             # open logo and attach it to the message
             logo_file = open(logo_str, 'rb')
