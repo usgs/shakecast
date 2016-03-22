@@ -15,7 +15,9 @@ import time
 from functions_util import *
 from dbi.db_alchemy import *
 
-sys.path += [sc_dir() + 'modules']
+modules_dir = sc_dir() + 'modules'
+if modules_dir not in sys.path:
+    sys.path += [modules_dir]
 import socks
 
 class Product_Grabber(object):

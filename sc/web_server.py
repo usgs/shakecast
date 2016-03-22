@@ -1,3 +1,10 @@
+from app.functions_util import *
+import os
+import sys
+modules_dir = sc_dir() + 'modules'
+if modules_dir not in sys.path:
+    sys.path += [modules_dir]
+
 from flask import Flask, render_template, url_for
 import time
 import datetime

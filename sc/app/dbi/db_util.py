@@ -37,7 +37,7 @@ def db_sc_dir():
     delim = get_delim()
     path = path.split(delim)
     del path[-1]
-    del path[-2]
+    del path[-1]
     directory = delim.join(path) + delim
     
     return directory

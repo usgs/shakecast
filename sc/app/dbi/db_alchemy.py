@@ -1,12 +1,17 @@
+from db_util import *
+import os
+import sys
+modules_dir = db_sc_dir() + 'modules'
+if modules_dir not in sys.path:
+    sys.path += [modules_dir]
+    
 from sqlalchemy import *
 import logging
 from sqlalchemy.ext.declarative import *
 from sqlalchemy.ext.hybrid import hybrid_method
 from sqlalchemy.orm import *
 from sqlalchemy.sql import and_, or_, not_
-import os
 import time
-from db_util import *
 
 # Get directory location for database
 path = os.path.dirname(os.path.abspath(__file__))
