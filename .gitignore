@@ -1,6 +1,7 @@
 data/
 tmp/
 logs/
+modules/
 .DS_Store
 *.pyc
 *~
