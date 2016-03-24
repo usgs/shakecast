@@ -436,7 +436,7 @@ def new_event_notification(notifications = [],
             for count,event in enumerate(events):
                 gmap = url_opener.open("https://maps.googleapis.com/maps/api/staticmap?center=%s,%s&zoom=5&size=200x200&sensor=false&maptype=terrain&markers=icon:http://earthquake.usgs.gov/research/software/shakecast/icons/epicenter.png|%s,%s" % (event.lat, event.lon ,event.lat, event.lon))
                 msg_gmap = MIMEImage(gmap)
-                msg_gmap.add_header('Content-ID', '<gmap>')
+                msg_gmap.add_header('Content-ID', '<gmap{0}>'.format(count))
                 msg_gmap.add_header('Content-Disposition', 'inline')
                 msg.attach(msg_gmap)
             
