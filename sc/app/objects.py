@@ -1412,11 +1412,11 @@ class URLOpener(object):
         if sc.use_proxy is True:
             if sc.proxy_username and sc.proxy_password:
                 proxy = urllib2.ProxyHandler({
-                            'http': "http://{1}:{2}@{3}:{4}".format(sc.proxy_username,
+                            'http': "http://{0}:{1}@{2}:{3}".format(sc.proxy_username,
                                                                     sc.proxy_password,
                                                                     sc.proxy_server,
                                                                     sc.proxy_port),
-                            'https': "http://{1}:{2}@{3}:{4}".format(sc.proxy_username,
+                            'https': "http://{0}:{1}@{2}:{3}".format(sc.proxy_username,
                                                                      sc.proxy_password,
                                                                      sc.proxy_server,
                                                                      sc.proxy_port)})
@@ -1429,8 +1429,8 @@ class URLOpener(object):
                 return url_read
                 
             else:
-                proxy = urllib2.ProxyHandler({'http': sc.proxy_server,
-                                              'https': sc.proxy_server})
+                proxy = urllib2.ProxyHandler({'http': 'http://{0}:{1}'.format(sc.proxy_server,sc.proxy_port),
+                                              'https': 'https://{0}:{1}'.format(sc.proxy_server,sc.proxy_port)})
                 opener = urllib2.build_opener(proxy)
                 
                 url_obj = opener.open(url, timeout=60)
