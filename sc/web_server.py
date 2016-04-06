@@ -1,11 +1,13 @@
 from app.functions_util import *
+from app.objects import AlchemyEncoder
 import os
 import sys
+import json
 modules_dir = sc_dir() + 'modules'
 if modules_dir not in sys.path:
     sys.path += [modules_dir]
 
-from flask import Flask, render_template, url_for
+from flask import Flask, render_template, url_for, request
 import time
 import datetime
 from app.dbi.db_alchemy import *
@@ -23,9 +25,18 @@ def index():
     eqs = session.query(Event).order_by(Event.time.desc())
     
     datetimes = []
+    Session.remove()
     for eq in eqs:
         datetimes += [clock.from_time(eq.time).strftime('%Y-%m-%d %H:%M:%S')]
     return render_template('index.html', eqs_times=zip(eqs,datetimes))
+
+@app.route('/get/eqdata/')
+def eq_data():
+    session = Session()
+    eqs = session.query(Event).order_by(Event.time.desc()).all()
+    eq_json = json.dumps(eqs, cls=AlchemyEncoder)
+    
+    return eq_json
 
 @app.route('/dbtest')
 def db_test():

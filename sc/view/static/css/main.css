@@ -38,3 +38,12 @@
             display: block;
             position: relative;
         }
+        
+.navbar ul {
+    list-style: none;
+}
+
+.navbar ul li {
+    float: left;
+    display: inline-block
+}

@@ -1,18 +1,37 @@
 <html>
     <head>
-        <link href="../static/index.css" rel="stylesheet">
+        <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet">
+        <link href="{{ url_for('static', filename='css/main.css') }}" rel="stylesheet">
+        <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.3.5/angular.min.js"></script>
+        <title>ShakeCast</title>
     </head>
-    <body>
+    <body ng-app="SC">
         <div class="image_header">
             <img src="{{ url_for('static', filename='sc_logo.png') }}" class="rounded_sc">
             <h1>ShakeCast</h1>
         </div>
-        
-        <div class="eqs">
-            {% for eq,time in eqs_times %}
-            <p class="eq">{{ eq.event_id }} -- {{ time }}</p>
-            {% endfor %}
+        <div class="navbar navbar-default" ng-controller="NavController">
+            <ul class='nav nav-list'>
+                <li ng-repeat='link in nav_links' ng-class="navClass('{[ link.title ]}')">
+                    <a href="/{[ link.title ]}" ng-click="changePage($event)" id='{[ link.title ]}'>{[ link.text ]}</a>
+                </li>
+            </ul>
         </div>
+        
+        <div class="app-body">
+            
+        </div>
+
+        
+        <!-- Modules -->
+        <script src="{{ url_for('static', filename='js/modules/app.js') }}"></script>
+
+        <!-- Controllers -->
+        <script src="{{ url_for('static', filename='js/controllers/MainController.js') }}"></script>
+        <script src="{{ url_for('static', filename='js/controllers/NavController.js') }}"></script>
+        
+        <!-- Bootstrap -->
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
         
     </body>
 </html>
