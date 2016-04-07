@@ -212,6 +212,15 @@ class Product_Grabber(object):
             if (shakemap.has_products(self.req_products)):
                 continue
             
+            # depricate previous unprocessed versions of the ShakeMap
+            dep_shakemaps = (
+                session.query(ShakeMap)
+                    .filter(ShakeMap.shakemap_id == shakemap.shakemap_id)
+                    .filter(ShakeMap.status == 'new')
+            )
+            for dep_shakemap in dep_shakemaps:
+                dep_shakemap.status = 'depricated'
+            
             # assign relevent information to shakemap
             shakemap.map_status = shakemap.json['properties']['map-status']
             shakemap.region = shakemap.json['properties']['eventsource']
