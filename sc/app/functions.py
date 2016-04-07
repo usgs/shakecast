@@ -459,8 +459,15 @@ def new_event_notification(notifications = [],
             if len(events) == 1:
                 msg['Subject'] = event.title
             else:
+                mags = []
+                for e in events:
+                    if e.event_id == 'heartbeat':
+                        mags += ['None']
+                    else:
+                        mags += [e.magnitude]
+                        
                 msg['Subject'] = '{0} New Events -- Magnitudes: {1}'.format(len(events),
-                                                                            [e.magnitude for e in events])
+                                                                            str(mags).replace("'", ''))
                 
             msg['To'] = ', '.join(you)
             msg['From'] = me
