@@ -1,6 +1,6 @@
 app.controller('navController', ['$scope', function($scope) {
     $scope.nav_links = [{
-        title: '',
+        title: 'home',
         text: 'Home',
     }, {
         title: 'about',

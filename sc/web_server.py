@@ -21,7 +21,7 @@ app = Flask(__name__,
 @app.route('/')
 def index():
     # make navbar
-    navitems = [{'title': '',
+    navitems = [{'title': 'home',
                  'text': 'Home'},
                 {'title': 'about',
                  'text': 'About Us'},
