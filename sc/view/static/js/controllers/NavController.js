@@ -1,6 +1,6 @@
-app.controller('NavController', ['$scope', '$http', '$location', function($scope, $http, $location) {
+app.controller('navController', ['$scope', function($scope) {
     $scope.nav_links = [{
-        title: 'home',
+        title: '',
         text: 'Home',
     }, {
         title: 'about',
@@ -9,13 +9,13 @@ app.controller('NavController', ['$scope', '$http', '$location', function($scope
         title: 'contact',
         text: 'Contact Us'
     }, {
-        title: '../html/eqpage.html',
+        title: 'earthquakes',
         text: 'Earthquakes'
     }];
-
+/*
     $scope.navClass = function (page) {
         var currentRoute = $location.path().substring(1) || 'home';
         return page === currentRoute ? 'active' : '';
     };
-    
+  */  
 }]);
