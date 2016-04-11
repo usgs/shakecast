@@ -1,8 +1,28 @@
-<!--{% extends "index.html" %}
-{% block content %} -->
-<div>
-    <p>EQ PAGE</p>
+<div class="title">
+    <div class="jumbotron">
+        <h2>Earthquakes</h2>
+    </div>
 </div>
-<!--
-{% endblock %}
--->
+
+<div class="map">
+    
+</div>
+<table class="eq-table">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Magnitude</th>
+            <th>Time</th>
+            <th>Description</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr class="eq" ng-repeat="eq in eq_data">
+            
+            <td>{[ eq['event_id'] ]}</td>
+            <td>{[ eq['magnitude'] ]}</td>
+            <td>{[ eq['time'] * 1000 | date]}</td>
+            <td>{[ eq['place'] ]}</td>
+        </tr>
+    </tbody>
+</table>

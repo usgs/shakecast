@@ -8,6 +8,7 @@ if modules_dir not in sys.path:
     sys.path += [modules_dir]
 
 from flask import Flask, render_template, url_for, request
+from flask.ext.admin import Admin
 import time
 import datetime
 from app.dbi.db_alchemy import *
@@ -18,18 +19,14 @@ app = Flask(__name__,
             template_folder=sc_dir()+'view'+get_delim()+'html',
             static_folder=sc_dir()+'view'+get_delim()+'static')
 
+admin = Admin(app)
+
 @app.route('/')
 def index():
-    # make navbar
-    navitems = [{'title': 'home',
-                 'text': 'Home'},
-                {'title': 'about',
-                 'text': 'About Us'},
-                {'title': 'contact',
-                 'text': 'Contact Us'},
-                {'title': 'earthquakes',
-                  'text': 'Earthquakes'}]
-    
+    return render_template('index.html')
+
+@app.route('/earthquakes')
+def earthquakes():
     # get eq info
     session = Session()
     clock = Clock()
@@ -38,11 +35,7 @@ def index():
     Session.remove()
     for eq in eqs:
         datetimes += [clock.from_time(eq.time).strftime('%Y-%m-%d %H:%M:%S')]
-    return render_template('index.html', navitems=navitems, eqs_times=zip(eqs,datetimes))
-
-@app.route('/earthquakes')
-def earthquakes():
-    return render_template('earthquakes.html')
+    return render_template('earthquakes.html', eqs_times=zip(eqs,datetimes))
 
 @app.route('/home')
 def home():
@@ -54,19 +47,9 @@ def eq_data():
     eqs = session.query(Event).order_by(Event.time.desc()).all()
     eq_json = json.dumps(eqs, cls=AlchemyEncoder)
     
+    Session.remove()    
     return eq_json
 
-@app.route('/dbtest')
-def db_test():
-    session = Session()
-    
-    eqs = session.query(ShakeMap).all()
-    eqs = eqs[-10:]
-    
-    return_str = 'Recent EQs:\n'
-    return_str += str([str(eq) for eq in eqs])
-
-    return return_str
 if __name__ == '__main__':
     if len(sys.argv) > 1:
         if sys.argv[1] == '-d':

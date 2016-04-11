@@ -1496,7 +1496,8 @@ class Clock(object):
         app_time = utc_time + datetime.timedelta(hours=sc.timezone)
         
         return app_time
-    
+  
+  
 class AlchemyEncoder(json.JSONEncoder):
     def default(self, obj):
         if isinstance(obj.__class__, DeclarativeMeta):
@@ -1508,7 +1509,10 @@ class AlchemyEncoder(json.JSONEncoder):
                     json.dumps(data) # this will fail on non-encodable values, like other classes
                     fields[field] = data
                 except TypeError:
-                    fields[field] = None
+                    try:
+                        fields[field] = [str(d) for d in data]
+                    except:
+                        fields[field] = None
             # a json-encodable dict
             return fields
     
