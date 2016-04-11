@@ -8,7 +8,6 @@ if modules_dir not in sys.path:
     sys.path += [modules_dir]
 
 from flask import Flask, render_template, url_for, request
-from flask.ext.admin import Admin
 import time
 import datetime
 from app.dbi.db_alchemy import *
