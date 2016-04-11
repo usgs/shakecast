@@ -34,11 +34,6 @@
             top: 50px;
         }
         
-.eq {
-            display: block;
-            position: relative;
-        }
-        
 .navbar ul {
     list-style: none;
 }

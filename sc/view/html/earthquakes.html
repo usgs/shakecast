@@ -7,7 +7,7 @@
 <div class="map">
     
 </div>
-<table class="eq-table">
+<table class="eq-table table table-hover">
     <thead>
         <tr>
             <th>ID</th>
@@ -18,7 +18,6 @@
     </thead>
     <tbody>
         <tr class="eq" ng-repeat="eq in eq_data">
-            
             <td>{[ eq['event_id'] ]}</td>
             <td>{[ eq['magnitude'] ]}</td>
             <td>{[ eq['time'] * 1000 | date]}</td>
