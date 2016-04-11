@@ -18,8 +18,6 @@ app = Flask(__name__,
             template_folder=sc_dir()+'view'+get_delim()+'html',
             static_folder=sc_dir()+'view'+get_delim()+'static')
 
-admin = Admin(app)
-
 @app.route('/')
 def index():
     return render_template('index.html')
