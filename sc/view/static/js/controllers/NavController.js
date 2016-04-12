@@ -12,10 +12,5 @@ app.controller('navController', ['$scope', function($scope) {
         title: 'earthquakes',
         text: 'Earthquakes'
     }];
-/*
-    $scope.navClass = function (page) {
-        var currentRoute = $location.path().substring(1) || 'home';
-        return page === currentRoute ? 'active' : '';
-    };
-  */  
+
 }]);
