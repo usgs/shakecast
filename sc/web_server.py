@@ -8,6 +8,7 @@ if modules_dir not in sys.path:
     sys.path += [modules_dir]
 
 from flask import Flask, render_template, url_for, request
+from flask_login import LoginManager, login_user, logout_user, current_user, login_required
 import time
 import datetime
 from app.dbi.db_alchemy import *
@@ -18,7 +19,25 @@ app = Flask(__name__,
             template_folder=sc_dir()+'view'+get_delim()+'html',
             static_folder=sc_dir()+'view'+get_delim()+'static')
 
+app.secret_key = 'super secret key'
+app.config['SESSION_TYPE'] = 'filesystem'
+
+login_manager = LoginManager()
+login_manager.init_app(app)
+login_manager.login_view = 'login'
+
+@login_manager.user_loader
+def load_user(id):
+    session = Session()
+    user = session.query(User).first()
+    return user
+
+@app.route('/login')
+def login():
+    return '<html><h1>LOGIN</h1></html>'
+
 @app.route('/')
+@login_required
 def index():
     return render_template('index.html')
 

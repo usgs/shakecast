@@ -288,6 +288,7 @@ class Facility(Base):
                         cls.lon_max > grid.lon_max,
                         cls.lat_min < grid.lat_max,
                         cls.lat_max > grid.lat_max))
+  
     
 class Facility_Shaking(Base):
     __tablename__ = 'facility_shaking'
@@ -374,8 +375,7 @@ class Notification(Base):
                                                              self.status,
                                                              self.notification_file)
     
-    
-    
+      
 class User(Base):
     __tablename__ = 'user'
     shakecast_id = Column(Integer, primary_key=True)
@@ -403,6 +403,18 @@ class User(Base):
                                            self.phone_number,
                                            self.full_name,
                                            self.user_type)
+                       
+    def is_authenticated(self):
+        return True
+ 
+    def is_active(self):
+        return True
+ 
+    def is_anonymous(self):
+        return False
+ 
+    def get_id(self):
+        return unicode(self.id)
     
   
     
@@ -687,6 +699,7 @@ class Event(Base):
         else:
             return True
 
+
 class ShakeMap(Base):
     __tablename__ = 'shakemap'
     shakecast_id = Column(Integer, primary_key=True)
@@ -816,6 +829,7 @@ class Product(Base):
                                                      self.source,
                                                      self.update_username,
                                                      self.update_timestamp)
+ 
     
 class Plugins(Base):
     """
