@@ -4,6 +4,7 @@
         <link href="{{ url_for('static', filename='css/main.css') }}" rel="stylesheet">
         <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.3.5/angular.min.js"></script>
         <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.25/angular-route.js"></script>
+        <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular-animate.js"></script>
         <title>ShakeCast</title>
     </head>
     <body ng-controller="mainController">
@@ -19,8 +20,12 @@
             </ul>
         </div>
         
-        <div id="main" ng-controller="homeController">
-            <div ng-view></div>
+        <div ng-show="loading">
+            <p>Loading...</p>
+        </div>
+        
+        <div id="main">
+            <div ng-view class="view"></div>
         </div>
         
 

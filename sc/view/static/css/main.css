@@ -34,6 +34,22 @@
             top: 50px;
         }
         
+.view.ng-enter{
+  opacity: 0;
+}
+
+.view.ng-enter.ng-enter-active{
+  opacity: 1;
+}
+
+.view.ng-leave{
+  opacity: 1;
+}
+
+.view.ng-leave.ng-leave-active{
+  opacity: 0;
+}
+        
 .navbar ul {
     list-style: none;
 }
