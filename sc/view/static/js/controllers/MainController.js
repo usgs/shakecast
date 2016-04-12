@@ -12,6 +12,8 @@ app.controller('mainController', function($scope, $rootScope) {
                 $scope.loading = false;
         });
         */
+        
+        // Route change animation
         $rootScope.$on('$routeChangeStart', function(event, currRoute, prevRoute){
                 $rootScope.animation = currRoute.animation;
         });
