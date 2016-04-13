@@ -414,7 +414,7 @@ class User(Base):
         return False
  
     def get_id(self):
-        return unicode(self.id)
+        return unicode(self.shakecast_id)
     
   
     

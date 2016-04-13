@@ -7,7 +7,7 @@ modules_dir = sc_dir() + 'modules'
 if modules_dir not in sys.path:
     sys.path += [modules_dir]
 
-from flask import Flask, render_template, url_for, request
+from flask import Flask, render_template, url_for, request, session, flash, redirect
 from flask_login import LoginManager, login_user, logout_user, current_user, login_required
 import time
 import datetime
@@ -32,9 +32,21 @@ def load_user(id):
     user = session.query(User).first()
     return user
 
-@app.route('/login')
+@app.route('/login',methods=['GET','POST'])
 def login():
-    return '<html><h1>LOGIN</h1></html>'
+    if request.method == 'GET':
+        return render_template('login.html')
+    session = Session()
+    username = request.form['username']
+    password = request.form['password']
+    
+    registered_user = session.query(User).filter(and_(User.username==username, User.password==password)).first()
+    if registered_user is None:
+        flash('Username or Password is invalid' , 'error')
+        return redirect(url_for('login'))
+    login_user(registered_user)
+    flash('Logged in successfully')
+    return redirect(request.args.get('next') or url_for('index'))
 
 @app.route('/')
 @login_required
