@@ -11,6 +11,11 @@
         <div class="image_header">
             <img src="{{ url_for('static', filename='sc_logo.png') }}" class="rounded_sc">
             <h1>ShakeCast</h1>
+            
+            <div style="float:right">
+                <p style="display:inline">Welcome, {{ current_user.username }}</p>
+                <a href="/logout" style="display:inline">Logout</a>
+            </div>
         </div>
         <div class="navbar navbar-default" ng-controller="navController">
             <ul class='nav nav-list'>

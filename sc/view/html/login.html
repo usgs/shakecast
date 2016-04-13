@@ -14,43 +14,43 @@
             <p>A USGS Application</p>
         </div>
         
-          <form action="" method=post class="form-horizontal">
+        <form action="" method=post class="form-horizontal">
     
-    <h2>Login</h2>
-    
-    {% with messages = get_flashed_messages() %}
-	  {% if messages %}
-	    {% for message in messages %}
-		  <div class="alert alert-warning alert-dismissible" role="alert">
-		  <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>
-			{{message}}
-		  </div>
-		{% endfor %}
-	  {% endif %}
-	{% endwith %}
-    
-    <div class="control-group">
-        <div class="controls">
-          <input type="text" id="username" name="username" class="input-xlarge"
-            placeholder="Enter Username"
-            required>
-        </div>
-    </div>
- 
-    <div class="control-group">
-        <div class="controls">
-          <input type="password" id="password" name="password" class="input-xlarge"
-            placeholder="Enter Password"
-            required>
-        </div>
-    </div>
- 
-    <div class="control-group">
-        <div class="controls">
-          <button type="submit" class="btn btn-success">Login</button>
-        </div>
-    </div>
-  </form>
+			<h2>Login</h2>
+			
+			{% with messages = get_flashed_messages() %}
+			  {% if messages %}
+				{% for message in messages %}
+				  <div class="alert alert-warning alert-dismissible" role="alert">
+				  <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>
+					{{message}}
+				  </div>
+				{% endfor %}
+			  {% endif %}
+			{% endwith %}
+			
+			<div class="control-group">
+				<div class="controls">
+				  <input type="text" id="username" name="username" class="input-xlarge"
+					placeholder="Enter Username"
+					required>
+				</div>
+			</div>
+		 
+			<div class="control-group">
+				<div class="controls">
+				  <input type="password" id="password" name="password" class="input-xlarge"
+					placeholder="Enter Password"
+					required>
+				</div>
+			</div>
+		 
+			<div class="control-group">
+				<div class="controls">
+				  <button type="submit" class="btn btn-success">Login</button>
+				</div>
+			</div>
+		</form>
         
         <!-- Modules -->
         <script src="{{ url_for('static', filename='js/modules/login.js') }}"></script>

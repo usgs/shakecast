@@ -27,9 +27,9 @@ login_manager.init_app(app)
 login_manager.login_view = 'login'
 
 @login_manager.user_loader
-def load_user(id):
+def load_user(user_id):
     session = Session()
-    user = session.query(User).first()
+    user = session.query(User).filter(User.shakecast_id==int(user_id)).first()
     return user
 
 @app.route('/login',methods=['GET','POST'])
@@ -40,13 +40,22 @@ def login():
     username = request.form['username']
     password = request.form['password']
     
-    registered_user = session.query(User).filter(and_(User.username==username, User.password==password)).first()
+    registered_user = (session.query(User)
+                            .filter(and_(User.username==username,
+                                         User.password==password)).first())
+    
     if registered_user is None:
         flash('Username or Password is invalid' , 'error')
         return redirect(url_for('login'))
     login_user(registered_user)
     flash('Logged in successfully')
     return redirect(request.args.get('next') or url_for('index'))
+
+@app.route('/logout')
+def logout():
+    logout_user()
+    flash('Logged out successfully')
+    return redirect('login')
 
 @app.route('/')
 @login_required
