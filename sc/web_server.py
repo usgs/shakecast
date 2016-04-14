@@ -32,7 +32,7 @@ def load_user(user_id):
     user = session.query(User).filter(User.shakecast_id==int(user_id)).first()
     return user
 
-@app.route('/login',methods=['GET','POST'])
+@app.route('/login', methods=['GET','POST'])
 def login():
     if request.method == 'GET':
         return render_template('login.html')
@@ -55,7 +55,7 @@ def login():
 def logout():
     logout_user()
     flash('Logged out successfully')
-    return redirect('login')
+    return redirect(url_for('login'))
 
 @app.route('/')
 @login_required
@@ -63,6 +63,7 @@ def index():
     return render_template('index.html')
 
 @app.route('/earthquakes')
+@login_required
 def earthquakes():
     # get eq info
     session = Session()
@@ -75,6 +76,7 @@ def earthquakes():
     return render_template('earthquakes.html', eqs_times=zip(eqs,datetimes))
 
 @app.route('/home')
+@login_required
 def home():
     return render_template('home.html')
 
@@ -86,6 +88,28 @@ def eq_data():
     
     Session.remove()    
     return eq_json
+
+############################ Admin Pages ##############################
+
+# wrapper for admin only URLs
+def admin_only(func):
+    def func_wrapper():
+        if current_user and current_user.is_authenticated:
+            if current_user.user_type == 'ADMIN':
+                return func()
+            else:
+                flash('Only administrators can access this page')
+                return redirect(url_for('index'))
+        else:
+            flash('Login as an administrator to access this page')
+            return redirect(url_for('login'))
+    return func_wrapper
+
+@app.route('/admin')
+@admin_only
+@login_required
+def admin():
+    return '<h1>admin access granted</h1>'
 
 if __name__ == '__main__':
     if len(sys.argv) > 1:
