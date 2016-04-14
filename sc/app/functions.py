@@ -7,6 +7,7 @@ import xml.etree.ElementTree as ET
 from email.mime.text import MIMEText
 from email.MIMEImage import MIMEImage
 from email.MIMEMultipart import MIMEMultipart
+from werkzeug.security import generate_password_hash
 from dbi.db_alchemy import *
 from objects import *
 from functions_util import *
@@ -579,8 +580,7 @@ def run_scenario(eq_id='', region=''):
             pass
         
     return processed_event, processed_shakemap
-    
-    
+      
 def create_grid(shakemap=None):
     """
     Creates a grid object from a specific ShakeMap
@@ -595,31 +595,6 @@ def create_grid(shakemap=None):
     grid.load(shakemap.directory_name + get_delim() + 'grid.xml')
     
     return grid    
-#######################################################################
-############################## Scenarios ##############################
-#def run_scenario(eq='', version=0):
-#    '''
-#    Have pyCast process a specific event, submitted by a user
-#    '''
-#    
-#    session = Local_Session()
-#    # check in db
-#    if version:
-#        shakemap = session.query(ShakeMap).filter(and_(ShakeMap.shakemap_id == eq,
-#                                                       ShakeMap.shakemap_version == version)).first()
-#    else:
-#        shakemap = session.query(ShakeMap).filter(ShakeMap.shakemap_id == eq).first()
-#        
-#    if shakemap:
-#        process_shakemaps([shakemap])
-#        
-#    else:
-#        # check for file
-#        pass
-#    
-#    # get files from web
-#    
-#    Local_Session.remove()
 
 #######################################################################
 ######################## Import Inventory Data ########################
@@ -1057,7 +1032,7 @@ def import_user_xml(xml_file=''):
         
         u.group_string = group_string   
         u.username = username
-        u.password = password
+        u.password = generate_password_hash(password, method='pbkdf2:sha512')
         u.email = email
         u.user_type = user_type
         u.full_name = full_name

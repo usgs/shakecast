@@ -9,6 +9,7 @@ if modules_dir not in sys.path:
 
 from flask import Flask, render_template, url_for, request, session, flash, redirect
 from flask_login import LoginManager, login_user, logout_user, current_user, login_required
+from werkzeug.security import generate_password_hash, check_password_hash
 import time
 import datetime
 from app.dbi.db_alchemy import *
@@ -41,10 +42,10 @@ def login():
     password = request.form['password']
     
     registered_user = (session.query(User)
-                            .filter(and_(User.username==username,
-                                         User.password==password)).first())
+                            .filter(and_(User.username==username)).first())
     
-    if registered_user is None:
+    if (registered_user is None or not
+            check_password_hash(registered_user.password, password)):
         flash('Username or Password is invalid' , 'error')
         return redirect(url_for('login'))
     login_user(registered_user)
