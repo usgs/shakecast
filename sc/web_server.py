@@ -65,15 +65,7 @@ def index():
 @app.route('/earthquakes')
 @login_required
 def earthquakes():
-    # get eq info
-    session = Session()
-    clock = Clock()
-    eqs = session.query(Event).order_by(Event.time.desc())
-    datetimes = []
-    Session.remove()
-    for eq in eqs:
-        datetimes += [clock.from_time(eq.time).strftime('%Y-%m-%d %H:%M:%S')]
-    return render_template('earthquakes.html', eqs_times=zip(eqs,datetimes))
+    return render_template('earthquakes.html')
 
 @app.route('/home')
 @login_required
