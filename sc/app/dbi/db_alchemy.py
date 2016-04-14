@@ -416,6 +416,10 @@ class User(Base):
     def get_id(self):
         return unicode(self.shakecast_id)
     
+    def is_admin(self):
+        return self.user_type.lower() == 'admin'
+    
+    
   
     
 class Group(Base):

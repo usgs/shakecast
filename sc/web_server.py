@@ -95,7 +95,7 @@ def eq_data():
 def admin_only(func):
     def func_wrapper():
         if current_user and current_user.is_authenticated:
-            if current_user.user_type == 'ADMIN':
+            if current_user.user_type.lower() == 'admin':
                 return func()
             else:
                 flash('Only administrators can access this page')

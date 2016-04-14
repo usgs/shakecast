@@ -22,6 +22,12 @@
                 <li ng-repeat='link in nav_links' ng-class="navClass('{[ link.title ]}')">
                     <a href="#{[ link.title ]}" id='{[ link.title ]}'>{[ link.text ]}</a>
                 </li>
+                
+                {% if current_user.is_admin() %}
+                <li>
+                    <a href="admin" id="admin">Administration Panel</a>
+                </li>
+                {% endif %}
             </ul>
         </div>
         

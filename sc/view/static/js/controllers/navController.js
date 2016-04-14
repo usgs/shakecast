@@ -12,5 +12,4 @@ app.controller('navController', ['$scope', function($scope) {
         title: 'earthquakes',
         text: 'Earthquakes'
     }];
-
 }]);
