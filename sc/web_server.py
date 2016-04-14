@@ -83,7 +83,7 @@ def home():
 @app.route('/get/eqdata/')
 def eq_data():
     session = Session()
-    eqs = session.query(Event).order_by(Event.time.desc()).all()
+    eqs = session.query(Event).filter(Event.event_id != 'heartbeat').order_by(Event.time.desc()).all()
     eq_json = json.dumps(eqs, cls=AlchemyEncoder)
     
     Session.remove()    
