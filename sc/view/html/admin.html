@@ -1,4 +1,4 @@
-<html ng-app="SC">
+<html ng-app="SC-admin">
     <head>
         <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet">
         <link href="{{ url_for('static', filename='css/main.css') }}" rel="stylesheet">
@@ -9,10 +9,10 @@
         <script src="{{ url_for('static', filename='js/angular/angular-toast/dist/ngToast.min.js') }}"></script>
         <title>ShakeCast</title>
     </head>
-    <body ng-controller="mainController">
+    <body ng-controller="adminController">
         <div class="image_header">
             <img src="{{ url_for('static', filename='sc_logo.png') }}" class="rounded_sc">
-            <h1>ShakeCast</h1>
+            <h1>ShakeCast - Admin</h1>
             
             <div style="float:right;margin-right:10px">
                 <p style="display:inline">Welcome, {{ current_user.username }} |</p>
@@ -24,12 +24,9 @@
                 <li ng-repeat='link in nav_links' ng-class="navClass('{[ link.title ]}')">
                     <a href="#{[ link.title ]}" id='{[ link.title ]}'>{[ link.text ]}</a>
                 </li>
-                
-                {% if current_user.is_admin() %}
                 <li>
-                    <a href="admin" id="admin">Administration Panel</a>
+                    <a href="/" >Back Home</a>
                 </li>
-                {% endif %}
             </ul>
         </div>
         
@@ -50,13 +47,17 @@
 -->
         
         <!-- Modules -->
-        <script src="{{ url_for('static', filename='js/modules/app.js') }}"></script>
+        <script src="{{ url_for('static', filename='js/modules/admin.js') }}"></script>
 
         <!-- Controllers -->
-        <script src="{{ url_for('static', filename='js/controllers/mainController.js') }}"></script>
-        <script src="{{ url_for('static', filename='js/controllers/navController.js') }}"></script>
-        <script src="{{ url_for('static', filename='js/controllers/eqController.js') }}"></script>
-        <script src="{{ url_for('static', filename='js/controllers/homeController.js') }}"></script>
+        <script src="{{ url_for('static', filename='js/controllers/admin/adminController.js') }}"></script>
+        <script src="{{ url_for('static', filename='js/controllers/admin/navController.js') }}"></script>
+        <script src="{{ url_for('static', filename='js/controllers/admin/inventoryController.js') }}"></script>
+        <script src="{{ url_for('static', filename='js/controllers/admin/userController.js') }}"></script>
+        <script src="{{ url_for('static', filename='js/controllers/admin/groupController.js') }}"></script>
+        <script src="{{ url_for('static', filename='js/controllers/admin/eqController.js') }}"></script>
+        <script src="{{ url_for('static', filename='js/controllers/admin/uploadController.js') }}"></script>
+        <script src="{{ url_for('static', filename='js/controllers/admin/settingsController.js') }}"></script>
         
         <!-- JQuery -->
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>

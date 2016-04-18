@@ -9,6 +9,8 @@ if modules_dir not in sys.path:
 
 from flask import Flask, render_template, url_for, request, session, flash, redirect
 from flask_login import LoginManager, login_user, logout_user, current_user, login_required
+from werkzeug.security import generate_password_hash, check_password_hash
+from functools import wraps
 import time
 import datetime
 from app.dbi.db_alchemy import *
@@ -41,15 +43,18 @@ def login():
     password = request.form['password']
     
     registered_user = (session.query(User)
-                            .filter(and_(User.username==username,
-                                         User.password==password)).first())
+                            .filter(and_(User.username==username)).first())
     
-    if registered_user is None:
-        flash('Username or Password is invalid' , 'error')
-        return redirect(url_for('login'))
+    if (registered_user is None or not
+            check_password_hash(registered_user.password, password)):
+        return redirect('/#login-fail')
     login_user(registered_user)
     flash('Logged in successfully')
     return redirect(request.args.get('next') or url_for('index'))
+
+#@app.route('/login-fail', methods=['GET','POST'])
+#def login_fail():
+#    return login()
 
 @app.route('/logout')
 def logout():
@@ -85,6 +90,7 @@ def eq_data():
 
 # wrapper for admin only URLs
 def admin_only(func):
+    @wraps(func)
     def func_wrapper():
         if current_user and current_user.is_authenticated:
             if current_user.user_type.lower() == 'admin':
@@ -101,7 +107,43 @@ def admin_only(func):
 @admin_only
 @login_required
 def admin():
-    return '<h1>admin access granted</h1>'
+    return render_template('admin.html')
+
+@app.route('/admin/settings')
+@admin_only
+@login_required
+def settings():
+    return '<h1>settings</h1>'
+
+@app.route('/admin/inventory')
+@admin_only
+@login_required
+def inventory():
+    return '<h1>inventory</h1>'
+
+@app.route('/admin/users')
+@admin_only
+@login_required
+def users():
+    return '<h1>users</h1>'
+
+@app.route('/admin/groups')
+@admin_only
+@login_required
+def groups():
+    return '<h1>groups</h1>'
+
+@app.route('/admin/upload')
+@admin_only
+@login_required
+def upload():
+    return '<h1>upload</h1>'
+
+@app.route('/admin/earthquakes')
+@admin_only
+@login_required
+def admin_eqs():
+    return '<h1>earthquakes</h1>'
 
 if __name__ == '__main__':
     if len(sys.argv) > 1:

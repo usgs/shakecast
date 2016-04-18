@@ -15,5 +15,4 @@ app.config(function($routeProvider){
         templateUrl:'/register',
         controller: 'loginController'
     })
-
 });
