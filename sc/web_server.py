@@ -21,9 +21,10 @@ app = Flask(__name__,
             template_folder=sc_dir()+'view'+get_delim()+'html',
             static_folder=sc_dir()+'view'+get_delim()+'static')
 
+################################ Login ################################
+
 app.secret_key = 'super secret key'
 app.config['SESSION_TYPE'] = 'filesystem'
-
 login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = 'login'
@@ -52,15 +53,13 @@ def login():
     flash('Logged in successfully')
     return redirect(request.args.get('next') or url_for('index'))
 
-#@app.route('/login-fail', methods=['GET','POST'])
-#def login_fail():
-#    return login()
-
 @app.route('/logout')
 def logout():
     logout_user()
     flash('Logged out successfully')
     return redirect(url_for('login'))
+
+############################# User Domain #############################
 
 @app.route('/')
 @login_required

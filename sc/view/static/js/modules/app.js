@@ -1,4 +1,4 @@
-var app = angular.module('SC', ['ngRoute', 'ngAnimate']);
+var app = angular.module('SC', ['ngRoute', 'ngAnimate', 'leaflet-directive']);
 
 app.config(['$interpolateProvider', function($interpolateProvider) {
   $interpolateProvider.startSymbol('{[');

@@ -4,12 +4,14 @@
     </div>
 </div>
 
-<div class="map">
+<leaflet width="100%" height="480px" center="center"></leaflet>
     
 </div>
+
 <table class="eq-table table table-hover">
     <thead>
         <tr>
+            <th></th>
             <th>ID</th>
             <th>Magnitude</th>
             <th>Time</th>
@@ -17,7 +19,8 @@
         </tr>
     </thead>
     <tbody>
-        <tr class="eq" ng-repeat="eq in eq_data">
+        <tr class="eq" ng-click="loadEQ($index)" ng-repeat="eq in eq_data">
+            <td>{[ $index + 1 ]}</td>
             <td>{[ eq['event_id'] ]}</td>
             <td>{[ eq['magnitude'] ]}</td>
             <td>{[ eq['time'] * 1000 | date]}</td>
