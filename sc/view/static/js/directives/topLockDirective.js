@@ -15,7 +15,7 @@ app.directive('topLock', function ($window) {
                 if ($window.pageYOffset >= offsetTop) {
                     element.addClass(topClass);
                     
-                    margin = parseInt($('.navbar').css('margin-bottom').replace('px', '')) + parseInt($('.navbar').css('margin-top').replace('px', ''))
+                    margin = parseInt(element.css('margin-bottom').replace('px', '')) + parseInt(element.css('margin-top').replace('px', ''))
                     parent.height(element.height() + margin);
                     if (!element.hasClass(topClass)) {
                         //$('body').css('margin-top', parseInt($('body').css('margin-top').replace("px", "")) + element.prop('offsetHeight'))
