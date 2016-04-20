@@ -53,14 +53,29 @@
 .navbar {
             width: 100%;
 }
-  
+
+.locked-navbar .nav-link {
+            width: 10%;
+}
+
+.nav-link { 
+            white-space: nowrap;
+}
+
 .navbar ul {
     list-style: none;
+    position: relative;
+    left: -45px;
+    text-align: center;
 }
 
 .navbar ul li {
     float: left;
     display: inline-block
+}
+
+.locked-navbar ul {
+            left: 5px;
 }
 
 .fix-to-top {
