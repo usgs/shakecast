@@ -39,7 +39,7 @@ app.controller('eqController', function($scope, $http, $timeout) {
                             lat: 0,
                             lng: 0,
                             message: '',
-                            focus: false,
+                            focus: true,
                             draggable: false
                         }
                     }
@@ -47,24 +47,44 @@ app.controller('eqController', function($scope, $http, $timeout) {
     
     $scope.loadEQ = function(index) {
         // apply new eq data to the map
-        $timeout(function () {
-            $scope.cur_eq = $scope.eq_data[index]
-            $scope.eqCenter = {
+        $scope.cur_eq = $scope.eq_data[index]
+        $scope.eqCenter = {
+                        lat: $scope.cur_eq.lat,
+                        lng: $scope.cur_eq.lon,
+                        zoom: 10
+                    };
+        $scope.markers = {
+                        eqMarker: {
                             lat: $scope.cur_eq.lat,
                             lng: $scope.cur_eq.lon,
-                            zoom: 4
-                        };
-            $scope.markers = {
-                            eqMarker: {
-                                lat: $scope.cur_eq.lat,
-                                lng: $scope.cur_eq.lon,
-                                message: $scope.cur_eq.place,
-                                focus: false,
-                                draggable: false
-                            }
-                        };
-        }, 100);
-    }
-    
+                            message: `<table class="table">
+                                        <tr> 
+                                            <th>Magnitude:</th><td>` + $scope.cur_eq.magnitude + `</td>
+                                        </tr>
+                                        <tr>
+                                            <th>Depth:</th><td>` + $scope.cur_eq.depth + `</td>
+                                        </tr>
+                                        <tr>
+                                            <th>Latitude:</th><td>` + $scope.cur_eq.lat + `</td>
+                                        </tr>
+                                        <tr>
+                                            <th>Longitude:</th><td>` + $scope.cur_eq.lon + `</td>
+                                        </tr>
+                                        <tr>
+                                            <th>Description:</th><td>` + $scope.cur_eq.place + `</td>
+                                        </tr>
+                                      </table>`,
+                            focus: true,
+                            draggable: false,
+                            popupOptions: {
+                                keepInView: true,
+                                autoPan: false
+                            },
+                            getMessageScope: function() {return $scope},
+                            compileMessage: true
+                        }
+                    };
+    };
+
     
 });

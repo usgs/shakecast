@@ -26,9 +26,9 @@
         </div>
         
         <div class="div-container">
-            <div class="navbar navbar-default" ng-controller="navController" top-lock="fix-to-top" padding-top="0">
+            <div class="navbar navbar-default" ng-controller="navController" top-lock="fix-to-top" padding-top="0" div-name="nav">
                 <ul class='nav nav-list'>
-                    <li ng-repeat='link in nav_links' ng-class="navClass('{[ link.title ]}')">
+                    <li ng-repeat="link in nav_links" ng-class="navClass('{[ link.title ]}')" class="nav-link">
                         <a href="#{[ link.title ]}" id='{[ link.title ]}'>{[ link.text ]}</a>
                     </li>
                     {% if current_user.is_admin() %}
