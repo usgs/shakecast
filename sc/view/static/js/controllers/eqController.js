@@ -35,7 +35,10 @@ app.controller('eqController', function($scope, $http) {
                     center: {
                         lat: $scope.cur_eq.lat,
                         lng: $scope.cur_eq.lon,
-                        zoom: 4}
+                        zoom: 4},
+                    defaults: {
+                        scrollWheelZoom: false
+                    }
                 });
     }
     
