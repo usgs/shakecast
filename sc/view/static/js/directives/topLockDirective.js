@@ -22,14 +22,14 @@ app.directive('topLock', function ($window) {
                     
                     if (name === 'navbar') {
                         
-                        element.addClass('locked-navbar', {duration:500, children: true})
+                        element.addClass('locked-navbar', {duration:200, children: true})
                     }
                 } else {
                     element.removeClass(topClass);
                     parent.css("height", null);
                     
                     if (name === 'navbar') {
-                        element.removeClass('locked-navbar', {duration:500, children: true})
+                        element.removeClass('locked-navbar', {duration:200, children: true})
                     }
                 }
             });
