@@ -2,11 +2,14 @@
     <head>
         <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet">
         <link href="{{ url_for('static', filename='css/main.css') }}" rel="stylesheet">
+        <link href="{{ url_for('static', filename='js/angular/dropzone/dropzone.css') }}" rel="stylesheet">
+
         <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.3.5/angular.min.js"></script>
         <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.25/angular-route.js"></script>
         <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular-animate.js"></script>
         <script src="{{ url_for('static', filename='js/angular/angular-sanitize.js') }}"></script>
         <script src="{{ url_for('static', filename='js/angular/angular-toast/dist/ngToast.min.js') }}"></script>
+        
         <title>ShakeCast</title>
     </head>
     <body ng-controller="adminController">
@@ -67,6 +70,12 @@
         
         <!-- Leaflet Maps -->
         <script src="http://cdn.leafletjs.com/leaflet-0.7.1/leaflet.js"></script>
+        
+        <!-- Dropzone -->
+        <script src="{{ url_for('static', filename='js/angular/dropzone/dropzone.js') }}"></script>
+        <script src="{{ url_for('static', filename='js/directives/admin/dropzoneDirective.js') }}"></script>
+        
+        
         
     </body>
 </html>

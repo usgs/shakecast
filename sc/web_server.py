@@ -107,7 +107,7 @@ def admin_only(func):
 @admin_only
 @login_required
 def admin():
-    return render_template('admin.html')
+    return render_template('admin/admin.html')
 
 @app.route('/admin/settings')
 @admin_only
@@ -133,11 +133,14 @@ def users():
 def groups():
     return '<h1>groups</h1>'
 
-@app.route('/admin/upload')
+@app.route('/admin/upload', methods=['GET','POST'])
 @admin_only
 @login_required
 def upload():
-    return '<h1>upload</h1>'
+    if request.method == 'GET':
+        return render_template('admin/upload.html')
+    
+    return "<p>got it</p>"
 
 @app.route('/admin/earthquakes')
 @admin_only
