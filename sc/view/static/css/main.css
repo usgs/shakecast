@@ -1,11 +1,14 @@
-.image_header {
+.header {
             height: 72px;
             background-color: #ffffff;
             margin-left: 10px;
             margin-bottom: 20px;
+            width: 35%;
+            min-width: 300px;
+            display: inline-block;
         }
         
-.image_header h1 {
+.header h1 {
             color: #444444;
             display: inline-block;
             font-size: 55px;
@@ -49,33 +52,67 @@
 .view.ng-leave.ng-leave-active{
   opacity: 0;
 }
-      
+
+.nav-container {
+            display: inline-block;
+            width: 60%;
+}
+
 .navbar {
+            width: 100%;
+            float: right;
+            left: 0px;
+            background: #ffffff;
+            overflow: visible;
+}
+
+.navbar ul {
+    list-style: none;
+    position: relative;
+    text-align: center;
+    float: left;
+    overflow: visible;
+}
+
+.navbar ul li {
+    float: left;
+    display: inline-block;
+    overflow: visible;
+}
+
+.navbar .in-app, .navbar .admin {
+                margin-right: 10px;
+}
+
+.navbar .logout {
+            float: right;
+}
+
+.navbar .logout p {
+            display: inline-block;
+}
+
+.navbar.locked-navbar {
+            width: 100%;
+            padding-top: 10px;
+}
+
+.locked-navbar ul {
             width: 100%;
 }
 
-.locked-navbar .nav-link {
-            width: 10%;
+.locked-navbar li {
+            margin-left: 20px;
 }
 
 .nav-link { 
             white-space: nowrap;
 }
 
-.navbar ul {
-    list-style: none;
-    position: relative;
-    left: -45px;
-    text-align: center;
-}
-
-.navbar ul li {
-    float: left;
-    display: inline-block
-}
-
-.locked-navbar ul {
-            left: 5px;
+.sc-nav img {
+            height:40px;
+            top:5px;
+            display: none;
 }
 
 .fix-to-top {
@@ -104,3 +141,4 @@
             margin-right: auto;
             position: relative;
 }
+

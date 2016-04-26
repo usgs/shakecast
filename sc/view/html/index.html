@@ -20,38 +20,35 @@
         <title>ShakeCast</title>
     </head>
     <body ng-controller="mainController">
-        <div class="image_header">
+        <div class="header">
             <img src="{{ url_for('static', filename='sc_logo.png') }}" class="rounded_sc">
             <h1>ShakeCast</h1>
-            
-            <div style="float:right;margin-right:10px">
-                <p style="display:inline">Welcome, {{ current_user.username }} |</p>
-                <a href="/logout" style="display:inline"> Logout</a>
-            </div>
         </div>
-        
-        <div class="div-container">
-            <div class="navbar navbar-default" ng-controller="navController" top-lock="fix-to-top" padding-top="0" div-name="navbar">
-                <ul class='nav nav-list'>
+        <div class="nav-container">
+            <div class="navbar" ng-controller="navController" top-lock="fix-to-top" padding-top="0" div-name="navbar">
+                <ul class='nav-list'>
                     
-                    <li class="sc">
-                        <img src="{{ url_for('static', filename='sc_logo.png') }}" class="rounded_sc" style="height:40px;top:5px">
+                    <li class="sc-nav">
+                        <img src="{{ url_for('static', filename='sc_logo.png') }}" class="rounded_sc" style="">
                     </li>
                     
-                    <li ng-repeat="link in nav_links" ng-class="navClass('{[ link.title ]}')" class="nav-link">
+                    <li ng-repeat="link in nav_links" ng-class="navClass('{[ link.title ]}')" class="nav-link in-app">
                         <a href="#{[ link.title ]}" id='{[ link.title ]}'>{[ link.text ]}</a>
                     </li>
                     {% if current_user.is_admin() %}
-                    <li class="nav-link">
+                    <li class="nav-link admin">
                         <a href="admin" id="admin">Administration Panel</a>
                     </li>
                     {% endif %}
+
+                    <li class="nav-link logout">
+                        <p>Welcome {{ current_user.username }} | </p>
+                        <a href="logout" class="nav-link">Logout</a>
+                    </li>
                 </ul>
             </div>
         </div>
-        
-        <toast></toast>
-        
+    
         <div ng-show="loading">
             <p>Loading...</p>
         </div>
