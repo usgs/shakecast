@@ -9,6 +9,7 @@ if modules_dir not in sys.path:
 
 from flask import Flask, render_template, url_for, request, session, flash, redirect
 from flask_login import LoginManager, login_user, logout_user, current_user, login_required
+from flask_uploads import UploadSet, configure_uploads
 from werkzeug.security import generate_password_hash, check_password_hash
 from functools import wraps
 import time
@@ -139,6 +140,7 @@ def groups():
 def upload():
     if request.method == 'GET':
         return render_template('admin/upload.html')
+    xml_files.save(request.files['file'])
     
     return "<p>got it</p>"
 
@@ -147,6 +149,12 @@ def upload():
 @login_required
 def admin_eqs():
     return '<h1>earthquakes</h1>'
+
+############################# Upload Setup ############################
+app.config['UPLOADED_XMLFILES_DEST'] = sc_dir() + 'tmp' + get_delim()
+xml_files = UploadSet('xmlfiles', ('xml',))
+configure_uploads(app, (xml_files,))
+
 
 if __name__ == '__main__':
     if len(sys.argv) > 1:
