@@ -6,6 +6,8 @@
             width: 35%;
             min-width: 300px;
             display: inline-block;
+            overflow-x: visible;
+            white-space: nowrap;
         }
         
 .header h1 {
@@ -118,6 +120,23 @@
 .fix-to-top {
     position: fixed;
     top: 0;
+}
+
+/* Classes for title of individual pages */
+.page-title {
+            text-align: center;
+}
+
+.page-title h2 {
+            border-bottom: 1px solid #444444;
+            padding-bottom: 3px;
+            width: 33%;
+            position: relative;
+            margin-left: auto;
+            margin-right: auto;
+            overflow: visible;
+            white-space: nowrap;
+            min-width: 400px
 }
 
 /*

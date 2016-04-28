@@ -38,5 +38,10 @@ app.config(function($routeProvider){
         controller: 'eqController',
         animation: 'main'
     })
+    .when('/notification',{
+        templateUrl:'/admin/notification',
+        controller: 'notController',
+        animation: 'main'
+    })
 });
       

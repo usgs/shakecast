@@ -141,8 +141,19 @@ def upload():
     if request.method == 'GET':
         return render_template('admin/upload.html')
     xml_files.save(request.files['file'])
+    # validate XML and determine which import function should be used
     
     return "<p>got it</p>"
+
+@app.route('/admin/notification', methods=['GET','POST'])
+@admin_only
+@login_required
+def notification():
+    if request.method == 'GET' and len(request.args) == 0:
+        return render_template('admin/notification.html')
+    elif request.method == 'GET':
+        return "<h1>notification {0}</h1>".format(len(request.args))
+    
 
 @app.route('/admin/earthquakes')
 @admin_only
