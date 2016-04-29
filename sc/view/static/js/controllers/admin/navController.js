@@ -11,7 +11,10 @@ app.controller('navController', ['$scope', function($scope) {
     }, {
         title: 'earthquakes',
         text: 'Earthquakes'
-    }, {
+    },{
+        title: 'notification',
+        text: 'Notification Templates'},
+    {
         title: 'upload',
         text: 'Upload'
     }, {

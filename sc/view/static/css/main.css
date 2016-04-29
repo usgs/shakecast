@@ -1,6 +1,7 @@
 .header {
             height: 72px;
             background-color: #ffffff;
+            margin-top: 10px;
             margin-left: 10px;
             margin-bottom: 20px;
             width: 35%;
@@ -8,6 +9,7 @@
             display: inline-block;
             overflow-x: visible;
             white-space: nowrap;
+            z-index:-1
         }
         
 .header h1 {
@@ -125,6 +127,7 @@
 /* Classes for title of individual pages */
 .page-title {
             text-align: center;
+            z-index: -1;
 }
 
 .page-title h2 {
@@ -136,7 +139,8 @@
             margin-right: auto;
             overflow: visible;
             white-space: nowrap;
-            min-width: 400px
+            min-width: 400px;
+            z-index: -1;
 }
 
 /*
@@ -153,6 +157,11 @@
             color: #000;
 }
 */
+
+/* ADMIN APP */
+.notifcation-container td, th {
+            text-align: center;
+}
 
 .upload-container {
             width: 80%;
