@@ -154,6 +154,12 @@ def notification():
     elif request.method == 'GET':
         return "<h1>notification {0}</h1>".format(len(request.args))
     
+@app.route('/new_event', methods=['GET','POST'])
+@admin_only
+@login_required
+def new_event():
+    return render_template('admin/new_event.html')
+    
 
 @app.route('/admin/earthquakes')
 @admin_only
