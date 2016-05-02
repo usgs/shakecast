@@ -2,6 +2,13 @@
   display: none !important;
 }
 
+h1,h2,h3,p,td,th {
+            color: #444444;
+            font-family: Arial;
+}
+
+
+
 .header {
             height: 72px;
             background-color: #ffffff;
@@ -29,7 +36,6 @@
             float: left;
             top: 50%;
             transform: translateY(-50%);
-            font-family: Arial
         }
         
 .rounded_sc {
@@ -145,6 +151,11 @@
             white-space: nowrap;
             min-width: 400px;
             z-index: -1;
+            color:#444444;
+}
+
+.page-title p {
+            color:#444444;
 }
 
 /*
@@ -167,10 +178,31 @@
             text-align: center;
 }
 
+/*////////// Upload Page ////////////*/
 .upload-container {
             width: 80%;
             margin-left: auto;
             margin-right: auto;
             position: relative;
+            height: 500px;
+}
+
+.dropzone {
+            border: 2px dashed #aaaaaa;
+            border-radius: 5px;
+            height: 40%;
+            margin-top: 40px;
+}
+
+.dropzone h2 {
+            color: #aaaaaa;
+            transform: translateY(-50%);
+}
+
+.dropzone .dz-message {
+            margin: 0px;
+            position: relative;
+            top: 50%;
+            transform: translateY(-50%);
 }
 
