@@ -3,11 +3,11 @@
     <p>An interface to personalize your ShakeCast notifications</p>
 </div>
 
-    <div class="notification-container" style="width:720px;height:1000px;display:inline-block;border: 2px dashed #cccccc;float:left;margin:10px;margin-right:5%;border-radius:10px" ng-include="template.url">
+    <div class="notification-container" ng-include="template.url">
 
     </div>
     
-    <div class="options-container" style="height:1000px;width:400px;display:inline-block;float:left;margin-top:20px">
+    <div class="options-container">
         <div class="option-container" style="width:100%;margin-left:5px;margin-bottom:5px">
             <label for="group-name">Group Name: </label>
             <select name="group-name" ng-model="group" ng-options="t.name for t in templates">
