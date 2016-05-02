@@ -159,6 +159,12 @@ def notification():
 @login_required
 def new_event():
     return render_template('admin/new_event.html')
+
+@app.route('/inspection', methods=['GET','POST'])
+@admin_only
+@login_required
+def inspection():
+    return '<h1>inspection</h1>'
     
 
 @app.route('/admin/earthquakes')
@@ -166,6 +172,38 @@ def new_event():
 @login_required
 def admin_eqs():
     return '<h1>earthquakes</h1>'
+
+@admin_only
+@login_required
+@app.route('/admin/get/groups')
+def get_groups():
+    session = Session()
+    if request.method == 'GET' and len(request.args) == 0:
+        groups = session.query(Group).all()
+    
+    if len(groups) > 1:
+        for group in groups:
+            group.facility_shaking = []
+            group.facilities = []
+        
+    group_json = json.dumps(groups, cls=AlchemyEncoder)
+    
+    Session.remove()    
+    return group_json
+
+@admin_only
+@login_required
+@app.route('/admin/get/users')
+def get_users():
+    session = Session()
+    users = session.query(User).all()
+    
+    for user in users:
+        user.password = ''
+    user_json = json.dumps(users, cls=AlchemyEncoder)
+    
+    Session.remove()    
+    return user_json
 
 ############################# Upload Setup ############################
 app.config['UPLOADED_XMLFILES_DEST'] = sc_dir() + 'tmp' + get_delim()

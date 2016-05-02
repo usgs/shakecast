@@ -117,6 +117,10 @@ class Facility(Base):
                                             self.orange_beta,
                                             self.red_beta,
                                             self.metric)
+                           
+    def __str__(self):
+        return self.name
+    
     
     def make_alert_level(self, shaking_point=None, shakemap=None, notifications=[]):
         '''
@@ -345,6 +349,9 @@ class Facility_Shaking(Base):
                                                    self.psa03,
                                                    self.psa10,
                                                    self.psa30)
+                                   
+    def __str__(self):
+        return ""
     
     
 #######################################################################
@@ -456,6 +463,9 @@ class Group(Base):
                                           self.lon_max,
                                           self.lat_min,
                                           self.lat_max)
+                        
+    def __str__(self):
+        return self.name
     
     @hybrid_method    
     def in_grid(self, grid):
