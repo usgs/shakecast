@@ -7,6 +7,10 @@ h1,h2,h3,p,td,th {
             font-family: Arial;
 }
 
+td,th {
+            text-align: center;
+}
+
 
 
 .header {
@@ -14,28 +18,29 @@ h1,h2,h3,p,td,th {
             background-color: #ffffff;
             margin-top: 10px;
             margin-left: 10px;
-            margin-bottom: 20px;
-            width: 35%;
-            min-width: 300px;
+            margin-bottom: 0px;
+            min-width: 375px;
             display: inline-block;
             overflow-x: visible;
             white-space: nowrap;
-            z-index:-1
+            position: relative;
         }
         
 .header h1 {
             color: #444444;
             display: inline-block;
             font-size: 55px;
-            position: relative;
+            position: absolute;
             line-height: 30px;
             padding-top: 10px;
             margin-left: 10px;
             margin-top: 0px;
-            margin-bottom: 0px;    
-            float: left;
+            margin-bottom: 0px;
+            left: 80px;
             top: 50%;
             transform: translateY(-50%);
+            position: absolute;
+            z-index: 1;
         }
         
 .rounded_sc {
@@ -43,33 +48,14 @@ h1,h2,h3,p,td,th {
             display: inline-block;
             position: relative;
             float: left;
+            position: absolute;
+            z-index: 1;
         }
-        
-.eqs {
-            display: block;
-            position: relative;
-            top: 50px;
-        }
-        
-.view.ng-enter{
-  opacity: 0;
-}
-
-.view.ng-enter.ng-enter-active{
-  opacity: 1;
-}
-
-.view.ng-leave{
-  opacity: 1;
-}
-
-.view.ng-leave.ng-leave-active{
-  opacity: 0;
-}
 
 .nav-container {
+            top: 10px;
             display: inline-block;
-            width: 60%;
+            float: right;
 }
 
 .navbar {
@@ -78,6 +64,8 @@ h1,h2,h3,p,td,th {
             left: 0px;
             background: #ffffff;
             overflow: visible;
+            border: none;
+            position: relative;
 }
 
 .navbar ul {
@@ -86,6 +74,11 @@ h1,h2,h3,p,td,th {
     text-align: center;
     float: left;
     overflow: visible;
+    margin-left: 20px;
+    padding: 0px;
+    overflow-x: visible;
+    float: right;
+    margin-right: 10px;
 }
 
 .navbar ul li {
@@ -99,7 +92,7 @@ h1,h2,h3,p,td,th {
 }
 
 .navbar .logout {
-            float: right;
+            margin-left: 40px;
 }
 
 .navbar .logout p {
@@ -111,8 +104,8 @@ h1,h2,h3,p,td,th {
             padding-top: 10px;
 }
 
-.locked-navbar ul {
-            width: 100%;
+.navbar.fix-to-top .nav-list {
+            margin-left: 39%;
 }
 
 .locked-navbar li {
@@ -138,6 +131,7 @@ h1,h2,h3,p,td,th {
 .page-title {
             text-align: center;
             z-index: -1;
+            margin-bottom: 40px;
 }
 
 .page-title h2 {
@@ -158,22 +152,28 @@ h1,h2,h3,p,td,th {
             color:#444444;
 }
 
-/*
-.dropzone {
-            width: 300px;
-            height: 300px;
-            border: 2px dashed #ccc;
-            line-height: 300px;
-            text-align: center;
+/*//////// GENERAL USER APP /////////////*/
+.eqs {
+            display: block;
+            position: relative;
+            top: 50px;
+        }
+
+.eq {
+            cursor: pointer;
+}
+        
+.leaf-container {
+            width:100%;
+            height:480px
 }
 
-.dropzone.dragover {
-            border-color: #000;
-            color: #000;
-}
-*/
+/*/////////// ADMIN APP /////////////////*/
 
-/* ADMIN APP */
+/*////// Inventory Page //////////////*/
+.fac {
+            cursor: pointer;
+}
 
 /*//////// Notification Page ////////*/
 .notifcation-container td, th {
@@ -190,12 +190,18 @@ h1,h2,h3,p,td,th {
             border-radius: 10px;
 }
 
-.options-container {
+.options {
             height: 1000px;
             width: 400px;
             display: inline-block;
             float: left;
             margin-top: 20px;
+}
+
+.option-container {
+            width: 100%;
+            margin-left: 5px;
+            margin-bottom: 5px;
 }
 
 /*////////// Upload Page ////////////*/
@@ -226,3 +232,19 @@ h1,h2,h3,p,td,th {
             transform: translateY(-50%);
 }
 
+/*///////////// ANIMATION ////////////////*/
+.view.ng-enter{
+  opacity: 0;
+}
+
+.view.ng-enter.ng-enter-active{
+  opacity: 1;
+}
+
+.view.ng-leave{
+  opacity: 1;
+}
+
+.view.ng-leave.ng-leave-active{
+  opacity: 0;
+}

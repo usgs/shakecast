@@ -104,7 +104,7 @@ def admin_only(func):
             return redirect(url_for('login'))
     return func_wrapper
 
-@app.route('/admin')
+@app.route('/admin/')
 @admin_only
 @login_required
 def admin():
@@ -120,7 +120,7 @@ def settings():
 @admin_only
 @login_required
 def inventory():
-    return '<h1>inventory</h1>'
+    return render_template('admin/inventory.html')
 
 @app.route('/admin/users')
 @admin_only
@@ -204,6 +204,18 @@ def get_users():
     
     Session.remove()    
     return user_json
+
+@admin_only
+@login_required
+@app.route('/admin/get/inventory')
+def get_inventory():
+    session = Session()
+    facilities = session.query(Facility).limit(50).all()
+    
+    facilities_json = json.dumps(facilities, cls=AlchemyEncoder)
+    
+    Session.remove()    
+    return facilities_json
 
 ############################# Upload Setup ############################
 app.config['UPLOADED_XMLFILES_DEST'] = sc_dir() + 'tmp' + get_delim()

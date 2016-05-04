@@ -14,7 +14,7 @@ app.directive('topLock', function ($window) {
                 
             $win.on('scroll', function (e) {
                 offsetTop = parent.prop('offsetTop') - padTop;
-                if ($window.pageYOffset >= offsetTop) {
+                if (($window.pageYOffset >= offsetTop) && ($window.pageYOffset != 0)) {
                     element.addClass(topClass);
                     element.css('top', padTop);
                     margin = parseInt(element.css('margin-bottom').replace('px', '')) + parseInt(element.css('margin-top').replace('px', ''))

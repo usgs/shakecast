@@ -3,25 +3,26 @@
     <p>An interface to personalize your ShakeCast notifications</p>
 </div>
 
-    <div class="notification-container" ng-include="template.url">
-
-    </div>
+    <div class="notification-container" ng-include="template.url"></div>
     
     <div class="options-container">
-        <div class="option-container" style="width:100%;margin-left:5px;margin-bottom:5px">
-            <label for="group-name">Group Name: </label>
-            <select name="group-name" ng-model="group" ng-options="t.name for t in templates">
-                <option value="">None</option>
-            </select>
+        <div class="options" top-lock="fix-to-top" padding-top="25">
+            <div class="option-container">
+                <label for="group-name">Group Name: </label>
+                <select name="group-name" ng-model="group" ng-options="t.name for t in templates">
+                    <option value="">None</option>
+                </select>
+            </div>
+            
+            <div class="option-container">
+                <label for="notification_type">Notification Type: </label>
+                <select name="group-name" ng-model="template" ng-options="t.name for t in templates">
+                    <option value="">None</option>
+                </select>
+            </div>
+            
+            <button class="btn">EDIT</button>
+            
         </div>
-        
-        <div class="option-container" style="width:100%;margin-left:5px;margin-bottom:5px">
-            <label for="notification_type">Notification Type: </label>
-            <select name="group-name" ng-model="template" ng-options="t.name for t in templates">
-                <option value="">None</option>
-            </select>
-        </div>
-        
-        <button class="btn">EDIT</button>
     
     </div>
