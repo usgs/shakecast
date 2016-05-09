@@ -53,12 +53,12 @@ td,th {
         }
 
 .nav-container {
-            top: 10px;
             display: inline-block;
             float: right;
 }
 
 .navbar {
+            padding-top: 10px;
             width: 100%;
             float: right;
             left: 0px;
@@ -232,6 +232,12 @@ td,th {
             transform: translateY(-50%);
 }
 
+/*////////////// GENERAL //////////////////*/
+.link {
+            cursor: pointer;
+}
+
+
 /*///////////// ANIMATION ////////////////*/
 .view.ng-enter{
   opacity: 0;
@@ -248,3 +254,4 @@ td,th {
 .view.ng-leave.ng-leave-active{
   opacity: 0;
 }
+

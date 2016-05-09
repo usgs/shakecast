@@ -1,18 +1,21 @@
 app.controller('inventoryController', function($scope, $http) {
     
-    $http.get('/admin/get/inventory')
-        .then(
-            function(response){
-                $scope.fac_data = response.data
-                $scope.cur_fac = $scope.fac_data[0]
-                $scope.loadFac(0)
-            }, 
-            function(response){
-                $scope.fac_data = []
-            }
-         );
+/////// GET FACILITY DATA ////////////
+    $scope.getFacs = function(lastID) {
+        $http.get('/admin/get/inventory')
+            .then(
+                function(response){
+                    $scope.fac_data = response.data
+                    $scope.cur_fac = $scope.fac_data[0]
+                    $scope.loadFac(0)
+                }, 
+                function(response){
+                    $scope.fac_data = []
+                }
+            );
+    }
     
-       
+//////////// MAP SETTINGS ////////////       
     angular.extend($scope, {
         center: {
                         lat: 0,
@@ -71,7 +74,7 @@ app.controller('inventoryController', function($scope, $http) {
                                             </tr>
                                             <tr>
                                                 <td colspan="2">
-                                                    <a>More Info ></a>
+                                                    <a class='link'>More Info ></a>
                                                 </td>
                                             </tr>
                                         <tbody>
@@ -82,9 +85,29 @@ app.controller('inventoryController', function($scope, $http) {
                         }
                     };
                                         
-        if ($scope.cur_eq['html']) {
-            $scope.markers.facMarker.message = $scope.cur_fac['html']
+        if ($scope.cur_fac.html) {
+            $scope.markers.facMarker.message = `<table>
+                                                    <tr>
+                                                        <td>` + $scope.cur_fac.html + `</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td colspan="2">
+                                                            <a class='link'>More Info ></a>
+                                                        </td>
+                                                    </tr>
+                                                </table>`
+                                                    
                         
         }
+    }
+    
+//////////// FACILITY POPUP ////////////
+    $scope.facMenuVisible = false
+    $scope.closeFacMenu = function() {
+        $scope.facMenuVisible = false;
+    };
+    $scope.showFacMenu = function(e) {
+        $scope.facMenuVisible = true;
+        e.stopPropagation();
     }
 });
