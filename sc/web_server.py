@@ -210,12 +210,18 @@ def get_users():
 @app.route('/admin/get/inventory')
 def get_inventory():
     session = Session()
-    facilities = session.query(Facility).limit(50).all()
+    facilities = session.query(Facility).filter(Facility.shakecast_id > request.args.get('last_id', 0)).limit(50).all()
     
     facilities_json = json.dumps(facilities, cls=AlchemyEncoder)
     
     Session.remove()    
     return facilities_json
+
+@admin_only
+@login_required
+@app.route('/admin/get/search_inventory')
+def inventory_search():
+    pass
 
 ############################# Upload Setup ############################
 app.config['UPLOADED_XMLFILES_DEST'] = sc_dir() + 'tmp' + get_delim()

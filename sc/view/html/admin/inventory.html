@@ -5,11 +5,61 @@
 
 
 <div class="div-container">
-    <div class="leaf-container" top-lock="fix-to-top" padding-top="40">
-        
-        <leaflet style="width:100%;height:100%" center="facCenter" defaults="defaults" markers="markers"></leaflet>
+    <div class='map-and-info-container' top-lock="fix-to-top" padding-top="40">
+        <div class="leaf-container inventory">
+            <leaflet class="leaflet" style="width:100%;height:100%" center="facCenter" defaults="defaults" markers="markers"></leaflet>
+        </div>
+        <div class="fac-info">
+            <div class="fac-details">
+                <h1>{[ cur_fac.name ]}</h1>
+                <p class="fac-desc">{[ cur_fac.description ? cur_fac.description : 'No Description' ]}</p>
+            </div>
+            <div class="fragility-table">
+                <h2>Fragility</h2>
+                <table class='table'>
+                    <tr>
+                        <th>
+                            Potential Impact
+                        </th>
+                        <th>
+                            Alhpa
+                        </th>
+                        <th>
+                            Beta
+                        </th>
+                    </tr>
+                    <tr>
+                        <td style="color:grey">Grey</td>
+                        <td>{[ cur_fac.grey != -1 ? cur_fac.grey : 'None' ]}</td>
+                        <td>{[ cur_fac.grey_beta != -1 ? cur_fac.grey_beta : 'None' ]}</td>
+                    </tr>
+                    <tr>
+                        <td style="color:green">Green</td>
+                        <td>{[ cur_fac.green != -1 ? cur_fac.green : 'None' ]}</td>
+                        <td>{[ cur_fac.green_beta != -1 ? cur_fac.green_beta : 'None' ]}</td>
+                    </tr>
+                    <tr>
+                        <td style="color:gold">Yellow</td>
+                        <td>{[ cur_fac.yellow != -1 ? cur_fac.yellow : 'None' ]}</td>
+                        <td>{[ cur_fac.yellow_beta != -1 ? cur_fac.yellow_beta : 'None' ]}</td>
+                    </tr>
+                    <tr>
+                        <td style="color:orange">Orange</td>
+                        <td>{[ cur_fac.orange != -1 ? cur_fac.orange : 'None' ]}</td>
+                        <td>{[ cur_fac.orange_beta != -1 ? cur_fac.orange_beta : 'None' ]}</td>
+                    </tr>
+                    <tr>
+                        <td style="color:red">Red</td>
+                        <td>{[ cur_fac.red != -1 ? cur_fac.red : 'None' ]}</td>
+                        <td>{[ cur_fac.red_beta != -1 ? cur_fac.red_beta : 'None' ]}</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
     </div>
 </div>
+
+
 
 <table class="fac-table table table-hover">
     <thead>
@@ -28,4 +78,6 @@
             <td>{[ fac['description'] ]}</td>
         </tr>
     </tbody>
+    
+    <h2>MORE</h2>
 </table>

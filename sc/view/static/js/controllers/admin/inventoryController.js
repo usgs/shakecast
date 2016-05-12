@@ -2,7 +2,7 @@ app.controller('inventoryController', function($scope, $http) {
     
 /////// GET FACILITY DATA ////////////
     $scope.getFacs = function(lastID) {
-        $http.get('/admin/get/inventory')
+        $http.get('/admin/get/inventory', {params: {last_id: lastID}})
             .then(
                 function(response){
                     $scope.fac_data = response.data
@@ -14,6 +14,8 @@ app.controller('inventoryController', function($scope, $http) {
                 }
             );
     }
+    
+    $scope.getFacs(0)
     
 //////////// MAP SETTINGS ////////////       
     angular.extend($scope, {
