@@ -176,6 +176,10 @@ td,th {
             cursor: pointer;
 }
 
+.fac-table {
+            margin-bottom: 0px;
+}
+
 .map-and-info-container {
             width: 100%;
             height: 490px;
@@ -202,6 +206,19 @@ td,th {
             float: left;
             margin-left: 1%;
             margin-top: 5px;
+}
+
+.more-facilities {
+            width: 100%;
+            text-align: center;
+            cursor: pointer;
+            color: rgb(50,100,220);
+            margin: 0px;
+            padding: 10px;
+}
+
+.more-facilities:hover {
+            background-color: rgb(220,220,220);
 }
 
 /*//////// Notification Page ////////*/

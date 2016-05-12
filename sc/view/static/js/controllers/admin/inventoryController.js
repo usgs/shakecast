@@ -1,13 +1,29 @@
 app.controller('inventoryController', function($scope, $http) {
     
 /////// GET FACILITY DATA ////////////
+    $scope.fac_data = []
     $scope.getFacs = function(lastID) {
         $http.get('/admin/get/inventory', {params: {last_id: lastID}})
             .then(
                 function(response){
-                    $scope.fac_data = response.data
-                    $scope.cur_fac = $scope.fac_data[0]
-                    $scope.loadFac(0)
+                    if (lastID == 0) {
+                        cur_fac_pos = 0
+                    } else {
+                        cur_fac_pos = $scope.fac_data.length
+                    }
+                    
+                    $scope.fac_data = $scope.fac_data.concat(response.data)
+                    
+                    // make sure we don't try to select a fac that
+                    // isn't there
+                    if ($scope.fac_data.length <= cur_fac_pos) {
+                        $scope.cur_fac = $scope.fac_data.slice(-1)[0]
+                    } else {
+                        $scope.cur_fac = $scope.fac_data[cur_fac_pos] 
+                    }
+                    
+                    $scope.loadFac()
+                    $scope.lastID = $scope.fac_data.slice(-1)[0].shakecast_id
                 }, 
                 function(response){
                     $scope.fac_data = []
@@ -51,9 +67,12 @@ app.controller('inventoryController', function($scope, $http) {
                 });
     
     
-    $scope.loadFac = function(index) {
+    $scope.loadFac = function(index=0, fac=[]) {
         // apply new eq data to the map
-        $scope.cur_fac = $scope.fac_data[index]
+        if ((fac == false) && (index != false)) {
+            $scope.cur_fac = $scope.fac_data[index]
+        }
+        
         $scope.facCenter = {
                         lat: $scope.cur_fac.lat_min,
                         lng: $scope.cur_fac.lon_min,
