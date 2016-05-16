@@ -14,6 +14,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from functools import wraps
 import time
 import datetime
+from ast import literal_eval
 from app.dbi.db_alchemy import *
 from app.server import Server
 from app.functions_util import *
@@ -210,7 +211,30 @@ def get_users():
 @app.route('/admin/get/inventory')
 def get_inventory():
     session = Session()
-    facilities = session.query(Facility).filter(Facility.shakecast_id > request.args.get('last_id', 0)).limit(50).all()
+    filter_ = literal_eval(request.args.get('filter', None))
+    if filter_:
+        if filter_.get('group', None):
+            facilities = (session.query(Facility)
+                            .filter(Facility.shakecast_id > request.args.get('last_id', 0))
+                            .filter(Facility.lat_min > (float(filter_['lat']) - float(filter_['lat_pm'])))
+                            .filter(Facility.lat_max < (float(filter_['lat']) + float(filter_['lat_pm'])))
+                            .filter(Facility.lon_min > (float(filter_['lon']) - float(filter_['lon_pm'])))
+                            .filter(Facility.lon_max < (float(filter_['lon']) + float(filter_['lon_pm'])))
+                            .filter(Facility.groups.any(Group.name.like(filter_['group'])))
+                            .limit(50)
+                            .all())
+            
+        else:
+            facilities = (session.query(Facility)
+                            .filter(Facility.shakecast_id > request.args.get('last_id', 0))
+                            .filter(Facility.lat_min > (float(filter_['lat']) - float(filter_['lat_pm'])))
+                            .filter(Facility.lat_max < (float(filter_['lat']) + float(filter_['lat_pm'])))
+                            .filter(Facility.lon_min > (float(filter_['lon']) - float(filter_['lon_pm'])))
+                            .filter(Facility.lon_max < (float(filter_['lon']) - float(filter_['lon_pm'])))
+                            .limit(50)
+                            .all())
+    else:   
+        facilities = session.query(Facility).filter(Facility.shakecast_id > request.args.get('last_id', 0)).limit(50).all()
     
     facilities_json = json.dumps(facilities, cls=AlchemyEncoder)
     

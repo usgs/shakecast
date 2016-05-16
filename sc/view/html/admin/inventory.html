@@ -59,20 +59,36 @@
     </div>
 </div>
 
-
-
 <table class="fac-table table table-hover">
     <thead>
         <tr>
-            <th></th>
+            <th>
+                <div class="filter-button" ng-click="showFilter = !showFilter; use_filter=true">
+                    Filter <span class="glyphicon glyphicon-filter"></span>
+                </div>
+            </th>
             <th>ID</th>
             <th>Name</th>
             <th>Description</th>
         </tr>
+        <tr>
+            <td colspan="4" class='filter' ng-show="showFilter">
+                <form action="">
+                    <label for="group">Group: </label><input id="group" class="group" ng-model="filter.group"/>
+                    <label for="lat">Latitude: </label><input id="lat" class="lat" ng-model="filter.lat"/>
+                    <label for="lat-pm">+-</label><input id="lat-pm" class="lat-pm" ng-model="filter.lat_pm"/>
+                    <label for="lon">Longitude</label><input id="lon" class="lon" ng-model="filter.lon"/>
+                    <label for="lon-pm">+-</label><input id="lon-pm" class="lon-pm" ng-model="filter.lon_pm"/>
+                    <button class="button" ng-click="getFacsFilter(lastID=0, filter=filter)">Go</button>
+                    
+                    <button class="button" ng-click="clearFilter()">Clear</button>
+                </form>
+            </td>
+        </tr>
     </thead>
     <tbody>
         <tr class="fac" ng-click="loadFac($index)" ng-repeat="fac in fac_data">
-            <td>{[ $index + 1 ]}</td>
+            <td></td>
             <td>{[ fac['facility_id'] ]}</td>
             <td>{[ fac['name'] ]}</td>
             <td>{[ fac['description'] ]}</td>
@@ -80,4 +96,4 @@
     </tbody>
 </table>
 
-<h2 ng-click="getFacs(index=lastID)" class="more-facilities">LOAD MORE</h2>
+<h2 ng-click="getFacs(index=lastID, filter=filter)" class="more-facilities">LOAD MORE</h2>

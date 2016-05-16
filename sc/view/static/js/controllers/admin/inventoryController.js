@@ -2,8 +2,10 @@ app.controller('inventoryController', function($scope, $http) {
     
 /////// GET FACILITY DATA ////////////
     $scope.fac_data = []
-    $scope.getFacs = function(lastID) {
-        $http.get('/admin/get/inventory', {params: {last_id: lastID}})
+    $scope.filter = {}
+    $scope.use_filter = false
+    $scope.getFacs = function(lastID=0, filter={}) {
+        $http.get('/admin/get/inventory', {params: {last_id: lastID, filter: filter}})
             .then(
                 function(response){
                     if (lastID == 0) {
@@ -29,6 +31,17 @@ app.controller('inventoryController', function($scope, $http) {
                     $scope.fac_data = []
                 }
             );
+    }
+    
+    $scope.clearFilter = function() {
+        $scope.filter = {}
+        $scope.fac_data = []
+        $scope.getFacs(0)
+    }
+    
+    $scope.getFacsFilter = function(lastID=0, filter={}) {
+        $scope.fac_data = []
+        $scope.getFacs(lastID=lastID, filter=filter)
     }
     
     $scope.getFacs(0)
@@ -122,13 +135,9 @@ app.controller('inventoryController', function($scope, $http) {
         }
     }
     
-//////////// FACILITY POPUP ////////////
-    $scope.facMenuVisible = false
-    $scope.closeFacMenu = function() {
-        $scope.facMenuVisible = false;
-    };
-    $scope.showFacMenu = function(e) {
-        $scope.facMenuVisible = true;
-        e.stopPropagation();
+    $scope.showFilter = false
+    
+    isEmpty = function(obj) {
+        return Object.keys(obj).length === 0;
     }
 });

@@ -147,6 +147,25 @@ td,th {
             color:#444444;
 }
 
+.filter-button {
+            cursor: pointer;
+            color: rgb(50,100,220);
+            border-radius: 5px;
+            height: 95%;
+            width: 80%;
+            position: relative;
+            margin-left: auto;
+            margin-right: auto;
+}
+
+.filter-button:hover {
+  background-color: rgb(220,220,220);
+}
+
+.glyphicon-filter {
+            vertical-align: middle;
+}
+
 /*//////// GENERAL USER APP /////////////*/
 .eqs {
             display: block;
@@ -198,6 +217,7 @@ td,th {
             right: 0px;
             margin-right: 1%;
             background-color: #ffffff;
+            text-align: center;
 }
 
 .leaf-container.inventory {
