@@ -20,11 +20,12 @@ app.controller('inventoryController', function($scope, $http) {
                     // isn't there
                     if ($scope.fac_data.length <= cur_fac_pos) {
                         $scope.cur_fac = $scope.fac_data.slice(-1)[0]
+                        cur_fac_pos = $scope.fac_data.length -1
                     } else {
                         $scope.cur_fac = $scope.fac_data[cur_fac_pos] 
                     }
                     
-                    $scope.loadFac()
+                    $scope.loadFac(index=cur_fac_pos)
                     $scope.lastID = $scope.fac_data.slice(-1)[0].shakecast_id
                 }, 
                 function(response){
@@ -82,7 +83,7 @@ app.controller('inventoryController', function($scope, $http) {
     
     $scope.loadFac = function(index=0, fac=[]) {
         // apply new eq data to the map
-        if ((fac == false) && (index != false)) {
+        if (fac == false) {
             $scope.cur_fac = $scope.fac_data[index]
         }
         
