@@ -8,6 +8,7 @@
     "Services": {
         "use_geo_json": true,
         "geo_json_web": "http://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/1.0_day.geojson",
+        "ignore_nets": ["at", "pt"],
         "geo_json_int": 60,
         "check_new_int": 3,
         "archive_mag": 5,

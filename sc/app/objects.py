@@ -36,6 +36,7 @@ class Product_Grabber(object):
         self.req_products = req_products
         self.server_address = ''
         self.json_feed_url = sc.geo_json_web
+        self.ignore_nets = sc.ignore_nets
         self.json_feed = ''
         self.earthquakes = {}
         self.data_dir = ''
@@ -102,6 +103,8 @@ class Product_Grabber(object):
         new_events = []
         for eq_id in self.earthquakes.keys():
             eq = self.earthquakes[eq_id]
+            if eq['properties']['net'] in self.ignore_nets:
+                continue
             
             # get event id and all ids
             event = Event()
@@ -795,6 +798,7 @@ class SC(object):
         self.archive_mag = 0.0
         self.keep_eq_for = 0
         self.eq_req_products = []
+        self.ignore_nets = []
         self.log_rotate = 0
         self.log_file = ''
         self.log_level = 0
@@ -851,6 +855,7 @@ class SC(object):
         self.archive_mag = conf_json['Services']['archive_mag']
         self.keep_eq_for = conf_json['Services']['keep_eq_for']
         self.geo_json_web = conf_json['Services']['geo_json_web']
+        self.ignore_nets = conf_json['Services']['ignore_nets']
         self.eq_req_products = conf_json['Services']['eq_req_products']
         
         
