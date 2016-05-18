@@ -1,6 +1,7 @@
 data/
 tmp/
 logs/
+docs/
 sc/modules/
 .DS_Store
 *.pyc
@@ -8,3 +9,4 @@ sc/modules/
 *.db
 sc/db/*
 sc/logs/*
+sc.json
