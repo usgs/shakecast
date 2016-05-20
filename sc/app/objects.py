@@ -36,6 +36,7 @@ class Product_Grabber(object):
         self.req_products = req_products
         self.server_address = ''
         self.json_feed_url = sc.geo_json_web
+        self.ignore_nets = sc.ignore_nets
         self.json_feed = ''
         self.earthquakes = {}
         self.data_dir = ''
@@ -103,12 +104,15 @@ class Product_Grabber(object):
         for eq_id in self.earthquakes.keys():
             eq = self.earthquakes[eq_id]
             
+            # ignore info from unfavorable networks and low mag eqs
+            if (eq['properties']['net'] in self.ignore_nets or
+                    eq['properties']['mag'] < sc.new_eq_mag_cutoff):
+                continue
+            
             # get event id and all ids
             event = Event()
-            event.all_event_ids = self.earthquakes[eq_id]['properties']['ids']
-            event.magnitude = self.earthquakes[eq_id]['properties']['mag']
-            if event.magnitude < sc.new_eq_mag_cutoff:
-                continue
+            event.all_event_ids = eq['properties']['ids']
+            event.magnitude = eq['properties']['mag']
             
             event.directory_name = '%s%s' % (self.data_dir,
                                              eq_id)
@@ -119,28 +123,26 @@ class Product_Grabber(object):
             # query the old event if necessary
             old_shakemaps = []
             if event.is_new() is False:
+                event.status = 'ignore'
                 ids = event.all_event_ids.strip(',').split(',')
                 old_events = [(session.query(Event)
                                 .filter(Event.event_id == each_id)
                                 .first())
                                     for each_id in ids]
                 
+                # remove older events
                 for old_event in old_events:
                     if old_event is not None:
-                        if (event.magnitude < (old_event.magnitude * .9) or
-                                event.magnitude > (old_event.magnitude * 1.1)):
-                            old_shakemaps += old_event.shakemaps
-                            session.delete(old_event)
-                            event.status = 'Update'
-                            
-                            # move all folder contents from previous events to current folder
-                        else:
-                            event.status = 'ignore'
+                        old_shakemaps += old_event.shakemaps
+                        
+                        # if one of these old events hasn't had
+                        # notifications sent, this event should be sent
+                        if old_event.status == 'new':
+                            event.status = 'new'
+                        session.delete(old_event)
             else:
+                # this is a new event, make a status to match
                 event.status = 'new'
-                
-            if event.status == 'ignore':
-                continue
                         
             # Fill the rest of the event info
             event.event_id = eq_id
@@ -158,6 +160,8 @@ class Product_Grabber(object):
             session.add(event)
             session.commit()
             
+            # add the event to the return list and add info to the
+            # return string
             new_events += [event]
             event_str += 'Event: %s\n' % event.event_id
         
@@ -268,10 +272,12 @@ class Product_Grabber(object):
                 except:
                     print 'Failed to download: %s %s' % (eq_id, product_name)
             
-            event = session.query(Event).filter(Event.event_id == shakemap.shakemap_id).all()
+            # check for event whose id or one of its old ids matches the shakemap id
+            event = session.query(Event).filter(Event.all_event_ids.contains(shakemap.shakemap_id)).all()
             if event:
                 event = event[0]
                 event.shakemaps.append(shakemap)
+                
             session.commit()
             
             new_shakemaps += [shakemap]
@@ -795,6 +801,7 @@ class SC(object):
         self.archive_mag = 0.0
         self.keep_eq_for = 0
         self.eq_req_products = []
+        self.ignore_nets = []
         self.log_rotate = 0
         self.log_file = ''
         self.log_level = 0
@@ -851,6 +858,7 @@ class SC(object):
         self.archive_mag = conf_json['Services']['archive_mag']
         self.keep_eq_for = conf_json['Services']['keep_eq_for']
         self.geo_json_web = conf_json['Services']['geo_json_web']
+        self.ignore_nets = conf_json['Services']['ignore_nets']
         self.eq_req_products = conf_json['Services']['eq_req_products']
         
         
