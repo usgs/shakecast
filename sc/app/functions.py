@@ -7,10 +7,16 @@ import xml.etree.ElementTree as ET
 from email.mime.text import MIMEText
 from email.MIMEImage import MIMEImage
 from email.MIMEMultipart import MIMEMultipart
-from werkzeug.security import generate_password_hash
 from dbi.db_alchemy import *
 from objects import *
 from functions_util import *
+import sys
+
+modules_dir = sc_dir() + 'modules'
+if modules_dir not in sys.path:
+    sys.path += [modules_dir]
+from werkzeug.security import generate_password_hash
+
 
 def geo_json():
     '''Get earthquake feed from USGS and check for new earthquakes
