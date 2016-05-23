@@ -142,7 +142,7 @@ class UI(object):
         Attempt to connect to the server
         """
         self.conn = socket.socket()
-        self.conn.connect(('', 1981))
+        self.conn.connect(('localhost', 1981))
         
     def get_message(self):
         """
