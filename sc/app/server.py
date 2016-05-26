@@ -426,6 +426,11 @@ class Server(object):
             
 if __name__ == '__main__':
     sc_server = Server()
+
+    # start shakecast
+    if len(sys.argv) > 1 and sys.argv[1] == 'start':
+        sc_server.start_shakecast()
+    
     while sc_server.stop_server is False:
         sc_server.stop_loop = False
         sc_server.loop()

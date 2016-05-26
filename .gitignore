@@ -10,3 +10,4 @@ sc/modules/
 sc/db/*
 sc/logs/*
 sc.json
+pypy/
