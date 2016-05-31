@@ -55,10 +55,7 @@ class Product_Grabber(object):
         property
         """
         path = os.path.dirname(os.path.abspath(__file__))
-        if os.name == 'nt':
-            self.delim = '\\'
-        else:
-            self.delim = '/'
+        self.delim = os.sep
         path = path.split(self.delim)
         path[-1] = 'data'
         self.data_dir = self.delim.join(path) + self.delim
