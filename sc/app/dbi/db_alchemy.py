@@ -778,7 +778,19 @@ class ShakeMap(Base):
     def __str__(self):
         return self.shakemap_id
     
-    @hybrid_method    
+    def old_maps(self):
+        """
+        Returns 0 for false and an integer count of old shakemaps for true
+        """
+        session = Session()
+        old_shakemaps = (session.query(ShakeMap)
+                            .filter(and_(ShakeMap.shakemap_version < self.shakemap_version,
+                                         ShakeMap.shakemap_id == self.shakemap_id))
+                            .all())
+        
+        Session.remove()
+        return len(old_shakemaps)
+      
     def is_new(self):
         stmt = (select([ShakeMap.__table__.c.shakecast_id])
                     .where(and_(ShakeMap.__table__.c.shakemap_id == self.shakemap_id,
@@ -791,8 +803,7 @@ class ShakeMap(Base):
             return False
         else:
             return True
-        
-    @hybrid_method    
+           
     def has_products(self, req_prods):
         shakemap_prods = [prod.product_type for prod in self.products]
         for prod in req_prods:

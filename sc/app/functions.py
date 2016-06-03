@@ -240,24 +240,14 @@ def process_shakemaps(shakemaps=[], session=None, scenario=False):
         
         # send out new events and create inspection notifications
         for group in groups_affected:
-            old_sms = (session.query(ShakeMap)
-                        .filter(ShakeMap.shakemap_id == shakemap.shakemap_id)
-                        .all())
-            
-            # determine whether it is a new event or not
-            if shakemap.shakemap_version > 1:
-                new_event = False
-            else:
-                new_event = True
-                
-            # create an inspection notification
+
+            # check if the group gets inspection notifications
             if group.has_spec(not_type='DAMAGE'):
                 
                 # Check if the group gets notification for updates
-                if new_event is False:
+                if shakemap.old_maps():
                     specs = [spec for spec in group.specs if spec.event_type == 'UPDATE']
                     if not specs:
-                        shakemap.status = 'update -- no notification'
                         continue
                     
                 notification = Notification(group=group,
@@ -375,7 +365,10 @@ def process_shakemaps(shakemaps=[], session=None, scenario=False):
                                      grid=grid) for n in notifications]
                 
             shakemap.status = 'processed'    
-            session.commit()
+        else:
+            shakemap.status = 'no groups'
+        
+        session.commit()
         
 def make_inspection_prios(facility=None,
                           shakemap=None,

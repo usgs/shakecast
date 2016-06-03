@@ -144,7 +144,7 @@ class TestFull(unittest.TestCase):
         insp_prios = ['GREY', 'GREEN', 'YELLOW', 'ORANGE', 'RED']
         for insp_prio in insp_prios:
             gs = Group_Specification()
-            gs.notification_type = 'NEW_EVENT'
+            gs.notification_type = 'DAMAGE'
             gs.minimum_magnitude = 3
             gs.notificaiton_format = 'EMAIL_HTML'
             gs.inspection_priority = insp_prio
@@ -172,6 +172,7 @@ class TestFull(unittest.TestCase):
         if sm:
             grid = create_grid(sm)
             f = create_fac(grid=grid)
+            f.name = 'TEST FAC'
             session.add(f)
             session.commit()
         else:
@@ -190,13 +191,18 @@ class TestFull(unittest.TestCase):
     def step8_checkEvents(self):
         session = Session()
         events = session.query(Event).all()
+        shakemaps = session.query(ShakeMap).all()
         for event in events:
             print 'EVENT: {} STATUS: {}'.format(event.event_id, event.status)
             if event.notifications:
                 for notification in event.notifications:
                     print 'EVENT: {} NOTIFICATION_STATUS: {}'.format(event.event_id, notification.status)
             
-        
+        for shakemap in shakemaps:
+            print 'ShakeMap: {} STATUS: {}'.format(shakemap.shakemap_id, shakemap.status)
+            if shakemap.notifications:
+                for notification in shakemap.notifications:
+                    print 'ShakeMap: {} NOTIFICATION_STATUS: {}'.format(shakemap.shakemap_id, notification.status)
         
     def steps(self):
         for name in sorted(dir(self)):
@@ -228,7 +234,47 @@ class TestUser(unittest.TestCase):
         user.username = 'Test_User'
         user.user_type = 'admin'
         
+
+def cg():
+    session = Session()
+    group = Group()
+    group.name = 'GLOBAL'
+    group.facility_type = 'All'
+    group.lon_min = -179.99
+    group.lon_max = 179.99
+    group.lat_min = -89.99
+    group.lat_max = 89.99
+    session.add(group)
+    
+    gs = Group_Specification()
+    gs.notification_type = 'NEW_EVENT'
+    gs.minimum_magnitude = 3
+    gs.notificaiton_format = 'EMAIL_HTML'
+    group.specs.append(gs)
+    
+    insp_prios = ['GREY', 'GREEN', 'YELLOW', 'ORANGE', 'RED']
+    for insp_prio in insp_prios:
+        gs = Group_Specification()
+        gs.notification_type = 'DAMAGE'
+        gs.minimum_magnitude = 3
+        gs.notificaiton_format = 'EMAIL_HTML'
+        gs.inspection_priority = insp_prio
+        group.specs.append(gs)
         
+    session.commit()
+    Session.remove()
+    
+def cu():
+    session = Session()
+    user = User()
+    user.username = 'test_user'
+    user.email = 'test@test.com'
+    user.user_type = 'ADMIN'
+    user.group_string = 'GLOBAL'
+    session.add(user)
+    session.commit()
+    Session.remove()
+    
 if __name__ == '__main__':
     
     # If the user wants to make sure they can get emails, they should
