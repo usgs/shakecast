@@ -428,7 +428,7 @@ def new_event_notification(notifications = [],
         None
     """
     url_opener = URLOpener()
-
+    
     events = [n.event for n in notifications]
     group = notifications[0].group
     notification = notifications[0]

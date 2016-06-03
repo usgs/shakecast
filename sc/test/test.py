@@ -141,6 +141,10 @@ class TestFull(unittest.TestCase):
         gs.notificaiton_format = 'EMAIL_HTML'
         group.specs.append(gs)
         
+        gs = Group_Specification()
+        gs.notification_type = 'heartbeat'
+        group.specs.append(gs)
+        
         insp_prios = ['GREY', 'GREEN', 'YELLOW', 'ORANGE', 'RED']
         for insp_prio in insp_prios:
             gs = Group_Specification()
@@ -191,21 +195,31 @@ class TestFull(unittest.TestCase):
     def step8_checkEvents(self):
         session = Session()
         events = session.query(Event).all()
-        shakemaps = session.query(ShakeMap).all()
         for event in events:
-            print 'EVENT: {} STATUS: {}'.format(event.event_id, event.status)
-            if event.notifications:
-                for notification in event.notifications:
-                    print 'EVENT: {} NOTIFICATION_STATUS: {}'.format(event.event_id,
-                                                                     notification.status)
-            
+            if event.status != 'processed':
+                raise ValueError('Event not processed... {}: {}'.format(event.event_id,
+                                                                        event.status))
+            for notification in event.notifications:
+                if notification.status != 'sent' and notification.status != 'aggregated':
+                    raise ValueError('Notification not sent... {}: {}, {}'.format(event.event_id,
+                                                                                  notification.notification_type,
+                                                                                  notification.status))
+                    
+        Session.remove()
+        
+    def step9_checkShakeMaps(self):
+        session = Session()
+        shakemaps = session.query(ShakeMap).all()
         for shakemap in shakemaps:
-            print 'ShakeMap: {} STATUS: {}'.format(shakemap.shakemap_id,
-                                                   shakemap.status)
-            if shakemap.notifications:
-                for notification in shakemap.notifications:
-                    print 'ShakeMap: {} NOTIFICATION_STATUS: {}'.format(shakemap.shakemap_id,
-                                                                        notification.status)
+            if shakemap.status != 'processed':
+                raise ValueError('ShakeMap not processed... {}: {}'.format(shakemap.shakemap_id,
+                                                                           shakemap.status))
+            for notification in shakemap.notifications:
+                if notification.status != 'sent' and notification.status != 'aggregated':
+                    raise ValueError('Notification not sent... {}: {}, {}'.format(shakemap.shakemap_id,
+                                                                                  notification.notification_type,
+                                                                                  notification.status))
+        Session.remove()
         
     def steps(self):
         '''
@@ -249,15 +263,164 @@ class TestFull(unittest.TestCase):
             self.fail(fail_message)
     
 
-class TestUser(unittest.TestCase):
+class TestImport(unittest.TestCase):
     '''
-    Test actions with the User database object
+    Run tests on the XML import functions
     '''
-    def test_createUser(self):
+    def step1_clearData(self):
+        '''
+        Clear the user, group, and facility data from the test database
+        '''
         session = Session()
-        user = User()
-        user.username = 'Test_User'
-        user.user_type = 'admin'
+        users = session.query(User).all()
+        groups = session.query(Group).all()
+        facs = session.query(Facility).all()
+        
+        [session.delete(user) for user in users]
+        [session.delete(group) for group in groups]
+        [session.delete(fac) for fac in facs]
+        
+        session.commit()
+        Session.remove()
+    
+    def step2_userImport(self):
+        import_user_xml('test_users.xml')
+        
+    def step3_groupImport(self):
+        import_group_xml('test_groups.xml')
+        
+    def step4_facImport(self):
+        import_facility_xml('test_facs.xml')
+    
+    def step5_checkUser(self):
+        session = Session()
+        users = session.query(User).all()
+        
+        failed = False
+        failed_str = ''
+        if len(users) != 3:
+            failed_str += 'Incorrect number of users: {}'.format(len(users))
+            failed = True
+        for user in users:
+            if user.username == 'Ex1':
+                if len(user.groups) != 0:
+                    failed_str += '\nIncorrect number of groups: {}, {}'.format(user.username, len(user.groups))
+                    failed = True
+            elif user.username == 'Ex2':
+                if len(user.groups) != 1:
+                    failed_str += '\nIncorrect number of groups: {}, {}'.format(user.username, len(user.groups))
+                    failed = True
+            elif user.username == 'Ex3':
+                if len(user.groups) != 3:
+                    failed_str += '\nIncorrect number of groups: {}, {}'.format(user.username, len(user.groups))
+                    failed = True
+        
+        if failed is True:
+            raise ValueError(failed_str)        
+        
+        Session.remove()
+        
+    def step6_checkGroup(self):
+        session = Session()
+        groups = session.query(Group).all()
+        
+        failed = False
+        failed_str = ''
+        if len(groups) != 3:
+            failed_str += '\nIncorrect number of groups: {}'.format(len(groups))
+            failed = True
+        
+        for group in groups:
+            if group.name == 'DU':
+                if len(group.users) != 1:
+                    failed_str += '\nIncorrect number of users: {}, {}'.format(group.name, len(group.users))
+                    failed = True
+            elif group.name == 'CAL_BRIDGES':
+                if len(group.users) != 2:
+                    failed_str += '\nIncorrect number of users: {}, {}'.format(group.name,
+                                                                               len(group.users))
+                    failed = True
+            elif group.name == 'CAL_BRIDGES_SCENARIO':
+                if len(group.users) != 1:
+                    failed_str += '\nIncorrect number of users: {}, {}'.format(group.name,
+                                                                               len(group.users))
+                    failed = True
+        
+        if failed is True:
+            raise ValueError(failed_str)
+        
+        Session.remove()
+        
+    def step7_checkFacs(self):
+        session = Session()
+        facs = session.query(Facility).all()
+        
+        failed = False
+        failed_str = ''
+        if len(facs) != 2:
+            failed_str += '\nIncorrect number of facs: {}'.format(len(facs))
+            failed = True
+            
+        for fac in facs:
+            if fac.facility_id == 1:
+                if len(fac.groups) != 2:
+                    failed_str += '\nIncorrect number of groups: {}, {}'.format(fac.facility_id,
+                                                                                len(facs))
+                    failed = True
+            elif fac.facility_id == 2:
+                if len(fac.groups) != 1:
+                    failed_str += '\nIncorrect number of groups: {}, {}'.format(fac.facility_id,
+                                                                                len(facs))
+                    failed = True
+                    
+        if failed is True:
+            raise ValueError(failed_str)
+                    
+        Session.remove()
+        
+    def step9_removeData(self):
+        self.step1_clearData()
+        
+    def steps(self):
+        '''
+        Generates the step methods from their parent object
+        '''
+        for name in sorted(dir(self)):
+            if name.startswith('step'):
+                yield name, getattr(self, name)
+    
+    def test_steps(self):
+        '''
+        Run the individual steps associated with this test
+        '''
+        # Create a flag that determines whether to raise an error at
+        # the end of the test
+        failed = False
+        
+        # An empty string that the will accumulate error messages for 
+        # each failing step
+        fail_message = ''
+        for name, step in self.steps():
+            try:
+                step()
+            except Exception as e:
+                # A step has failed, the test should continue through
+                # the remaining steps, but eventually fail
+                failed = True
+                
+                # get the name of the method -- so the fail message is
+                # nicer to read :)
+                name = name.split('_')[1]
+                # append this step's exception to the fail message
+                fail_message += "\n\nFAIL: {}\n {} failed ({}: {})".format(name,
+                                                                           step,
+                                                                           type(e),
+                                                                           e)
+        
+        # check if any of the steps failed
+        if failed is True:
+            # fail the test with the accumulated exception message
+            self.fail(fail_message)
         
 
 def cg():
