@@ -196,31 +196,56 @@ class TestFull(unittest.TestCase):
             print 'EVENT: {} STATUS: {}'.format(event.event_id, event.status)
             if event.notifications:
                 for notification in event.notifications:
-                    print 'EVENT: {} NOTIFICATION_STATUS: {}'.format(event.event_id, notification.status)
+                    print 'EVENT: {} NOTIFICATION_STATUS: {}'.format(event.event_id,
+                                                                     notification.status)
             
         for shakemap in shakemaps:
-            print 'ShakeMap: {} STATUS: {}'.format(shakemap.shakemap_id, shakemap.status)
+            print 'ShakeMap: {} STATUS: {}'.format(shakemap.shakemap_id,
+                                                   shakemap.status)
             if shakemap.notifications:
                 for notification in shakemap.notifications:
-                    print 'ShakeMap: {} NOTIFICATION_STATUS: {}'.format(shakemap.shakemap_id, notification.status)
+                    print 'ShakeMap: {} NOTIFICATION_STATUS: {}'.format(shakemap.shakemap_id,
+                                                                        notification.status)
         
     def steps(self):
+        '''
+        Generates the step methods from their parent object
+        '''
         for name in sorted(dir(self)):
             if name.startswith('step'):
                 yield name, getattr(self, name)
     
     def test_steps(self):
+        '''
+        Run the individual steps associated with this test
+        '''
+        # Create a flag that determines whether to raise an error at
+        # the end of the test
         failed = False
+        
+        # An empty string that the will accumulate error messages for 
+        # each failing step
         fail_message = ''
         for name, step in self.steps():
             try:
                 step()
             except Exception as e:
+                # A step has failed, the test should continue through
+                # the remaining steps, but eventually fail
                 failed = True
+                
+                # get the name of the method -- so the fail message is
+                # nicer to read :)
                 name = name.split('_')[1]
-                fail_message += "\n\nFAIL: {}\n {} failed ({}: {})".format(name, step, type(e), e)
+                # append this step's exception to the fail message
+                fail_message += "\n\nFAIL: {}\n {} failed ({}: {})".format(name,
+                                                                           step,
+                                                                           type(e),
+                                                                           e)
         
+        # check if any of the steps failed
         if failed is True:
+            # fail the test with the accumulated exception message
             self.fail(fail_message)
     
 

@@ -781,14 +781,14 @@ class ShakeMap(Base):
     def old_maps(self):
         """
         Returns 0 for false and an integer count of old shakemaps for true
-        """
-        session = Session()
-        old_shakemaps = (session.query(ShakeMap)
-                            .filter(and_(ShakeMap.shakemap_version < self.shakemap_version,
-                                         ShakeMap.shakemap_id == self.shakemap_id))
-                            .all())
+        """        
+        stmt = (select([ShakeMap.__table__.c.shakecast_id])
+                    .where(and_(ShakeMap.__table__.c.shakemap_id == self.shakemap_id,
+                                ShakeMap.__table__.c.shakemap_version < self.shakemap_version)))
         
-        Session.remove()
+        result = engine.execute(stmt)
+        old_shakemaps = [row for row in result]
+        
         return len(old_shakemaps)
       
     def is_new(self):
