@@ -860,27 +860,6 @@ class Plugins(Base):
     
 #######################################################################
 
-#def setup_db(db_name='shakecast.db'):
-#    db_name = 'shakecast.db'
-#    
-#    # logging from DB
-#    #logging.basicConfig(level=logging.DEBUG)
-#    #logging.getLogger('sqlalchemy.engine.base').setLevel(logging.DEBUG)
-#    
-#    # SETUP DATABASE
-#    engine = create_engine('sqlite:///%s%s' % (directory, db_name))
-#    #connection = engine.connect()
-#    
-#    # create database schema that doesn't exist
-#    db_sql = metadata.create_all(engine)
-#    
-#    # In SQLalchemy we always work with RELATED objects
-#    # all the objects we're working with are stored in a session
-#    session_maker = sessionmaker(bind=engine)
-#    Session = scoped_session(session_maker)
-#
-#    return engine, Session, db_sql
-
 # name the database, but switch to a test database if run from test.py
 db_name = 'shakecast.db'
 testing = False
