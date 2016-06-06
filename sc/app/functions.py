@@ -1066,6 +1066,24 @@ def import_user_xml(xml_file=''):
             'log': log_message}
     
     return data
+
+def determine_xml(xml_file=''):
+    tree = ET.parse(xml_file)
+    root = tree.getroot()
+    
+    xml_type = ''
+    if 'FacilityTable' in str(root):
+        xml_type = 'facility'
+    elif 'GroupTable' in str(root):
+        xml_type = 'group'
+    elif 'UserTable' in str(root):
+        xml_type = 'user'
+    else:
+        xml_type = 'unknown'
+        
+    return xml_type
+    
+    
               
 def add_facs_to_groups(session=None):
     '''
