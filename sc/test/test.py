@@ -10,6 +10,7 @@ path = os.sep.join(path) + os.sep
 if path not in sys.path:
     sys.path += [path]
 from app.functions import *
+from app.task import Task
 
 class TestProductGrabber(unittest.TestCase):
     '''
@@ -107,6 +108,33 @@ class TestClock(unittest.TestCase):
     def test_fromTime(self):
         c = Clock()
         c.from_time(time.time())
+        
+
+class TestTask(unittest.TestCase):
+    '''
+    Test the Task object the SC server uses to compelte jobs
+    '''
+    def test_initTask(self):
+        t = Task()
+    
+    def test_FuncNoArgs(self):
+        def func():
+            for i in xrange(1000):
+                pass
+            
+        t = Task()
+        t.func = func
+        t.run()
+        
+    def test_FuncArgs(self):
+        def func(some_arg=0):
+            for i in xrange(some_arg):
+                pass
+        
+        t = Task()
+        t.func = func
+        t.args_in = {'some_arg': 1000}
+        t.run()
         
 
 class TestFull(unittest.TestCase):

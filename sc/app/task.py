@@ -56,7 +56,6 @@ class Task(object):
         
     def run(self):
         self.status = 'running'
-        print 'Running: %s' % self.name
         
         if self.pdb is True:
             pdb.set_trace()
