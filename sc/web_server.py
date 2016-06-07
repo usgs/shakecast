@@ -19,6 +19,9 @@ from app.dbi.db_alchemy import *
 from app.server import Server
 from app.functions_util import *
 from app.objects import Clock
+from app.functions import determine_xml
+from ui import UI
+
 app = Flask(__name__,
             template_folder=sc_dir()+'view'+get_delim()+'html',
             static_folder=sc_dir()+'view'+get_delim()+'static')
@@ -141,10 +144,42 @@ def groups():
 def upload():
     if request.method == 'GET':
         return render_template('admin/upload.html')
-    xml_files.save(request.files['file'])
-    # validate XML and determine which import function should be used
     
-    return "<p>got it</p>"
+    xml_files.save(request.files['file'])
+    xml_file = app.config['UPLOADED_XMLFILES_DEST'] + request.files['file'].filename
+    # validate XML and determine which import function should be used
+    xml_file_type = determine_xml(xml_file)
+    
+    # these import functions need to be submitted to the server instead
+    # of run directly
+    import_data = {}
+    if xml_file_type is 'facility':
+        ui.send("{'import_facility_xml': {'func': import_facility_xml, \
+                                          'args_in': {'xml_file': '%s'}, \
+                                          'db_use': True, \
+                                          'loop': False}}" % xml_file)
+
+    if xml_file_type is 'group':
+        ui.send("{'import_group_xml': {'func': import_group_xml, \
+                                          'args_in': {'xml_file': '%s'}, \
+                                          'db_use': True, \
+                                          'loop': False}}" % xml_file)
+    if xml_file_type is 'user':
+        ui.send("{'import_user_xml': {'func': import_user_xml, \
+                                          'args_in': {'xml_file': '%s'}, \
+                                          'db_use': True, \
+                                          'loop': False}}" % xml_file)
+    else:
+        import_data = {'error': 'root'}
+        
+    time.sleep(1)
+    message = ui.get_message()
+    if message:
+        return ui.get_message()
+    else:
+        return 'no message'
+        
+    
 
 @app.route('/admin/notification', methods=['GET','POST'])
 @admin_only
@@ -241,12 +276,6 @@ def get_inventory():
     Session.remove()    
     return facilities_json
 
-@admin_only
-@login_required
-@app.route('/admin/get/search_inventory')
-def inventory_search():
-    pass
-
 ############################# Upload Setup ############################
 app.config['UPLOADED_XMLFILES_DEST'] = sc_dir() + 'tmp' + get_delim()
 xml_files = UploadSet('xmlfiles', ('xml',))
@@ -254,6 +283,7 @@ configure_uploads(app, (xml_files,))
 
 
 if __name__ == '__main__':
+    ui = UI()
     if len(sys.argv) > 1:
         if sys.argv[1] == '-d':
             # run in debug mode
