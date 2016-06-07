@@ -175,7 +175,7 @@ def upload():
     time.sleep(1)
     message = ui.get_message()
     if message:
-        return ui.get_message()
+        return message
     else:
         return 'no message'
         
