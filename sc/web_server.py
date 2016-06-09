@@ -114,31 +114,31 @@ def admin_only(func):
 def admin():
     return render_template('admin/admin.html')
 
-@app.route('/admin/settings')
+@app.route('/admin/settings/')
 @admin_only
 @login_required
 def settings():
     return '<h1>settings</h1>'
 
-@app.route('/admin/inventory')
+@app.route('/admin/inventory/')
 @admin_only
 @login_required
 def inventory():
     return render_template('admin/inventory.html')
 
-@app.route('/admin/users')
+@app.route('/admin/users/')
 @admin_only
 @login_required
 def users():
-    return '<h1>users</h1>'
+    return render_template('admin/users.html')
 
-@app.route('/admin/groups')
+@app.route('/admin/groups/')
 @admin_only
 @login_required
 def groups():
-    return '<h1>groups</h1>'
+    return render_template('admin/groups.html')
 
-@app.route('/admin/upload', methods=['GET','POST'])
+@app.route('/admin/upload/', methods=['GET','POST'])
 @admin_only
 @login_required
 def upload():
@@ -232,10 +232,23 @@ def get_groups():
 @app.route('/admin/get/users')
 def get_users():
     session = Session()
-    users = session.query(User).all()
+    filter_ = literal_eval(request.args.get('filter', None))
+    if filter_:
+        if filter_.get('group', None):
+            users = (session.query(User)
+                            .filter(User.shakecast_id > request.args.get('last_id', 0))
+                            .filter(User.groups.any(Group.name.like(filter_['group'])))
+                            .limit(50)
+                            .all())
+            
+        else:
+            users = (session.query(User)
+                            .filter(User.shakecast_id > request.args.get('last_id', 0))
+                            .limit(50)
+                            .all())
+    else:   
+        users = session.query(User).filter(User.shakecast_id > request.args.get('last_id', 0)).limit(50).all()
     
-    for user in users:
-        user.password = ''
     user_json = json.dumps(users, cls=AlchemyEncoder)
     
     Session.remove()    

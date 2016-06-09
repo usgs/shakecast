@@ -8,37 +8,37 @@ app.config(['$interpolateProvider', function($interpolateProvider) {
 
 app.config(function($routeProvider){
   $routeProvider
-    .when('/settings',{
-        templateUrl:'/admin/settings',
+    .when('/settings/',{
+        templateUrl:'/admin/settings/',
         controller: 'settingsController',
         animation: 'main'
     })
-    .when('/inventory',{
-        templateUrl:'/admin/inventory',
+    .when('/inventory/',{
+        templateUrl:'/admin/inventory/',
         controller: 'inventoryController',
         animation: 'main'
     })
-    .when('/users',{
-        templateUrl:'/admin/users',
+    .when('/users/',{
+        templateUrl:'/admin/users/',
         controller: 'userController',
         animation: 'main'
     })
-    .when('/groups',{
-        templateUrl:'/admin/groups',
+    .when('/groups/',{
+        templateUrl:'/admin/groups/',
         controller: 'groupController',
         animation: 'main'
     })
-    .when('/upload',{
-        templateUrl:'/admin/upload',
+    .when('/upload/',{
+        templateUrl:'/admin/upload/',
         controller: 'uploadController',
         animation: 'main'
     })
-    .when('/earthquakes',{
-        templateUrl:'/admin/earthquakes',
+    .when('/earthquakes/',{
+        templateUrl:'/admin/earthquakes/',
         controller: 'eqController',
         animation: 'main'
     })
-    .when('/notification',{
+    .when('/notification/',{
         templateUrl:'/admin/notification',
         controller: 'notController',
         animation: 'main'
