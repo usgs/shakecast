@@ -1,0 +1,24 @@
+<div class="page-title">
+    <h2>Notification Groups</h2>
+    <p>View and edit your notification group configurations</p>
+</div>
+
+<table class="table table-hover">
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Facility Type</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr class="group" ng-repeat="group in group_data">
+            <td>{[ group['name'] ]}</td>
+            <td>{[ group['facility_type'] ]}</td>
+            <td></td>
+        </tr>
+    </tbody>
+</table>
+
+
+<h2 ng-click="getGroups(index=lastID, filter=filter)" class="more-facilities">LOAD MORE</h2>

@@ -14,7 +14,7 @@ app.controller('userController', function($scope, $http) {
                     $scope.lastID = $scope.user_data.slice(-1)[0].shakecast_id
                 }, 
                 function(response){
-                    $scope.fac_data = []
+                    $scope.user_data = []
                 }
             );
     }

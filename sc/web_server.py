@@ -214,13 +214,10 @@ def admin_eqs():
 @app.route('/admin/get/groups')
 def get_groups():
     session = Session()
-    if request.method == 'GET' and len(request.args) == 0:
-        groups = session.query(Group).all()
-    
-    if len(groups) > 1:
-        for group in groups:
-            group.facility_shaking = []
-            group.facilities = []
+    groups = (session.query(Group)
+                .filter(Group.shakecast_id > request.args.get('last_id', 0))
+                .limit(50)
+                .all())
         
     group_json = json.dumps(groups, cls=AlchemyEncoder)
     
