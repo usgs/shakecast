@@ -166,6 +166,9 @@ td,th {
             vertical-align: middle;
 }
 
+.div-container {
+  height: null;
+}
 /*//////// GENERAL USER APP /////////////*/
 .eqs {
             display: block;
@@ -220,6 +223,7 @@ td,th {
             margin-right: 1%;
             background-color: #ffffff;
             text-align: center;
+            overflow: scroll;
 }
 
 .leaf-container.inventory {
