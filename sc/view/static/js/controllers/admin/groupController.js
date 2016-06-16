@@ -88,5 +88,12 @@ app.controller('groupController', function($scope, $http) {
                             focus: true
                         }
                     };
+                    
+        $http.get('/admin/get/groups/' + $scope.cur_group.shakecast_id + '/specs')
+                .then(
+                    function(response){
+                        $scope.cur_group.specs = response.data
+                    }
+                );
     }
 });

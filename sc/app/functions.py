@@ -853,6 +853,7 @@ def import_group_xml(xml_file=''):
         notification_type = ''
         inspection_priority = ''
         minimum_magnitude = 0
+        event_type = ''
         notification_format = ''
         aggregate_name = 'Default'
         damage_level = ''
@@ -950,6 +951,7 @@ def import_group_xml(xml_file=''):
                 spec.minimum_magnitude = minimum_magnitude
                 spec.notification_format = notification_format
                 spec.aggregate_group = aggregate_name
+                spec.event_type = event_type
     
     add_facs_to_groups(session=session)
     add_users_to_groups(session=session)

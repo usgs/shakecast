@@ -11,6 +11,28 @@
         <div class="fac-info">
             <div class="fac-details" ng-click="loadGroup($index)">
                 <h1>{[ cur_group.name ]}</h1>
+                <p>Facility Types: {[ cur_group.facility_type ]}</p>
+                <h2>Notifications for:</h2>
+                <div ng-if="cur_group.specs.heartbeat.length > 0">
+                    <p>Heartbeat</p>
+                </div>
+                <div ng-if="cur_group.specs.new_event.length > 0">
+                    <h3>New Events: Magnitudes > {[ cur_group.specs.new_event[0].minimum_magnitude ]}</h3>
+                </div>
+                <div ng-if="cur_group.specs.inspection.length > 0">
+                    <h3>Potential Impact:</h3>
+                    <p ng-repeat='spec in cur_group.specs.inspection'>{[ spec.inspection_priority ]}: Magnitudes > {[ spec.minimum_magnitude ]}</p>
+                </div>
+                <div ng-if="cur_group.specs.scenario_new_event.length > 0 || cur_group.specs.scenario_inspection.length > 0 ">
+                    <h3>Scenarios:</h3>
+                    <div ng-if="cur_group.specs.scenario_new_event.length > 0">
+                        <h3>New Events: Magnitudes > {[ cur_group.specs.scenario_new_event[0].minimum_magnitude ]}</h3>
+                    </div>
+                    <div ng-if="cur_group.specs.scenario_inspection.length > 0">
+                        <h3>Potential Impact:</h3>
+                        <p ng-repeat='spec in cur_group.specs.scenario_inspection'>{[ spec.inspection_priority ]}: Magnitudes > {[ spec.minimum_magnitude ]}</p>
+                    </div>
+                </div>
             </div>
         </div>
     </div>

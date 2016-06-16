@@ -226,6 +226,39 @@ def get_groups():
 
 @admin_only
 @login_required
+@app.route('/admin/get/groups/<group_id>/specs')
+def get_group_specs(group_id):
+    session = Session()
+    group = (session.query(Group)
+                .filter(Group.shakecast_id == group_id)
+                .first())
+    
+    group_specs = {'inspection': [],
+                   'new_event': [],
+                   'heartbeat': [],
+                   'scenario_inspection': [],
+                   'scenario_new_event': []}
+    if group is not None:
+        for spec in group.specs:
+            if spec.notification_type is not None and spec.event_type is not None:
+                if spec.notification_type.lower() == 'damage' and spec.event_type.lower() == 'actual':
+                    group_specs['inspection'] += [json.loads(json.dumps(spec, cls=AlchemyEncoder))]
+                elif spec.notification_type.lower() == 'new_event' and spec.event_type.lower() == 'actual':
+                    group_specs['new_event'] += [json.loads(json.dumps(spec, cls=AlchemyEncoder))]
+                elif spec.notification_type.lower() == 'damage' and spec.event_type.lower() =='scenario':
+                    group_specs['scenario_inspection'] += [json.loads(json.dumps(spec, cls=AlchemyEncoder))]
+                elif spec.notification_type.lower() == 'new_event' and spec.event_type.lower() =='scenario':
+                    group_specs['scenario_new_event'] += [json.loads(json.dumps(spec, cls=AlchemyEncoder))]
+                elif spec.notification_type.lower() == 'heartbeat':
+                    group_specs['heartbeat'] += [json.loads(json.dumps(spec, cls=AlchemyEncoder))]
+    
+    specs_json = json.dumps(group_specs, cls=AlchemyEncoder)
+    
+    Session.remove()    
+    return specs_json
+
+@admin_only
+@login_required
 @app.route('/admin/get/users')
 def get_users():
     session = Session()
