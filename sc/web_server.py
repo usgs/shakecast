@@ -286,6 +286,25 @@ def get_users():
 
 @admin_only
 @login_required
+@app.route('/admin/get/users/<user_id>/groups')
+def get_user_groups(user_id):
+    session = Session()
+    user = session.query(User).filter(User.shakecast_id == user_id).first()
+    
+    groups = []
+    if user is not None and user.groups:
+        for group in user.groups:
+            group.facilities = []
+            groups += [json.loads(json.dumps(group, cls=AlchemyEncoder))]
+            
+    
+    groups_json = json.dumps(groups, cls=AlchemyEncoder)
+    
+    Session.remove()    
+    return groups_json
+
+@admin_only
+@login_required
 @app.route('/admin/get/inventory')
 def get_inventory():
     session = Session()

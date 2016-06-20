@@ -94,6 +94,6 @@ app.controller('groupController', function($scope, $http) {
                     function(response){
                         $scope.cur_group.specs = response.data
                     }
-                );
+        );
     }
 });
