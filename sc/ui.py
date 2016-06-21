@@ -28,7 +28,7 @@ class UI(object):
     def __init__(self):
         self.stop_ui = False
         self.conn = socket.socket()
-        self.conns = {}
+        self.conns = []
         self._get_message = True
         self.print_queue = []
         
@@ -155,6 +155,7 @@ class UI(object):
             data += part
             
         print data
+        return data
         
     def get_message_loop(self):
         """

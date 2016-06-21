@@ -36,6 +36,7 @@ class Task(object):
         self.output = {'status': '',
                        'messege': ''}
         self.pdb = use_pdb
+        self.error = ''
         
     def __str__(self):
         return self.name
@@ -55,7 +56,6 @@ class Task(object):
         
     def run(self):
         self.status = 'running'
-        print 'Running: %s' % self.name
         
         if self.pdb is True:
             pdb.set_trace()
@@ -69,8 +69,9 @@ class Task(object):
                 else:
                     self.output = self.func()
                     self.status = 'finished'
-            except:
+            except Exception as e:
                 self.status = 'failed'
+                self.error = e
                 
             if self.loop is True:
                 self.next_run = time.time() + self.interval

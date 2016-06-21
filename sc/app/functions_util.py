@@ -20,12 +20,7 @@ def get_delim():
     """
     Returns which delimeter is appropriate for the operating system
     """
-    if os.name == 'nt':
-        delim = '\\'
-    else:
-        delim = '/'
-        
-    return delim
+    return os.sep
 
 def sc_dir():
     """

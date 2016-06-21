@@ -166,6 +166,9 @@ td,th {
             vertical-align: middle;
 }
 
+.div-container {
+  height: null;
+}
 /*//////// GENERAL USER APP /////////////*/
 .eqs {
             display: block;
@@ -200,10 +203,12 @@ td,th {
 }
 
 .map-and-info-container {
-            width: 100%;
+            width: 99%;
             height: 490px;
             background-color: #aaaaaa;
             z-index: 1;
+            border-radius: 5px;
+            margin-left: .5%;
 }
 
 .fac-info {
@@ -218,6 +223,7 @@ td,th {
             margin-right: 1%;
             background-color: #ffffff;
             text-align: center;
+            overflow: scroll;
 }
 
 .leaf-container.inventory {

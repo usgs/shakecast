@@ -1,6 +1,8 @@
 from db_util import *
 import os
 import sys
+import inspect as inspect_mod
+
 modules_dir = db_sc_dir() + 'modules'
 if modules_dir not in sys.path:
     sys.path += [modules_dir]
@@ -20,16 +22,6 @@ path = path.split(delim)
 path[-2] = 'db'
 del path[-1]
 directory = delim.join(path) + delim
-
-db_name = 'shakecast.db'
-
-# logging from DB
-#logging.basicConfig(level=logging.DEBUG)
-#logging.getLogger('sqlalchemy.engine.base').setLevel(logging.DEBUG)
-
-# SETUP DATABASE
-engine = create_engine('sqlite:///%s%s' % (directory, db_name))
-connection = engine.connect()
 
 # create a metadata object
 metadata = MetaData()
@@ -786,7 +778,19 @@ class ShakeMap(Base):
     def __str__(self):
         return self.shakemap_id
     
-    @hybrid_method    
+    def old_maps(self):
+        """
+        Returns 0 for false and an integer count of old shakemaps for true
+        """        
+        stmt = (select([ShakeMap.__table__.c.shakecast_id])
+                    .where(and_(ShakeMap.__table__.c.shakemap_id == self.shakemap_id,
+                                ShakeMap.__table__.c.shakemap_version < self.shakemap_version)))
+        
+        result = engine.execute(stmt)
+        old_shakemaps = [row for row in result]
+        
+        return len(old_shakemaps)
+      
     def is_new(self):
         stmt = (select([ShakeMap.__table__.c.shakecast_id])
                     .where(and_(ShakeMap.__table__.c.shakemap_id == self.shakemap_id,
@@ -799,8 +803,7 @@ class ShakeMap(Base):
             return False
         else:
             return True
-        
-    @hybrid_method    
+           
     def has_products(self, req_prods):
         shakemap_prods = [prod.product_type for prod in self.products]
         for prod in req_prods:
@@ -857,13 +860,34 @@ class Plugins(Base):
     
 #######################################################################
 
+# name the database, but switch to a test database if run from test.py
+db_name = 'shakecast.db'
+testing = False
+insp = inspect_mod.stack()
+for stack in insp:
+    if 'test.py' in stack:
+        db_name = 'test.db'
+        testing = True
+        
+# logging from DB
+#logging.basicConfig(level=logging.DEBUG)
+#logging.getLogger('sqlalchemy.engine.base').setLevel(logging.DEBUG)
+
+# SETUP DATABASE
+engine = create_engine('sqlite:///%s%s' % (directory, db_name))
+#connection = engine.connect()
+
+# if we're testing, we want to drop all existing database info to test
+# from scratch
+if testing is True:
+    drop_sql = metadata.drop_all(engine)
+
 # create database schema that doesn't exist
 db_sql = metadata.create_all(engine)
-
-#with open('db.txt', 'w') as f:
-#    f.write(db_sql)
 
 # In SQLalchemy we always work with RELATED objects
 # all the objects we're working with are stored in a session
 session_maker = sessionmaker(bind=engine)
 Session = scoped_session(session_maker)
+
+

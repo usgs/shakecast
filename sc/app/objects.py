@@ -14,7 +14,6 @@ import datetime
 import time
 from functions_util import *
 from dbi.db_alchemy import *
-
 modules_dir = sc_dir() + 'modules'
 if modules_dir not in sys.path:
     sys.path += [modules_dir]
@@ -55,10 +54,7 @@ class Product_Grabber(object):
         property
         """
         path = os.path.dirname(os.path.abspath(__file__))
-        if os.name == 'nt':
-            self.delim = '\\'
-        else:
-            self.delim = '/'
+        self.delim = os.sep
         path = path.split(self.delim)
         path[-1] = 'data'
         self.data_dir = self.delim.join(path) + self.delim
@@ -68,14 +64,8 @@ class Product_Grabber(object):
         Pulls json feed from USGS web and sets the self.json_feed
         variable. Also makes a list of the earthquakes' IDs
         """
-        
-        try:
-            url_opener = URLOpener()
-            json_str = url_opener.open(self.json_feed_url)
-        except:
-            self.log += 'Unable to access JSON -- check internet connection\n'
-            self.log += 'Error: %s' % sys.exc_info()[1]
-            return
+        url_opener = URLOpener()
+        json_str = url_opener.open(self.json_feed_url)
         
         self.json_feed = json.loads(json_str)
         
@@ -186,7 +176,7 @@ class Product_Grabber(object):
             try:
                 eq_str = url_opener.open(eq_url)
             except:
-                continue
+                self.log += 'Bad EQ URL: {0}'.format(eq_id)
             try:
                 eq_info = json.loads(eq_str)
             except e:
@@ -270,7 +260,7 @@ class Product_Grabber(object):
                     product.file_.write(product.str_)
                     product.file_.close()
                 except:
-                    print 'Failed to download: %s %s' % (eq_id, product_name)
+                    self.log += 'Failed to download: %s %s' % (eq_id, product_name)
             
             # check for event whose id or one of its old ids matches the shakemap id
             event = session.query(Event).filter(Event.all_event_ids.contains(shakemap.shakemap_id)).all()
@@ -295,6 +285,7 @@ class Product_Grabber(object):
         '''
         session = Session()
         last_hb = session.query(Event).filter(Event.event_id == 'heartbeat').all()
+        make_hb = False
         if last_hb:
             if time.time() > (last_hb[-1].time) + 24*60*60:
                 make_hb = True

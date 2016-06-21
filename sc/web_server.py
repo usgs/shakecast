@@ -19,6 +19,9 @@ from app.dbi.db_alchemy import *
 from app.server import Server
 from app.functions_util import *
 from app.objects import Clock
+from app.functions import determine_xml
+from ui import UI
+
 app = Flask(__name__,
             template_folder=sc_dir()+'view'+get_delim()+'html',
             static_folder=sc_dir()+'view'+get_delim()+'static')
@@ -111,40 +114,72 @@ def admin_only(func):
 def admin():
     return render_template('admin/admin.html')
 
-@app.route('/admin/settings')
+@app.route('/admin/settings/')
 @admin_only
 @login_required
 def settings():
     return '<h1>settings</h1>'
 
-@app.route('/admin/inventory')
+@app.route('/admin/inventory/')
 @admin_only
 @login_required
 def inventory():
     return render_template('admin/inventory.html')
 
-@app.route('/admin/users')
+@app.route('/admin/users/')
 @admin_only
 @login_required
 def users():
-    return '<h1>users</h1>'
+    return render_template('admin/users.html')
 
-@app.route('/admin/groups')
+@app.route('/admin/groups/')
 @admin_only
 @login_required
 def groups():
-    return '<h1>groups</h1>'
+    return render_template('admin/groups.html')
 
-@app.route('/admin/upload', methods=['GET','POST'])
+@app.route('/admin/upload/', methods=['GET','POST'])
 @admin_only
 @login_required
 def upload():
     if request.method == 'GET':
         return render_template('admin/upload.html')
-    xml_files.save(request.files['file'])
-    # validate XML and determine which import function should be used
     
-    return "<p>got it</p>"
+    xml_files.save(request.files['file'])
+    xml_file = app.config['UPLOADED_XMLFILES_DEST'] + request.files['file'].filename
+    # validate XML and determine which import function should be used
+    xml_file_type = determine_xml(xml_file)
+    
+    # these import functions need to be submitted to the server instead
+    # of run directly
+    import_data = {}
+    if xml_file_type is 'facility':
+        ui.send("{'import_facility_xml': {'func': import_facility_xml, \
+                                          'args_in': {'xml_file': '%s'}, \
+                                          'db_use': True, \
+                                          'loop': False}}" % xml_file)
+
+    if xml_file_type is 'group':
+        ui.send("{'import_group_xml': {'func': import_group_xml, \
+                                          'args_in': {'xml_file': '%s'}, \
+                                          'db_use': True, \
+                                          'loop': False}}" % xml_file)
+    if xml_file_type is 'user':
+        ui.send("{'import_user_xml': {'func': import_user_xml, \
+                                          'args_in': {'xml_file': '%s'}, \
+                                          'db_use': True, \
+                                          'loop': False}}" % xml_file)
+    else:
+        import_data = {'error': 'root'}
+        
+    time.sleep(1)
+    message = ui.get_message()
+    if message:
+        return message
+    else:
+        return 'no message'
+        
+    
 
 @app.route('/admin/notification', methods=['GET','POST'])
 @admin_only
@@ -179,13 +214,10 @@ def admin_eqs():
 @app.route('/admin/get/groups')
 def get_groups():
     session = Session()
-    if request.method == 'GET' and len(request.args) == 0:
-        groups = session.query(Group).all()
-    
-    if len(groups) > 1:
-        for group in groups:
-            group.facility_shaking = []
-            group.facilities = []
+    groups = (session.query(Group)
+                .filter(Group.shakecast_id > request.args.get('last_id', 0))
+                .limit(50)
+                .all())
         
     group_json = json.dumps(groups, cls=AlchemyEncoder)
     
@@ -197,10 +229,23 @@ def get_groups():
 @app.route('/admin/get/users')
 def get_users():
     session = Session()
-    users = session.query(User).all()
+    filter_ = literal_eval(request.args.get('filter', None))
+    if filter_:
+        if filter_.get('group', None):
+            users = (session.query(User)
+                            .filter(User.shakecast_id > request.args.get('last_id', 0))
+                            .filter(User.groups.any(Group.name.like(filter_['group'])))
+                            .limit(50)
+                            .all())
+            
+        else:
+            users = (session.query(User)
+                            .filter(User.shakecast_id > request.args.get('last_id', 0))
+                            .limit(50)
+                            .all())
+    else:   
+        users = session.query(User).filter(User.shakecast_id > request.args.get('last_id', 0)).limit(50).all()
     
-    for user in users:
-        user.password = ''
     user_json = json.dumps(users, cls=AlchemyEncoder)
     
     Session.remove()    
@@ -241,12 +286,6 @@ def get_inventory():
     Session.remove()    
     return facilities_json
 
-@admin_only
-@login_required
-@app.route('/admin/get/search_inventory')
-def inventory_search():
-    pass
-
 ############################# Upload Setup ############################
 app.config['UPLOADED_XMLFILES_DEST'] = sc_dir() + 'tmp' + get_delim()
 xml_files = UploadSet('xmlfiles', ('xml',))
@@ -254,6 +293,7 @@ configure_uploads(app, (xml_files,))
 
 
 if __name__ == '__main__':
+    ui = UI()
     if len(sys.argv) > 1:
         if sys.argv[1] == '-d':
             # run in debug mode

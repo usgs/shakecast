@@ -36,7 +36,7 @@ app.controller('uploadController', function($scope) {
     */
     $scope.dropzoneConfig = {
     'options': { // passed into the Dropzone constructor
-      'url': '/admin/upload'
+      'url': '/admin/upload/'
     },
     'eventHandlers': {
       'sending': function (file, xhr, formData) {

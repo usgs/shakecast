@@ -31,7 +31,11 @@ def geo_json():
                     'log': message to be added to ShakeCast log
                            and should contain info on error}
     '''
-    
+    error = ''
+    log_message = ''
+    status = 'failed'
+    new_events = []
+    new_shakemaps = []
     try:
         pg = Product_Grabber()
         pg.get_json_feed()
@@ -40,15 +44,20 @@ def geo_json():
         new_events, log_message = pg.get_new_events()
         new_shakemaps, log_message = pg.get_new_shakemaps()
         pg.make_heartbeat()
-    except Exception:
+        status = 'finished'
+    except Exception as e:
         log_message = 'Failed to download ShakeMap products: Check internet connection and firewall settings'
-        log_message += '\nError: %s' % sys.exc_info()[1]
+        error = str(e)
+        log_message += '\nError: %s' % error
     
     log_message = pg.log
     
-    data = {'status': 'finished',
+    data = {'status': status,
             'message': 'Check for new earthquakes',
-            'log': log_message}
+            'log': log_message,
+            'error': error,
+            'new_events': len(new_events),
+            'new_shakemaps': len(new_shakemaps)}
     
     return data
 
@@ -65,6 +74,7 @@ def check_new():
                            and should contain info on error}
     '''
     log_message = ''
+    error = ''
     try:
         session = Session()
         
@@ -75,8 +85,10 @@ def check_new():
                                 .filter(ShakeMap.status=='new')
                                 .all())
         
-    except:
-        log_message += 'failed to access database'
+    except Exception as e:
+        error = str(e)
+        log_message += 'failed to access database: {}'.format(error)
+        
         
     try:
         if new_events:
@@ -88,14 +100,17 @@ def check_new():
         else:
             log_message += '\nNo new shakemaps'
      
-    except:
-        log_message += 'failed to process new shakemaps: '
+    except Exception as e:
         raise
+        error = str(e)
+        log_message += 'failed to process new shakemaps: {}'.format(e)
+        
     
     Session.remove()
     data = {'status': 'finished',
             'message': 'Check for new earthquakes',
-            'log': log_message}
+            'log': log_message,
+            'error': error}
     
     return data
 
@@ -119,6 +134,7 @@ def process_events(events=[], session=None, scenario=False):
     clock = Clock()
     sc = SC()
     groups_affected = []
+    all_groups_affected = set()
     for event in events:
         # check if we should wait until daytime to process
         if (clock.nighttime() is True) and (scenario is False):
@@ -131,14 +147,17 @@ def process_events(events=[], session=None, scenario=False):
                                         .all())
             groups_affected = [group for group in in_region
                                     if group.has_spec(not_type='scenario')]
+            all_groups_affected.update(groups_affected)
         elif event.event_id != 'heartbeat':
             groups_affected = (session.query(Group)
                                         .filter(Group.point_inside(event))
                                         .all())
+            all_groups_affected.update(groups_affected)
         else:
             all_groups = session.query(Group).all()
             groups_affected = [group for group in all_groups
                                     if group.has_spec(not_type='heartbeat')]
+            all_groups_affected.update(groups_affected)
         
         event.status = 'processing_started'    
         if not groups_affected:
@@ -162,8 +181,8 @@ def process_events(events=[], session=None, scenario=False):
                                             status='created')
                 session.add(notification)
     
-    if groups_affected:    
-        for group in groups_affected:
+    if all_groups_affected:    
+        for group in all_groups_affected:
             # get new notifications
             nots = (session.query(Notification)
                         .filter(Notification.notification_type == 'NEW_EVENT')
@@ -171,7 +190,9 @@ def process_events(events=[], session=None, scenario=False):
                         .all())
                 
             new_event_notification(notifications=nots)
-            event.status = 'processed'
+            processed_events = [n.event for n in nots]
+            for e in processed_events:
+                e.status = 'processed'
             session.commit() 
     
 def process_shakemaps(shakemaps=[], session=None, scenario=False):
@@ -219,24 +240,14 @@ def process_shakemaps(shakemaps=[], session=None, scenario=False):
         
         # send out new events and create inspection notifications
         for group in groups_affected:
-            old_sms = (session.query(ShakeMap)
-                        .filter(ShakeMap.shakemap_id == shakemap.shakemap_id)
-                        .all())
-            
-            # determine whether it is a new event or not
-            if shakemap.shakemap_version > 1:
-                new_event = False
-            else:
-                new_event = True
-                
-            # create an inspection notification
+
+            # check if the group gets inspection notifications
             if group.has_spec(not_type='DAMAGE'):
                 
                 # Check if the group gets notification for updates
-                if new_event is False:
+                if shakemap.old_maps():
                     specs = [spec for spec in group.specs if spec.event_type == 'UPDATE']
                     if not specs:
-                        shakemap.status = 'update -- no notification'
                         continue
                     
                 notification = Notification(group=group,
@@ -354,11 +365,14 @@ def process_shakemaps(shakemaps=[], session=None, scenario=False):
                                      grid=grid) for n in notifications]
                 
             shakemap.status = 'processed'    
-            session.commit()
+        else:
+            shakemap.status = 'no groups'
         
-def make_inspection_prios(facility=Facility(),
-                          shakemap=ShakeMap(),
-                          grid=SM_Grid(),
+        session.commit()
+        
+def make_inspection_prios(facility=None,
+                          shakemap=None,
+                          grid=None,
                           notifications=[]):
     '''
     Determines inspection priorities for the input facility
@@ -414,76 +428,71 @@ def new_event_notification(notifications = [],
         None
     """
     url_opener = URLOpener()
-
+    
     events = [n.event for n in notifications]
     group = notifications[0].group
     notification = notifications[0]
-    for n in notifications[1:]:
-        n.status = 'agregated'
-        
-    try:
-        # create HTML for the event email
-        not_builder = Notification_Builder()
-        not_builder.buildNewEventHTML(events)
-        
-        notification.status = 'HTML success'
-    except:
-        notification.status = 'HTML failed'
     
-    if notification.status != 'HTML failed':
-        try:
-            #initiate message
-            msg = MIMEMultipart()
-            
-            # attach html
-            msg_html = MIMEText(not_builder.html, 'html')
-            msg.attach(msg_html)
+    # aggregate multiple events
+    for n in notifications[1:]:
+        n.status = 'aggregated'
 
-            # get and attach map
-            for count,event in enumerate(events):
-                gmap = url_opener.open("https://maps.googleapis.com/maps/api/staticmap?center=%s,%s&zoom=5&size=200x200&sensor=false&maptype=terrain&markers=icon:http://earthquake.usgs.gov/research/software/shakecast/icons/epicenter.png|%s,%s" % (event.lat, event.lon ,event.lat, event.lon))
-                msg_gmap = MIMEImage(gmap)
-                msg_gmap.add_header('Content-ID', '<gmap{0}>'.format(count))
-                msg_gmap.add_header('Content-Disposition', 'inline')
-                msg.attach(msg_gmap)
-            
-            # find the ShakeCast logo
-            logo_str = '{0}view{1}static{1}sc_logo.png'.format(sc_dir(),
-                                                               get_delim())
-            
-            # open logo and attach it to the message
-            logo_file = open(logo_str, 'rb')
-            msg_image = MIMEImage(logo_file.read())
-            logo_file.close()
-            msg_image.add_header('Content-ID', '<sc_logo>')
-            msg_image.add_header('Content-Disposition', 'inline')
-            msg.attach(msg_image)
-            
-            mailer = Mailer()
-            me = mailer.me
-            you = [user.email for user in group.users]
-            
-            if len(events) == 1:
-                msg['Subject'] = event.title
+    # create HTML for the event email
+    not_builder = Notification_Builder()
+    not_builder.buildNewEventHTML(events)
+    
+    notification.status = 'HTML success'
+
+    #initiate message
+    msg = MIMEMultipart()
+    
+    # attach html
+    msg_html = MIMEText(not_builder.html, 'html')
+    msg.attach(msg_html)
+
+    # get and attach map
+    for count,event in enumerate(events):
+        gmap = url_opener.open("https://maps.googleapis.com/maps/api/staticmap?center=%s,%s&zoom=5&size=200x200&sensor=false&maptype=terrain&markers=icon:http://earthquake.usgs.gov/research/software/shakecast/icons/epicenter.png|%s,%s" % (event.lat, event.lon ,event.lat, event.lon))
+        msg_gmap = MIMEImage(gmap)
+        msg_gmap.add_header('Content-ID', '<gmap{0}>'.format(count))
+        msg_gmap.add_header('Content-Disposition', 'inline')
+        msg.attach(msg_gmap)
+    
+    # find the ShakeCast logo
+    logo_str = '{0}view{1}static{1}sc_logo.png'.format(sc_dir(),
+                                                       get_delim())
+    
+    # open logo and attach it to the message
+    logo_file = open(logo_str, 'rb')
+    msg_image = MIMEImage(logo_file.read())
+    logo_file.close()
+    msg_image.add_header('Content-ID', '<sc_logo>')
+    msg_image.add_header('Content-Disposition', 'inline')
+    msg.attach(msg_image)
+    
+    mailer = Mailer()
+    me = mailer.me
+    you = [user.email for user in group.users]
+    
+    if len(events) == 1:
+        msg['Subject'] = event.title
+    else:
+        mags = []
+        for e in events:
+            if e.event_id == 'heartbeat':
+                mags += ['None']
             else:
-                mags = []
-                for e in events:
-                    if e.event_id == 'heartbeat':
-                        mags += ['None']
-                    else:
-                        mags += [e.magnitude]
-                        
-                msg['Subject'] = '{0} New Events -- Magnitudes: {1}'.format(len(events),
-                                                                            str(mags).replace("'", ''))
+                mags += [e.magnitude]
                 
-            msg['To'] = ', '.join(you)
-            msg['From'] = me
-            
-            mailer.send(msg=msg, you=you)
-            
-            notification.status = 'sent'
-        except:
-            notification.status = 'send failed'
+        msg['Subject'] = '{0} New Events -- Magnitudes: {1}'.format(len(events),
+                                                                    str(mags).replace("'", ''))
+        
+    msg['To'] = ', '.join(you)
+    msg['From'] = me
+    
+    mailer.send(msg=msg, you=you)
+    
+    notification.status = 'sent'
     
 def inspection_notification(notification=Notification(),
                             grid=SM_Grid()):
@@ -1057,6 +1066,24 @@ def import_user_xml(xml_file=''):
             'log': log_message}
     
     return data
+
+def determine_xml(xml_file=''):
+    tree = ET.parse(xml_file)
+    root = tree.getroot()
+    
+    xml_type = ''
+    if 'FacilityTable' in str(root):
+        xml_type = 'facility'
+    elif 'GroupTable' in str(root):
+        xml_type = 'group'
+    elif 'UserTable' in str(root):
+        xml_type = 'user'
+    else:
+        xml_type = 'unknown'
+        
+    return xml_type
+    
+    
               
 def add_facs_to_groups(session=None):
     '''
