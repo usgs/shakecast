@@ -56,9 +56,9 @@ app.controller('groupController', function($scope, $http) {
                     paths: {
                         polygon: {
                             type: "polygon",
-                            latlngs: [[0,0], [0,0], [0,0], [0,0]],
-                            fillColor: 'red',
-                            color: 'red'
+                            latlngs: [],
+                            fillColor: 'blue',
+                            color: 'blue'
                         }
                     }
                 });
@@ -96,4 +96,5 @@ app.controller('groupController', function($scope, $http) {
                     }
         );
     }
+
 });
