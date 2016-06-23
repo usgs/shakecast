@@ -56,9 +56,9 @@ app.controller('groupController', function($scope, $http) {
                     paths: {
                         polygon: {
                             type: "polygon",
-                            latlngs: [[0,0], [0,0], [0,0], [0,0]],
-                            fillColor: 'red',
-                            color: 'red'
+                            latlngs: [],
+                            fillColor: 'blue',
+                            color: 'blue'
                         }
                     }
                 });
@@ -88,5 +88,13 @@ app.controller('groupController', function($scope, $http) {
                             focus: true
                         }
                     };
+                    
+        $http.get('/admin/get/groups/' + $scope.cur_group.shakecast_id + '/specs')
+                .then(
+                    function(response){
+                        $scope.cur_group.specs = response.data
+                    }
+        );
     }
+
 });

@@ -14,7 +14,7 @@ import datetime
 import time
 from functions_util import *
 from dbi.db_alchemy import *
-modules_dir = sc_dir() + 'modules'
+modules_dir = os.path.join(sc_dir(), 'modules')
 if modules_dir not in sys.path:
     sys.path += [modules_dir]
 import socks
@@ -57,7 +57,7 @@ class Product_Grabber(object):
         self.delim = os.sep
         path = path.split(self.delim)
         path[-1] = 'data'
-        self.data_dir = self.delim.join(path) + self.delim
+        self.data_dir = os.path.normpath(self.delim.join(path))
         
     def get_json_feed(self):
         """
@@ -104,8 +104,8 @@ class Product_Grabber(object):
             event.all_event_ids = eq['properties']['ids']
             event.magnitude = eq['properties']['mag']
             
-            event.directory_name = '%s%s' % (self.data_dir,
-                                             eq_id)
+            event.directory_name = os.path.join(self.data_dir,
+                                                eq_id)
             if not os.path.exists(event.directory_name):
                 os.makedirs(event.directory_name)
             
@@ -227,11 +227,10 @@ class Product_Grabber(object):
             shakemap.status = 'new'
             
             # make a directory for the new event
-            shakemap.directory_name = '%s%s%s%s-%s' % (self.data_dir,
+            shakemap.directory_name = os.path.join(self.data_dir,
                                                    shakemap.shakemap_id,
-                                                   get_delim(),
                                                    shakemap.shakemap_id,
-                                                   shakemap.shakemap_version)
+                                                   '-' + shakemap.shakemap_version)
             if not os.path.exists(shakemap.directory_name):
                 os.makedirs(shakemap.directory_name)
             
@@ -334,10 +333,9 @@ class Product_Grabber(object):
         shakemap.status = 'scenario'
         
         # make a directory for the new event
-        shakemap.directory_name = '{0}{1}{2}{1}-{3}'.format(self.data_dir,
-                                                            shakemap.shakemap_id,
-                                                            get_delim(),
-                                                            shakemap.shakemap_version)
+        shakemap.directory_name = os.path.join(self.data_dir,
+                                               shakemap.shakemap_id,
+                                               '-' + shakemap.shakemap_version)
         if not os.path.exists(shakemap.directory_name):
             os.makedirs(shakemap.directory_name)
         
@@ -393,7 +391,7 @@ class Product_Grabber(object):
         shakemap.event = event
         event.magnitude = grid.magnitude
         event.depth = grid.depth
-        event.directory_name = '{0}{1}'.format(self.data_dir,
+        event.directory_name = os.path.join(self.data_dir,
                                                event.event_id)
         event.lat = grid.lat
         event.lon = grid.lon

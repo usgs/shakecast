@@ -3,7 +3,7 @@ import os
 import sys
 import inspect as inspect_mod
 
-modules_dir = db_sc_dir() + 'modules'
+modules_dir = os.path.join(db_sc_dir(), 'modules')
 if modules_dir not in sys.path:
     sys.path += [modules_dir]
     
@@ -21,7 +21,7 @@ delim = get_delim()
 path = path.split(delim)
 path[-2] = 'db'
 del path[-1]
-directory = delim.join(path) + delim
+directory = delim.join(path)
 
 # create a metadata object
 metadata = MetaData()
@@ -874,7 +874,7 @@ for stack in insp:
 #logging.getLogger('sqlalchemy.engine.base').setLevel(logging.DEBUG)
 
 # SETUP DATABASE
-engine = create_engine('sqlite:///%s%s' % (directory, db_name))
+engine = create_engine('sqlite:///%s' % os.path.join(directory, db_name))
 #connection = engine.connect()
 
 # if we're testing, we want to drop all existing database info to test

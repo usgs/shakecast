@@ -3,7 +3,7 @@ from app.objects import AlchemyEncoder
 import os
 import sys
 import json
-modules_dir = sc_dir() + 'modules'
+modules_dir = os.path.join(sc_dir(), 'modules')
 if modules_dir not in sys.path:
     sys.path += [modules_dir]
 
@@ -23,8 +23,8 @@ from app.functions import determine_xml
 from ui import UI
 
 app = Flask(__name__,
-            template_folder=sc_dir()+'view'+get_delim()+'html',
-            static_folder=sc_dir()+'view'+get_delim()+'static')
+            template_folder=os.path.join(sc_dir(),'view','html'),
+            static_folder=os.path.join(sc_dir(),'view','static'))
 
 ################################ Login ################################
 
@@ -146,7 +146,8 @@ def upload():
         return render_template('admin/upload.html')
     
     xml_files.save(request.files['file'])
-    xml_file = app.config['UPLOADED_XMLFILES_DEST'] + request.files['file'].filename
+    xml_file = os.path.join(app.config['UPLOADED_XMLFILES_DEST'],
+                            request.files['file'].filename)
     # validate XML and determine which import function should be used
     xml_file_type = determine_xml(xml_file)
     
@@ -155,18 +156,19 @@ def upload():
     import_data = {}
     if xml_file_type is 'facility':
         ui.send("{'import_facility_xml': {'func': import_facility_xml, \
-                                          'args_in': {'xml_file': '%s'}, \
+                                          'args_in': {'xml_file': r'%s'}, \
                                           'db_use': True, \
                                           'loop': False}}" % xml_file)
 
     if xml_file_type is 'group':
-        ui.send("{'import_group_xml': {'func': import_group_xml, \
-                                          'args_in': {'xml_file': '%s'}, \
+        send_str = ("{'import_group_xml': {'func': import_group_xml, \
+                                          'args_in': {'xml_file': r'%s'}, \
                                           'db_use': True, \
                                           'loop': False}}" % xml_file)
+        ui.send(send_str)
     if xml_file_type is 'user':
         ui.send("{'import_user_xml': {'func': import_user_xml, \
-                                          'args_in': {'xml_file': '%s'}, \
+                                          'args_in': {'xml_file': r'%s'}, \
                                           'db_use': True, \
                                           'loop': False}}" % xml_file)
     else:
@@ -226,6 +228,39 @@ def get_groups():
 
 @admin_only
 @login_required
+@app.route('/admin/get/groups/<group_id>/specs')
+def get_group_specs(group_id):
+    session = Session()
+    group = (session.query(Group)
+                .filter(Group.shakecast_id == group_id)
+                .first())
+    
+    group_specs = {'inspection': [],
+                   'new_event': [],
+                   'heartbeat': [],
+                   'scenario_inspection': [],
+                   'scenario_new_event': []}
+    if group is not None:
+        for spec in group.specs:
+            if spec.notification_type is not None and spec.event_type is not None:
+                if spec.notification_type.lower() == 'damage' and spec.event_type.lower() == 'actual':
+                    group_specs['inspection'] += [json.loads(json.dumps(spec, cls=AlchemyEncoder))]
+                elif spec.notification_type.lower() == 'new_event' and spec.event_type.lower() == 'actual':
+                    group_specs['new_event'] += [json.loads(json.dumps(spec, cls=AlchemyEncoder))]
+                elif spec.notification_type.lower() == 'damage' and spec.event_type.lower() =='scenario':
+                    group_specs['scenario_inspection'] += [json.loads(json.dumps(spec, cls=AlchemyEncoder))]
+                elif spec.notification_type.lower() == 'new_event' and spec.event_type.lower() =='scenario':
+                    group_specs['scenario_new_event'] += [json.loads(json.dumps(spec, cls=AlchemyEncoder))]
+                elif spec.notification_type.lower() == 'heartbeat':
+                    group_specs['heartbeat'] += [json.loads(json.dumps(spec, cls=AlchemyEncoder))]
+    
+    specs_json = json.dumps(group_specs, cls=AlchemyEncoder)
+    
+    Session.remove()    
+    return specs_json
+
+@admin_only
+@login_required
 @app.route('/admin/get/users')
 def get_users():
     session = Session()
@@ -250,6 +285,25 @@ def get_users():
     
     Session.remove()    
     return user_json
+
+@admin_only
+@login_required
+@app.route('/admin/get/users/<user_id>/groups')
+def get_user_groups(user_id):
+    session = Session()
+    user = session.query(User).filter(User.shakecast_id == user_id).first()
+    
+    groups = []
+    if user is not None and user.groups:
+        for group in user.groups:
+            group.facilities = []
+            groups += [json.loads(json.dumps(group, cls=AlchemyEncoder))]
+            
+    
+    groups_json = json.dumps(groups, cls=AlchemyEncoder)
+    
+    Session.remove()    
+    return groups_json
 
 @admin_only
 @login_required
@@ -287,7 +341,7 @@ def get_inventory():
     return facilities_json
 
 ############################# Upload Setup ############################
-app.config['UPLOADED_XMLFILES_DEST'] = sc_dir() + 'tmp' + get_delim()
+app.config['UPLOADED_XMLFILES_DEST'] = os.path.join(sc_dir(), 'tmp')
 xml_files = UploadSet('xmlfiles', ('xml',))
 configure_uploads(app, (xml_files,))
 

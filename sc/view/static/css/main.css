@@ -169,6 +169,10 @@ td,th {
 .div-container {
   height: null;
 }
+
+.main {
+  min-height: 900px;
+}
 /*//////// GENERAL USER APP /////////////*/
 .eqs {
             display: block;
