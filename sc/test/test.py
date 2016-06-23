@@ -6,7 +6,7 @@ import time
 import pdb
 path = os.path.dirname(os.path.abspath(__file__)).split(os.sep)
 del path[-1]
-path = os.sep.join(path) + os.sep
+path = os.path.normpath(os.sep.join(path))
 if path not in sys.path:
     sys.path += [path]
 from app.functions import *

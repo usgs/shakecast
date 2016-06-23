@@ -40,14 +40,12 @@ class Server(object):
         self.last_task = 0
         self.db_open = True
         
-        self.log_file = '%s%s%s%s' % (sc_dir(),
+        self.log_file = os.path.join(sc_dir(),
                                     'logs',
-                                    get_delim(),
                                     'server.log')
-        self.sc_log_file = '%s%s%s%s' % (sc_dir(),
-                                         'logs',
-                                         get_delim(),
-                                         'shakecast.log')
+        self.sc_log_file = os.path.join(sc_dir(),
+                                        'logs',
+                                        'shakecast.log')
         
         self.socket_setup()
         
@@ -204,8 +202,12 @@ class Server(object):
                 out_str = "FAILED: %s" % task.output['message']
                 server_log = 'Task: %s :: failed to finish'
             elif task.status == 'failed':
-                out_str = '%s failed to run...' % task.name
-                server_log = 'Task: %s :: failed to run'
+                out_str = '{} failed to run... \n{}: {}'.format(task.name,
+                                                                type(task.error),
+                                                                task.error)
+                server_log = 'Task: {} :: failed to run \n{}: {}'.format(task.name,
+                                                                         type(task.error),
+                                                                         task.error)
                 
             self.log(message=task.output.get('log', ''),
                      which='shakecast')

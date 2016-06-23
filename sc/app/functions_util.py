@@ -30,6 +30,6 @@ def sc_dir():
     delim = get_delim()
     path = path.split(delim)
     del path[-1]
-    directory = delim.join(path) + delim
+    directory = os.path.normpath(delim.join(path))
     
     return directory

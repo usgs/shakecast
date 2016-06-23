@@ -12,7 +12,7 @@ from objects import *
 from functions_util import *
 import sys
 
-modules_dir = sc_dir() + 'modules'
+modules_dir = os.path.join(sc_dir() + 'modules')
 if modules_dir not in sys.path:
     sys.path += [modules_dir]
 from werkzeug.security import generate_password_hash
@@ -459,8 +459,7 @@ def new_event_notification(notifications = [],
         msg.attach(msg_gmap)
     
     # find the ShakeCast logo
-    logo_str = '{0}view{1}static{1}sc_logo.png'.format(sc_dir(),
-                                                       get_delim())
+    logo_str = os.path.join(sc_dir(),'view','static','sc_logo.png')
     
     # open logo and attach it to the message
     logo_file = open(logo_str, 'rb')
@@ -538,8 +537,7 @@ def inspection_notification(notification=Notification(),
             msg.attach(msg_shakemap)
             
             # find the ShakeCast logo
-            logo_str = '{0}view{1}static{1}sc_logo.png'.format(sc_dir(),
-                                                               get_delim())
+            logo_str = os.path.join(sc_dir(),'view','static','sc_logo.png')
             
             # open logo and attach it to the message
             logo_file = open(logo_str, 'rb')
