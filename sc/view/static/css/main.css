@@ -308,6 +308,19 @@ td,th {
             transform: translateY(-50%);
 }
 
+/*///////////// Admin Settings ////////////*/
+.settings-group {
+  margin: 10px;
+}
+
+.settings-group .setting {
+  margin-left: 20px;
+}
+
+.settings-group .setting * {
+  display: inline-block;
+}
+
 /*////////////// GENERAL //////////////////*/
 .link {
             cursor: pointer;

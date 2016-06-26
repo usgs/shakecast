@@ -18,7 +18,7 @@ from ast import literal_eval
 from app.dbi.db_alchemy import *
 from app.server import Server
 from app.functions_util import *
-from app.objects import Clock
+from app.objects import Clock, SC
 from app.functions import determine_xml
 from ui import UI
 
@@ -114,11 +114,19 @@ def admin_only(func):
 def admin():
     return render_template('admin/admin.html')
 
-@app.route('/admin/settings/')
+@app.route('/admin/settings/', methods=['GET','POST'])
 @admin_only
 @login_required
 def settings():
-    return '<h1>settings</h1>'
+    if request.method == 'GET':
+        return render_template('admin/settings.html')
+    sc = SC()
+    settings = request.get_json().get('settings', '')
+    sc.json = json.dumps(settings)
+    
+    if sc.validate() is True:
+        sc.save()
+        return redirect('/admin/#/settings/')
 
 @app.route('/admin/inventory/')
 @admin_only
@@ -339,6 +347,13 @@ def get_inventory():
     
     Session.remove()    
     return facilities_json
+
+@admin_only
+@login_required
+@app.route('/admin/get/settings')
+def get_settings():
+    sc = SC()
+    return sc.json
 
 ############################# Upload Setup ############################
 app.config['UPLOADED_XMLFILES_DEST'] = os.path.join(sc_dir(), 'tmp')
