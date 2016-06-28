@@ -817,6 +817,8 @@ class SC(object):
         self.server_name = ''
         self.server_dns = ''
         self.software_version = ''
+        self.json = ''
+        self.conf_file_location = ''
     
         self.load()
     
@@ -829,8 +831,10 @@ class SC(object):
         """
         
         conf_dir = self.get_conf_dir()
-        conf_file = open(conf_dir + 'sc.json', 'r')
+        self.conf_file_location = os.path.join(conf_dir, 'sc.json')
+        conf_file = open(self.conf_file_location, 'r')
         conf_str = conf_file.read()
+        self.json = conf_str
         conf_json = json.loads(conf_str)
         
         # timezone
@@ -889,6 +893,14 @@ class SC(object):
         self.server_dns = conf_json['Server']['DNS']
         self.software_version = conf_json['Server']['software_version']
     
+    def validate(self):
+        return True
+    
+    def save(self):
+        conf_file = open(self.conf_file_location, 'w')
+        conf_file.write(self.json)
+        conf_file.close()
+    
     def get_conf_dir(self):
         """
         Determine where the conf directory is
@@ -902,7 +914,7 @@ class SC(object):
         delim = get_delim()
         path = path.split(delim)
         path[-1] = 'conf'
-        directory = delim.join(path) + delim
+        directory = os.path.normpath(delim.join(path))
         
         return directory
 

@@ -1,0 +1,156 @@
+<div class="page-title">
+    <h2>Settings</h2>
+    <p>Change the way ShakeCast works</p>
+</div>
+
+<div class="settings-container">
+    
+    <div class="settings-group">
+        <h3>Your ShakeCast</h3>
+        <div class="setting">
+            <label for="timezone">Timezone: </label>
+            <input id="timezone" type="number" value=0 ng-model="settings.timezone"/>
+        </div>
+        
+        <div class="setting">
+            <label for="name">Your Server Name: </label>
+            <input id="name" ng-model="settings.Server.name"/>
+        </div>
+        
+        <div class="setting">
+            <label for="dns">DNS Address: </label>
+            <input id="dns" ng-model="settings.Server.DNS"/>
+        </div>
+    </div>
+    
+    <div class="settings-group">
+        <h3>Application Behavior</h3>
+        
+        <div class="setting">
+            <label for="use_geo_json">Get USGS GeoJSON Feed: </label>
+            <select id="use_geo_json" ng-model="settings.Services.use_geo_json"
+                ng-options="geo_json_option.sc_val as geo_json_option.value for geo_json_option in geo_json_options">
+            </select>
+        </div>
+        
+        <div class="setting">
+            <label for="geo_json_web">GeoJSON Web: </label>
+            <input type="text" id="geo_json_web" ng-model="settings.Services.geo_json_web" />
+        </div>
+        
+        <div class="setting">
+            <label for="ignore_nets">Ignore Networks: </label>
+            <p id="ignore_nets">{[ settings.Services.ignore_nets.join(', ') ]}</p>
+            <button id="add_to_ignore_nets">edit</button>
+        </div>
+        
+        <div class="setting">
+            <label for="mag_cutoff">Magnitude Cutoff: </label>
+            <input id="mag_cutoff" type="number" value=0 ng-model="settings.Services.new_eq_mag_cutoff"/>
+        </div>
+        
+        <div class="setting">
+            <label for="keep_eq_for">Keep earthquakes for: </label>
+            <input id="keep_eq_for" type="number" value=0 ng-model="settings.Services.keep_eq_for"/>
+            <label for="keep_eq_for"> days</label>
+        </div>
+        
+        <div class="setting">
+            <label for="archive_mag">Permanently retain earthquakes magnitude </label>
+            <input id="archive_mag" type="number" value=0 ng-model="settings.Services.archive_mag"/>
+            <label for="archive_mag"> and larger</label>
+        </div>
+    </div>
+    
+    <div class="settings-group">
+        <h3>Nighttime Settings</h3>
+        <div class="setting">
+            <label for="night_mag">Minimum Magnitude for nighttime notifications: </label>
+            <input id="night_mag" type="number" value=0 ng-model="settings.Services.night_eq_mag_cutoff"/>
+        </div>
+        
+        <div class="setting">
+            <label for="nighttime">Nighttime: </label>
+            <input id="nighttime" type="number" value=0 ng-model="settings.Services.nighttime"/>
+        </div>
+        
+        <div class="setting">
+            <label for="morning">Morning: </label>
+            <input id="morning" type="number" value=0 ng-model="settings.Services.morning"/>
+        </div>
+    </div>
+    
+    <div class="settings-group">
+        <h3>SMTP Server</h3>
+        
+        <div class="setting">
+            <label for="server">Database Type: </label>
+            <input id="server" ng-model="settings.SMTP.server"/>
+        </div>
+        
+        <div class="setting">
+            <label for="username">Email: </label>
+            <input id="username" ng-model="settings.SMTP.username" />
+        </div>
+        
+        <div class="setting">
+            <label for="password">Password: </label>
+            <input id="password" ng-model="smtp_password" />
+        </div>
+        
+    </div>
+    
+    <div class="settings-group">
+        <h3>Database</h3>
+        
+        <div class="setting">
+            <label for="db_type">Database Type: </label>
+            <select id="db_type" ng-model="settings.DBConnection.type">
+                <option value="sqlite">SQLite</option>
+                <option value="mysql">MySQL</option>
+            </select>
+        </div>
+        
+        <div class="setting" ng-if="settings.DBConnection.type !== 'sqlite'">
+            <label for="username">Username: </label>
+            <input id="username" ng-model="settings.DBConnection.username" />
+        </div>
+        
+        <div class="setting" ng-if="settings.DBConnection.type !== 'sqlite'">
+            <label for="password">Password: </label>
+            <input id="password" ng-model="db_password" />
+        </div>
+        
+    </div>
+    
+    <div class="settings-group">
+        <h3>Proxy</h3>
+        
+        <div class="setting">
+            <label for="use_proxy">Connect through a proxy: </label>
+            <input id="use_proxy" type="checkbox" ng-model="settings.Proxy.use" />
+        </div>
+        
+        <div class="setting" ng-if="settings.Proxy.use">
+            <label for="server">Server: </label>
+            <input id="server" ng-model="settings.Proxy.server" />
+        </div>
+        
+        <div class="setting" ng-if="settings.Proxy.use">
+            <label for="port">Port: </label>
+            <input id="port" ng-model="settings.Proxy.port" />
+        </div>
+        
+        <div class="setting" ng-if="settings.Proxy.use">
+            <label for="username">Username: </label>
+            <input id="username" ng-model="settings.Proxy.username" />
+        </div>
+        
+        <div class="setting" ng-if="settings.Proxy.use">
+            <label for="password">Password: </label>
+            <input id="password" ng-model="proxy_password" />
+        </div>
+    </div>
+    
+    <h1 ng-click="save()" class="link">SAVE</h1>
+</div>
