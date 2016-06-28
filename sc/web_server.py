@@ -38,6 +38,8 @@ login_manager.login_view = 'login'
 def load_user(user_id):
     session = Session()
     user = session.query(User).filter(User.shakecast_id==int(user_id)).first()
+    
+    Session.remove()
     return user
 
 @app.route('/login', methods=['GET','POST'])
@@ -53,10 +55,12 @@ def login():
     
     if (registered_user is None or not
             check_password_hash(registered_user.password, password)):
+        Session.remove()
         return redirect('/#login-fail')
 
     login_user(registered_user)
     flash('Logged in successfully')
+    Session.remove()
     return redirect(request.args.get('next') or url_for('index'))
 
 @app.route('/logout')
