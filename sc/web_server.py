@@ -21,6 +21,7 @@ from app.functions_util import *
 from app.objects import Clock, SC
 from app.functions import determine_xml
 from ui import UI
+import pdb
 
 app = Flask(__name__,
             template_folder=os.path.join(sc_dir(),'view','html'),
@@ -308,9 +309,9 @@ def get_user_groups(user_id):
     groups = []
     if user is not None and user.groups:
         for group in user.groups:
-            group.facilities = []
-            groups += [json.loads(json.dumps(group, cls=AlchemyEncoder))]
-            
+            group_dict = group.__dict__.copy()
+            group_dict.pop('_sa_instance_state', None)
+            groups += [group_dict]
     
     groups_json = json.dumps(groups, cls=AlchemyEncoder)
     
