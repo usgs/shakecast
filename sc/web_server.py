@@ -91,7 +91,14 @@ def home():
 def eq_data():
     session = Session()
     eqs = session.query(Event).filter(Event.event_id != 'heartbeat').order_by(Event.time.desc()).all()
-    eq_json = json.dumps(eqs, cls=AlchemyEncoder)
+    
+    eq_dicts = []
+    for eq in eqs:
+        eq_dict = eq.__dict__.copy()
+        eq_dict.pop('_sa_instance_state', None)
+        eq_dicts += [eq_dict]
+    
+    eq_json = json.dumps(eq_dicts, cls=AlchemyEncoder)
     
     Session.remove()    
     return eq_json
@@ -233,8 +240,14 @@ def get_groups():
                 .filter(Group.shakecast_id > request.args.get('last_id', 0))
                 .limit(50)
                 .all())
+    
+    group_dicts = []
+    for group in groups:
+        group_dict = group.__dict__.copy()
+        group_dict.pop('_sa_instance_state', None)
+        group_dicts += [group_dict]
         
-    group_json = json.dumps(groups, cls=AlchemyEncoder)
+    group_json = json.dumps(group_dicts, cls=AlchemyEncoder)
     
     Session.remove()    
     return group_json
@@ -256,16 +269,18 @@ def get_group_specs(group_id):
     if group is not None:
         for spec in group.specs:
             if spec.notification_type is not None and spec.event_type is not None:
+                spec_dict = spec.__dict__.copy()
+                spec_dict.pop('_sa_instance_state', None)
                 if spec.notification_type.lower() == 'damage' and spec.event_type.lower() == 'actual':
-                    group_specs['inspection'] += [json.loads(json.dumps(spec, cls=AlchemyEncoder))]
+                    group_specs['inspection'] += [spec_dict]
                 elif spec.notification_type.lower() == 'new_event' and spec.event_type.lower() == 'actual':
-                    group_specs['new_event'] += [json.loads(json.dumps(spec, cls=AlchemyEncoder))]
+                    group_specs['new_event'] += [spec_dict]
                 elif spec.notification_type.lower() == 'damage' and spec.event_type.lower() =='scenario':
-                    group_specs['scenario_inspection'] += [json.loads(json.dumps(spec, cls=AlchemyEncoder))]
+                    group_specs['scenario_inspection'] += [spec_dict]
                 elif spec.notification_type.lower() == 'new_event' and spec.event_type.lower() =='scenario':
-                    group_specs['scenario_new_event'] += [json.loads(json.dumps(spec, cls=AlchemyEncoder))]
+                    group_specs['scenario_new_event'] += [spec_dict]
                 elif spec.notification_type.lower() == 'heartbeat':
-                    group_specs['heartbeat'] += [json.loads(json.dumps(spec, cls=AlchemyEncoder))]
+                    group_specs['heartbeat'] += [spec_dict]
     
     specs_json = json.dumps(group_specs, cls=AlchemyEncoder)
     
@@ -277,7 +292,7 @@ def get_group_specs(group_id):
 @app.route('/admin/get/users')
 def get_users():
     session = Session()
-    filter_ = literal_eval(request.args.get('filter', None))
+    filter_ = literal_eval(request.args.get('filter', 'None'))
     if filter_:
         if filter_.get('group', None):
             users = (session.query(User)
@@ -294,7 +309,13 @@ def get_users():
     else:   
         users = session.query(User).filter(User.shakecast_id > request.args.get('last_id', 0)).limit(50).all()
     
-    user_json = json.dumps(users, cls=AlchemyEncoder)
+    user_dicts = []
+    for user in users:
+        user_dict = user.__dict__.copy()
+        user_dict.pop('_sa_instance_state', None)
+        user_dicts += [user_dict]
+        
+    user_json = json.dumps(user_dicts, cls=AlchemyEncoder)
     
     Session.remove()    
     return user_json
@@ -323,7 +344,7 @@ def get_user_groups(user_id):
 @app.route('/admin/get/inventory')
 def get_inventory():
     session = Session()
-    filter_ = literal_eval(request.args.get('filter', None))
+    filter_ = literal_eval(request.args.get('filter', 'None'))
     if filter_:
         if filter_.get('group', None):
             facilities = (session.query(Facility)
@@ -348,7 +369,13 @@ def get_inventory():
     else:   
         facilities = session.query(Facility).filter(Facility.shakecast_id > request.args.get('last_id', 0)).limit(50).all()
     
-    facilities_json = json.dumps(facilities, cls=AlchemyEncoder)
+    facility_dicts = []
+    for facility in facilities:
+        facility_dict = facility.__dict__.copy()
+        facility_dict.pop('_sa_instance_state', None)
+        facility_dicts += [facility_dict]
+    
+    facilities_json = json.dumps(facility_dicts, cls=AlchemyEncoder)
     
     Session.remove()    
     return facilities_json
