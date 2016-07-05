@@ -14,6 +14,7 @@ from sqlalchemy.ext.hybrid import hybrid_method
 from sqlalchemy.orm import *
 from sqlalchemy.sql import and_, or_, not_
 import time
+from werkzeug.security import generate_password_hash
 
 # Get directory location for database
 path = os.path.dirname(os.path.abspath(__file__))
@@ -890,4 +891,15 @@ db_sql = metadata.create_all(engine)
 session_maker = sessionmaker(bind=engine)
 Session = scoped_session(session_maker)
 
+# create scadmin if there are no other users
+session = Session()
+us = session.query(User).all()
+if not us:
+    u = User()
+    u.username = 'scadmin'
+    u.password = generate_password_hash('scadmin', method='pbkdf2:sha512')
+    u.user_type = 'ADMIN'
+    session.add(u)
+    session.commit()
+Session.remove()
 
