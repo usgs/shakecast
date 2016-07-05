@@ -95,49 +95,33 @@ app.controller('eqController', function($scope, $http, $timeout) {
                         }
         };
         
+        // Remove shakemap if it exists
+        if ($scope.layers.overlays.hasOwnProperty('shakemap')) {
+            delete $scope.layers.overlays['shakemap']
+        }
+        
         $http.get('/get/shakemaps/' + $scope.cur_eq.event_id)
             .then(
                 function(response) {
                     shakemaps = response.data
                     if (shakemaps.length > 0) {
                         var image_url = 'get/shakemaps/' + $scope.cur_eq.event_id + '/overlay'
-                        //var image_url = 'get/shakemaps/ak13738825/overlay'
                         
-                        $scope.layers = {
-                            baselayers: {
-                                            xyz: {
-                                                name: 'OpenStreetMap (XYZ)',
-                                                url: 'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
-                                                type: 'xyz'
-                                            }
-                                        },
-                            overlays: {
-                                shakemap: {
-                                    name: 'ShakeMap',
-                                    type: 'imageOverlay',
-                                    visible: true,
-                                    url: image_url,
-                                    bounds: [[shakemaps[0].lat_min, shakemaps[0].lon_min],
-                                             [shakemaps[0].lat_max, shakemaps[0].lon_max]],
-                                    layerParams: {
-                                        opacity: .7,
-                                        format: 'image/png',
-                                        transparent: true
-                                    }
-                                }
+                        $scope.layers.overlays['shakemap'] = {
+                            name: 'ShakeMap',
+                            type: 'imageOverlay',
+                            visible: true,
+                            url: image_url,
+                            bounds: [[shakemaps[0].lat_min, shakemaps[0].lon_min],
+                                     [shakemaps[0].lat_max, shakemaps[0].lon_max]],
+                            layerParams: {
+                                opacity: .7,
+                                format: 'image/png',
+                                transparent: true
                             }
-                        };
+                        }
                     } else {
-                        $scope.layers = {
-                            baselayers: {
-                                            xyz: {
-                                                name: 'OpenStreetMap (XYZ)',
-                                                url: 'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
-                                                type: 'xyz'
-                                            }
-                                        },
-                            overlays: {}
-                        };
+                        delete $scope.layers.overlays['shakemap']
                     }
                 }
             )
