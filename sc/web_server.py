@@ -7,7 +7,7 @@ modules_dir = os.path.join(sc_dir(), 'modules')
 if modules_dir not in sys.path:
     sys.path += [modules_dir]
 
-from flask import Flask, render_template, url_for, request, session, flash, redirect
+from flask import Flask, render_template, url_for, request, session, flash, redirect, send_file
 from flask_login import LoginManager, login_user, logout_user, current_user, login_required
 from flask_uploads import UploadSet, configure_uploads
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -88,6 +88,7 @@ def home():
     return render_template('home.html')
 
 @app.route('/get/eqdata/')
+@login_required
 def eq_data():
     session = Session()
     eqs = session.query(Event).filter(Event.event_id != 'heartbeat').order_by(Event.time.desc()).all()
@@ -102,6 +103,65 @@ def eq_data():
     
     Session.remove()    
     return eq_json
+
+@app.route('/get/shakemaps')
+@login_required
+def get_shakemaps():
+    session = Session()
+    sms = (session.query(ShakeMap)
+                .order_by(ShakeMap.recieve_timestamp.desc())
+                .all())
+    
+    sm_dicts = []
+    for sm in sms:
+        sm_dict = sm.__dict__.copy()
+        sm_dict.pop('_sa_instance_state', None)
+        sm_dicts += [sm_dict]
+    
+    sm_json = json.dumps(sm_dicts, cls=AlchemyEncoder)
+    
+    Session.remove()    
+    return sm_json
+
+@app.route('/get/shakemaps/<shakemap_id>')
+@login_required
+def get_shakemap(shakemap_id):
+    session = Session()
+    sms = (session.query(ShakeMap)
+                .filter(ShakeMap.shakemap_id == shakemap_id)
+                .order_by(ShakeMap.shakemap_version.desc())
+                .all())
+    
+    sm_dicts = []
+    for sm in sms:
+        sm_dict = sm.__dict__.copy()
+        sm_dict.pop('_sa_instance_state', None)
+        sm_dicts += [sm_dict]
+    
+    sm_json = json.dumps(sm_dicts, cls=AlchemyEncoder)
+    
+    Session.remove()    
+    return sm_json
+
+@app.route('/get/shakemaps/<shakemap_id>/overlay')
+@login_required
+def shakemap_overlay(shakemap_id):
+    session = Session()
+    shakemap = (session.query(ShakeMap)
+                    .filter(ShakeMap.shakemap_id == shakemap_id)
+                    .order_by(desc(ShakeMap.shakemap_version))
+                    .limit(1)).first()
+    if shakemap is not None:
+        img = os.path.join(app.config['EARTHQUAKES'],
+                           shakemap_id,
+                           shakemap_id + '-' + str(shakemap.shakemap_version),
+                           'ii_overlay.png')
+        
+    else:
+        img = app.send_static_file('sc_logo.png')
+        
+    Session.remove()
+    return send_file(img, mimetype='image/gif')
 
 ############################ Admin Pages ##############################
 
@@ -389,6 +449,7 @@ def get_settings():
 
 ############################# Upload Setup ############################
 app.config['UPLOADED_XMLFILES_DEST'] = os.path.join(sc_dir(), 'tmp')
+app.config['EARTHQUAKES'] = os.path.join(sc_dir(), 'data')
 xml_files = UploadSet('xmlfiles', ('xml',))
 configure_uploads(app, (xml_files,))
 

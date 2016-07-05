@@ -229,8 +229,7 @@ class Product_Grabber(object):
             # make a directory for the new event
             shakemap.directory_name = os.path.join(self.data_dir,
                                                    shakemap.shakemap_id,
-                                                   shakemap.shakemap_id,
-                                                   '-' + shakemap.shakemap_version)
+                                                   shakemap.shakemap_id + '-' + shakemap.shakemap_version)
             if not os.path.exists(shakemap.directory_name):
                 os.makedirs(shakemap.directory_name)
             
