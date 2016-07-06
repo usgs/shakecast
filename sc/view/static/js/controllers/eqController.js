@@ -42,6 +42,16 @@ app.controller('eqController', function($scope, $http, $timeout) {
                             focus: true,
                             draggable: false
                         }
+                    },
+                    layers: {
+                        baselayers: {
+                            xyz: {
+                                name: 'OpenStreetMap (XYZ)',
+                                url: 'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+                                type: 'xyz'
+                            }
+                        },
+                        overlays: {}
                     }
                 });
     
@@ -51,7 +61,7 @@ app.controller('eqController', function($scope, $http, $timeout) {
         $scope.eqCenter = {
                         lat: $scope.cur_eq.lat,
                         lng: $scope.cur_eq.lon,
-                        zoom: 10
+                        zoom: 7
                     };
         $scope.markers = {
                         eqMarker: {
@@ -83,8 +93,38 @@ app.controller('eqController', function($scope, $http, $timeout) {
                             getMessageScope: function() {return $scope},
                             compileMessage: true
                         }
-                    };
-    };
+        };
+        
+        // Remove shakemap if it exists
+        if ($scope.layers.overlays.hasOwnProperty('shakemap')) {
+            delete $scope.layers.overlays['shakemap']
+        }
+        
+        $http.get('/get/shakemaps/' + $scope.cur_eq.event_id)
+            .then(
+                function(response) {
+                    shakemaps = response.data
+                    if (shakemaps.length > 0) {
+                        var image_url = 'get/shakemaps/' + $scope.cur_eq.event_id + '/overlay'
+                        
+                        $scope.layers.overlays['shakemap'] = {
+                            name: 'ShakeMap',
+                            type: 'imageOverlay',
+                            visible: true,
+                            url: image_url,
+                            bounds: [[shakemaps[0].lat_min, shakemaps[0].lon_min],
+                                     [shakemaps[0].lat_max, shakemaps[0].lon_max]],
+                            layerParams: {
+                                opacity: .7,
+                                format: 'image/png',
+                                transparent: true
+                            }
+                        }
+                    } else {
+                        delete $scope.layers.overlays['shakemap']
+                    }
+                }
+            )
 
-    
+    }
 });
