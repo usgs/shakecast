@@ -143,6 +143,33 @@ def get_shakemap(shakemap_id):
     Session.remove()    
     return sm_json
 
+@app.route('/get/shakemaps/<shakemap_id>/facilities')
+@login_required
+def get_affected_facilities(shakemap_id):
+    session = Session()
+    sms = (session.query(ShakeMap)
+                .filter(ShakeMap.shakemap_id == shakemap_id)
+                .order_by(ShakeMap.shakemap_version.desc())
+                .all())
+    
+    fac_dicts = []
+    if sms:
+        sm = sms[0]
+        fac_shaking = sm.facility_shaking
+        
+        for s in fac_shaking:
+            fac_dict = s.facility.__dict__.copy()
+            s_dict = s.__dict__.copy()
+            fac_dict.pop('_sa_instance_state', None)
+            s_dict.pop('_sa_instance_state', None)
+            fac_dict['shaking'] = s_dict
+            fac_dicts += [fac_dict]
+    
+    fac_json = json.dumps(fac_dicts, cls=AlchemyEncoder)
+    
+    Session.remove()    
+    return fac_json
+
 @app.route('/get/shakemaps/<shakemap_id>/overlay')
 @login_required
 def shakemap_overlay(shakemap_id):

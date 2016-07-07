@@ -58,11 +58,14 @@ app.controller('eqController', function($scope, $http, $timeout) {
     $scope.loadEQ = function(index) {
         // apply new eq data to the map
         $scope.cur_eq = $scope.eq_data[index]
+        
         $scope.eqCenter = {
                         lat: $scope.cur_eq.lat,
                         lng: $scope.cur_eq.lon,
                         zoom: 7
                     };
+                    
+        
         $scope.markers = {
                         eqMarker: {
                             lat: $scope.cur_eq.lat,
@@ -87,7 +90,7 @@ app.controller('eqController', function($scope, $http, $timeout) {
                             focus: true,
                             draggable: false,
                             popupOptions: {
-                                keepInView: true,
+                                keepInView: false,
                                 autoPan: false
                             },
                             getMessageScope: function() {return $scope},
@@ -120,11 +123,42 @@ app.controller('eqController', function($scope, $http, $timeout) {
                                 transparent: true
                             }
                         }
+                        
+                        $scope.layers.overlays['facilities'] = {
+                            name: 'Facilities',
+                            type: 'group',
+                            visible: true
+                        }
+                        
+                        $http.get('/get/shakemaps/' + $scope.cur_eq.event_id + '/facilities')
+                            .then(
+                                function(response) {
+                                    facs = response.data
+                                    for (i=0; i < facs.length; i++) {
+                                        fac = facs[i]
+                                        fac_marker = 'fac_' + fac.shakecast_id.toString()
+                                        $scope.markers[fac_marker] = {
+                                            lat: fac.lat_min,
+                                            lng: fac.lon_min,
+                                            message: `<table class="table">
+                                                        <tr> 
+                                                            <th>Facility:</th><td>` + fac.name + `</td>
+                                                        </tr>
+                                                     </table>`
+                                        }
+                                        
+                                    }
+                                }
+                            );
+                        
+                        
                     } else {
                         delete $scope.layers.overlays['shakemap']
                     }
+                    
                 }
-            )
+            );
+            
 
     }
 });
