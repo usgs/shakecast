@@ -728,7 +728,7 @@ class Mailer(object):
         server.ehlo()
         server.starttls()
         server.ehlo()
-        server.login(self.me, self.password)
+        server.login(self.username, self.password)
         
         server.sendmail(self.me, you, msg.as_string())
         server.quit()
