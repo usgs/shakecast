@@ -1,0 +1,12 @@
+; Default Pager Notification -- header
+;
+From: ShakeCast <%HEADER_FROM%>
+To: %HEADER_TO%
+Subject: ShakeCast Damage Summary
+
+ShakeCast from ShakeMap %EVENT_NAME %Version %SHAKEMAP_VERSION%: Mag %MAGNITUDE%
+Generated at %GENERATION_TIMESTAMP%
+Max Value: MMI: %_MAX_METRIC_MMI%; Acceleration: %_MAX_METRIC_PGA%
+No. Fac. Likely Damage: %_NUM_DAMAGE_LEVEL_RED%
+No. Fac. Possible Damage: %_NUM_DAMAGE_LEVEL_YELLOW%
+;;;;;

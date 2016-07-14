@@ -1,0 +1,10 @@
+; new product aggregate body
+;
+=====
+Product:   %PRODUCT_TYPE% (%NAME%)
+URL:       http://%DNS_ADDRESS%/data/%SHAKEMAP_ID%-%SHAKEMAP_VERSION%/%FILENAME%
+#ifdef FACILITY_ID
+Facility:  %FACILITY_NAME%
+#endif
+Event:     %EVENT_ID%  Version: %EVENT_VERSION%
+Shakemap:  %SHAKEMAP_ID%  Version: %SHAKEMAP_VERSION%

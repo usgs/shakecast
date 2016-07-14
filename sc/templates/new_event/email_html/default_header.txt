@@ -1,0 +1,47 @@
+; Default HTML Email Notification
+; Based on Caltrans template
+;
+From: ShakeCast V3 <%HEADER_FROM%>
+To: %HEADER_TO%
+Subject: %_ITEMNO% New Event(s), Max Magnitude: M%_MAX_MAGNITUDE%
+Attach: /usr/local/shakecast/sc/images/header.jpg
+; End -- header
+
+
+
+
+<table width=700 border=1 bordercolor=black cellpadding=15 cellspacing=0 bgcolor=white>
+
+<tr><td>
+<img alt="ShakeCast" height=60 width=700 src="cid:header.jpg">
+</td></tr>
+
+<tr><td height=30 bgcolor=black>
+<font size=3 face="Arial" color="white"><b>Preliminary Earthquake Notification</b></font>
+</td></tr>
+
+<tr><td>
+<font size=2 face="Arial">
+This report supersedes any earlier reports about this event.  This is a computer-generated message and has not yet been reviewed by an Engineer or Seismologist.  Epicenter and magnitude are published by the <a href=http://earthquake.usgs.gov/earthquakes/>USGS</a>.  Reported magnitude may be revised and will not be reported through ShakeCast. The <a href=http://earthquake.usgs.gov/earthquakes/>USGS</a> website should be referenced for the most up-to-date information.  Inspection prioritization emails will be sent shortly if ShakeCast determines significant shaking occurred at user's infrastructure.  An interactive version of this report is accessible on the <a href=https://%DNS_ADDRESS%>ShakeCast internet/intranet website</a>.  
+</font>
+<br>
+</td></tr>
+
+<tr><td height=30 bgcolor=black>
+<font size=3 face="Arial" color="white"><b>Earthquake Details</b></font>
+</td></tr>
+
+<tr><td>
+<br>
+<font size=2 face="Arial">
+<table border=1 bordercolor=black cellpadding=5 cellspacing=0>
+<tr>
+  <th>Map
+  <th>ID
+  <th>Time
+  <th>Mag
+  <th>Lat
+  <th>Lon
+  <th>Location
+</tr>
+;;;;;

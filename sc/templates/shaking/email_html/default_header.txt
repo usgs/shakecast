@@ -1,0 +1,29 @@
+; Default HTML Email Notification -- header
+;
+From: ShakeCast <%HEADER_FROM%>
+To: %HEADER_TO%
+Subject: Shaking M%MAGNITUDE% - %EVENT_LOCATION_DESCRIPTION% (%EVENT_ID%) 
+; End -- header
+
+<font size=+2><b>ShakeCast Event: Magnitude %MAGNITUDE%</b></font><br>
+ShakeMap %EVENT_NAME:|NULL|;(Unnamed Event) %Version %SHAKEMAP_VERSION%<br>
+Event Location: %EVENT_LOCATION_DESCRIPTION%<br>
+Event Time: %EVENT_TIMESTAMP%<br>
+Generated at %GENERATION_TIMESTAMP%<br>
+Reported by: Server ID = %SERVER_ID%, DNS = %DNS_ADDRESS%
+<p>
+<font size=+2><b>Shaking Summary</b></font><br>
+Number of Facilities Reported: %_ITEMNO%<br>
+Max Value: MMI: %_MAX_METRIC_MMI%; 
+Acceleration: %_MAX_METRIC_PGA:|NULL|;(not measured)%<br>
+Number of Reports of Shaking over Threshold:  %_ITEMNO%
+<p>
+<font size=+2><b>Facility Shaking Estimates from ShakeMap</b></font>
+
+<table border=1 bordercolor=black cellpadding=5 cellspacing=0>
+<tr>
+  <th>Facility
+  <th>Metric
+  <th>Value
+</tr>
+;;;;;

@@ -1,0 +1,773 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="shortcut icon" href="/images/sc_logo.png">
+
+    <title>Inventory Details</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="./bootstrap3/css/bootstrap.css" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+	<link rel="stylesheet" href="./bootstrap3/css/navbar-fixed-top.css">
+	<link rel="stylesheet" href="./css/main.css">
+	<link rel="stylesheet" href="./css/jquery-ui-1.8.16.custom.css">
+	  
+    <!-- Just for debugging purposes. Don't actually copy this line! -->
+    <!--[if lt IE 9]><script src="../../docs-assets/js/ie8-responsive-file-warning.js"></script><![endif]-->
+
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+      <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
+    <![endif]-->
+  </head>
+
+  <body>
+  <!-- Fixed navbar -->
+  <div class="navbar navbar-default navbar-inverse navbar-fixed-top" role="navigation">
+    <div class="container">
+      <div class="navbar-header">
+	<button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+	  <span class="sr-only">Toggle navigation</span>
+	  <span class="icon-bar"></span>
+	  <span class="icon-bar"></span>
+	  <span class="icon-bar"></span>
+	</button>
+	<a class="navbar-brand" href="?dest=index"><img src="/images/sc_logo.png" class="img-circle logo" /> ShakeCast</a>
+      </div>
+      <div class="navbar-collapse collapse">
+	<ul id="nav_menu" class="nav navbar-nav">
+	  <li><a href="?dest=index">Home</a></li>
+	  <li><a href="#about">About</a></li>
+	  <li class="dropdown active">
+	  <a href="?dest=list" class="dropdown-toggle" data-toggle="dropdown">Earthquake List <b class="caret"></b></a>
+	  <ul class="dropdown-menu">
+	    <li><a href="?dest=list">Recent Events</a></li>
+	    <li class="divider"></li>
+	    <li><a href="?dest=list&type=major">Significant Events</a></li>
+	    <li><a href="?dest=list&type=scenario">Scenarios</a></li>
+	    <li class="divider"></li>
+	  </ul>
+	  </li>
+	    <li><a href="?dest=preference">Settings</a></li>
+		<TMPL_VAR NAME=ADMIN>
+		<TMPL_VAR NAME=LOGOUT>
+	</ul>
+      </div><!--/.nav-collapse -->
+    </div>
+  </div>
+
+<!-- Subhead
+================================================== -->
+<header class="header" id="overview">
+  <div class="container">
+    <h2>Inventory Details <small>Exposed facility list and detailed information on assessed fragility</small></h2>
+    <ol class="breadcrumb">
+      <li class="pull-right"><a href="#" id="tab_link">Table View</a></li>
+      <li><a href="?dest=index">Home</a></li>
+      <li><a href="?dest=list">Earthquakes</a></li>
+      <li id="evid"><a href="#">Event</a></li>
+      <li class="active"></li>
+    </ol>
+  </div>
+</header>
+
+
+<div class="container">
+
+      <div class="row">
+        <div class="col-md-3">
+	  <!-- Single button
+	  <div class="btn-group">
+	    <button type="button" class="btn btn-sm btn-default dropdown-toggle" data-toggle="dropdown">
+	      Earthquake Product <span class="caret"></span>
+	    </button>
+	    <ul class="dropdown-menu" role="menu" id="sidebar_prod">
+	    </ul>
+	  </div>
+	   -->
+	   
+          <div class="panel panel-default">
+	    <div class="panel-heading">Inventory Type</div>
+	    <div class="list-group" id="sidebar">
+	    </div>
+          </div><!--/.well -->
+	  
+          <div class="panel panel-default">
+	    <div class="panel-heading">High Priority Facilities</div>
+	    <div class="list-group" id="sidebar_fac">
+	    </div>
+          </div><!--/.well -->
+	  
+          <div class="panel panel-default">
+	    <div class="panel-heading">Earthquake Product</div>
+	    <div id="sidebar_prod">
+	    </div>
+          </div><!--/.well -->
+	  
+	  <!--<button type="button" id="load_more" class="btn btn-primary"></button> -->
+        </div><!--/span-->
+	
+        <div class="col-md-9">
+            <!-- Main hero unit for a primary marketing message or call to action -->
+            <div class="panel panel-default" id="main_pane">
+				<div class="panel-heading" id="map_title"></div>
+				<div id="map_canvas" style="width:800px; height:400px;"></div>
+ 				<div id="caption"></div>
+           </div>
+
+          <div class="panel panel-default" id="fac_shaking">
+	    <div class="panel-heading"></div>
+	    <div class="panel-body">
+	    </div>
+          </div><!--/.well -->
+            <!-- Example row of columns
+            <div class="row">
+		<div class="accordion"></div>
+            </div>
+ -->
+
+
+			<div id="spinner" class="spinner ui-widget ui-widget-content ui-corner-all" style="width:50px;background:#fff;height:50px;">
+				<img id="img-spinner" src="/images/usgs.gif" alt="Loading" style="margin:10px auto;"/>
+			</div>
+
+        </div> <!-- /container -->
+      </div> <!-- /container -->
+
+    <!-- Footer
+    ================================================== -->
+    <footer class="footer">
+      <div class="container">
+        <ul class="footer-links">
+          <li><a href="http://earthquake.usgs.gov">&copy; USGS 2013</a></li>
+          <li class="muted">&middot;</li>
+          <li>Desktop</li>
+          <li class="muted">&middot;</li>
+          <li><a href="?dest=mobile">Mobile</a></li>
+        </ul>
+     </div>
+    </footer>
+
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script type="text/javascript">
+      var prefix;
+      var script = '<script type="text/javascript" src="';
+      var loc = new String(window.parent.document.location);
+      if (loc.indexOf("https://")!= -1)
+	prefix = "https://";
+      else
+	prefix = "http://";
+      script += prefix + 'maps.google.com/maps/api/js?sensor=false"><' + '/script>';
+      document.write(script);
+    </script>
+    <script type="text/javascript" src="./js/jquery-1.10.2.min.js"></script>
+    <script type="text/javascript" src="./bootstrap3/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="./js/jquery-ui.js"></script>
+    <script type="text/javascript" src="./js/main.js"></script>
+    <script type="text/javascript" src="./js/shakemap.js"></script>
+    <script type="text/javascript" src="./js/loadXML.js"></script>
+    <script type="text/javascript" src="./js/mapapp_event.js"></script>
+    <script type="text/javascript" src="./js/sc_constant.js"></script>
+    <script type="text/javascript" src="./js/storage.js"></script>
+    <script type="text/javascript" src="./js/sc_markerclusterer.js"></script>
+ 
+    <script>
+      var latlng = new google.maps.LatLng(35,-120);
+      var map;
+      var sc_id = gup('event');
+      var type = gup('type') ? gup('type') : 'actual';
+      var age = gup('age') ? gup('age') : 'week';
+      var fac_des = [];
+      var fac_info = [];
+	  var fac_type;
+      var start=0, length=0, total;
+      //var sm_url = '/scripts/damage.pl/datatables';
+      var sm_url = '/scripts/r/damage/datatables';
+      var marker_icon = [];
+		var markers = [];
+		    var markers_index = [];
+		var markerCluster;	
+
+	    SC_DEF.init();
+        //var sm_url = '/scripts/shakemap.pl/from_id/' + sc_id;
+        var username = SC_DEF.user ? SC_DEF.user : 'guest';
+        var password = SC_DEF.pass ? SC_DEF.pass : 'guest';
+        var sm_url = '/scripts/r/user/from_id/'+username;
+        var submit_data = {
+        };
+
+      $(window).load(function() {
+	map = MAPAPP.init(SC_DEF);
+	//menu_update();
+	$("#fac_shaking").hide();
+	$("#sidebar_fac").hide();
+	$("#sidebar").hide();
+
+	if (!(type)) {
+	  type = SC_DEF.event_type ? SC_DEF.event_type : 'actual';
+	}
+	if (!(age)) {
+	  age = SC_DEF.recent_events ? parseInt(SC_DEF.recent_events) : 'week';
+	}
+	sm_url = '/scripts/event.pl/datatables?type='+type+'&age='+age;
+
+	if (sc_id)  {
+	  $(".breadcrumb #evid").html('<a href="#">'+sc_id+'</a>');
+	  $(".breadcrumb #tab_link").html('<a href="?dest=event_tab&event='+sc_id+'">Table View</a>');
+	}
+	
+	load_sm();
+	load_fac();
+	load_prod();
+	//load_marker();
+      });
+			
+	$(window).resize(function() {
+		//oTable.fnAdjustColumnSizing();
+		//$("#eq_content_table").width($(".row").width());
+		$("#map_canvas").width($("#main_pane").width());
+		$("#map_canvas").height(($("#map_canvas").width())/2);
+		//console.log($("#map_canvas").width());
+		google.maps.event.trigger(map, 'resize');
+		$("#sidebar_fac").height($("#map_canvas").height()/2);
+		$("#sidebar_prod").height($("#map_canvas").height()/2);
+		var cont_height = $("#map_canvas").height() + $(".accordion").height();
+		$('html').css('height', cont_height);
+	});
+
+      $('#load_more').on('click', fnAccordion);
+
+      function fnAccordion(facility_id){
+		//var local_url = '/scripts/damage.pl/datatables/' + sc_id + '?type=' + type + '&start=' + start + '&length=' + length;
+		var local_url = '/scripts/r/damage/from_id/' + sc_id;
+		var all = (SC_DEF.allmarker_flag) ? 1 : 0;
+		$.post(local_url, {facility : facility_id, all : all}
+			, function(data) {
+
+			// Are there even any EQ to display?
+			if (typeof data.grid.shakemap_id === "undefined") {
+				return;
+			}
+
+
+			var facility_probability = data.facility_probability;
+			var html_array = [];
+			var severity_index = [];
+			if (data.severity_index) {
+				severity_index = data.severity_index.slice(0);
+			} else {
+			for ( var key in data.facility_damage) severity_index.push(key);
+			}
+			for ( var sev_ind =0; sev_ind< severity_index.length; sev_ind++) {
+			var fac_index = severity_index[sev_ind];
+			//MAPAPP.addMarker(data.facility_damage[fac_index]);
+
+			var facility = data.facility_damage[fac_index];
+			$(".breadcrumb li").last().html(facility.facility_type + ' : ' + facility.facility_name);
+			html_array = html_array.concat([
+			  '<span class="label '+label[facility.damage_level]+'">',
+			  concern_level[facility.damage_level] + '</span> ',
+			  ' <strong>' + facility.facility_type + '</strong> ',
+			  ''+facility.facility_name + ' / <strong>ID</strong> ' + facility.external_facility_id,
+			  ' / <strong>Dist</strong> '+facility.dist + 'km',
+			  ]);
+
+			fac_info[facility.facility_id] = 
+				{"facility_type":facility.facility_type,  "facility_id":facility.facility_id,
+				"facility_name":facility.facility_name, "dist":facility.dist,
+				"lat_min":facility.lat_min, "lon_min":facility.lon_min,
+				//"damage_level":concern_level[facility.damage_level],  "metric":facility.metric}
+				"damage_level":facility.damage_level,  "metric":facility.metric};
+
+			var fac_damage= [];
+			fac_damage[facility.metric] = facility.damage_level;
+			var fac_mmi = mmi[parseInt(parseFloat(facility.mmi)+0.5)-1];
+			var cell_tabs = [
+				'<ul class="nav nav-tabs">',
+				'<li><a href="#' + facility.facility_id,
+				'_shaking" data-toggle="tab">Shaking Estimates</a></li>',
+				];
+			var cell_array = [
+				'<div class="tab-content">',
+				'<div class="tab-pane" id="' + facility.facility_id,
+				'_shaking">',
+				'<table><tr style="background-color:#eee;"><td class="metric '+((facility.metric == 'MMI') ? facility.damage_level:'')+'"><b>MMI</b><br>' + fac_mmi + '</td>',
+				'<td class="metric '+((facility.metric == 'PGA') ? facility.damage_level:'')+'"><b>PGA</b><br>' + facility.pga + '  (%g)</td>',
+				'<td class="metric '+((facility.metric == 'PGV') ? facility.damage_level:'')+'"><b>PGV</b><br>' + facility.pgv + ' (cm/s)</td>',
+				(facility.psa03) ? '<td class="metric '+((facility.metric == 'PSA03') ? facility.damage_level:'')+'"><b>PSA03</b><br>' + facility.psa03 + ' (%g)</td>' : '',
+				(facility.psa10) ? '<td class="metric '+((facility.metric == 'PSA10') ? facility.damage_level:'')+'"><b>PSA10</b><br>' + facility.psa10 + ' (%g)</td>' : '',
+				(facility.psa30) ? '<td class="metric '+((facility.metric == 'PSA30') ? facility.damage_level:'')+'"><b>PSA30</b><br>' + facility.psa30 + ' (%g)</td>' : '',
+				'<td class="metric"><b>STDPGA</b><br>' + facility.stdpga + ' ln(%g)</td>',
+				'<td class="metric"><b>SVEL</b><br>' + facility.svel + ' (m/s)</td>',
+				'</tr></table></div>',
+				];
+			if (facility_probability[facility.facility_id]) {
+				cell_tabs = cell_tabs.concat([
+				'<li><a href="#' + facility.facility_id,
+				'probability" data-toggle="tab">Fragility Probability</a></li>',
+				]);
+				cell_array = cell_array.concat([
+				'<div class="tab-pane" id="' + facility.facility_id,
+				'probability"><table>']);
+			var fac_class = [];
+			for (var i=0;i < facility_probability[facility.facility_id].length;i++) {
+			  var fac_prob = facility_probability[facility.facility_id][i];
+			  if (fac_class[fac_prob.class]) {
+			  fac_class[fac_prob.class].push(i);
+			  } else {
+			  fac_class[fac_prob.class] = [i];
+			  }
+			}
+			for (var class_type in fac_class) {
+				cell_array = cell_array.concat(['<tr><td><span class="label label-primary">',
+								class_type,
+								'</span></td></tr>']);
+			for (var i=0;i < fac_class[class_type].length;i++) {
+				if (i==0) {
+				cell_array = cell_array.concat(['<tr>']);
+				} else if (i % 4) {
+				cell_array = cell_array.concat(['</td>']);
+				} else {
+				cell_array = cell_array.concat(['</td></tr><tr>']);
+				}
+				var component = facility_probability[facility.facility_id][fac_class[class_type][i]];
+				var damage_level = ['GREY'];
+				//var damage_level = [];
+				damage_level = damage_level.concat((component.damage_level).split(","));
+				//var prob_distribution = (component.prob_distribution).split(",");
+				var prob_distribution = [0];
+				prob_distribution = prob_distribution.concat((component.cdf).split(","));
+				cell_array = cell_array.concat([
+				'<td><div class="histogram_wrap">',
+				'<ul class="histogram">']);
+				for (var j = 0;j<damage_level.length;j++) {
+					cell_array = cell_array.concat([
+					'<li>' + parseInt(parseFloat(prob_distribution[j])*100),
+					':' + damage_level[j],
+					':' + damage_level[j],
+					'</li>']);
+				}
+				cell_array = cell_array.concat([
+				//component.class + ' - ' + component.component,
+				component.component,
+				'</ul>',
+				'</div>']);
+			}
+			}
+				cell_array = cell_array.concat([
+				'</tr></table></div>']);
+			}
+
+			var facility_attribute = data.facility_attribute;
+			for (var key in facility_attribute) {
+				var attribute = facility_attribute[key];
+				if (attribute[facility.facility_id]) {
+				var att_fac = attribute[facility.facility_id];
+				cell_tabs = cell_tabs.concat([
+				'<li><a href="#fea"'+facility.facility_id+'" data-toggle="tab">Facility Specific Information</a></li>',
+				]);
+				cell_array = cell_array.concat([
+				'<div id="fea"'+facility.facility_id+'" class="tab-pane">',
+				'<div class="ui-block-b fac_sum">',
+				'<ul>',
+				]);
+
+				for (var att_key in att_fac) {
+				cell_array = cell_array.concat([
+				'<li class="fac_summary"><b>' + att_key + '</b> : ' + att_fac[att_key] + '</li>',
+				]);
+				}
+				cell_array = cell_array.concat([
+				'</ul></div>',
+				'</div>']);
+				}
+				}
+				cell_tabs = cell_tabs.concat(['</ul>']);
+				cell_array = cell_array.concat(['</div>']);
+			fac_des[facility.facility_id] = cell_tabs.join('') + cell_array.join('');
+
+			};
+			
+	  $("#fac_shaking .panel-heading").html(html_array.join(''));
+
+	      	    $("#fac_shaking .panel-body").html(fac_des[facility.facility_id]);
+	      	    $("#fac_shaking .panel-body").tab();
+		    $("#fac_shaking .panel-body a:first").tab('show')
+		    $("#fac_shaking").show();
+
+				makeGraph("graph", "labels");
+	  $(window).trigger('resize');
+
+
+		}, 'json');
+			}
+
+	function makeGraph()
+	{
+		var dnl = $(".histogram").each(function() {
+			var component = $(this).find("li").each( function(index) {
+			var item = $(this).text();
+			var color = this.style.background=color;
+			var content = item.split(":");
+			var value = content[0];
+			if (content[1] != 'GREY') {
+			this.style.height=value/2 + "px";
+			this.style.top=(70 - value/2) + "px";
+			this.style.left = ((index-1) * 35 + 5) + "px";
+			this.innerHTML = value + "%";
+			this.style.visibility="visible";
+			color = content[2];
+			if(color != false) this.style.background=color;
+			} else {
+			this.style.height="1px";
+			this.style.top="45px";
+			this.style.left = "0px";
+			this.style.width = "180px";
+			this.style.textAlign = "right";
+			this.innerHTML = "50%";
+			this.background = "white";
+			this.borderStyle = "dotted";
+			$(this).css('moz-box-shadow', '');
+			$(this).css('webkit-box-shadow', '');
+			$(this).css('box-shadow', '');
+			this.style.visibility="visible";
+			color = content[2];
+			if(color != false) this.style.background=color;
+			}
+			/*labels.innerHTML = labels.innerHTML +
+				 "<span style='margin:8px;background:"+ color+"'>" +
+				 content[1] + "</span>";*/
+		});
+		});
+	}
+
+	function load_prod ( )
+	{
+	  //var sm_url = '/scripts/product.pl/from_id/'+ sc_id;
+	  var sm_url = '/scripts/r/product/from_id/'+ sc_id;
+	  var html_array = [];
+
+	  $.post(sm_url, submit_data, function(data) {
+
+	    // Are there even any EQ to display?
+	    if (data.product.length <= 0) {
+		    return;
+	    }
+
+	    var products = data.product;
+	    for (var i=0; i < products.length; i++) {
+	    //MAPAPP.addMarker(data.facility_damage[key]);
+	    var product = products[i];
+	    //if (!product_type[product.product_type]) {continue;}
+	    var file_path;
+	    var img_path;
+	    if (product.display) {
+	      if (product.eq_product) {
+		file_path = '/data/' + product.filename;
+	      } else {
+		file_path = '/data/' + sc_id + '/' + product.filename;
+	      }
+	    if (product.url) {
+		    img_path = product.url;
+	    } else {
+		    img_path = file_path;
+	    }
+	      html_array = html_array.concat([
+	      '<a class="list-group-item" href="' + file_path + '">',
+	      '<img src="' + img_path + '" class="img-thumbnail" style="max-width:32px"> ',
+		product.name + '</a>',
+	      ]);
+	    }}
+	    var event_id = sc_id.replace(/-.*$/,"");
+	      html_array = html_array.concat([
+	      '<a class="list-group-item" href="http://earthquakes.usgs.gov/earthquakes/eventpage/',
+	      event_id + '">',
+		'<img src="/images/usgs_green.png" class="img-thumbnail" style="max-width:32px"> ',
+		'USGS Event Page</a>',
+	      ]);
+
+	    $("#sidebar_prod").append(html_array.join(''));
+	  }, 'json');
+	}
+
+      function load_fac(){
+		//sm_url = '/scripts/shaking.pl/shaking_summary/' + sc_id;
+		sm_url = '/scripts/r/shaking/shaking_summary/' + sc_id;
+		$.post(sm_url, submit_data, function(data) {
+
+			// Are there even any EQ to display?
+			if (data.length <= 0) {
+				return;
+			}
+			var total_count = 0;
+			for (var i=0; i < data.length; i++) {
+			total_count += parseInt(data[i].count);
+			}
+			data.push({facility_type: 'ALL', count:total_count});
+
+			var base_url = window.location.pathname + '?event=' + sc_id;
+			for (var i=0; i < data.length; i++) {
+				var event = data[i];
+				$("#sidebar").append('<a class="facility_type list-group-item" id="' + event.facility_type +
+					'" href="#"><img src="/images/' + event.facility_type + '.png"> ' + event.facility_type +
+					' (' + event.count + ')</a>');
+				marker_icon[event.facility_type] =
+				  {
+				    url: '/images/' + event.facility_type + '.png',
+				    // This marker is 20 pixels wide by 32 pixels tall.
+				    size: new google.maps.Size(25, 25),
+				    // The origin for this image is 0,0.
+				    origin: new google.maps.Point(0,0),
+				    // The anchor for this image is the base of the flagpole at 0,32.
+				    anchor: new google.maps.Point(12, 12)
+				  };
+
+			}
+			$("#sidebar").show();
+
+ 			$('#sidebar a').on('click', function() {
+			  $('.facility_type').removeClass("active");
+			  if (this.id != type) {
+			    //MAPAPP.removeMarkers();
+			    start = 0;
+/*
+			    if ($( ".accordion" ).accordion()) {
+	    $( ".accordion" ).accordion('destroy');
+	    $(".accordion h3").unbind('click');
+	    $( ".accordion" ).html('');
+			    }
+*/
+			  }
+			  type = this.id;
+			  $('#'+ type).addClass("active");
+			  if (type != fac_type) {
+				  fac_type = type;
+				  load_sibar_fac();
+				  load_marker();
+			  }
+			  });
+	$('#sidebar a:first').trigger('click');
+
+		}, 'json');
+		}
+
+      function load_sibar_fac(){
+		//var local_url = '/scripts/damage.pl/datatables/' + sc_id + '?type=' + type + '&start=' + start + '&length=' + length;
+		var local_url = '/scripts/r/damage/from_id/' + sc_id;
+		var all = (SC_DEF.allmarker_flag) ? 1 : 0;
+		$.post(local_url,  {type:type, start:start, length:length, all:all}
+			, function(data) {
+
+			// Are there even any EQ to display?
+			if (typeof data.grid.shakemap_id === "undefined") {
+				return;
+			}
+
+			$("#sidebar_fac").html('');
+			var facility_probability = data.facility_probability;
+			var html_array = [];
+			var severity_index = [];
+			if (data.severity_index) {
+				severity_index = data.severity_index.slice(0);
+			} else {
+			for ( var key in data.facility_damage) severity_index.push(key);
+			}
+			for ( var sev_ind =0; sev_ind< severity_index.length; sev_ind++) {
+			var fac_index = severity_index[sev_ind];
+			//MAPAPP.addMarker(data.facility_damage[fac_index]);
+
+			var facility = data.facility_damage[fac_index];
+			$(".breadcrumb li").last().html(facility.facility_type + ' : ' + facility.facility_name);
+			var icon_type =  facility.facility_type + facility.damage_level;
+			icon_type = icon_type.toLowerCase();
+			$("#sidebar_fac").append('<a class="facility_type list-group-item" id="' + facility.facility_id +
+				'" href="#"><img src="/images/' + icon_type + '.png"> ' + facility.facility_name + '</a>');
+ 			$('#sidebar_fac #'+facility.facility_id).on('click', function() {
+			  google.maps.event.trigger(markers[markers_index[this.id]], 'click');
+			});
+			}
+			$("#sidebar_fac").show();
+
+
+		}, 'json');
+		}
+
+      function load_sm(){
+		//var sm_url = '/scripts/shakemap.pl/from_id/' + sc_id;
+		var sm_url = '/scripts/r/shakemap/from_id/' + sc_id;
+		$.post(sm_url, submit_data, function(data) {
+
+		// Are there even any EQ to display?
+		if (typeof data.shakemap_id === "undefined") {
+			return;
+		}
+
+		data.facility_type = "epicenter";
+		MAPAPP.addMarker(data);
+
+		var lat_min = parseFloat(data.lat_min);
+		var lat_max = parseFloat(data.lat_max);
+		var lon_min = parseFloat(data.lon_min);
+		var lon_max = parseFloat(data.lon_max);
+
+		var rectBounds = new google.maps.LatLngBounds(
+					new google.maps.LatLng(lat_min, lon_min),
+					new google.maps.LatLng(lat_max, lon_max));
+		var img = '/data/'+ sc_id +'/ii_overlay.png';
+		var latlng = new google.maps.LatLng((lat_min+lat_max)/2, (lon_min+lon_max)/2);
+
+		//map = MAPAPP.init(latlng, 8);
+
+		MAPAPP.loadSM(rectBounds, img);
+		$(window).trigger('resize');
+
+		}, 'json');
+      }
+
+      function load_marker(){
+		MAPAPP.addCaption(sc_id, fac_type);
+		//var sm_url = '/scripts/shakemap.pl/from_id/' + sc_id;
+		var sm_url = '/scripts/r/damage/marker/' + sc_id;
+		var all = (SC_DEF.allmarker_flag) ? 1 : 0;
+		$.post(sm_url, {type:fac_type, all:all}, function(data) {
+
+		// Are there even any EQ to display?
+		if (typeof data === "undefined") {
+			return;
+		}
+		
+		var count = 0;
+
+		for (var icon_type in marker_icon) {
+		    marker_icon[icon_type].facility_count = 0;
+		} // for
+		if (markerCluster) markerCluster.clearMarkers();
+		markers = [];
+		for (var fac in data) {
+		  var facility = data[fac];
+		  var latLng = new google.maps.LatLng(facility.latitude,
+		      facility.longitude);
+		  var icon_type =  facility.facility_type + facility.damage_level;
+		  icon_type = icon_type.toLowerCase();
+		  if (typeof marker_icon[icon_type] === "undefined") {
+		      marker_icon[icon_type] =
+			{
+			  url: '/images/' + icon_type + '.png',
+			  // This marker is 20 pixels wide by 32 pixels tall.
+			  size: new google.maps.Size(25, 25),
+			  // The origin for this image is 0,0.
+			  origin: new google.maps.Point(0,0),
+			  // The anchor for this image is the base of the flagpole at 0,32.
+			  anchor: new google.maps.Point(12, 12),
+			  facility_type: facility.facility_type,
+			  facility_count: 1,
+			  damage_level: facility.damage_level,
+			  severity_rank: parseInt(facility.severity_rank),
+			};
+		  } else {
+		    marker_icon[icon_type].facility_count += 1;
+		  }
+		  var marker = new google.maps.Marker({
+		    position: latLng,
+		    //shadow: markershadow,
+		    icon: marker_icon[icon_type],
+		    facility_id: fac,
+		    facility_type: facility.facility_type,
+		    severity_rank: facility.severity_rank,
+		    facility_name: facility.facility_name,
+		  });
+		  google.maps.event.addListener(marker, 'click', function() {
+				  //console.log(marker.facility_id);
+				  map.setCenter(marker.getPosition());
+				  MAPAPP.loadInfo(this.facility_id, this.getPosition());
+				  fnAccordion(this.facility_id);
+				  });
+		  
+		  markers.push(marker);
+		  markers_index[fac] = count++;
+		}
+		
+		var disp_icon = [];
+		for (var key in marker_icon) disp_icon.push(marker_icon[key]);
+		disp_icon.sort(function(a, b){
+		    var a1= a.severity_rank, b1= b.severity_rank;
+		    if(a1== b1) return 0;
+		    return a1> b1? 1: -1;
+		});
+		
+		/*var dmg_url = '/scripts/r/damage/from_id/'+sc_id+'?action=summary';
+		if (fac_type != "ALL") {
+		  dmg_url += '&type=' + fac_type;
+		}
+		$.getJSON(dmg_url, function(summary) {
+			var damage_summary = '<div class="progress">';
+			// Are there even any EQ to display?
+			//if (summary.count > 0) {
+				jQuery.each(summary.damage_summary, function(i, val) {
+					damage_summary += '<div class="progress-bar ' + bar[i] + '" style="width:20%;">' + val + '</div>';
+				});
+			//}
+			damage_summary += '</div>';
+			$("#caption").html(damage_summary);
+		});*/
+		markerCluster = new MarkerClusterer(map, markers,{'zoomOnClick':0});
+		
+		MAPAPP.addLegend(disp_icon);
+		
+		  google.maps.event.addListener(markerCluster, 'clusterclick', function(cluster) {
+		    var marker_index = [];
+		    var this_cluster = cluster;
+		    var cluster_markers = cluster.getMarkers();
+		    var cluster_length = cluster_markers.length;
+		    var cluster_info = SC_DEF.cluster_info ? parseInt(SC_DEF.cluster_info) : 10;
+		    if (cluster_length > cluster_info) {
+		      cluster.getMap().fitBounds(cluster.getBounds());
+		    } else {
+		      var html_array = ['<div class="panel panel-default">',
+					'<div class="panel panel-heading"><b>Clustered Facilities</b></div>',
+					'<div class="list-group" id="info_popup">',
+					];
+		      for (var ii=0; ii < cluster_markers.length; ii++) {
+			html_array.push('<a class="list-group-item" href="#" id="' +
+					cluster_markers[ii].facility_id +
+					'"><b>' + cluster_markers[ii].facility_type + '</b> : ' +
+					cluster_markers[ii].facility_name + '</a>'
+					);
+			marker_index[cluster_markers[ii].facility_id] = ii;
+		      }
+		      html_array.push('<a class="list-group-item" id="all" href="#">' +
+				      '<b>Show All Facilities</b></a></div></div>');
+		      var infocontent = html_array.join('');
+		      MAPAPP.infowindow.setContent(infocontent);
+		      MAPAPP.infowindow.setPosition(cluster.getCenter());
+		      MAPAPP.infowindow.open(map);
+
+		      $("#info_popup>a").on('click', function () {
+			  var id = (this.id);
+			  if (id == 'all') {
+			    for (var mar_ind=0; mar_ind < cluster_length; mar_ind++)
+			      cluster_markers[mar_ind].setMap(map);
+			    MAPAPP.infowindow.close();
+			  } else {
+			  cluster_markers[marker_index[id]].setMap(map);
+			  google.maps.event.trigger(cluster_markers[marker_index[id]], 'click');
+			  }
+		      });
+		    }
+				  });
+		}, 'json');
+      }
+
+    </script>
+
+  </body>
+</html>

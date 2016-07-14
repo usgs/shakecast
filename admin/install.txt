@@ -1,0 +1,56 @@
+Ubuntu 
+git
+gitk
+https://github.com/klin-usgs/ShakeCast.git
+
+subversion
+https://shakemap.unfuddle.com/svn/shakemap_pc/
+https://shakemap.unfuddle.com/svn/shakemap_shakecast/
+
+perl
+ubuntu
+libdbi-perl libdbd-mysql-perl libtext-csv_xs-perl libtext-csv-xs-perl libconfig-general-perl libxml-libxml-simple-perl libxml-writer-perl libtemplate-toolkit-perl libtemplate-perl libpdf-api2-perl libpdf-table-perl libimage-size-perl libmime-lite-perl libgd-gd2-perl libgd-text-perl libgd-graph-perl libgd-graph3d-perl libhtml-tableextract-perl libxml-simple-perl libnet-smtp-tls-perl libnet-smtp-ssl-perl libarchive-zip-perl libjson-perl libjson-xs-perl libmojolicious-perl
+cpan install enum
+
+mysql-server
+
+
+RedHat
+perl-DBI.i386
+perl-DBD-MySQL.i386
+perl-Text-CSV_XS.i386
+perl-Config-General.noarch 
+cpan install XML::LibXML::Simple
+perl-XML-Writer.noarch
+perl-Template-Toolkit.i386
+cpan PDF::API2
+cpan PDF::Table
+perl-MIME-Lite.noarch
+perl-GD.i386
+perl-GDGraph.noarch
+perl-GDGraph3d.noarch
+perl-HTML-TableExtract.noarch
+perl-XML-Simple.noarch 
+perl-Net-SMTP-SSL.noarch
+cpan Net::SMTP::TLS
+perl-Archive-Zip.noarch
+perl-JSON.noarch
+perl-JSON-XS.i386
+cpan File::PATH
+perl-Image-Size.noarch
+
+gnuplot.i386 
+ImageMagick.i386
+GMT.i386
+GMT-coastlines-all.noarch
+git.i386
+
+
+
+--
+7/7/2013
+DateTime::Event::Cron 
+
+--
+7/11/2013
+ShakeCast V3 discussion with Caltrans

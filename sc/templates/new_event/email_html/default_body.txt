@@ -1,0 +1,10 @@
+<tr>
+  <td><img src="http://maps.google.com/maps/api/staticmap?center=%LAT%,%LON%&zoom=5&size=200x200&maptype=terrain&sensor=false&markers=icon:http://earthquake.usgs.gov/research/software/shakecast/icons/epicenter.png|%LAT%,%LON%">
+  <td>%EVENT_ID%
+  <td>%EVENT_TIMESTAMP%
+  <td>%MAGNITUDE%
+  <td>%LAT%
+  <td>%LON%
+  <td>%EVENT_LOCATION_DESCRIPTION%
+</tr>
+;;;;;

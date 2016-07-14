@@ -1,0 +1,7 @@
+<tr>
+  <td>%LOG_MESSAGE_ID%
+  <td>%SERVER_ID%
+  <td>%RECEIVE_TIMESTAMP%
+  <td>%DESCRIPTION%
+</tr>
+;;;;;

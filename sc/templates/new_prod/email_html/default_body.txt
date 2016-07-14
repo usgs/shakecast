@@ -1,0 +1,10 @@
+<tr>
+  <td>%FACILITY_ID%
+  <td>%FACILITY_NAME%
+  <td>%FACILITY_TYPE%
+  <td>%DESCRIPTION%
+  <td>%FACILITY_LAT%
+  <td>%FACILITY_LON%
+  <td>%NAME%
+</tr>
+;;;;;

@@ -1,0 +1,589 @@
+<!DOCTYPE html>
+<!-- saved from url=(0065)http://twitter.github.com/bootstrap/getting-started.html#examples -->
+<html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta charset="utf-8">
+    <title>System Configuration</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <!-- Le styles -->
+    <link href="../css/bootstrap.css" rel="stylesheet">
+    <link href="../css/bootstrap-responsive.css" rel="stylesheet">
+    <link href="../css/docs.css" rel="stylesheet">
+    <link href="../css/prettify.css" rel="stylesheet">
+
+    <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="assets/js/html5shiv.js"></script>
+    <![endif]-->
+
+    <!-- Le fav and touch icons -->
+    <link rel="apple-touch-icon-precomposed" sizes="144x144" href="http://twitter.github.com/bootstrap/assets/ico/apple-touch-icon-144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="http://twitter.github.com/bootstrap/assets/ico/apple-touch-icon-114-precomposed.png">
+      <link rel="apple-touch-icon-precomposed" sizes="72x72" href="http://twitter.github.com/bootstrap/assets/ico/apple-touch-icon-72-precomposed.png">
+                    <link rel="apple-touch-icon-precomposed" href="http://twitter.github.com/bootstrap/assets/ico/apple-touch-icon-57-precomposed.png">
+        <link rel="shortcut icon" href="/images/sc_logo.png">
+
+  <style id="holderjs-style" type="text/css">
+	.holderjs-fluid {font-size:16px;font-weight:bold;text-align:center;font-family:sans-serif;margin:0}
+				img.logo{ 
+				vertical-align: text-bottom;
+				text-align: center;
+				height: 24px;
+			}
+
+  </style></head>
+
+  <body data-spy="scroll" data-target=".bs-docs-sidebar" data-twttr-rendered="true">
+
+    <!-- Navbar
+    ================================================== -->
+    <div class="navbar navbar-fixed-top">
+      <div class="navbar-inner">
+        <div class="container">
+          <div class="nav-collapse collapse">
+            <ul class="nav">
+              <!-- <li class="">
+                <a href="http://twitter.github.com/bootstrap/index.html">Home</a>
+              </li> -->
+				<li class="logo"><a class="brand" href="../index.html"><img src="/images/sc_logo.png" class="img-circle logo" /> ShakeCast</a></li>
+              <li class="active">
+                <a href="config.html">System Configuration</a>
+              </li>
+              <li class="">
+                <a href="earthquake.html">Earthquakes</a>
+              </li>
+              <li class="">
+                <a href="facility.html">Facilities</a>
+              </li>
+              <li class="">
+                <a href="Product.html">Products</a>
+              </li>
+              <li class="">
+                <a href="station.html">Stations</a>
+              </li>
+              <li class="">
+                <a href="user.html">Users</a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+<!-- Subhead
+================================================== -->
+<header class="jumbotron subhead" id="overview">
+  <div class="container">
+    <h1>System Configuration</h1>
+    <p class="lead">Overview of the system, its components, and how to customize it.</p>
+  </div>
+</header>
+
+
+  <div class="container">
+
+    <!-- Docs nav
+    ================================================== -->
+    <div class="row">
+      <div class="span3 bs-docs-sidebar">
+        <ul class="nav nav-list bs-docs-sidenav affix">
+          <li class="active"><a href="#database-connection"><i class="icon-chevron-right"></i> ShakeCast Database</a></li>
+          <li class=""><a href="#email-server"><i class="icon-chevron-right"></i> Email Server</a></li>
+          <li class=""><a href="#shakemap-server"><i class="icon-chevron-right"></i> ShakeMap Server</a></li>
+          <li class=""><a href="#shakemap-region"><i class="icon-chevron-right"></i> ShakeMap Region</a></li>
+          <li class=""><a href="#system-directory"><i class="icon-chevron-right"></i> System Directory</a></li>
+          <li class=""><a href="#misc-param"><i class="icon-chevron-right"></i> Misc. Parameter</a></li>
+        </ul>
+      </div>
+      <div class="span9">
+
+
+
+        <!-- ShakeCast Database
+        ================================================== -->
+        <section id="database-connection">
+          <div class="page-header">
+            <h1>1. ShakeCast Database</h1>
+          </div>
+          <p class="lead">Specify connection information for the ShakeCast database.</p>
+          <p>Once connected, the administrator can modify system specific configuration settings.</p>
+
+          <div class="row-fluid">
+<div class="span6" id="server-form">
+<form>
+  <fieldset>
+    <table class="table table-hover">
+    <thead>
+    <tr>
+    <th>Connection String</th>
+    <th>Type</th>
+    <th>Username</th>
+    <th>Password</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+    <td><input type="text" placeholder="Connection String" id="db_connection_string" ></td>
+    <td><input type="text" placeholder="Type" id="db_type" ></td>
+    <td><input type="text" placeholder="Username" id="db_username" ></td>
+    <td><input type="password" placeholder="Password" id="db_password" ></td>
+    </tr>
+    </tbody>
+    </table>
+	<button type="button" class="btn config_update">Update</button>
+	<div class="server_result"></div>
+  </fieldset>
+</form>
+          </div>
+          </div>
+        </section>
+
+
+        <!-- Email Server
+        ================================================== -->
+        <section id="email-server">
+          <div class="page-header">
+            <h1>2. Email Server</h1>
+          </div>
+          <p class="lead">Specify information for Email server.</p>
+          <p>A valid SMTP email server is required for sending ShakeCast notifications. Leave the username and password fields blank if no authentication is required.</p>
+
+          <div class="row-fluid">
+<div class="span6" id="server-form">
+<form>
+  <fieldset>
+    <table class="table table-hover">
+    <thead>
+    <tr>
+    <th>SMTP Server</th>
+    <th>Security</th>
+    <th>Port</th>
+    <th>Username</th>
+    <th>Password</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+    <td><input type="text" class="input-medium" placeholder="SMTP Server" id="email_smtpserver" ></td>
+    <td><select class="input-small" placeholder="Security" id="email_security" >
+		<option></option>
+		<option>SSL</option>
+		<option>TLS</option></select></td>
+    <td><input type="text" class="input-mini" placeholder="Port" id="email_port" ></td>
+    <td><input type="text" placeholder="Username" id="email_username" ></td>
+    <td><input type="password" placeholder="Password" id="email_password" ></td>
+    </tr>
+    </tbody>
+    </table>
+          <p>Notif.</p>
+    <table class="table table-hover">
+    <thead>
+    <tr>
+    <th>Default Email Template</th>
+    <th>Default Script Template</th>
+    <th>From</th>
+    <th>Envelope From</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+    <td><input type="text" class="input-medium" placeholder="Default Email Template" id="email_defaultemailtemplate" ></td>
+    <td><input type="text" class="input-medium" placeholder="Default Script Template" id="email_defaultscripttemplate" ></td>
+    <td><input type="text" placeholder="From" id="email_from" ></td>
+    <td><input type="text" placeholder="Envelope From" id="email_envelopefrom" ></td>
+    </tr>
+    </tbody>
+    </table>
+	<button type="button" class="btn config_update">Update</button>
+	<div class="server_result"></div>
+  </fieldset>
+</form>
+          </div>
+          </div>
+        </section>
+
+
+
+        <!-- ShakeMap Server
+        ================================================== -->
+        <section id="shakemap-server">
+          <div class="page-header">
+            <h1>3. ShakeMap Server</h1>
+          </div>
+          <p class="lead">Specify server information for ShakeMap and related earthquake products.</p>
+
+          <div class="row-fluid">
+<div class="span6" id="server-form">
+<form>
+  <fieldset>
+    <table class="table table-hover">
+    <thead>
+    <tr>
+    <th>Server ID</th>
+    <th>DNS Address</th>
+    <th>Query</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+    <td><input type="text" placeholder="Server ID" id="server_server_id" ></td>
+    <td><input type="text" placeholder="DNS Address" id="server_dns_address" ></td>
+    <td><input type="checkbox" id="server_query_flag" > </td>
+    </tr>
+    </tbody>
+    </table>
+	<button type="button" class="btn" id="server_update">Update</button>
+	<div class="server_result"></div>
+  </fieldset>
+</form>
+          </div>
+          </div>
+        </section>
+
+
+        <!-- ShakeMap Region
+        ================================================== -->
+        <section id="shakemap-region">
+          <div class="page-header">
+            <h1>4. ShakeMap Region</h1>
+          </div>
+          <p class="lead">Specify region preference for ShakeMap and related earthquake products.</p>
+
+          <div class="row-fluid">
+<div class="span6" id="server-form">
+<form>
+  <fieldset>
+    <table class="table table-hover">
+    <thead>
+    <tr>
+    <th>Region</th>
+    <th>Active Time Window</th>
+    <th>Magnitude Threshold</th>
+    <th>Update Threshold</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+    <td><input type="text" placeholder="ShakeMap Network Codes" id="sm_region" ></td>
+    <td><input type="text" class="input-medium" placeholder="Days after Earthquake" id="sm_time_window" ></td>
+    <td><input type="text" class="input-medium" placeholder="Magnitude Threshold" id="param_mag_threshold" ></td>
+    <td><input type="text" class="input-medium" placeholder="% Changes in PGM" id="param_update_threshold" ></td>
+    </tr>
+    </tbody>
+    </table>
+	<button type="button" class="btn config_update">Update</button>
+	<div class="server_result"></div>
+  </fieldset>
+</form>
+          </div>
+          </div>
+        </section>
+
+
+        <!-- System Directory
+        ================================================== -->
+        <section id="system-directory">
+          <div class="page-header">
+            <h1>5. System Directory</h1>
+          </div>
+          <p class="lead">Specify region preference for ShakeMap and related earthquake products.</p>
+
+          <div class="row-fluid">
+<div class="span6" id="server-form">
+<form>
+  <fieldset>
+    <table class="table table-hover">
+    <thead>
+    <tr>
+    <th>Root Directory</th>
+    <th>Data Root</th>
+    <th>Template Directory</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+    <td><input type="text" placeholder="Root Directory" id="param_rootdir" ></td>
+    <td><input type="text" placeholder="Data Directory" id="param_dataroot" ></td>
+    <td><input type="text" placeholder="Template Directory" id="param_templatedir" ></td>
+    </tr>
+    </tbody>
+    </table>
+    <table class="table table-hover">
+    <thead>
+    <tr>
+    <th>Log Directory</th>
+    <th>Log File</th>
+    <th>Log Level</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+    <td><input type="text" placeholder="Log Directory" id="param_logdir" ></td>
+    <td><input type="text" class="input-small" placeholder="Log File" id="param_logfile" ></td>
+    <td><select class="input-small" placeholder="Log Level" id="param_loglevel" >
+		<option>1</option>
+		<option>2</option>
+		<option>3</option>
+		<option>4</option></select></td>
+    </tr>
+    </tbody>
+    </table>
+	<button type="button" class="btn config_update">Update</button>
+	<div class="server_result"></div>
+  </fieldset>
+</form>
+          </div>
+          </div>
+        </section>
+
+
+        <!-- System Directory
+        ================================================== -->
+        <section id="misc-param">
+          <div class="page-header">
+            <h1>6. Misc. Parameters</h1>
+          </div>
+          <p class="lead">Specify region preference for ShakeMap and related earthquake products.</p>
+
+          <div class="row-fluid">
+<div class="span6" id="server-form">
+<form>
+  <fieldset>
+    <table class="table table-hover">
+    <thead>
+    <tr>
+    <th>GNU Plot</th>
+    <th>wkhtmltopdf</th>
+    <th>Perl</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+    <td><input type="text" placeholder="GNU Plot" id="param_gnuplot" ></td>
+    <td><input type="text" placeholder="wkhtmltopdf" id="param_wkhtmltopdf" ></td>
+    <td><input type="text" placeholder="Perl Bin" id="param_perlbin" ></td>
+    </tr>
+    </tbody>
+    </table>
+    <table class="table table-hover">
+    <thead>
+    <tr>
+    <th>User ID</th>
+    <th>Group ID</th>
+    <th>Redundancy Check</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+    <td><input type="text" class="input-small" placeholder="User ID" id="param_userid" ></td>
+    <td><input type="text" class="input-small" placeholder="Group ID" id="param_groupid" ></td>
+    <td><input type="text" class="input-small" placeholder="Redundancy Check" id="param_redundant_check" ></td>
+    </tr>
+    </tbody>
+    </table>
+	<button type="button" class="btn config_update">Update</button>
+	<div class="server_result"></div>
+  </fieldset>
+</form>
+          </div>
+          </div>
+        </section>
+
+
+      </div>
+    </div>
+
+  </div>
+
+
+
+    <!-- Footer
+    ================================================== -->
+    <footer class="footer">
+      <div class="container">
+        <p>Designed and built with Bootstrap</p>
+      </div>
+    </footer>
+
+
+
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script type="text/javascript" src="./example_files/widgets.js"></script>
+    <script src="./example_files/jquery.js"></script>
+    <script src="./example_files/bootstrap-transition.js"></script>
+    <script src="./example_files/bootstrap-alert.js"></script>
+    <script src="./example_files/bootstrap-modal.js"></script>
+    <script src="./example_files/bootstrap-dropdown.js"></script>
+    <script src="./example_files/bootstrap-scrollspy.js"></script>
+    <script src="./example_files/bootstrap-tab.js"></script>
+    <script src="./example_files/bootstrap-tooltip.js"></script>
+    <script src="./example_files/bootstrap-popover.js"></script>
+    <script src="./example_files/bootstrap-button.js"></script>
+    <script src="./example_files/bootstrap-collapse.js"></script>
+    <script src="./example_files/bootstrap-carousel.js"></script>
+    <script src="./example_files/bootstrap-typeahead.js"></script>
+    <script src="./example_files/bootstrap-affix.js"></script>
+
+    <script src="../example_files/holder.js"></script>
+    <script src="../example_files/prettify.js"></script>
+
+    <script src="./example_files/application.js"></script>
+
+	<script>
+	$(window).load(function() {
+
+		var config_url = '/scripts/system_config.pl/';
+
+		$.getJSON(config_url, function(data) {
+
+			// Are there even any EQ to display?
+			if (data.length <= 0) {
+				return;
+			}
+			
+			var db = data.DBConnection;
+			console.log(db.ConnectString);
+			$("#db_connection_string").val(db.ConnectString);
+			$("#db_type").val(db.Type);
+			$("#db_username").val(db.Username);
+			$("#db_password").val(db.Password);
+			
+			var servers = data.server;
+			if (servers.length > 0) {
+			var server = servers[0];
+			console.log(server.server_id);
+			$("#server_server_id").val(server.server_id);
+			$("#server_dns_address").val(server.dns_address);
+			if (server.query_flag > 0) $("#server_query_flag").prop('checked', true);
+			}
+			
+			var email_server = data.Notification;
+			console.log(email_server.SmtpServer);
+			$("#email_smtpserver").val(email_server.SmtpServer);
+			$("#email_security").val(email_server.Security);
+			$("#email_port").val(email_server.Port);
+			$("#email_username").val(email_server.Username);
+			$("#email_password").val(email_server.Password);
+			$("#email_defaultemailtemplate").val(email_server.DefaultEmailTemplate);
+			$("#email_defaultscripttemplate").val(email_server.DefaultScriptTemplate);
+			$("#email_from").val(email_server.From);
+			$("#email_envelopefrom").val(email_server.EnvelopeFrom);
+			
+			var sm = data.rss;
+			console.log(sm.TIME_WINDOW);
+			$("#sm_time_window").val(sm.TIME_WINDOW);
+			$("#sm_region").val(sm.REGION);
+			$("#param_update_threshold").val(data.Threshold);
+			$("#param_mag_threshold").val(data.MAG_CUTOFF);
+
+			$("#param_dataroot").val(data.DataRoot);
+			$("#param_logfile").val(data.LogFile);
+			$("#param_rootdir").val(data.RootDir);
+			$("#param_templatedir").val(data.TemplateDir);
+			$("#param_loglevel").val(data.LogLevel);
+			$("#param_logdir").val(data.LogDir);
+			
+			$("#param_groupid").val(data.GroupID);
+			$("#param_gnuplot").val(data.gnuplot);
+			$("#param_wkhtmltopdf").val(data.wkhtmltopdf);
+			$("#param_redundant_check").val(data.REDUNDANT_CHECK);
+			$("#param_userid").val(data.UserID);
+			$("#param_perlbin").val(data.perlbin);
+		});
+	});
+
+
+		/* Add a click handler for the delete row */
+		$('.config_update').bind('click', function() {
+			var obj = $(this);
+			var config_url = '/scripts/system_config.pl/config_update/';
+			var param = {
+					'param_groupid': $("#param_groupid").val(),
+					'param_gnuplot': $("#param_gnuplot").val(),
+					'param_wkhtmltopdf': $("#param_wkhtmltopdf").val(),
+					'param_redundant_check': $("#param_redundant_check").val(),
+					'param_userid': $("#param_userid").val(),
+					'param_perlbin': $("#param_perlbin").val(),
+					'param_dataroot': $("#param_dataroot").val(),
+					'param_logfile': $("#param_logfile").val(),
+					'param_rootdir': $("#param_rootdir").val(),
+					'param_templatedir': $("#param_templatedir").val(),
+					'param_loglevel': $("#param_loglevel").val(),
+					'param_logdir': $("#param_logdir").val(),
+					'sm_time_window': $("#param_logdir").val(),
+					'sm_region': $("#param_logdir").val(),
+					'param_update_threshold': $("#param_logdir").val(),
+					'param_mag_threshold': $("#param_logdir").val(),
+					'email_smtpserver': $("#email_smtpserver").val(),
+					'email_security': $("#email_security").val(),
+					'email_port': $("#email_port").val(),
+					'email_username': $("#email_username").val(),
+					'email_password': $("#email_password").val(),
+					'email_defaultemailtemplate': $("#email_defaultemailtemplate").val(),
+					'email_defaultscripttemplate': $("#email_defaultscripttemplate").val(),
+					'email_from': $("#email_from").val(),
+					'email_envelopefrom': $("#email_envelopefrom").val(),
+					'db_connection_string': $("#db_connection_string").val(),
+					'db_type': $("#db_type").val(),
+					'db_username': $("#db_username").val(),
+					'db_password': $("#db_password").val(),
+			
+					};
+					console.log($("#param_groupid").val());
+				$.post(config_url, param, function(data) {
+
+					// Are there even any EQ to display?
+					if (data.update_result <= 0) {
+					obj.siblings(".server_result").html('	  <div class="alert alert-error">'+
+						'<button type="button" class="close" data-dismiss="alert">&times;</button>' +
+						'<strong>Error in updating server information!</strong>' +
+						'</div>');
+						return;
+					} else {
+					obj.siblings(".server_result").html('<div class="alert">' +
+						'<button type="button" class="close" data-dismiss="alert">&times;</button>' +
+						'Server Info Updated.</strong></div>');
+					}
+					//$("result").html(data);
+					//console.log($("#server_dns_address").val() + ' - ' + data.query_flag);
+					//console.log(data.dns_address + ' - ' + data.query_flag);
+				}, "json");
+		} );
+
+		/* Add a click handler for the delete row */
+		$('#server_update').bind('click', function() {
+			var obj = $(this);
+			var config_url = '/scripts/system_config.pl/server_update/';
+			var param = {
+					'server_id': $("#server_server_id").val(),
+					'dns_address': $("#server_dns_address").val(),
+					'query_flag': $("#server_query_flag").is(':checked'),
+					};
+				$.post(config_url, param, function(data) {
+
+					// Are there even any EQ to display?
+					if (data.update_result <= 0) {
+					obj.siblings(".server_result").html('	  <div class="alert alert-error">'+
+						'<button type="button" class="close" data-dismiss="alert">&times;</button>' +
+						'<strong>Error in updating server information!</strong>' +
+						'</div>');
+						return;
+					} else {
+					obj.siblings(".server_result").html('<div class="alert">' +
+						'<button type="button" class="close" data-dismiss="alert">&times;</button>' +
+						'Server Info Updated.</strong></div>');
+					}
+					//$("result").html(data);
+					//console.log($("#server_dns_address").val() + ' - ' + data.query_flag);
+					//console.log(data.dns_address + ' - ' + data.query_flag);
+				}, "json");
+		} );
+
+ 	</script>
+ 
+
+<div id="directions_extension" style="display: none;"></div></body></html>

@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="shortcut icon" href="/images/sc_logo.png">
+
+    <title>Earthquake List</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="./bootstrap3/css/bootstrap.css" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+	<link rel="stylesheet" href="./bootstrap3/css/navbar-fixed-top.css">
+	<link rel="stylesheet" href="./css/main.css">
+	<link rel="stylesheet" href="./css/jquery-ui-1.8.16.custom.css">
+	  
+    <!-- Just for debugging purposes. Don't actually copy this line! -->
+    <!--[if lt IE 9]><script src="../../docs-assets/js/ie8-responsive-file-warning.js"></script><![endif]-->
+
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+      <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
+    <![endif]-->
+  </head>
+
+  <body>
+  <!-- Fixed navbar -->
+  <div class="navbar navbar-default navbar-inverse navbar-fixed-top" role="navigation">
+    <div class="container">
+      <div class="navbar-header">
+	<button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+	  <span class="sr-only">Toggle navigation</span>
+	  <span class="icon-bar"></span>
+	  <span class="icon-bar"></span>
+	  <span class="icon-bar"></span>
+	</button>
+	<a class="navbar-brand" href="?dest=index"><img src="/images/sc_logo.png" class="img-circle logo" /> ShakeCast</a>
+      </div>
+      <div class="navbar-collapse collapse">
+	<ul id="nav_menu" class="nav navbar-nav">
+	  <li class="active"><a href="?dest=index">Home</a></li>
+	  <li><a href="#about">About</a></li>
+	  <li class="dropdown">
+	  <a href="?dest=list" class="dropdown-toggle" data-toggle="dropdown">Earthquake List <b class="caret"></b></a>
+	  <ul class="dropdown-menu">
+	    <li><a href="?dest=list">Recent Events</a></li>
+	    <li class="divider"></li>
+	    <li><a href="?dest=list&type=major">Significant Events</a></li>
+	    <li><a href="?dest=list&type=scenario">Scenarios</a></li>
+	    <li class="divider"></li>
+	  </ul>
+	  </li>
+	    <li><a href="?dest=preference">Settings</a></li>
+		<TMPL_VAR NAME=ADMIN>
+		<TMPL_VAR NAME=LOGOUT>
+	</ul>
+      </div><!--/.nav-collapse -->
+    </div>
+  </div>
+
+<!-- Subhead
+================================================== -->
+<header class="header" id="overview">
+  <div class="container">
+    <h2>Earthquake List <small>Earthquake list and available products of each event.</small></h2>
+    <ol class="breadcrumb">
+      <li><a href="?dest=index">Home</a></li>
+      <li><a href="#">Earthquakes</a></li>
+      <li class="active"></li>
+    </ol>
+  </div>
+</header>
+
+<div class="container">
+
+      <div class="row">
+        <div class="col-md-2">
+          <div class="panel panel-default">
+	    <div class="list-group" id="sidebar">
+              <a class="list-group-item" id="list_day" href="?dest=list&age=day">Last Day</a>
+              <a class="list-group-item" id="list_week" href="?dest=list&age=week">Within a Week</a>
+              <a class="list-group-item" id="list_month" href="?dest=list&age=month">Within a Month</a>
+              <a class="list-group-item" id="list_year" href="?dest=list&age=year">Within a Year</a>
+              <a class="list-group-item" id="list_all" href="?dest=list&age=all">All</a>
+				<span></span>
+               <a class="list-group-item" id="list_major" href="?dest=list&type=major">Significant Events</a>
+             <a class="list-group-item" id="list_scenario" href="?dest=list&type=scenario">Scenarios</a>
+             <a class="list-group-item" id="list_test" href="?dest=list&type=test">Test/Exercise Events</a>
+	    </div>
+          </div><!--/.well -->
+        </div><!--/span-->
+        <div class="col-md-10">
+            <!-- Main hero unit for a primary marketing message or call to action -->
+            <div class="panel panel-default" id="main_pane">
+				<div id="map_title"></div>
+				<div id="map_canvas" style="width:800px; height:400px;"></div>
+ 				<div id="caption"></div>
+           </div>
+
+            <!-- Example row of columns -->
+            <div class="panel panel-default">
+		<div class="accordion"></div>
+	  <button type="button" id="load_more" class="btn btn-primary"></button>
+            </div>
+
+
+
+			<div id="spinner" class="spinner ui-widget ui-widget-content ui-corner-all" style="width:50px;background:#fff;height:50px;">
+				<img id="img-spinner" src="/images/usgs.gif" alt="Loading" style="margin:10px auto;"/>
+			</div>
+
+        </div> <!-- /container -->
+      </div> <!-- /container -->
+
+    <!-- Footer
+    ================================================== -->
+    <footer class="footer">
+      <div class="container">
+        <ul class="footer-links">
+          <li><a href="http://earthquake.usgs.gov">&copy; USGS 2013</a></li>
+          <li class="muted">&middot;</li>
+          <li>Desktop</li>
+          <li class="muted">&middot;</li>
+          <li><a href="?dest=mobile">Mobile</a></li>
+        </ul>
+     </div>
+    </footer>
+
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script type="text/javascript">
+      var prefix;
+      var script = '<script type="text/javascript" src="';
+      var loc = new String(window.parent.document.location);
+      if (loc.indexOf("https://")!= -1)
+	prefix = "https://";
+      else
+	prefix = "http://";
+      script += prefix + 'maps.google.com/maps/api/js?sensor=false"><' + '/script>';
+      document.write(script);
+    </script>
+    <script type="text/javascript" src="./js/jquery-1.10.2.min.js"></script>
+    <script type="text/javascript" src="./bootstrap3/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="./js/jquery-ui.js"></script>
+    <script type="text/javascript" src="./js/main.js"></script>
+    <script type="text/javascript" src="./js/shakemap.js"></script>
+    <script type="text/javascript" src="./js/loadXML.js"></script>
+    <script type="text/javascript" src="./js/mapapp_list.js"></script>
+    <script type="text/javascript" src="./js/sc_constant.js"></script>
+    <script type="text/javascript" src="./js/storage.js"></script>
+    <script type="text/javascript" src="./js/sc_markerclusterer.js"></script>
+ 
+    <script>
+      var latlng = new google.maps.LatLng(35,-120);
+      var map;
+      var sc_id = gup('event');
+      var type = gup('type') ? gup('type') : 'actual';
+      var age = gup('age') ? gup('age') : 'day';
+      var eq_des = [];
+      var start=0, length=0, total;
+		var markers = [];
+		var markerCluster;
+	        var marker_icon = [];
+      //var sm_url = '/scripts/event.pl/datatables';
+      var sm_url = '/scripts/r/event/datatables';
+			
+	    SC_DEF.init();
+        //var sm_url = '/scripts/shakemap.pl/from_id/' + sc_id;
+        var username = SC_DEF.user ? SC_DEF.user : 'guest';
+        var password = SC_DEF.pass ? SC_DEF.pass : 'guest';
+        var sm_url = '/scripts/r/user/from_id/'+username;
+        var submit_data = {
+        };
+
+      $(window).load(function() {
+	map = MAPAPP.init(SC_DEF);
+	//menu_update();
+
+	if (!(type)) {
+	  type = SC_DEF.event_type ? SC_DEF.event_type : 'actual';
+	}
+	if (!(age)) {
+	  age = SC_DEF.recent_events ? parseInt(SC_DEF.recent_events) : 'week';
+	}
+	//sm_url = '/scripts/event.pl/datatables?type='+type+'&age='+age;
+	sm_url = '/scripts/r/event/datatables';
+
+	if (type == 'actual') {
+	  $(".breadcrumb li").last().html(age.toUpperCase() + ' List');
+	  $("#list_"+age).addClass("active");
+	} else {
+	  $(".breadcrumb li").last().html(type.toUpperCase() + ' Event List');
+	  $("#list_"+type).addClass("active");
+	}
+	fnAccordion();
+      });
+			
+      function fnAccordion ( )
+      {
+	$.post(sm_url, {type:type, age:age, start:start}, function(eqdata) {
+
+	  var data = eqdata.data;
+	  // Are there even any EQ to display?
+	  if (data.length <= 0) {
+		  return;
+	  }
+	  var html_array = [];
+	  for (var i=0; i < data.length; i++) {
+	  //MAPAPP.addMarker(data.facility_damage[key]);
+	  var event = data[i];
+	  event.opacity = 1-i/data.length;
+	  MAPAPP.addMarker(event);
+	  html_array = html_array.concat([
+	    '<h3 id="'+ event.shakemap_id + '-' + event.shakemap_version,
+	    '"><a href="?dest=event&event=' + event.shakemap_id + '-' + event.shakemap_version,
+	    '"><strong>M'+event.magnitude + '</strong> - ' + event.event_location_description + '</a></h3>',
+	    '<div id="'+ event.shakemap_id + '-' + event.shakemap_version,
+	    '_detail" class="content_wrap"></div>',
+	    ]);
+	  eq_des[event.shakemap_id + '-' + event.shakemap_version] = event;
+	  }
+	  
+	  $(".accordion").append(html_array.join(''));
+	  if (start > 0) {
+	    $( ".accordion" ).accordion('destroy');;
+	  }
+	  $( ".accordion" ).accordion();
+	  $( ".accordion" ).accordion({heightStyle: "auto"});
+
+	  $(".accordion h3").bind('click', function () {
+	      var id = (this.id);
+	      var products = fnFormatDetails(id);
+	      //$("#"+id+"_detail").html(products);
+		  $( ".accordion" ).accordion('refresh');
+	      var event = eq_des[id];
+	      var sLat = parseFloat(event.lat);
+	      var sLon = parseFloat(event.lon);
+	      google.maps.event.trigger(MAPAPP.facMarkers[event.event_id], 'click');
+	      if (markerCluster) {
+		markerCluster.removeMarkers(markers);
+		markers = [];
+	      }
+	      load_marker(id);
+	  });
+  
+	  google.maps.event.trigger(MAPAPP.facMarkers[data[0].event_id], 'click');
+	  map.setCenter(MAPAPP.facMarkers[data[0].event_id].getPosition());
+	  
+	  var event = data[0];
+	  $('#'+selector(event.shakemap_id) + '-' + event.shakemap_version).trigger('click');
+	  if (eqdata.start+eqdata.length >= eqdata.total) {
+	    $('#load_more').hide();
+	  } else {
+	    $('#load_more').html('Load More Earthquakes ('+
+			    (start+eqdata.length)+'/'+eqdata.total+')');
+	    length = eqdata.length;
+	    start = eqdata.start+length+1;
+	    //sm_url = '/scripts/event.pl/datatables?type='+type+'&age='+age+'&start='+start+'&length='+length;
+	    sm_url = '/scripts/r/event/datatables?type='+type+'&age='+age+'&start='+start+'&length='+length;
+	  }
+	  $(window).trigger('resize');
+	}, 'json');
+      }
+			
+
+	$(window).resize(function() {
+		//oTable.fnAdjustColumnSizing();
+		//$("#eq_content_table").width($(".row").width());
+		$("#map_canvas").width($("#main_pane").width());
+		$("#map_canvas").height(($("#map_canvas").width())/2);
+		//console.log($("#map_canvas").width());
+		google.maps.event.trigger(map, 'resize');
+		var cont_height = $("#map_canvas").height() + $(".accordion").height();
+		if ($("#sidebar").length) {
+			cont_height = ($("#sidebar").height() > cont_height) ? $("#sidebar").height() : cont_height;
+		}
+		$('html').css('height', cont_height);
+	});
+
+	function fnFormatDetails ( sm_id )
+	{
+	  //var sm_url = '/scripts/product.pl/from_id/'+ sm_id;
+	  var sm_url = '/scripts/r/product/from_id/'+ sm_id;
+	  var html_array = [];
+
+	  $.post(sm_url, submit_data, function(data) {
+
+	    // Are there even any EQ to display?
+	    if (data.product.length <= 0) {
+		    return;
+	    }
+
+	    var products = data.product
+		    html_array = html_array.concat([
+	      '<div class="row">',
+		'<div class="col-md-2">',
+		'<a href="?dest=event&event=' + sm_id + '">',
+		'<img src="/images/sc_logo_kwl.png" class="img-thumbnail" style="max-width:96px">',
+		'<p class="thumbnailClass">ShakeCast Page</p>',
+		'</a>',
+		'</div>',
+		    ]);
+	    for (var i=0; i < products.length; i++) {
+	    //MAPAPP.addMarker(data.facility_damage[key]);
+	    var product = products[i];
+	    //if (!product_type[product.product_type]) {continue;}
+	    var file_path;
+	    var img_path;
+	    if (product.display) {
+	      if (product.eq_product) {
+		file_path = '/data/' + product.filename;
+	      } else {
+		file_path = '/data/' + sm_id + '/' + product.filename;
+	      }
+	    if (product.url) {
+		    img_path = product.url;
+	    } else {
+		    img_path = file_path;
+	    }
+	      html_array = html_array.concat([
+	      '<div class="col-md-2">',
+	      //'<a href="#myModal" role="button" class="btn" data-toggle="modal">',
+	      '<a href="' + file_path + '">',
+		'<img src="' + img_path + '" class="img-thumbnail" style="max-width:96px">',
+		'<p class="thumbnailClass">' + product.name + '</p>',
+	      '</a>',
+	      '</div>',
+	      ]);
+	    }}
+	    var event_id = sm_id.replace(/-.*$/,"");
+	      html_array = html_array.concat([
+	      '<div class="col-md-2">',
+	      '<a href="http://earthquakes.usgs.gov/earthquakes/eventpage/' + event_id + '">',
+		'<img src="/images/usgs_green.png" class="img-thumbnail" style="max-width:96px">',
+		'<p class="thumbnailClass">USGS Event Page</p>',
+	      '</a>',
+	      '</div>',
+		      '</div>',
+	      ]);
+
+	    $("#"+selector(sm_id)+"_detail").html(html_array.join(''));
+	    $(".accordion").accordion( "refresh" );
+	  }, 'json');
+	}
+
+function selector(sm_id) {
+    var specials = [
+      '#', '&', '~', '=', '>', 
+      "'", ':', '"', '!', ';', ','
+    ];
+    var regexSpecials = [
+      '.', '*', '+', '|', '[', ']', '(', ')', '/', '^', '$'
+    ];
+    var sRE = new RegExp(
+      '(' + specials.join('|') + '|\\' + regexSpecials.join('|\\') + ')', 'g'
+    );
+
+      return sm_id.replace(sRE, '\\$1');
+    }
+
+    function switch_sm(){
+	var event = event_array[display_ind];
+	var shakemap = event.shakemap_id + '-' + event.shakemap_version;
+	//var dmg_url = '/scripts/damage.pl/from_id/'+shakemap+'?action=summary';
+	var dmg_url = '/scripts/r/damage/from_id/'+shakemap+'?action=summary';
+	    $("#map_title").html('<p class="text-info">Loading Event ' + shakemap +
+				' (' + (display_ind+1) + '/' + event_ind + ' for the last ' +
+				age + ' days)...</p>');
+	if (!SC_DEF.fixed_pos_flag) {
+	    google.maps.event.trigger(MAPAPP.facMarkers[event.event_id], 'click');
+	    map.setCenter(MAPAPP.facMarkers[event.event_id].getPosition());
+	}
+	display_ind ++;
+	if (display_ind >= event_ind) {display_ind = 0;}
+      }
+
+      $('#load_more').on('click', fnAccordion);
+
+      function load_marker(sc_id){
+		//var sm_url = '/scripts/shakemap.pl/from_id/' + sc_id;
+		var sm_url = '/scripts/r/damage/marker/' + sc_id;
+		var all = (SC_DEF.allmarker_flag) ? 1 : 0;
+		$.post(sm_url, {all:all}, function(data) {
+
+		// Are there even any EQ to display?
+		if (typeof data === "undefined") {
+			return;
+		}
+
+		for (var icon_type in marker_icon) {
+		    marker_icon[icon_type].facility_count = 0;
+		} // for
+		for (var fac in data) {
+		  var facility = data[fac];
+		  var latLng = new google.maps.LatLng(facility.latitude,
+		      facility.longitude);
+		  var icon_type =  facility.facility_type + facility.damage_level;
+		  icon_type = icon_type.toLowerCase();
+		  if (typeof marker_icon[icon_type] === "undefined") {
+		      marker_icon[icon_type] =
+			{
+			  url: '/images/' + icon_type + '.png',
+			  // This marker is 20 pixels wide by 32 pixels tall.
+			  size: new google.maps.Size(25, 25),
+			  // The origin for this image is 0,0.
+			  origin: new google.maps.Point(0,0),
+			  // The anchor for this image is the base of the flagpole at 0,32.
+			  anchor: new google.maps.Point(12, 12),
+			  facility_type: facility.facility_type,
+		    severity_rank: facility.severity_rank,
+			  facility_count: 1,
+			};
+		  } else {
+		    marker_icon[icon_type].facility_count += 1;
+		  }
+		  var marker = new google.maps.Marker({
+		    position: latLng,
+		    //shadow: markershadow,
+		    icon: marker_icon[icon_type],
+		    facility_id: fac,
+		    facility_type: facility.facility_type,
+		    severity_rank: facility.severity_rank,
+		    facility_name: facility.facility_name,
+		  });
+		  google.maps.event.addListener(marker, 'click', function() {
+				  //console.log(marker.facility_id);
+				  //map.setCenter(marker.getPosition());
+				  MAPAPP.loadInfo(this.facility_id, this.getPosition());
+				  });
+		  
+		  markers.push(marker);
+		}
+		markerCluster = new MarkerClusterer(map, markers,{'zoomOnClick':0});
+		
+		var disp_icon = [];
+		for (var key in marker_icon) disp_icon.push(marker_icon[key]);
+		disp_icon.sort(function(a, b){
+		    var a1= a.severity_rank, b1= b.severity_rank;
+		    if(a1== b1) return 0;
+		    return a1> b1? 1: -1;
+		});
+		
+		MAPAPP.addLegend(disp_icon);
+		
+		  google.maps.event.addListener(markerCluster, 'clusterclick', function(cluster) {
+		    var cluster_markers = cluster.getMarkers();
+		    var cluster_length = cluster_markers.length;
+		    var marker_index = [];
+		    var cluster_info = SC_DEF.cluster_info ? parseInt(SC_DEF.cluster_info) : 10;
+		    if (cluster_length > cluster_info) {
+		      cluster.getMap().fitBounds(cluster.getBounds());
+		    } else {
+		      var html_array = ['<div class="panel panel-default">',
+					'<div class="panel panel-heading"><b>Clustered Facilities</b></div>',
+					'<div class="list-group" id="info_popup">',
+					];
+		      for (var ii=0; ii < cluster_markers.length; ii++) {
+			html_array.push('<a class="list-group-item" href="#" id="' +
+					cluster_markers[ii].facility_id +
+					'"><b>' + cluster_markers[ii].facility_type + '</b> : ' +
+					cluster_markers[ii].facility_name + '</a>'
+					);
+			marker_index[cluster_markers[ii].facility_id] = ii;
+		      }
+		      html_array.push('<a class="list-group-item" id="all" href="#">' +
+				      '<b>Show All Facilities</b></a></div></div>');
+		      var infocontent = html_array.join('');
+		      MAPAPP.infowindow.setContent(infocontent);
+		      MAPAPP.infowindow.setPosition(cluster.getCenter());
+		      MAPAPP.infowindow.open(map);
+
+		      $("#info_popup>a").on('click', function () {
+			  var id = (this.id);
+			  if (id == 'all') {
+			    for (var mar_ind=0; mar_ind < cluster_length; mar_ind++)
+			      cluster_markers[mar_ind].setMap(map);
+			    MAPAPP.infowindow.close();
+			  } else {
+			  cluster_markers[marker_index[id]].setMap(map);
+			  google.maps.event.trigger(cluster_markers[marker_index[id]], 'click');
+			  }
+		      });
+		    }
+				  });
+		}, 'json');
+      }
+    </script>
+
+  </body>
+</html>

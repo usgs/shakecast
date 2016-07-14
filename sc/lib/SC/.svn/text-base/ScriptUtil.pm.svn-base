@@ -1,0 +1,160 @@
+
+# $Id: ScriptUtil.pm 64 2007-06-05 14:58:38Z klin $
+
+##############################################################################
+# 
+# Terms and Conditions of Software Use
+# ====================================
+# 
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+# 
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+# 
+# Disclaimer of Earthquake Information
+# ====================================
+# 
+# The data and maps provided through this system are preliminary data
+# and are subject to revision. They are computer generated and may not
+# have received human review or official approval. Inaccuracies in the
+# data may be present because of instrument or computer
+# malfunctions. Subsequent review may result in significant revisions to
+# the data. All efforts have been made to provide accurate information,
+# but reliance on, or interpretation of earthquake data from a single
+# source is not advised. Data users are cautioned to consider carefully
+# the provisional nature of the information before using it for
+# decisions that concern personal or public safety or the conduct of
+# business that involves substantial monetary or operational
+# consequences.
+# 
+# Disclaimer of Software and its Capabilities
+# ===========================================
+# 
+# This software is provided as an "as is" basis.  Attempts have been
+# made to rid the program of software defects and bugs, however the
+# U.S. Geological Survey (USGS) and Gatekeeper Systems have no
+# obligations to provide maintenance, support, updates, enhancements or
+# modifications. In no event shall USGS or Gatekeeper Systems be liable
+# to any party for direct, indirect, special, incidental or consequential
+# damages, including lost profits, arising out of the use of this
+# software, its documentation, or data obtained though the use of this
+# software, even if USGS or Gatekeeper Systems have been advised of the
+# possibility of such damage. By downloading, installing or using this
+# program, the user acknowledges and understands the purpose and
+# limitations of this software.
+# 
+# Contact Information
+# ===================
+# 
+# Coordination of this effort is under the auspices of the USGS Advanced
+# National Seismic System (ANSS) coordinated in Golden, Colorado, which
+# functions as the clearing house for development, distribution,
+# documentation, and support. For questions, comments, or reports of
+# potential bugs regarding this software please contact wald@usgs.gov or
+# klin@usgs.gov.  
+#
+#############################################################################
+
+
+use strict;
+use warnings;
+
+package SC::ScriptUtil;
+
+use vars qw($VERSION @ISA @EXPORT @EXPORT_OK);
+
+require Exporter;
+
+@ISA       = qw(Exporter);
+$VERSION   = '0.01';
+
+@EXPORT    = qw(&read_xml_input &reply);
+@EXPORT_OK = qw();
+
+use SC;
+
+sub read_xml_input {
+    local $/ = undef;
+    my $content = <STDIN>;
+    # TODO decide whether we will pass the XML tag or not
+    $content =~ s/^<\?xml[^>]+>//;
+    return $content;
+}
+
+sub reply {
+    my ($status, $msg, $rv) = @_;
+    my $xml;
+    if (defined $rv) {
+	$xml = "<shakecast_response><response_body>$rv</response_body>" .
+		status_to_xml($status, $msg) .
+		"</shakecast_response>";
+    } else {
+	$xml = status_to_xml($status, $msg);
+    }
+    print
+	qq{Content-type: 'text/xml'\n\n},
+	qq{<?xml version="1.0" encoding="UTF-8" standalone="yes"?>},
+	$xml;
+}
+
+sub status_to_xml {
+    my ($status, $msg) = @_;
+    $msg = '' unless defined $msg;
+    $msg = SC->xml_esc($msg);
+    return qq{<shakecast_status status="$status">$msg</shakecast_status>};
+}
+
+1;
+
+__END__
+
+=head1 NAME
+
+SC::ScriptUtil - a collection of utility routines used by the server scripts
+
+=head1 DESCRIPTION
+
+This module contains utility routines that are used
+by the server-to-server scripts in C</scripts/s>.
+All documented methods are exported by default.
+
+=head1 FUNCTIONS
+
+=over 4
+
+=item C<read_xml_input>
+
+  $xml = read_xml_input;
+
+This routine reads a well-formed XML document from STDIN and returns it.
+If the document begins with an XML declaration that is stripped out.
+The resulting string may contain embedded newlines.
+
+=item C<reply>
+
+  reply( $status, $message )
+  reply( $status, $message, $return_value )
+
+This routine writes a standard ShakeCast XML status or response document to
+STDOUT, along with the necessary HTTP headers.  The first version outputs
+a C<shakecast_status> document.  The second version writes a
+C<shakecast_response> document, with C<$return_value> as the body of the
+response.  In this case the C<$return_value> is assumed to be valid XML
+that does not require any further processing (for example, the result of
+a query issued by a remote polling server).
+
+The message is XML-escaped as needed.  The C<$status> value is assumed to be
+a valid status value.
+
+=back
+
+=cut

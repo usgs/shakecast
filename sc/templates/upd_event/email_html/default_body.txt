@@ -1,0 +1,10 @@
+<tr>
+  <td>%EVENT_ID%
+  <td>%EVENT_VERSION%
+  <td>%EVENT_TIMESTAMP%
+  <td>%MAGNITUDE%
+  <td>%LAT%
+  <td>%LON%
+  <td>%EVENT_LOCATION_DESCRIPTION%
+</tr>
+;;;;;

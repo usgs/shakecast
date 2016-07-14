@@ -1,0 +1,7 @@
+ID: %EVENT_ID% Ver: %EVENT_VERSION% Date/Time: %EVENT_TIMESTAMP%
+Name:       %EVENT_NAME%
+Magnitude:  %MAGNITUDE%
+Lat:        %LAT%      Lon: %LON%
+Location:   %EVENT_LOCATION_DESCRIPTION%
+
+;;;;;

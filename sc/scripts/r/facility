@@ -1,0 +1,123 @@
+#!/usr/local/bin/perl
+
+use strict;
+use warnings;
+
+use FindBin;
+use lib "$FindBin::Bin/../../lib";
+
+use Carp;
+
+use CGI;
+use CGI::Session;
+use JSON::XS;
+
+use SC;
+use API::Facility;
+use API::User;
+use API::APIUtil;
+
+SC->initialize;
+my $default_options = API::APIUtil::config_options();
+
+my $self = new CGI;
+my $session = new CGI::Session(undef, $self);
+$session->expires("+10m");
+my (@args) = split '/', $ENV{PATH_INFO};
+shift @args;
+my $action = shift @args;
+SC->log(0, $action);
+# Authenticated
+#my $username = $self->param('username') || '';
+#my $password = $self->param('password') || '';
+
+print "Content-Type: application/json\n\n";
+unless ( $session->param("~logged-in")) {
+    exit(0);
+}
+
+if (not defined *{$action} ) {
+} else {
+    SC->log(0, "facility: task is $action $args[0]");
+
+	no strict 'refs';
+    # perform the requested action
+    #eval {
+	my $json =  &{ $action }( @args );
+	print JSON::XS->new->utf8->encode(API::APIUtil::stringfy($json));
+    #};
+}
+
+    # Authenticated
+sub from_id {
+	my ($facility_id) = @_;
+	my $facility = new API::Facility->from_id($facility_id);
+
+	return $facility;
+}
+
+
+    # Authenticated
+sub facility_list {
+	my ($facility_id) = @_;
+	unless ( $session->param("admin_user")) {
+		return 0;
+	}
+
+	my $facility = new API::Facility->facility_list();
+
+	return $facility;
+}
+
+  # / (with authentication)
+sub facility_type {
+	my ($type) = @_;
+
+	unless ( $session->param("admin_user")) {
+		return 0;
+	}
+
+	my $facility_type = new API::Facility->facility_type_list($type);
+
+	return $facility_type;
+  };
+  
+
+sub erase_type {
+
+    #my $valid = API::User->validate($username, $password, 1);
+    #return 1 unless $valid;
+	unless ( $session->param("admin_user")) {
+		return 0;
+	}
+	
+    # Authenticated
+	my $event_results;
+    my $type = $self->param('type');
+	$type =~ s/\s//g;
+
+		my $event = new API::Facility->erase_type($type);
+	$event_results->{"type"} = $type;
+	$event_results->{"status"} = $event;
+ 
+	return $event_results;
+  };
+  
+sub erase {
+
+	unless ( $session->param("admin_user")) {
+		return 0;
+	}
+    my $facility_id = $self->param('facility_id');
+   #my $valid = API::User->validate($username, $password, 1);
+    #return 1 unless $valid;
+	
+    # Authenticated
+	my $event_results;
+		my $event = new API::Facility->erase_facility($facility_id);
+		$event_results->{"id"} = $facility_id;
+		$event_results->{"status"} = $event;
+ 
+	return $event_results;
+  };
+  

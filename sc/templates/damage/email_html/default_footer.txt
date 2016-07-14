@@ -1,0 +1,26 @@
+</table>
+<br>
+<table>
+<br>
+</td></tr>
+
+<tr><td height=30 bgcolor=black>
+<font size=3 face="Arial" color="white"><b>ShakeCast Server</b></font>
+</td></tr>
+
+<tr><td>
+<font size=2 face="Arial">
+ShakeCast Web: <b><a href=https://%DNS_ADDRESS%>https://%DNS_ADDRESS%</a></b><br>
+Software:  <b>ShakeCast V3</b><br>
+Notification Generated: <b>%GENERATION_TIMESTAMP:|NULL|;(not available at this time)%</b><br>
+Reported by: <b>Server ID %SERVER_ID%</b><br>
+Template Type:  <b>default.txt</b><br>
+Template Modified:  <b>10-26-2015</b>
+<br><br>
+Questions about ShakeCast?  Contact Administrator at <a href="mailto:%HEADER_FROM%?subject=ShakeCast V3 Inquiry">%HEADER_FROM%</a>.
+</font>
+</td></tr>
+
+</table>
+
+[END]

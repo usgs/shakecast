@@ -1,0 +1,8 @@
+<tr>
+<td>%FACILITY_NAME%
+<td><font color=%DAMAGE_LEVEL:YELLOW;ORANGE%>%DAMAGE_LEVEL:RED;Likely;YELLOW;Possible;GREEN;Unlikely%</font>
+<td>%METRIC%
+<td>%GRID_VALUE%
+<td>%EXCEEDANCE_RATIO%
+</tr>
+

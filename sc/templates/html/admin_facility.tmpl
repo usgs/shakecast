@@ -1,0 +1,589 @@
+<!DOCTYPE html>
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js"> <!--<![endif]-->
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="shortcut icon" href="/images/sc_logo.png">
+
+    <title>Facility Inventory Administration</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="./bootstrap3/css/bootstrap.css" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+	<link rel="stylesheet" href="./bootstrap3/css/navbar-fixed-top.css">
+	<link rel="stylesheet" href="./css/main.css">
+	<link rel="stylesheet" href="./css/application.css"> 
+	<link rel="stylesheet" href="./css/jquery-ui-1.8.16.custom.css">
+	<link rel="stylesheet" href="./css/demo_table.css">
+
+    <!-- Just for debugging purposes. Don't actually copy this line! -->
+    <!--[if lt IE 9]><script src="../../docs-assets/js/ie8-responsive-file-warning.js"></script><![endif]-->
+
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+      <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
+    <![endif]-->
+  </head>
+
+  <body>
+
+        <!--[if lt IE 7]>
+            <p class="chromeframe">You are using an outdated browser. <a href="http://browsehappy.com/">Upgrade your browser today</a> or <a href="http://www.google.com/chromeframe/?redirect=true">install Google Chrome Frame</a> to better experience this site.</p>
+        <![endif]-->
+
+        <!-- This code is taken from http://twitter.github.com/bootstrap/examples/hero.html -->
+
+
+  <!-- Fixed navbar -->
+  <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+    <div class="container">
+      <div class="navbar-header">
+	<button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+	  <span class="sr-only">Toggle navigation</span>
+	  <span class="icon-bar"></span>
+	  <span class="icon-bar"></span>
+	  <span class="icon-bar"></span>
+	</button>
+	<a class="navbar-brand" href="?dest=index"><img src="/images/sc_logo.png" class="img-circle logo" /> ShakeCast</a>
+      </div>
+      <div class="navbar-collapse collapse">
+	<ul id="nav_menu" class="nav navbar-nav">
+	    <li><a href="?dest=admin_index">Admin Home</a></li>
+	    <li><a href="?dest=admin_config">General Settings</a></li>
+	    <li>
+	    <a href="?dest=admin_earthquake">Earthquakes</a>
+	    </li>
+	    <li class="active">
+	    <a href="?dest=admin_facility">Facilities</a>
+	    </li>
+	    <li class="">
+	    <a href="?dest=admin_product">Products</a>
+	    </li>
+	    <li class="">
+	    <a href="?dest=admin_user">Users</a>
+	    </li>
+	    <li class="">
+	    <a href="?dest=admin_post_file">Upload</a>
+	    </li>
+		<TMPL_VAR NAME=LOGOUT>
+	</ul>
+      </div><!--/.nav-collapse -->
+    </div>
+  </div>
+
+  <!-- Subhead
+  ================================================== -->
+  <header class="header" id="overview">
+    <div class="container">
+      <h2>Facility Inventory Administration <small>Manage the facility inventory, and fragility</small></h2>
+      <ol class="breadcrumb">
+	<li><a href="?dest=admin_index">Admin Home</a></li>
+	<li><a href="#">Facility Inventory Administration</a></li>
+        <li class="active"></li>
+      </ol>
+    </div>
+  </header>
+  
+        <!--/.nav-collapse <div class="container">-->
+<div class="container">
+
+      <div class="row">
+        <div class="col-md-2">
+          <div class="panel panel-default">
+	    <div class="panel-heading">Facility Type</div>
+	    <div class="list-group" id="sidebar">
+	    </div>
+          </div><!--/.well -->
+        </div><!--/span-->
+
+        <div class="col-md-10">
+            <!-- Main hero unit for a primary marketing message or call to action -->
+            <div class="panel panel-default" id="main_pane">
+				<div id="map_title"></div>
+				<div id="map_canvas" style="width:800px; height:400px;"></div>
+ 				<div id="caption"></div>
+           </div>
+
+            <!-- Example row of columns -->
+            <div class="panel panel-default">
+				<ul class="nav nav-pills">
+				<li class="pull-right"><a class="btn btn-danger" href="javascript:void(0)" id="delete_type">Delete All Facilities</a></li>
+				<li class="pull-right"><a class="btn btn-danger" href="javascript:void(0)" id="delete">Delete Selected Facilities</a></li>
+				</ul>
+			<table cellpadding="0" cellspacing="0" border="0" class="display" id="eq_content_table"></table>
+            </div>
+
+          <div class="panel panel-default" id="fac_shaking">
+	    <div class="panel-heading"></div>
+	    <div class="panel-body">
+	    </div>
+          </div><!--/.well -->
+
+<div id="spinner" class="spinner ui-widget ui-widget-content ui-corner-all" style="width:50px;background:#fff;height:50px;">
+	<img id="img-spinner" src="/images/usgs.gif" alt="Loading" style="margin:10px auto;"/>
+</div>
+
+<div class="modal fade" id="myModal" >
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <h4 class="modal-title">Delete Facilities</h4>
+      </div>
+      <div class="modal-body">
+        <p>Delete all facilities shown in the table from the ShakeCast database?</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+        <button type="button" class="btn btn-danger" id="confirm_delete">Yes</button>
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+<!-- Button to trigger modal -->
+
+     
+        </div> <!-- /container -->
+      </div> <!-- /container -->
+
+    <!-- Footer
+    ================================================== -->
+    <footer class="footer">
+      <div class="container">
+        <ul class="footer-links">
+          <li><a href="http://earthquake.usgs.gov">&copy; USGS 2013</a></li>
+          <li class="muted">&middot;</li>
+          <li>Desktop</li>
+          <li class="muted">&middot;</li>
+          <li><a href="?dest=mobile">Mobile</a></li>
+        </ul>
+     </div>
+    </footer>
+
+
+        </div><!--/span-->
+        </div> <!-- /container -->
+		
+<script type="text/javascript">
+  var prefix;
+  var script = '<script type="text/javascript" src="';
+  var loc = new String(window.parent.document.location);
+  if (loc.indexOf("https://")!= -1)
+    prefix = "https://";
+  else
+    prefix = "http://";
+  script += prefix + 'maps.google.com/maps/api/js?sensor=false"><' + '/script>';
+  document.write(script);
+</script>
+<script type="text/javascript" src="./js/jquery-1.10.2.min.js"></script>
+<script type="text/javascript" src="./bootstrap3/js/bootstrap.min.js"></script>
+<script type="text/javascript" src="./js/jquery-ui.js"></script>
+<script type="text/javascript" src="./js/main.js"></script>
+<script type="text/javascript" src="./js/shakemap.js"></script>
+<script type="text/javascript" src="./js/loadXML.js"></script>
+<script type="text/javascript" src="./js/mapapp_list.js"></script>
+<script type="text/javascript" src="./js/sc_constant.js"></script>
+<script type="text/javascript" src="./js/storage.js"></script>
+<script type="text/javascript" src="./js/sc_markerclusterer.js"></script>
+<script type="text/javascript" src="./js/jquery.dataTables.min.js"></script>
+
+<script>
+  var map;
+  var sc_id = gup('event');
+  var type = gup('type');
+  var age = gup('age');
+  var fac_des = [];
+  var fac_info = [];
+  var anOpen = [];
+  var oTable;
+  var anOpen = [];
+
+  SC_DEF.init();
+  //var sm_url = '/scripts/shakemap.pl/from_id/' + sc_id;
+  var username = SC_DEF.user ? SC_DEF.user : 'guest';
+  var password = SC_DEF.pass ? SC_DEF.pass : 'guest';
+  var submit_data = {
+  };
+
+  $(window).load(function() {
+    //user_auth(submit_data);
+	load_list();
+    map = MAPAPP.init(sc_id);
+    $(window).trigger('resize');
+  });
+  	  
+  function load_list() {
+    //var sm_url = '/scripts/shakemap.pl/from_id/' + sc_id;
+    //var sm_url = '/scripts/event.pl/event_list?type='+type+'&age='+age;
+    //var sm_url = '/scripts/facility.pl/';
+    var sm_url = '/scripts/r/facility/facility_list';
+    
+    $.post(sm_url, submit_data, function(data) {
+    
+      // Are there even any EQ to display?
+      if (data.length <= 0) {
+	      return;
+      }
+      var total_count = 0;
+      for (var i=0; i < data.length; i++) {
+	total_count += parseInt(data[i].count);
+      }
+      data.push({facility_type: 'ALL', count:total_count});
+		    
+      for (var i=0; i < data.length; i++) {
+	var event = data[i];
+	$("#sidebar").append('<a class="list-group-item facility_type" id="' + event.facility_type +
+	  '" href="#">' + event.facility_type +
+	  ' (' + event.count + ')</a>');
+      }
+
+      $('#sidebar a').on('click', function (e) {
+	var fac_type = this;
+	//var sm_url = '/scripts/facility.pl/type/' + type.id;
+	var sm_url = '/scripts/r/facility/facility_type/' + fac_type.id;
+	type = fac_type.id;
+	$("#sidebar a").removeClass("active");
+	$("#"+fac_type.id).addClass("active");
+	$.post(sm_url, submit_data, function(data) {
+
+	  if (data.length <= 0) {
+	    return;
+	  }
+	  var eqTable = [];
+	  for (var i=0; i < data.length; i++) {
+	    var facility = data[i];
+	    eqTable.push({
+	      "index":i+1,
+	      "id":facility.facility_id,  
+	      "type":facility.facility_type, 
+	      "facility_id":facility.facility_id,  
+	      "external_facility_id":facility.external_facility_id,  
+	      "facility_type":facility.facility_type, 
+	      "latitude":facility.lat_min + ' <i class="icon-resize-horizontal"></i> ' + facility.lat_max, 
+	      "longitude":facility.lon_min + ' <i class="icon-resize-horizontal"></i> ' + facility.lon_max, 
+	      "lat_min":facility.lat_min, "lon_min":facility.lon_min, 
+	      "lat_max":facility.lat_max, "lon_max":facility.lon_max, 
+	      "origin":facility.update_timestamp, 
+	      "name":facility.facility_name, 
+	      "shakemap_version":facility.short_name, 
+	      "description":facility.description,
+	    });
+	  }
+		      
+	  var eqDiv = {
+	    "bJQueryUI": true,
+	    "iDisplayLength": 25,
+	    "sScrollY": ($("#map_canvas").height() > 0) ? $("#map_canvas").height() :  $(window).height()/3,
+	    "sScrollX": "100%",
+	    //"aaSorting": [[ 5, "desc" ]],
+	    "bUseRendered": false,
+	    aaData: eqTable, 
+	    aoColumns: 
+	      [
+	      {'sTitle': 'Index',"mDataProp": "index"},
+	      {'sTitle': 'Facility ID',"mDataProp": "external_facility_id"},
+	      {'sTitle': 'Type',"mDataProp": "type"},
+	      {'sTitle': 'Name',"mDataProp": "name"},
+	      {'sTitle': 'Latitude',"mDataProp": "latitude"},
+	      {'sTitle': 'Longitude',"mDataProp": "longitude"}, 
+	      {'sTitle': 'Description',"mDataProp": "description"},
+	    ]};
+
+	  if (oTable) oTable.fnDestroy();
+	  
+	  oTable = $('#eq_content_table').dataTable(eqDiv);
+	  
+	  oTable.$('tr').click( function () {
+	    var data = oTable.fnGetData( this );
+	    //fnAccordion(data.id);
+	    //load_marker(data.id);
+	    row_click(this);
+	  });
+
+	  $(window).trigger('resize');
+	});
+      });
+	$("#sidebar a").first().trigger('click');
+
+    }, 'json');
+  }
+  
+  function row_click (data) {
+    if ( $(data).hasClass('row_selected') ) {
+      $(data).removeClass('row_selected');
+      var oData = oTable.fnGetData( data );
+      MAPAPP.infowindow.close(map);
+      MAPAPP.removeMarker(oData.facility_id);
+      //MAPAPP.removeSM();
+    }
+    else {
+      //oTable.$('tr.row_selected').removeClass('row_selected');
+      $(data).addClass('row_selected');
+      var oData = oTable.fnGetData( data );
+      var sLat = parseFloat(oData.latitude);
+      var sLon = parseFloat(oData.longitude);
+      MAPAPP.addFacMarker(oData);
+      google.maps.event.trigger(MAPAPP.facMarkers[oData.facility_id], 'click');
+      fnAccordion(oData.id);
+    }
+    $(window).trigger('resize');
+  };
+
+  /* Get the rows which are currently selected */
+  function fnGetSelected( oTableLocal ) {
+    return oTableLocal.$(".row_selected");
+  }
+
+  /* Get the rows which are currently selected */
+  function fnDeleteRow() {
+    var anSelected = fnGetSelected( oTable );
+    for (var i=0; i < anSelected.length; i++) {
+      var oData = oTable.fnGetData( anSelected[i] );
+      MAPAPP.infowindow.close(map);
+      MAPAPP.removeMarker(oData.facility_id);
+      //MAPAPP.removeSM();
+      //MAPAPP.removeMarker(oData.event_id);
+      oTable.fnDeleteRow( anSelected[i] );
+    }
+  }
+	  
+		$("#delete_type").on('click', function() {
+				$('#myModal').modal();
+		});
+ 
+		$("#confirm_delete").on('click', function() {
+				$('#myModal').modal('hide');
+				var sm_url = '/scripts/r/facility/erase_type/';
+				submit_data.type = type;
+				$.post(sm_url, submit_data, function(data) {
+			// Are there even any EQ to display?
+			if (data.status > 0) {
+			  alert("Facility type "+type+" is deleted from the database.");
+			  oTable.fnClearTable();
+			} else {
+			  alert("Error in deleting facility.");
+			}
+				}, "json");
+		});
+ 
+		$("#delete").on('click', function() {
+		    var anSelected = fnGetSelected( oTable );
+		    for (var i=0; i < anSelected.length; i++) {
+		      var oData = oTable.fnGetData( anSelected[i] );
+		      submit_data.facility_id = oData.facility_id;
+				var sm_url = '/scripts/r/facility/erase/';
+		      $.post(sm_url, submit_data, function(data) {
+			// Are there even any EQ to display?
+			if (data.status > 0) {
+			  alert("Facility is deleted from the database.");
+			  var row = anSelected[i];
+			  oTable.fnDeleteRow( row );
+			} else {
+			  alert("Error in deleting facility.");
+			}
+		      }, "json");
+		  }
+		});
+ 
+  $(window).resize(function() {
+    //oTable.fnAdjustColumnSizing();
+    //$("#eq_content_table").width($(".row").width());
+    $("#map_canvas").width($("#main_pane").width());
+    $("#map_canvas").height(($("#map_canvas").width())/2);
+    //console.log($("#map_canvas").width());
+    google.maps.event.trigger(map, 'resize');
+    var cont_height = $("#map_canvas").height() + $(".accordion").height();
+    if ($("#sidebar").length) {
+      cont_height = ($("#sidebar").height() > cont_height) ? $("#sidebar").height() : cont_height;
+    }
+    $('html').css('height', cont_height);
+  });
+
+  function fnAccordion(facility_id){
+    //var local_url = '/scripts/damage.pl/datatables/' + sc_id + '?type=' + type + '&start=' + start + '&length=' + length;
+    var local_url = '/scripts/r/facility/from_id/' + facility_id;
+    $.post(local_url, submit_data, function(data) {
+
+      // Are there even any EQ to display?
+      if (typeof data.facility_id === "undefined") {
+	return;
+      }
+
+      $(".breadcrumb li").last().html(data.facility_type + ' : ' + data.facility_name);
+
+      var html_array = [];
+      var facility = data;
+      var facility_probability = data.model;
+
+      var fragility = data.fragility;
+      html_array = html_array.concat([
+	' <strong>' + facility.facility_type + '</strong> ',
+	''+facility.facility_name + ' / <strong>ID</strong> ' + facility.external_facility_id,
+	]);
+
+      fac_info[facility.facility_id] = 
+	{"facility_type":facility.facility_type,  "facility_id":facility.facility_id,
+	"facility_name":facility.facility_name, "dist":facility.dist,
+	"lat_min":facility.lat_min, "lon_min":facility.lon_min,
+	//"damage_level":concern_level[facility.damage_level],  "metric":facility.metric}
+	"damage_level":facility.damage_level,  "metric":facility.metric};
+
+      var fac_damage= [];
+      fac_damage[facility.metric] = facility.damage_level;
+      var fac_mmi = mmi[parseInt(parseFloat(facility.mmi)+0.5)-1];
+      var cell_tabs = [
+	'<ul class="nav nav-tabs">',
+	'<li><a href="#' + facility.facility_id,
+	'_shaking" data-toggle="tab">Notification Fragility</a></li>',
+	];
+      var cell_array = [
+	'<div class="tab-content">',
+	'<div class="tab-pane" id="' + facility.facility_id,
+	'_shaking">',
+	'<table class="table table-striped table-responsive">',
+	'<tr><td>ID</td><td>Damage Level</td><td>Low Limit</td><td>High Limit</td><td>Metric</td></tr>'
+	];
+      for (var ind=0; ind< fragility.length; ind++) {
+	var attribute = fragility[ind];
+	cell_array = cell_array.concat([
+	  '<tr>',
+	  '<td>' + attribute.facility_fragility_id + '</td>',
+	  '<td><span class="label '+label[attribute.damage_level]+'"><b>' + attribute.damage_level + '</b></span></td>',
+	  '<td>' + attribute.low_limit + '</td>',
+	  '<td>' + attribute.high_limit + '</td>',
+	  '<td>' + attribute.metric + '</td>',
+	  '</tr>',
+	  ]);
+      }
+      cell_array = cell_array.concat([
+      '</table>',
+      '</div>']);
+
+      
+      if (facility_probability.length>0) {
+	cell_tabs = cell_tabs.concat([
+	  '<li><a href="#' + facility.facility_id,
+	  'probability" data-toggle="tab">Fragility Probability</a></li>',
+	  ]);
+	cell_array = cell_array.concat([
+	  '<div class="tab-pane" id="' + facility.facility_id,
+	  'probability">',
+	  '<table class="table table-striped table-responsive">',
+	  ]);
+	for (var i=0;i < facility_probability.length;i++) {
+	  var attribute = facility_probability[i];
+	  cell_array = cell_array.concat([
+	    '<tr>',
+	    '<td><strong>'+ attribute[0].class+'</strong></td>',
+	    '<td><strong>'+ attribute[0].component+'</strong></td>',
+	    '<td></td><td></td>',
+	    '</tr>'
+	    ]);
+	  for (var ind = 0; ind< attribute.length; ind++) {
+	    cell_array = cell_array.concat([
+	      '<tr>',
+	      '<td><span class="label '+label[attribute[ind].damage_level]+'"><b>' + attribute[ind].damage_level + '</b></span></td>',
+	      '<td>' + attribute[ind].alpha + '</td>',
+	      '<td>' + attribute[ind].beta + '</td>',
+	      '<td>' + attribute[ind].metric + '</td>',
+	      '</tr>',
+	    ]);
+	  }
+	}
+	cell_array = cell_array.concat([
+	  '</tr></table></div>']);
+      }
+
+	  var facility_attribute = data.attribute;
+	  if (facility_attribute.length>0) {
+		cell_tabs = cell_tabs.concat([
+		  '<li><a href="#' + facility.facility_id,
+		  'attribute" data-toggle="tab">Facility Attributes</a></li>',
+		  ]);
+		cell_array = cell_array.concat([
+		  '<div class="tab-pane" id="' + facility.facility_id,
+		  'attribute">',
+		  '<table class="table table-striped table-responsive">',
+		  ]);
+		for (var ind=0; ind<facility_attribute.length; ind++) {
+		  var att_fac = facility_attribute[ind];
+		  for (var att_key in att_fac) {
+			cell_array = cell_array.concat([
+			  '<tr><td><strong>' + att_key + '</strong></td><td>' + att_fac[att_key] + '</td></tr>',
+			  ]);
+		  }
+		  cell_array = cell_array.concat([
+			'<tr><td></td><td></td></tr>',
+			]);
+		}
+		cell_array = cell_array.concat([
+		  '</table></div>']);
+	  }
+      cell_tabs = cell_tabs.concat(['</ul>']);
+      cell_array = cell_array.concat(['</div>']);
+      fac_des[facility.facility_id] = cell_tabs.join('') + cell_array.join('');
+
+      $("#fac_shaking .panel-heading").html(html_array.join(''));
+
+      $("#fac_shaking .panel-body").html(fac_des[facility.facility_id]);
+      $("#fac_shaking .panel-body").tab();
+      $("#fac_shaking .panel-body a:first").tab('show')
+      $("#fac_shaking").show();
+
+      makeGraph("graph", "labels");
+      $(window).trigger('resize');
+
+    });
+  }
+
+  function makeGraph() {
+    var dnl = $(".histogram").each(function() {
+      var component = $(this).find("li").each( function(index) {
+	var item = $(this).text();
+	var color = this.style.background=color;
+	var content = item.split(":");
+	var value = content[0];
+	if (content[1] != 'GREY') {
+	  this.style.height=value/2 + "px";
+	  this.style.top=(70 - value/2) + "px";
+	  this.style.left = ((index-1) * 35 + 5) + "px";
+	  this.innerHTML = value + "%";
+	  this.style.visibility="visible";
+	  color = content[2];
+	  if(color != false) this.style.background=color;
+	} else {
+	  this.style.height="1px";
+	  this.style.top="45px";
+	  this.style.left = "0px";
+	  this.style.width = "180px";
+	  this.style.textAlign = "right";
+	  this.innerHTML = "50%";
+	  this.background = "white";
+	  this.borderStyle = "dotted";
+	  $(this).css('moz-box-shadow', '');
+	  $(this).css('webkit-box-shadow', '');
+	  $(this).css('box-shadow', '');
+	  this.style.visibility="visible";
+	  color = content[2];
+	  if(color != false) this.style.background=color;
+	}
+	/*labels.innerHTML = labels.innerHTML +
+		 "<span style='margin:8px;background:"+ color+"'>" +
+		 content[1] + "</span>";*/
+      });
+    });
+  }
+
+</script>
+
+    </body>
+</html>

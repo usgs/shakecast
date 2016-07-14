@@ -1,0 +1,143 @@
+<?xml version="1.0"?>
+<shakecast
+    event_id="[% shakemap.shakemap_id %]"
+    process_timestamp="[% shakecast.process_timestamp %]"
+    code_version="[% shakecast.code_version %]"
+    version="[% shakemap.shakemap_version %]">
+
+    <shakemap
+        shakemap_id="[% shakemap.shakemap_id %]"
+        shakemap_version="[% shakemap.shakemap_version %]"
+        code_version="[% shakemap.code_version %]"
+        process_timestamp="[% shakemap.shakemap_id %]"
+        shakemap_originator="[% shakemap.generation_timestamp %]"
+        map_status="[% shakemap.shakemap_status %]"
+        shakemap_event_type="[% event.event_type %]" />
+
+    <event
+        id="[% event.event_id %]"
+        magnitude="[% event.magnitude %]"
+        depth="[% event.depth %]"
+        lat="[% event.lat %]"
+        lon="[% event.lon %]"
+        event_timestamp="[% event.event_timestamp %]"
+        event_description="[% event.event_location_description %]" />
+
+	[% FOREACH exposure = shakecast.exposure %]
+    <exposure type="[% exposure.type %]">
+	[%- FOREACH item = exposure.item -%]
+        [%- SWITCH exposure.type -%]
+			[%- CASE 'BRIDGE' -%]
+				[% INCLUDE bridge %]
+			[%- CASE 'CITY' -%]
+				[% INCLUDE city %]
+			[%- CASE 'NUCLEAR' -%]
+				[% INCLUDE nuclear %]
+			[%- CASE 'USGS' -%]
+				[% INCLUDE usgs %]
+			[%- CASE -%]
+				[% INCLUDE usgs %]
+		[%- END -%]
+	[%- END -%]
+	</exposure>
+	[% END %]
+</shakecast>
+
+[% BLOCK bridge %]
+	<item name="[% item.name %]" 
+		latitude="[% item.lat_min %]" 
+		longitude="[% item.lon_min %]"
+		facility_name="[% item.facility_name %]" 
+		external_facility_id="[% item.external_facility_id %]" 
+		short_name="[% item.short_name %]" 
+		description="[% item.description %]" 
+		metric="[% item.metric %]" 
+		low_limit="[% item.low_limit %]" 
+		high_limit="[% item.high_limit %]" 
+		damage_level="[% item.damage_level %]" 
+		facility_id="[% item.facility_id %]" >
+		<intensity type="MMI" value="[% item.mmi %]" />
+		<intensity type="PGA" value="[% item.pga %]" />
+		<intensity type="PGV" value="[% item.pgv %]" />
+		<intensity type="PSA03" value="[% item.psa03 %]" />
+		<intensity type="PSA10" value="[% item.psa10 %]" />
+		<intensity type="PSA30" value="[% item.psa30 %]" />
+		<intensity type="SVEL" value="[% item.svel %]" />
+		<intensity type="STDPGA" value="[% item.stdpga %]" />
+	</item>
+[% END %]
+[% BLOCK city %]
+	<item name="[% item.name %]" 
+		population="[% item.population %]" 
+		latitude="[% item.lat_min %]" 
+		longitude="[% item.lon_min %]"
+		capital="[% item.capital %]"
+		facility_name="[% item.facility_name %]" 
+		external_facility_id="[% item.external_facility_id %]" 
+		short_name="[% item.short_name %]" 
+		description="[% item.description %]" 
+		metric="[% item.metric %]" 
+		low_limit="[% item.low_limit %]" 
+		high_limit="[% item.high_limit %]" 
+		damage_level="[% item.damage_level %]" 
+		facility_id="[% item.facility_id %]" >
+		<intensity type="MMI" value="[% item.mmi %]" />
+		<intensity type="PGA" value="[% item.pga %]" />
+		<intensity type="PGV" value="[% item.pgv %]" />
+		<intensity type="PSA03" value="[% item.psa03 %]" />
+		<intensity type="PSA10" value="[% item.psa10 %]" />
+		<intensity type="PSA30" value="[% item.psa30 %]" />
+		<intensity type="SVEL" value="[% item.svel %]" />
+		<intensity type="STDPGA" value="[% item.stdpga %]" />
+	</item>
+[% END %]
+[% BLOCK nuclear %]
+	<item name="[% item.name %]" 
+		fragility="1"
+		latitude="[% item.lat_min %]" 
+		longitude="[% item.lon_min %]"
+		DIST="[% item.dist %]" 
+		facility_name="[% item.facility_name %]" 
+		external_facility_id="[% item.external_facility_id %]" 
+		short_name="[% item.short_name %]" 
+		description="[% item.description %]" 
+		metric="[% item.metric %]" 
+		low_limit="[% item.low_limit %]" 
+		high_limit="[% item.high_limit %]" 
+		damage_level="[% item.damage_level %]" 
+		facility_id="[% item.facility_id %]" >
+		<intensity type="MMI" value="[% item.mmi %]" />
+		<intensity type="PGA" value="[% item.pga %]" />
+		<intensity type="PGV" value="[% item.pgv %]" />
+		<intensity type="PSA03" value="[% item.psa03 %]" />
+		<intensity type="PSA10" value="[% item.psa10 %]" />
+		<intensity type="PSA30" value="[% item.psa30 %]" />
+		<intensity type="SVEL" value="[% item.svel %]" />
+		<intensity type="STDPGA" value="[% item.stdpga %]" />
+	</item>
+[% END %]
+[% BLOCK usgs %]
+	<item name="[% item.name %]" 
+		fragility="1"
+		latitude="[% item.lat_min %]" 
+		longitude="[% item.lon_min %]"
+		DIST="[% item.dist %]" 
+		facility_name="[% item.facility_name %]" 
+		external_facility_id="[% item.external_facility_id %]" 
+		short_name="[% item.short_name %]" 
+		description="[% item.description %]" 
+		metric="[% item.metric %]" 
+		low_limit="[% item.low_limit %]" 
+		high_limit="[% item.high_limit %]" 
+		damage_level="[% item.damage_level %]" 
+		facility_id="[% item.facility_id %]" >
+		<intensity type="MMI" value="[% item.mmi %]" />
+		<intensity type="PGA" value="[% item.pga %]" />
+		<intensity type="PGV" value="[% item.pgv %]" />
+		<intensity type="PSA03" value="[% item.psa03 %]" />
+		<intensity type="PSA10" value="[% item.psa10 %]" />
+		<intensity type="PSA30" value="[% item.psa30 %]" />
+		<intensity type="SVEL" value="[% item.svel %]" />
+		<intensity type="STDPGA" value="[% item.stdpga %]" />
+	</item>
+[% END %]

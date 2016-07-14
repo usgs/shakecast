@@ -1,0 +1,75 @@
+#!/usr/local/bin/perl
+
+use strict;
+use warnings;
+
+use FindBin;
+use lib "$FindBin::Bin/../../lib";
+
+use Carp;
+
+use CGI;
+use CGI::Session;
+use JSON::XS;
+
+use SC;
+use API::Shaking;
+use API::APIUtil;
+
+SC->initialize;
+my $default_options = API::APIUtil::config_options();
+
+my $self = new CGI;
+my $session = new CGI::Session(undef, $self);
+$session->expires("+10m");
+my (@args) = split '/', $ENV{PATH_INFO};
+shift @args;
+my $action = shift @args;
+
+print "Content-Type: application/json\n\n";
+unless ( $session->param("~logged-in")) {
+    exit(0);
+}
+if (not defined *{$action} ) {
+} else {
+    SC->log(0, "user: task is $action $args[0]");
+
+	no strict 'refs';
+    # perform the requested action
+    #eval {
+	my $json =  &{ $action }( @args );
+	print JSON::XS->new->utf8->encode(API::APIUtil::stringfy($json));
+    #};
+}
+
+    # Authenticated
+sub shaking_summary {
+	my ($shakemap) = @_;
+
+	my ($shakemap_id, $shakemap_version) = $shakemap =~ /(.*)-(\d+)$/;
+	my $options = { 'shakemap_id' => $shakemap_id,
+			'shakemap_version' => $shakemap_version};
+	my $shaking = new API::Shaking->shaking_summary($options);
+
+	return $shaking;
+}
+
+    # Authenticated
+sub shaking_point {
+	my ($shakemap) = @_;
+
+	my ($shakemap_id, $shakemap_version) = $shakemap =~ /(.*)-(\d+)$/;
+	my $longitude = $self->param('longitude');
+	my $latitude = $self->param('latitude');
+	my $options = { 'shakemap_id' => $shakemap_id,
+			'shakemap_version' => $shakemap_version,
+			'latitude' => $latitude,
+			'longitude' => $longitude
+			};
+			
+	my $shaking = new API::Shaking->shaking_point($options);
+
+	return $shaking;
+}
+
+

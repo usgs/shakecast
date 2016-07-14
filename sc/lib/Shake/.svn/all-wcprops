@@ -1,0 +1,23 @@
+K 25
+svn:wc:ra_dav:version-url
+V 48
+/svn/ShakeCast/!svn/ver/336/trunk/unix/lib/Shake
+END
+DataArray.pm
+K 25
+svn:wc:ra_dav:version-url
+V 61
+/svn/ShakeCast/!svn/ver/336/trunk/unix/lib/Shake/DataArray.pm
+END
+Source.pm
+K 25
+svn:wc:ra_dav:version-url
+V 58
+/svn/ShakeCast/!svn/ver/336/trunk/unix/lib/Shake/Source.pm
+END
+Station.pm
+K 25
+svn:wc:ra_dav:version-url
+V 59
+/svn/ShakeCast/!svn/ver/336/trunk/unix/lib/Shake/Station.pm
+END

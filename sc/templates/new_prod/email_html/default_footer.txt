@@ -1,0 +1,12 @@
+</table>
+<p>
+<table>
+<tr>
+  <td>Number of Events
+  <td>%_ITEMNO%
+<tr>
+  <td>Max Magnitude
+  <td>%_MAX_MAGNITUDE%
+</table>
+#####
+;;;;;

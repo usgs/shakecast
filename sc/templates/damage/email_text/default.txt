@@ -1,0 +1,27 @@
+; Default Text Email Notification
+;
+From: ShakeCast <%HEADER_FROM%>
+To: %HEADER_TO%
+Subject: %DAMAGE_LEVEL% Damage Level at  %FACILITY_NAME%
+
+Grid generated at %GENERATION_TIMESTAMP% shows that
+%METRIC% shaking at %FACILITY_NAME% resulted in a 
+damage level of %DAMAGE_LEVEL% (%DAMAGE_NAME%).
+The actual value was %GRID_VALUE%.
+
+%DAMAGE_DESCRIPTION%
+
+Event ID:   %EVENT_ID%   Version: %EVENT_VERSION%
+
+Shakemap ID: %SHAKEMAP_ID%  Version: %SHAKEMAP_VERSION%
+
+Reported by: Server ID = %SERVER_ID%, DNS = %DNS_ADDRESS%
+
+Event Info:
+
+Name:       %EVENT_NAME%
+Magnitude:  %MAGNITUDE%
+Lat:        %LAT%      Lon: %LON%
+Location:   %EVENT_LOCATION_DESCRIPTION%
+=====
+

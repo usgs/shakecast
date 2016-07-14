@@ -1,0 +1,84 @@
+#!/usr/local/bin/perl
+
+use strict;
+#use warnings;
+
+use FindBin;
+use lib "$FindBin::Bin/../../lib";
+
+use Carp;
+
+use CGI;
+use CGI::Session;
+use JSON::XS;
+
+use SC;
+use API::Damage;
+use API::APIUtil;
+use API::Shaking;
+
+SC->initialize;
+my $default_options = API::APIUtil::config_options();
+
+my $self = new CGI;
+my $session = new CGI::Session(undef, $self);
+$session->expires("+10m");
+my $arg = ($ENV{PATH_INFO}) ? $ENV{PATH_INFO} : $ARGV[0];
+my (@args) = split '/', $arg;
+shift @args;
+my $action = shift @args;
+
+print "Content-Type: application/json\n\n";
+unless ( $session->param("~logged-in")) {
+    exit(0);
+}
+if (not defined *{$action} ) {
+} else {
+    SC->log(0, "damage: task is $action $args[0]");
+
+	no strict 'refs';
+    # perform the requested action
+    #eval {
+	my $json =  &{ $action }( @args );
+	print JSON::XS->new->utf8->encode(API::APIUtil::stringfy($json));
+    SC->log(0, "damage: task is $json");
+    #};
+}
+
+    # Authenticated
+sub from_id {
+	my ($shakemap) = @_;
+	my ($shakemap_id, $shakemap_version) = $shakemap =~ /(.*)-(\d+)$/;
+	my @facility;
+
+	my $type = $self->param('type');
+	my $json = new API::User->from_id($type);
+
+	return $json;
+}
+
+
+  # / (with authentication)
+sub station_type {
+	my ($type) = @_;
+	unless ( $session->param("admin_user")) {
+		return 0;
+	}
+	my $event = new API::Station->station_type_list($type);
+	#$event->{'type'} = $type;
+
+	return $event;
+  };
+  
+    # Authenticated
+sub station_list {
+
+	unless ( $session->param("admin_user")) {
+		return 0;
+	}
+	my $station = new API::Station->station_list();
+
+	return $station;
+}
+
+

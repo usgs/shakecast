@@ -1,0 +1,12 @@
+; Default Pager Notification
+;
+From: ShakeCast <%HEADER_FROM%>
+To: %HEADER_TO%
+Subject: Updated Event: %EVENT_ID%
+
+%EVENT_TIMESTAMP% 
+Mag: %MAGNITUDE%
+Lat: %LAT% Lon: %LON%
+Loc  %EVENT_LOCATION_DESCRIPTION%
+
+

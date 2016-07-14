@@ -1,0 +1,126 @@
+MAPAPP = (function() {
+    // initailise constants
+    var DEFAULT_ZOOM = 7;
+    
+    // initialise variables
+    var map = null,
+	detailMapLayer = null,
+	mgr = null,
+	mc = null,
+	fac_mc = null,
+	smOverlay = null,
+	smImg = null,
+	epimarker = null;
+        
+    function loadSM(bounds, img) {
+        // create a new marker to and display it on the map
+		if (smOverlay) {
+			smOverlay.setMap(null);
+		}
+
+		smImg = img;
+		smBounds = bounds;
+		if (smBounds) {
+		smOverlay = new USGSOverlay(bounds, img, map);
+
+		}
+		map.setCenter(smBounds.getCenter(), DEFAULT_ZOOM);
+    } // addMarker
+    
+    function addMarker(facility) {
+		var lat, lon;
+
+		if (facility.facility_type == "epicenter") {
+			lat = parseFloat(facility.origin_lat);
+			lon = parseFloat(facility.origin_lon);
+		} else {
+			lat = parseFloat(facility.lat_min);
+			lon = parseFloat(facility.lon_min);
+		}
+		//MAPAPP.addMarker(new google.maps.LatLng(lat, lon), domdata);
+		var markerimage  = new google.maps.MarkerImage("/images/" + facility.facility_type + ".png",
+			new google.maps.Size(25,25),
+			new google.maps.Point(0,0),
+			new google.maps.Point(12,12));				
+			
+		var markershadow = new google.maps.MarkerImage("/images/shadow-" + facility.facility_type + ".png",
+			new google.maps.Size(38,25),
+			new google.maps.Point(0,0),
+			new google.maps.Point(12,12));			
+
+		var marker = new google.maps.Marker({
+			position: new google.maps.LatLng(lat, lon), 
+			shadow: markershadow,
+			icon: markerimage,
+			map: map,
+		});
+		//facMarkers.push(marker);
+        
+    } // addMarker
+    
+    
+    var module = {
+        addMarker: addMarker,
+		loadSM: loadSM,
+        
+        init: function(position, zoomLevel) {
+
+            // define the required options
+            var myOptions = {
+                zoom: zoomLevel ? zoomLevel : DEFAULT_ZOOM,
+                center: position,
+				disableDefaultUI: true,
+				mapTypeId: google.maps.MapTypeId.TERRAIN,
+            };
+
+            // initialise the map
+            map = new google.maps.Map(
+                document.getElementById("map_canvas"),
+                myOptions);
+                
+			var detailsMapLayerOptions = {
+			getTileUrl: function(tile, zoom) {
+				//console.debug(X);
+				//return "/server_event.php?x="+tile.x+"&y="+tile.y+"&zoom="+zoom; },
+				var tilesAtThisZoom = 1 << zoom;
+				var tilex = tile.x % tilesAtThisZoom;
+				//if (zoom > TILE_ZOOM) {
+					//return "/scripts/gmap.pl/event/"+tile.x+","+tile.y+","+zoom;
+				//} else {
+					return "/html/tiles/event/"+zoom+"/"+tilex+"/"+tile.y+".png";
+				//}
+				},
+			tileSize: new google.maps.Size(256, 256),
+			isPng: true
+			};
+			eventMapLayer = new google.maps.ImageMapType(detailsMapLayerOptions);
+			//map.overlayMapTypes.insertAt("0",eventMapLayer);
+			map.overlayMapTypes.insertAt("0", eventMapLayer);
+
+			var facilityMapLayerOptions = {
+			getTileUrl: function(tile, zoom) {
+				//console.debug(X);
+				//return "/server_event.php?x="+tile.x+"&y="+tile.y+"&zoom="+zoom; },
+				//return "/scripts/gmap.pl/facility/"+tile.x+","+tile.y+","+zoom; },
+				var tilesAtThisZoom = 1 << zoom;
+				var tilex = tile.x % tilesAtThisZoom;
+				//if (zoom > TILE_ZOOM) {
+				//	return "/scripts/gmap.pl/facility/"+tile.x+","+tile.y+","+zoom;
+				//} else {
+					return "/html/tiles/facility/"+zoom+"/"+tilex+"/"+tile.y+".png";
+				//}
+				},
+			tileSize: new google.maps.Size(256, 256),
+			isPng: true
+			};
+			facilityMapLayer = new google.maps.ImageMapType(facilityMapLayerOptions);
+			//map.overlayMapTypes.insertAt("1",facilityMapLayer);
+			//map.overlayMapTypes.insertAt("1",facilityMapLayer);
+        },
+        
+    };
+    
+    return module;
+})();
+
+

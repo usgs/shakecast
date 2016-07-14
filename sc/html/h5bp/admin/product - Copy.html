@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js"> <!--<![endif]-->
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+        <title>ShakeCast</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+<link rel="stylesheet" media="screen" href="../css/proui.css" />
+<link rel="stylesheet" media="screen" href="../css/mapapp.css" />
+<link href="../css/tango/skin.css" rel="stylesheet" type="text/css" />
+		<style type="text/css" title="currentStyle"> 
+			@import "../css/jquery-ui-1.8.16.custom.css";
+			@import "../css/demo_table.css";
+		</style> 
+        <link rel="stylesheet" href="../css/bootstrap.css">
+        <link rel="shortcut icon" href="/images/sc_logo.png">
+        <style>
+            body {
+                padding-top: 60px;
+                padding-bottom: 40px;margin:0px;
+            }
+			.logo{ 
+				vertical-align: text-bottom;
+				text-align: center;
+				height: 24px;
+			}
+			html { overflow-y: scroll; height: 300%; font-size: 100%; -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%; }
+			table { clear: both }
+			 .GREEN { background-color: #008800; }
+			 .YELLOW { background-color: #eeee00; }
+			 .ORANGE { background-color: #ee9900; }
+			 .RED { background-color: #cc0000; }
+			 .NA { background-color: #888888; }
+			 .GREY { background-color: #888888; }
+			.accordion h3 { padding-left: 2em; }
+.fac_summary {
+	border-bottom: 1px solid #888;
+    text-align: left;
+}
+.fac_summary:nth-child(odd) {
+	background-color: #eeeeee;
+}
+
+.metric
+{
+    margin:10px;
+    padding:5px;	
+	height: 50px;
+	border: 1px solid #888;
+	font-size: 80%;
+}
+
+.histogram
+{
+    position:relative;
+    margin:5px;
+    padding:5px;	
+	height: 75px;
+	border-bottom: 1px solid #888;
+   background:#eee;
+	font-size: 70%;
+	width: 175px;
+}
+
+.histogram li
+{
+    position:absolute;
+   list-style:none;
+   background:lightblue;
+   width:30px;
+   text-align:center;
+   visibility: hidden;
+-moz-box-shadow:    3px 3px 5px 6px #ccc;
+  -webkit-box-shadow: 1px #ccc;
+  box-shadow:         1px 1px 1px 1px #ccc;
+}
+
+.thumbnailClass{ text-align: center; }
+
+       </style>
+        <link rel="stylesheet" href="../css/bootstrap-responsive.min.css">
+        <link rel="stylesheet" href="../css/main.css">
+    <link rel="stylesheet" href="../themes/default/default.css" type="text/css" media="screen" />
+
+        <script src="../js/vendor/modernizr-2.6.1-respond-1.1.0.min.js"></script>
+    </head>
+    <body>
+        <!--[if lt IE 7]>
+            <p class="chromeframe">You are using an outdated browser. <a href="http://browsehappy.com/">Upgrade your browser today</a> or <a href="http://www.google.com/chromeframe/?redirect=true">install Google Chrome Frame</a> to better experience this site.</p>
+        <![endif]-->
+
+        <!-- This code is taken from http://twitter.github.com/bootstrap/examples/hero.html -->
+
+<div class="container-fluid">
+<div>                    
+	<!-- <a class="brand" href="index.html"><img src="/images/sc_logo.png" class="img-circle logo" />ShakeCast</a>    -->
+	<div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <div class="nav-collapse collapse">
+                        <ul class="nav">
+                            <li class="logo"><a href="../index.html">Home</a></li>
+                            <li><a href="#about">About</a></li>
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">Earthquake List <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="../list.html">Recent Events</a></li>
+                                    <li class="divider"></li>
+									<li><a href="../list.html?type=major">Significant Events</a></li>
+									<li><a href="../list.html?type=scenario">Scenarios</a></li>
+                                    <li class="divider"></li>
+                                    <li><a href="#">Settings</a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                        <ul class="nav">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">Management <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="earthquake.html">Earthquakes</a></li>
+                                    <li class="divider"></li>
+									<li><a href="facility.html">Facilities</a></li>
+                                    <li class="divider"></li>
+									<li><a href="station.html">Stations</a></li>
+                                    <li class="divider"></li>
+									<li><a href="product.html">Products</a></li>
+                                    <li class="divider"></li>
+									<li><a href="user.html">Users</a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                        <form class="navbar-form pull-right">
+                            <input class="span2" type="text" placeholder="Email">
+                            <input class="span2" type="password" placeholder="Password">
+                            <button type="submit" class="btn">Sign in</button>
+                        </form>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+</div>
+        <!--/.nav-collapse <div class="container">-->
+      <div class="row-fluid">
+        <div class="span2">
+          <div class="well sidebar-nav">
+            <ul id="sidebar" class="nav nav-list">
+              <li class="nav-header">product List</li>
+             <li></li>
+            </ul>
+          </div><!--/.well -->
+        </div><!--/span-->
+        <div class="span9">
+            <!-- Example row of columns -->
+            <div class="row-fluid">
+			
+			<p><a class="btn btn-danger" href="javascript:void(0)" id="delete">Delete Selected Row</a>	
+			<a class="btn btn-primary" href="javascript:void(0)" id="update">Update Product Display</a></p> 	
+			<table cellpadding="0" cellspacing="0" border="0" class="display" id="eq_content_table"></table>
+            </div>
+
+<div id="spinner" class="spinner ui-widget ui-widget-content ui-corner-all" style="width:50px;background:#fff;height:50px;">
+	<img id="img-spinner" src="/images/usgs.gif" alt="Loading" style="margin:10px auto;"/>
+</div>
+
+<!-- Button to trigger modal -->
+     
+    <!-- Modal -->
+    <div id="myModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
+    <h3 id="myModalLabel">Modal header</h3>
+    </div>
+    <div class="modal-body">
+    <p>One fine body</p>
+    </div>
+    <div class="modal-footer">
+    <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+    <button class="btn btn-primary">Save File</button>
+    </div>
+    </div>
+
+            <hr>
+
+            <footer>
+                <p>&copy; Company 2012</p>
+            </footer>
+
+
+        </div><!--/span-->
+        </div> <!-- /container -->
+		
+        <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
+        <script>window.jQuery || document.write('<script src="../js/vendor/jquery-1.8.2.min.js"><\/script>')</script>
+        <script src="../js/jquery-ui.js"></script>
+
+        <script src="../js/vendor/bootstrap.min.js"></script>
+
+        <script src="../js/plugins.js"></script>
+        <script src="../js/main.js"></script>
+        <script src="../js/spin.min.js"></script>
+<script type="text/javascript" src="../js/jquery.dataTables1.9.4.min.js"></script>
+<script type="text/javascript" src="http://maps.google.com/maps/api/js?sensor=false"></script>
+<script src="../js/shakemap.js" type="text/javascript"></script>
+<script src="../js/loadXML.js" type="text/javascript"></script>
+<script type="text/javascript" src="../js/mapapp_list.js"></script>
+<script type="text/javascript" src="../js/jquery.jcarousel.min.js"></script>
+
+<script>
+	var map;
+	var sc_id = gup('event');
+	var type = gup('type');
+	var age = gup('age');
+	var fac_des = [];
+	var mmi = ["I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X+"];
+	var product_type = {'INFO_XML':1, 'INTEN_JPG':1, 'PGA_JPG':1, 'PGV_JPG':1, 
+		'PSA03_JPG':1, 'PSA10_JPG':1, 'PSA30_JPG':1, 'STN_XML':1,};
+	var oTable;
+	var anOpen = [];
+	var eqDiv = {
+		"bJQueryUI": true,
+		"iDisplayLength": 25,
+		"sScrollY": "100%",
+		"sScrollX": "100%",
+		//"aaSorting": [[ 5, "desc" ]],
+		"bUseRendered": false,
+		aaData: null, 
+		aoColumns: 
+			[
+			{'sTitle': 'Select',"mDataProp": "select_box"},
+			//{'sTitle': 'Product Type',"mDataProp": "product_type"},
+			{'sTitle': 'Product Source',"mDataProp": "product_source"},
+			{'sTitle': 'Name',"mDataProp": "name"},
+			{'sTitle': 'Description',"mDataProp": "description"},
+			{'sTitle': 'Filename',"mDataProp": "filename"}, 
+			{'sTitle': 'Metric',"mDataProp": "metric"}, 
+			{'sTitle': 'URL',"mDataProp": "url"}, 
+			{'sTitle': 'Display',"mDataProp": "display"}, 
+	]};
+					oTable = $('#eq_content_table').dataTable(eqDiv);
+	$('<a class="badge" href="javascript:void(0)" id="select_all">Select All</a>').appendTo('div.dataTables_length');
+	$('<a class="badge" href="javascript:void(0)" id="unselect_all">Unselect All</a>').appendTo('div.dataTables_length');
+	$(window).load(function() {
+
+		//map = MAPAPP.init(sc_id);
+			//google.maps.event.trigger(map, 'resize');
+	 
+		//var sm_url = '/scripts/shakemap.pl/from_id/' + sc_id;
+		//var sm_url = '/scripts/event.pl/event_list?type='+type+'&age='+age;
+		var sm_url = '/scripts/product.pl/';
+
+		$.getJSON(sm_url, function(data) {
+
+			// Are there even any EQ to display?
+			if (data.length <= 0) {
+				return;
+			}
+			var total_count = 0;
+			for (var i=0; i < data.length; i++) {
+			total_count += parseInt(data[i].count);
+			}
+			data.push({product_source: 'ALL', count:total_count});
+			
+				var product_source = [];
+			for (var i=0; i < data.length; i++) {
+				var event = data[i];
+				if (! product_source[event.product_source]) {
+				$("#sidebar li:last").append('<li class="station_network"><a id="' + event.product_source +
+					'" href="#">' + event.product_source +
+					' (' + event.count + ')</a></li>');
+					product_source[event.product_source] = 1; 
+				}
+			}
+			$('.station_network a').live('click', function (e) {
+				var type = this;
+				var sm_url = '/scripts/product.pl/type/' + type.id;
+				$.getJSON(sm_url, function(data) {
+
+					fnDeleteRow();
+					oTable.fnClearTable();
+					// Are there even any EQ to display?
+					if (data.length <= 0) {
+						return;
+					}
+					var eqTable = [];
+					for (var i=0; i < data.length; i++) {
+					var facility = data[i];
+					eqTable.push({
+						"select_box":'<input type="checkbox" class="btn btn-primary display_box" value="' + 
+							facility.product_type + '" ' + ((facility.display) ? 'checked' : '')+ '/>', 
+						//"product_type":facility.product_type, 
+						"product_source":facility.product_source,  
+						"name":facility.name,  
+						"description":facility.description, 
+						"filename":facility.filename, 
+						"metric":facility.metric, 
+						"url":facility.url, 
+						//"display":facility.display, 
+						//"display":'<button type="button" class="btn btn-primary" data-toggle="button">Single Toggle</button>', 
+						"display":(facility.display) ? 'Yes' : '', 
+						});
+						
+					}
+					//eqDiv.aaData = eqTable;
+					$('#eq_content_table').dataTable().fnAddData(eqTable);
+					$(window).trigger('resize');
+
+		$("#eq_content_table tbody tr").live('click', function (e) {
+			if ( $(this).hasClass('row_selected') ) {
+				$(this).removeClass('row_selected');
+				var oData = oTable.fnGetData( this );
+				//MAPAPP.infowindow.close(map);
+				//MAPAPP.removeMarker(oData.facility_id);
+				//MAPAPP.removeSM();
+			}
+			else {
+				//oTable.$('tr.row_selected').removeClass('row_selected');
+				$(this).addClass('row_selected');
+				var oData = oTable.fnGetData( this );
+				var sLat = parseFloat(oData.latitude);
+				var sLon = parseFloat(oData.longitude);
+				//MAPAPP.addFacMarker(oData);
+				//google.maps.event.trigger(MAPAPP.facMarkers[oData.facility_id], 'click');
+			}
+			});
+			 
+		$('#update').bind('click', function (e) {
+			var checked_box = $(".display_box");
+			for (var i=0; i<(checked_box.length); i++) {
+				//console.log(checked_box[i].value + ' ' + checked_box[i].checked);
+				var evt_url = '/scripts/product.pl/toggle?product_id='+checked_box[i].value+'&save='+checked_box[i].checked;
+				$.getJSON(evt_url, function(data) {
+
+					// Are there even any EQ to display?
+					if (data.length <= 0) {
+						return;
+					}
+					console.log(data.flag);
+				});
+			}
+			});
+			 
+		$('#select_all').bind('click', function (e) {
+			var flag = true;
+			var checked_box = $(".display_box");
+			for (var i=0; i<(checked_box.length); i++) {
+				checked_box[i].checked = flag;
+			}
+			});
+			 
+		$('#unselect_all').bind('click', function (e) {
+			var flag = false;
+			var checked_box = $(".display_box");
+			for (var i=0; i<(checked_box.length); i++) {
+				checked_box[i].checked = flag;
+			}
+			});
+			 
+		/* Add a click handler for the delete row */
+		$('#delete').bind('click', fnDeleteRow);
+
+		 /* Get the rows which are currently selected */
+		function fnGetSelected( oTableLocal )
+		{
+			return oTableLocal.$(".row_selected");
+		}
+
+		 /* Get the rows which are currently selected */
+		function fnDeleteRow()
+		{
+			var anSelected = fnGetSelected( oTable );
+			for (var i=0; i < anSelected.length; i++) {
+				var oData = oTable.fnGetData( anSelected[i] );
+				//MAPAPP.infowindow.close(map);
+				//MAPAPP.removeMarker(oData.facility_id);
+				//MAPAPP.removeSM();
+				//MAPAPP.removeMarker(oData.event_id);
+				oTable.fnDeleteRow( anSelected[i] );
+			}
+		}
+
+				});
+				});
+					 $(window).trigger('resize');
+		});
+
+	});
+		
+	$(window).resize(function() {
+		//$("#eq_content_table").width($(".row").width());
+		//$("#map_canvas").width($(".hero-unit").width());
+		//$("#map_canvas").height(($("#map_canvas").width())/2);
+		//google.maps.event.trigger(map, 'resize');
+		oTable.fnAdjustColumnSizing();
+		var cont_height = $("#eq_content_table").height();
+		if ($("#sidebar").length) {
+			cont_height = ($("#sidebar").height() > cont_height) ? $("#sidebar").height() : cont_height;
+		}
+		$('html').css('height', cont_height+ 300);
+	});
+		
+	$(document).ready(function(){
+		$("#spinner").bind("ajaxStart", function() {
+			$(this).show();
+		}).bind("ajaxStop", function() {
+			$(this).hide();
+		}).bind("ajaxError", function() {
+			$(this).hide();
+		});
+
+		 });
+
+    </script>
+    </body>
+</html>

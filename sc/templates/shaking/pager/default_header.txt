@@ -1,0 +1,9 @@
+; Default Text Email Notification -- header
+;
+From: ShakeCast <%HEADER_FROM%>
+To: %HEADER_TO%
+Subject: Facilities Shaken: %_ITEMNO%
+
+Reported by: Server ID = %SERVER_ID%, DNS = %DNS_ADDRESS%
+
+;;;;;

@@ -1,0 +1,108 @@
+; Default HTML Email Notification
+; Based on Caltrans template
+;
+From: ShakeCast V3 <%HEADER_FROM%>
+To: %HEADER_TO%
+Subject: POTENTIAL IMPACTS: %FACILITY_TYPE%, %EVENT_LOCATION_DESCRIPTION% (%EVENT_ID% Version %SHAKEMAP_VERSION%) 
+Attach: /usr/local/shakecast/sc/images/header.jpg
+Attach: /usr/local/shakecast/sc/data/%SHAKEMAP_ID%-%SHAKEMAP_VERSION%/intensity.jpg
+; End -- header
+
+
+<table width=700 border=1 bordercolor=black cellpadding=15 cellspacing=0 bgcolor=white>
+
+<tr><td>
+<img alt="ShakeCast" height=60 width=700 src="cid:header.jpg">
+</td></tr>
+
+<tr><td height=30 bgcolor=black>
+<font size=3 face="Arial" color="white"><b>Potential Impacts: %FACILITY_TYPE%</b></font>
+</td></tr>
+
+<tr><td>
+<font size=2 face="Arial">
+This report supersedes any earlier reports about this event.  This is a computer-generated message and has not yet been reviewed by an Engineer or Seismologist.  Epicenter and magnitude are published by the <a href=http://earthquake.usgs.gov/earthquakes/>USGS</a>.  Reported magnitude may be revised and will not be reported through ShakeCast. The <a href=http://earthquake.usgs.gov/earthquakes/>USGS</a> website should be referenced for the most up-to-date information.  Inspection prioritization emails will be sent shortly if ShakeCast determines significant shaking occurred at user's infrastructure.  An interactive version of this report is accessible on the <a href=https://%DNS_ADDRESS%>ShakeCast internet/intranet website</a>.  
+</font>
+<br>
+</td></tr>
+
+<tr><td bgcolor=black>
+<font size=3 face="Arial" color="white"><b>Earthquake Details</b></font>
+</td></tr>
+
+<tr><td>
+<img alt="The USGS ShakeMap was not be available at the time this message was generated." src="cid:intensity.jpg">
+<br>
+<br>
+<font size=2 face="Arial">
+Name: <b>%EVENT_NAME:|NULL|;(not assigned at this time)%</b></br>
+Magnitude:  <b>%MAGNITUDE% </b></br>
+ShakeMap ID:   <b>%SHAKEMAP_ID%-%SHAKEMAP_VERSION% </b></br>
+Location: <b>%EVENT_LOCATION_DESCRIPTION:|NULL|;(not assigned at this time)%</b></br>
+Latitude-Longitude: <b>%LAT%, %LON% </b></br>
+Local Time: <b>%EVENT_TIMESTAMP%</b>
+</font>
+<br>
+</td></tr>
+
+
+
+<tr><td bgcolor=black>
+<font size=3 face="Arial" color="white"><b>Summary of Potential Impacts: %FACILITY_TYPE%</b></font>
+</td></tr>
+
+<tr><td>
+<font size=2 face="Arial">
+Total number of facilities analyzed: <b>%_ITEMNO%</b> <br>
+Summary by impact rank:<br></font>
+<br>
+<table border=0 bordercolor=#F0F0F0 cellpadding=3 cellspacing=0 bgcolor=#F0F0F0>
+<tr>
+  <td width=110 align="center" bgcolor="red"><font size=2 face="Arial"><b>High</b></font>
+  <td width=70 align="center"><font size=2 face="Arial"><b>%_NUM_DAMAGE_LEVEL_RED:|NULL|;0%</b></font>
+  <td width=500><font size=2 face="Arial">High impact potential</font>
+</tr>
+<tr>
+  <td width=110 align="center" bgcolor="darkorange"><font size=2 face="Arial"><b>Medium-High</b></font>
+  <td width=70 align="center"><font size=2 face="Arial"><b>%_NUM_DAMAGE_LEVEL_ORANGE:|NULL|;0%</b></font>
+  <td width=500><font size=2 face="Arial">Medium-High impact potential</font>
+</tr>
+<tr>
+  <td width=110 align="center" bgcolor="gold"><font size=2 face="Arial"><b>Medium</b></font>
+  <td width=70 align="center"><font size=2 face="Arial"><b>%_NUM_DAMAGE_LEVEL_YELLOW:|NULL|;0%</b></font>
+  <td width=500><font size=2 face="Arial">Medium impact potential</font>
+</tr>
+<tr>
+  <td width=110 align="center" bgcolor="green"><font size=2 face="Arial"><b>Low</b></font>
+  <td width=70 align="center"><font size=2 face="Arial"><b>%_NUM_DAMAGE_LEVEL_GREEN:|NULL|;0%</b></font>
+  <td width=500><font size=2 face="Arial">Low impact potential</font>
+</tr>
+<tr>
+  <td width=110 align="center" bgcolor="grey"><font size=2 face="Arial"><b>Below Threshold</b></font>
+  <td width=70 align="center"><font size=2 face="Arial"><b>%_NUM_DAMAGE_LEVEL_GREY:|NULL|;0%</b></font>
+  <td width=500><font size=2 face="Arial">No impact potential</font>
+</tr>
+</table>
+
+<br>
+</td></tr>
+
+
+<tr><td bgcolor=black>
+<font size=3 face="Arial" color="white"><b>List of Potentially Impacted Facilities: %FACILITY_TYPE%</b></font>
+</td></tr>
+
+<tr><td>
+<font size=2 face="Arial">
+%FACILITY_TYPE% presented in the table below are sorted in order of impact potential.  The list includes the top 200 facilities in the area of shaking.  The complete list is available on the web server.
+</font>
+<br><br>
+<table width=680 border=0 bordercolor=black cellpadding=3 cellspacing=0 bgcolor=#F0F0F0>
+<tr bgcolor=#D8D8D8><font size=2 face="Arial">
+  <td width=280><b>%FACILITY_TYPE%</b>
+  <td width=80><b>Facility<br>ID</b>
+  <td width=120><b>Location</b>
+  <td align="center" width=100><b>Impact<br>Potential</b>
+  <td align="center" width=50><b>%METRIC%</b>
+</font>
+</tr>

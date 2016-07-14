@@ -1,0 +1,33 @@
+; Default HTML Email Notification -- header
+;
+From: ShakeCast <%HEADER_FROM%>
+To: %HEADER_TO%
+Subject: ShakeCast Summary Nuclear Power Plants: %EVENT_ID% (%_ITEMNO%)
+Content-Type: text/html
+
+<font size=+2><b>ShakeCast Event: Magnitude %MAGNITUDE%</b></font><br>
+ShakeMap %EVENT_NAME:|NULL|;(Unnamed Event) %Version %SHAKEMAP_VERSION%<br>
+Event Location: %EVENT_LOCATION_DESCRIPTION%<br>
+Event Time: %EVENT_TIMESTAMP%<br>
+Generated at %GENERATION_TIMESTAMP%<br>
+Reported by: Server ID = %SERVER_ID%, DNS = %DNS_ADDRESS%
+<p>
+<font size=+2><b>Damage Summary</b></font><br>
+Number of %FACILITY_TYPE% Facility Reported: %_ITEMNO%<br>
+Max Value: MMI: %_MAX_METRIC_MMI%; 
+Acceleration: %_MAX_METRIC_PGA:|NULL|;(not measured)%<br>
+Number of Reports of Likely Damage: %_NUM_DAMAGE_LEVEL_RED:|NULL|;0%<br>
+Number of Reports of Possible Damage: %_NUM_DAMAGE_LEVEL_YELLOW:|NULL|;0%<br>
+Number of Reports of Unlikely Damage: %_NUM_DAMAGE_LEVEL_GREEN:|NULL|;0%
+<p>
+<font size=+2><b>FACILITY Damage Estimates from ShakeMap</b></font>
+
+<table border=1 bordercolor=black cellpadding=5 cellspacing=0>
+<tr>
+  <th>Nuclear Power Plant
+  <th>Damage Level
+  <th>Metric
+  <th>Value
+  <th>Exceedance Ratio
+</tr>
+;;;;;

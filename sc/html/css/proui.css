@@ -1,0 +1,193 @@
+body {
+    margin: 0px;
+    font-family: Arial;
+}
+
+div.view {
+    display: none;
+    padding: 0 6px;
+}
+
+div#main {
+    display: block;
+}
+
+h1.fancy, div.view h1 {
+    background: #222222;
+    background-image: -moz-linear-gradient(top, #666666, #3A3A3A 50%, #222222 50%, #000000);
+    background: -webkit-gradient(linear, left top, left bottom, color-stop(0.0, #666666), color-stop(0.5, #3A3A3A), color-stop(0.5, #222222), color-stop(1.0, #000000));
+    -border-top-left-radius: 6px;
+    -border-top-right-radius: 6px;
+    -webkit-border-top-left-radius: 6px;
+    -webkit-border-top-right-radius: 6px;
+    -moz-border-radius-topleft: 6px;
+    -moz-border-radius-topright: 6px;
+    font-size: 1.1em;
+    color: white;
+    padding: 10px 8px;
+    margin: 0 0 0 0;
+    text-align: center;
+}
+
+h1.GREEN {
+    background: #008800;
+    background-image: -moz-linear-gradient(top, #00ff00, #009900 50%, #008800 50%, #006600);
+    background: -webkit-gradient(linear, left top, left bottom, color-stop(0.0, #00ff00), color-stop(0.5, #009900), color-stop(0.5, #008800), color-stop(1.0, #006600));
+    -webkit-box-shadow: 0 2px 2px #333333;
+    -border-radius: 6px;
+    -webkit-border-radius: 6px;
+    -moz-border-radius: 6px;
+    font-size: 1.1em;
+    color: white;
+    padding: 8px;
+    margin: 6px 0 6px 0;
+    text-align: center;
+}
+
+h1.YELLOW {
+    background: #eeee00;
+    background-image: -moz-linear-gradient(top, #ffff00, #fafa00 50%, #eeee00 50%, #999900);
+    background: -webkit-gradient(linear, left top, left bottom, color-stop(0.0, #ffff00), color-stop(0.5, #fafa00), color-stop(0.5, #eeee00), color-stop(1.0, #999900));
+    -webkit-box-shadow: 0 2px 2px #333333;
+    -border-radius: 6px;
+    -webkit-border-radius: 6px;
+    -moz-border-radius: 6px;
+    font-size: 1.1em;
+    color: white;
+    padding: 8px;
+    margin: 6px 0 6px 0;
+    text-align: center;
+}
+
+h1.ORANGE {
+    background: #ee9900;
+    background-image: -moz-linear-gradient(top, #ffcc00, #f5a500 50%, #ee9900 50%, #995500);
+    background: -webkit-gradient(linear, left top, left bottom, color-stop(0.0, #ffcc00), color-stop(0.5, #f5a500), color-stop(0.5, #ee9900), color-stop(1.0, #995500));
+    -webkit-box-shadow: 0 2px 2px #333333;
+    -border-radius: 6px;
+    -webkit-border-radius: 6px;
+    -moz-border-radius: 6px;
+    font-size: 1.1em;
+    color: white;
+    padding: 8px;
+    margin: 6px 0 6px 0;
+    text-align: center;
+}
+
+h1.RED {
+    background: #880000;
+    background-image: -moz-linear-gradient(top, #ff0000, #990000 50%, #880000 50%, #660000);
+    background: -webkit-gradient(linear, left top, left bottom, color-stop(0.0, #ff0000), color-stop(0.5, #990000), color-stop(0.5, #880000), color-stop(1.0, #660000));
+    -webkit-box-shadow: 0 2px 2px #333333;
+    -border-radius: 6px;
+    -webkit-border-radius: 6px;
+    -moz-border-radius: 6px;
+    font-size: 1.1em;
+    color: white;
+    padding: 8px;
+    margin: 6px 0 6px 0;
+    text-align: center;
+}
+
+h1.NA {
+    background: #888888;
+    background-image: -moz-linear-gradient(top, #cccccc, #aaaaaa 50%, #888888 50%, #666666);
+    background: -webkit-gradient(linear, left top, left bottom, color-stop(0.0, #cccccc), color-stop(0.5, #aaaaaa), color-stop(0.5, #888888), color-stop(1.0, #666666));
+    -webkit-box-shadow: 0 2px 2px #333333;
+    -border-radius: 6px;
+    -webkit-border-radius: 6px;
+    -moz-border-radius: 6px;
+    font-size: 1.1em;
+    color: white;
+    padding: 8px;
+    margin: 6px 0 6px 0;
+    text-align: center;
+}
+
+/* include the simple header styles (CHAPTER 8) */
+
+h1.simple {
+    font-size: 0.9em;
+    padding: 8px 4px 4px 8px;
+    background: #333333;
+    color: #AAAAAA;
+    border-bottom: 2px solid #AAAAAA;
+    margin: 0 0 4px 0;
+}
+
+h1.floating {
+    position: absolute; 
+    width: 100%; 
+    z-index: 100;
+}
+
+/* menu styles (CHAPTER 4) */
+
+ul#menu {
+    position: fixed;
+    bottom: 0px;
+    margin: 0;
+    padding: 5px;
+    list-style-type: none;
+    background: -webkit-gradient(linear, left top, left bottom, color-stop(0.0, #666666), color-stop(0.5, #3A3A3A), color-stop(0.5, #222222), color-stop(1.0, #000000));;
+    width: 100%;
+}
+
+ul#menu li {
+    margin: 0;
+    float: left;
+    padding: 4px 10px 0 0;
+}
+
+ul#menu li a { 
+    color: white;
+    font-weight: bold;
+}
+
+/* button list styles (CHAPTER 4) */
+
+ul.buttons {
+    margin: 4px 0 0 0;
+    padding: 0;
+    list-style-type: none;
+}
+
+ul.buttons li {
+    margin: 0;
+}
+
+ul.buttons li a {
+    display: block;
+    background: -webkit-gradient(linear, left top, left bottom, color-stop(0.0, #b3b3b3), color-stop(0.4, #666666), color-stop(1.0, #333333));;
+    color: white;
+    text-decoration: none;
+    padding: 8px;
+    text-align: center;
+    -webkit-box-shadow: 0 2px 2px #333333;
+    -webkit-border-radius: 6px;
+}
+
+ul.buttons_buttom {
+    margin: 0 0 0 0;
+    padding: 0;
+    list-style-type: none;
+}
+
+h1.fancy_bottom, div.view_bottom h1 {
+    background: #222222;
+    background-image: -moz-linear-gradient(top, #666666, #3A3A3A 50%, #222222 50%, #000000);
+    background: -webkit-gradient(linear, left top, left bottom, color-stop(0.0, #666666), color-stop(0.5, #3A3A3A), color-stop(0.5, #222222), color-stop(1.0, #000000));
+    -webkit-box-shadow: 0 2px 1px #AAAAAA;
+    font-size: 1.1em;
+    color: white;
+    padding: 10px 8px;
+    margin: 0 0 6px 0;
+    text-align: center;
+    -border-top-left-radius: 6px;
+    -border-top-right-radius: 6px;
+    -webkit-border-bottom-left-radius: 6px;
+    -webkit-border-bottom-right-radius: 6px;
+    -moz-border-radius-bottomleft: 6px;
+    -moz-border-radius-bottomright: 6px;
+}
+

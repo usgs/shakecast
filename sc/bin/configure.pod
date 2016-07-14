@@ -1,0 +1,93 @@
+=cut
+
+$Id: configure.pod 64 2007-06-05 14:58:38Z klin $
+
+=pod
+
+=head1 NAME
+
+Setup - ShakeCast configuration instructions
+
+=head1 DESCRIPTION
+
+This is a random collection of notes intended to help anyone trying to bring
+up a new ShakeCast server.
+
+=head2 OVERVIEW
+
+=head2 Directories
+
+There is one directory hierarchy for all of ShakeCast except the product files;
+this is sometimes called the I<ShakeCast root>.
+Relative file paths are usually taken relative to this location.
+By default this is configured to be F<C:/sc>.
+If you want to change this location you will need to look through the
+configuration file F<conf/sc.conf> and make the necessary changes.
+
+The product files reside in a separate hierarchy to simplify space management
+issues (the total volume of product files could be quite large).
+The default location as defined in F<conf/sc.conf> is F<C:/sc_data>.
+
+=head2 Configuration files
+
+The config files (mostly?) are found in F<conf/>.
+The primary configuration file is typically named F<sc.conf>.  The exception
+to this naming convention is that it can also have a name that matches the first
+part (up to the first dot) of the site's hostname.
+
+=head2 Installing the daemons
+
+ShakeCast uses several daemons to handle various parts of the processing.
+These need to be installed as Windows services.
+
+=over 4
+
+=item dispd
+
+The dispatch daemon takes locally generated requests for remote files,
+queues those requests, then returns to the caller.  The requests are serviced
+later by child processes.
+To install the dispatch daemon you should first check the configuration
+information located in the I<Dispatcher> section of the main configuration
+file (C<conf/sc.conf>, unless you have renamed it).
+If you chose a non-standard location for the root directory then you will
+probably want to modify the C<LOG> parameter.
+All the other values can probably be left alone.
+
+To install dispd:
+
+  $ dispd.pl --install
+
+Note that this does not start the daemon, it only installs it.
+You can uninstall the daemon as well:
+
+  $ dispd.pl --remove
+
+Also see L<bin/dispd.pl> for details about this daemon.
+
+=item polld
+
+The polling daemon is responsible for periodically checking with other servers
+that have been configured as source systems to see if new data is available
+for download.
+This daemon is configured and installed similarly to the dispatch daemon.
+Also see L<bin/polld.pl> for details about this daemon.
+
+=item notifyqueue
+
+The Notification Generator looks for new events, shakemaps, or products
+to be delivered to the server.  When that happens it checks to see if any
+ShakeCast users want to be notified of same, and if so, adds a notification
+to the Notification Queue (which will later be processed and sent by the
+Notification Distribution daemon).
+This daemon is configured and installed similarly to the dispatch daemon,
+using settings in the I<Notifyqueue> section of the configuration file.
+
+=item notify
+
+The Notification Distributor takes notifications from the notification
+queue (in the database) and sends each to its recipient.
+This daemon is configured and installed similarly to the dispatch daemon,
+using settings in the I<Notify> section of the configuration file.
+
+=back

@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<kml xmlns="http://earth.google.com/kml/2.0">
+  <Document>
+    <name>ShakeMap: [% shakemap.shakemap_id %]</name>
+    <LookAt>
+      <longitude>[% event.lon %]</longitude>
+      <latitude>[% event.lat %]</latitude>
+      <range>200000</range>
+      <tilt>0</tilt>
+      <heading>0</heading>
+    </LookAt>
+    <NetworkLink>
+      <name>Epicenter</name>
+      <Url>
+        <href>[% shakemap.gs_url %]/download/epicenter.kmz</href>
+        <refreshMode>onInterval</refreshMode>
+        <refreshInterval>300</refreshInterval>
+      </Url>
+    </NetworkLink>
+    <NetworkLink>
+      <name>ShakeMap: Intensity</name>
+      <Url>
+        <href>[% shakemap.gs_url %]/download/overlay.kmz</href>
+        <refreshMode>onInterval</refreshMode>
+        <refreshInterval>300</refreshInterval>
+      </Url>
+    </NetworkLink>
+    <NetworkLink>
+      <name>Seismic Stations</name>
+      <Url>
+        <href>[% shakemap.gs_url %]/download/stations.kmz</href>
+        <refreshMode>onInterval</refreshMode>
+        <refreshInterval>300</refreshInterval>
+      </Url>
+    </NetworkLink>
+    <ScreenOverlay>
+      <name>Intensity Legend</name>
+      <Icon>
+        <href>http://earthquake.usgs.gov/eqcenter/shakemap/sc/shake/icons/shakemap.png</href>
+      </Icon>
+      <overlayXY x="0" y="90" xunits="pixels" yunits="pixels" />
+      <screenXY x="5" y="1" xunits="pixels" yunits="fraction" />
+      <size x="0" y="0" xunits="pixels" yunits="pixels" />
+    </ScreenOverlay>
+    <ScreenOverlay>
+      <name>USGS Logo</name>
+      <Icon>
+        <href>http://earthquake.usgs.gov/eqcenter/shakemap/sc/shake/icons/USGSlogo.png</href>
+      </Icon>
+      <overlayXY x="1" y="0" xunits="fraction" yunits="pixels" />
+      <screenXY x=".82" y="30" xunits="fraction" yunits="pixels" />
+      <size x="0" y="0" xunits="pixels" yunits="pixels" />
+    </ScreenOverlay>
+    <Style id="facilityIcon">
+      <IconStyle>
+        <scale>0.5</scale>
+        <Icon>
+          <href>root://icons/palette-4.png</href>
+          <x>128</x>
+          <y>0</y>
+          <w>32</w>
+          <h>32</h>
+        </Icon>
+      </IconStyle>
+      <ListStyle>
+        <listItemType>checkHideChildren</listItemType>
+      </ListStyle>
+    </Style>
+    <Style id="RED">
+      <IconStyle>
+        <scale>0.5</scale>
+        <Icon>
+          <href>http://earthquake.usgs.gov/research/software/shakecast/icons/red.png</href>
+        </Icon>
+      </IconStyle>
+      <ListStyle>
+        <listItemType>checkHideChildren</listItemType>
+      </ListStyle>
+    </Style>
+    <Style id="ORANGE">
+      <IconStyle>
+        <scale>0.5</scale>
+        <Icon>
+          <href>http://earthquake.usgs.gov/research/software/shakecast/icons/orange.png</href>
+        </Icon>
+      </IconStyle>
+      <ListStyle>
+        <listItemType>checkHideChildren</listItemType>
+      </ListStyle>
+    </Style>
+    <Style id="YELLOW">
+      <IconStyle>
+        <scale>0.5</scale>
+        <Icon>
+          <href>http://earthquake.usgs.gov/research/software/shakecast/icons/yellow.png</href>
+        </Icon>
+      </IconStyle>
+      <ListStyle>
+        <listItemType>checkHideChildren</listItemType>
+      </ListStyle>
+    </Style>
+    <Style id="GREEN">
+      <IconStyle>
+        <scale>0.5</scale>
+        <Icon>
+          <href>http://earthquake.usgs.gov/research/software/shakecast/icons/green.png</href>
+        </Icon>
+      </IconStyle>
+      <ListStyle>
+        <listItemType>checkHideChildren</listItemType>
+      </ListStyle>
+    </Style>
+	<Folder>
+		<description>Displays the ShakeCast facilities on the map and the peak ground motion at each location.</description>
+		<name>ShakeCast Facilities</name>
+		<visibility>1</visibility>
+		<open>0</open>
+		[% FOREACH exposure = shakecast.exposure %]
+		<Folder>
+			<description>Displays the [% exposure.type %] facilities on the map and the peak ground motion at each location.</description>
+			<name>[% exposure.type %] Facility Type</name>
+			<visibility>1</visibility>
+			<open>0</open>
+			[%- FOREACH item = exposure.item -%]
+			<Placemark>
+			  <name>[% item.name %]</name>
+			  <visibility>1</visibility>
+			  <description>Lat: [% item.lat_min %] Lon: [% item.lon_min %] &lt;br&gt;mmi: &lt;b&gt;[% item.mmi %] &lt;/b&gt;&lt;br&gt;PGA: &lt;b&gt;[% item.pga %] %g&lt;/b&gt;&lt;br&gt;pgv: &lt;b&gt;[% item.pgv %] cm/sec&lt;/b&gt;&lt;br&gt;PSA 0.3sec: [% item.psa03 %] %g&lt;br&gt;PSA 1.0sec: [% item.psa10 %] %g&lt;br&gt;PSA 3.0sec: [% item.psa30 %] %g&lt;br&gt;</description>
+			  <styleUrl>#[% item.damage_level %]</styleUrl>
+			  <Point>
+				<extrude>0</extrude>
+				<tessellate>0</tessellate>
+				<altitudeMode>clampToGround</altitudeMode>
+				<coordinates>[% item.lon_min %],[% item.lat_min %]</coordinates>
+			  </Point>
+			</Placemark>
+			[%- END -%]
+		</Folder>
+		[% END %]
+  </Folder>
+  </Document>
+</kml>
+
