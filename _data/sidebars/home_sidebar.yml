@@ -1,0 +1,46 @@
+# This is your sidebar TOC. The sidebar code loops through sections here and provides the appropriate formatting.
+
+entries:
+- title: Sidebar
+  levels: one
+  folders:
+
+  - title: Category
+    output: web
+    folderitems:
+    - title: News
+      url: /news.html
+      output: web
+    - title: ShakeCast V3
+      url: /doc_introduction.html
+      output: web
+    - title: ShakeCast V4 (pyCast)
+      url: /apidocs
+      output: web
+    - title: ShakeCast Workbook
+      url: /index.html
+      output: web
+    - title: ShakeCast Lite
+      url: /index.html
+      output: web
+
+  - title: Tag archive pages
+    output: web
+    folderitems:
+
+      - title: Getting Started
+        url: /tag_getting_started.html
+        output: web
+
+      - title: ShakeCast V3 pages
+        url: /tag_shakecast_v3.html
+        output: web
+
+      - title: ShakeCast V4 (pyCast) pages
+        url: /tag_pycast.html
+        output: web
+
+      - title: Troubleshooting pages
+        url: /tag_troubleshooting.html
+        output: web
+

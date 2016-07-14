@@ -1,0 +1,1882 @@
+<!DOCTYPE html>
+<head>
+    <meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="">
+<meta name="keywords" content="troubleshootingshakecast_v3,  appendix, command line, utility">
+<title>Utility Scripts | ShakeCast Documentation</title>
+<link rel="stylesheet" href="css/syntax.css">
+
+
+<link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
+<!--<link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">-->
+<link rel="stylesheet" href="css/modern-business.css">
+<link rel="stylesheet" href="css/lavish-bootstrap.css">
+<link rel="stylesheet" href="css/customstyles.css">
+<link rel="stylesheet" href="css/theme-blue.css">
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.min.js"></script>
+<script src="js/jquery.navgoco.min.js"></script>
+
+
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/anchor-js/2.0.0/anchor.min.js"></script>
+<script src="js/toc.js"></script>
+<script src="js/customscripts.js"></script>
+
+<link rel="shortcut icon" href="images/favicon.ico">
+
+<!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+<!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+<!--[if lt IE 9]>
+<script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+<script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+<![endif]-->
+
+<link rel="stylesheet" href="css/project.css">
+
+<link rel="alternate" type="application/rss+xml" title="" href="feed.xml">
+
+    <script>
+        $(document).ready(function() {
+            // Initialize navgoco with default options
+            $("#mysidebar").navgoco({
+                caretHtml: '',
+                accordion: true,
+                openClass: 'active', // open
+                save: false, // leave false or nav highlighting doesn't work right
+                cookie: {
+                    name: 'navgoco',
+                    expires: false,
+                    path: '/'
+                },
+                slide: {
+                    duration: 400,
+                    easing: 'swing'
+                }
+            });
+
+            $("#collapseAll").click(function(e) {
+                e.preventDefault();
+                $("#mysidebar").navgoco('toggle', false);
+            });
+
+            $("#expandAll").click(function(e) {
+                e.preventDefault();
+                $("#mysidebar").navgoco('toggle', true);
+            });
+
+        });
+
+    </script>
+    <script>
+        $(function () {
+            $('[data-toggle="tooltip"]').tooltip()
+        })
+    </script>
+    
+
+</head>
+<body>
+<!-- Navigation -->
+<nav class="navbar navbar-inverse navbar-fixed-top">
+    <div class="container topnavlinks">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="index.html"><img src="images/usgs_sc_logo.png">&nbsp;<span class="projectTitle"> ShakeCast Documentation</span></a>
+        </div>
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+            <ul class="nav navbar-nav navbar-right">
+                <!-- entries without drop-downs appear here -->
+                
+                
+                
+                <li><a href="news">News</a></li>
+                
+                
+                
+                <!-- entries with drop-downs appear here -->
+                <!-- conditional logic to control which topnav appears for the audience defined in the configuration file.-->
+                
+                
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">ShakeCast Resources<b class="caret"></b></a>
+                    <ul class="dropdown-menu">
+                        
+                        
+                        <li><a href="https://github.com/klin-usgs/ShakeCast" target="_blank">Github Repo</a></li>
+                        
+                        
+                        
+                        <li><a href="http://earthquake.usgs.gov/research/software/shakecast/" target="_blank">ShakeCast Web</a></li>
+                        
+                        
+                        
+                        <li><a href="ftp://ftpext.usgs.gov/pub/cr/co/Golden/ShakeCast" target="_blank">ShakeCast FTP</a></li>
+                        
+                        
+                        
+                        <li><a href="https://my.usgs.gov/confluence/display/ShakeCast/Home" target="_blank">ShakeCast Science Base</a></li>
+                        
+                        
+                    </ul>
+                </li>
+                
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">Products<b class="caret"></b></a>
+                    <ul class="dropdown-menu">
+                        
+                        
+                        <li><a href="doc_introduction.html">ShakeCast V3</a></li>
+                        
+                        
+                        
+                        <li><a href="apidocs">ShakeCast V4 (pyCast)</a></li>
+                        
+                        
+                        
+                        <li><a href="index.html">ShakeCast Workbook</a></li>
+                        
+                        
+                        
+                        <li><a href="index.html">ShakeCast Lite</a></li>
+                        
+                        
+                    </ul>
+                </li>
+                
+                
+                
+			<!-- Send feedback function -->
+<script>
+function SendLinkByMail(href) {
+var subject= "ShakeCast Documentation feedback";
+var body = "I have some feedback about the Utility Scripts page: ";
+body += window.location.href;
+body += "";
+var uri = "mailto:shakecast-help@usgs.gov?subject=";
+uri += encodeURIComponent(subject);
+uri += "&body=";
+uri += encodeURIComponent(body);
+window.location.href = uri;
+}
+</script>
+
+<li><a href="javascript:void(0)" onclick="SendLinkByMail()"><i class="fa fa-envelope-o"></i> Feedback</a></li>
+
+		
+                <!--comment out this block if you want to hide search-->
+                <li>
+                    <!--start search-->
+                    <div id="search-demo-container">
+                        <input type="text" id="search-input" placeholder="search...">
+                        <ul id="results-container"></ul>
+                    </div>
+                    <script src="js/jekyll-search.js" type="text/javascript"></script>
+                    <script type="text/javascript">
+                            SimpleJekyllSearch.init({
+                                searchInput: document.getElementById('search-input'),
+                                resultsContainer: document.getElementById('results-container'),
+                                dataSource: './search.json',
+                                searchResultTemplate: '<li><a href="{url}" title="Utility Scripts">{title}</a></li>',
+                    noResultsText: 'No results found.',
+                            limit: 10,
+                            fuzzy: true,
+                    })
+                    </script>
+                    <!--end search-->
+                </li>
+            </ul>
+        </div>
+        </div>
+        <!-- /.container -->
+</nav>
+
+<!-- Page Content -->
+<div class="container">
+    <div class="col-lg-12">&nbsp;</div>
+    <!-- Content Row -->
+    <div class="row">
+        <!-- Sidebar Column -->
+        <div class="col-md-3">
+
+          
+
+
+
+
+
+
+
+
+
+
+
+
+<ul id="mysidebar" class="nav">
+    <li class="sidebarTitle">ShakeCast Documentation 3.0</li>
+    
+    
+    
+        
+    
+    <li>
+        <a href="#">Overview</a>
+        <ul>
+            
+            
+            
+            <li><a href="index.html">Introduction</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="doc_about.html">About the authors</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="doc_support.html">Support</a></li>
+            
+            
+            
+            
+        </ul>
+        
+        
+    
+    <li>
+        <a href="#">Installation</a>
+        <ul>
+            
+            
+            
+            <li><a href="doc_requirements.html">System Requirements</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="doc_install_shakecast_on_windows.html">Install ShakeCast on Windows</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="doc_install_shakecast_on_aws.html">Install ShakeCast on AWS</a></li>
+            
+            
+            
+            
+        </ul>
+        
+        
+    
+    <li>
+        <a href="#">Release Notes</a>
+        <ul>
+            
+            
+            
+            <li><a href="doc_release_notes_3.html">V3 Release notes</a></li>
+            
+            
+            
+            
+        </ul>
+        
+        
+    
+    <li>
+        <a href="#">User Guide</a>
+        <ul>
+            
+            
+            
+            <li><a href="doc_pages.html">User Guide</a></li>
+            
+            
+            
+            
+        </ul>
+        
+        
+    
+    <li>
+        <a href="#">Technical Guide</a>
+        <ul>
+            
+            
+            
+            <li><a href="doc_operator_install.html">Installation</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="doc_operator_config.html">System Configuration</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="doc_operator_custom.html">Customization</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="doc_operator_admin.html">Administration</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="doc_operator_appenda.html">Append. Inventory Format</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="doc_operator_appendb.html">Append. Metadata Format</a></li>
+            
+            
+            
+            
+            
+            
+            <li class="active"><a href="doc_operator_appendc.html">Append. Utility Scripts</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="doc_operator_appendd.html">Append. HAZUS MBT</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="doc_operator_appende.html">Append. MBT Fragility</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="doc_operator_appendf.html">Append. Template Keywords</a></li>
+            
+            
+            
+            
+        </ul>
+        
+        
+    
+    <li>
+        <a href="#">Troubleshooting</a>
+        <ul>
+            
+            
+            
+            <li><a href="doc_v2_to_v3.html">V2 to V3</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="doc_faq.html">FAQ</a></li>
+            
+            
+            
+            
+        </ul>
+        
+        
+        
+        <!-- if you aren't using the accordion, uncomment this block:
+           <p class="external">
+               <a href="#" id="collapseAll">Collapse All</a> | <a href="#" id="expandAll">Expand All</a>
+           </p>
+           -->
+    </li>
+</ul>
+</div>
+
+<!-- this highlights the active parent class in the navgoco sidebar. this is critical so that the parent expands when you're viewing a page. This must appear below the sidebar code above. Otherwise, if placed inside customscripts.js, the script runs before the sidebar code runs and the class never gets inserted.-->
+<script>$("li.active").parents('li').toggleClass("active");</script>
+
+    <!-- Content Column -->
+    <div class="col-md-9">
+        
+        <div class="post-header">
+   <h1 class="post-title-main">Utility Scripts</h1>
+</div>
+
+
+
+<div class="post-content">
+
+   
+
+    
+    
+<!-- this handles the automatic toc. use ## for subheads to auto-generate the on-page minitoc. if you use html tags, you must supply an ID for the heading element in order for it to appear in the minitoc. -->
+<script>
+$( document ).ready(function() {
+  // Handler for .ready() called.
+
+$('#toc').toc({ minimumHeaders: 0, listType: 'ul', showSpeed: 0, headers: 'h2,h3,h4' });
+
+/* this offset helps account for the space taken up by the floating toolbar. */
+$('#toc').on('click', 'a', function() {
+  var target = $(this.getAttribute('href'))
+    , scroll_target = target.offset().top
+
+  $(window).scrollTop(scroll_target - 10);
+  return false
+})
+  
+});
+</script>
+
+<div id="toc"></div>
+
+    
+
+    
+    <a target="_blank" href="https://github.com/klin-usgs/shakecast/blob/gh-pages//pages/doc//doc_operator_appendc.md" class="btn btn-default githubEditButton" role="button"><i class="fa fa-github fa-lg"></i> Edit me</a>
+    
+    
+
+  <p>A number of valuable Perl scripts are distributed with ShakeCast. This Appendix documents these utilities. For the most part, these scripts are internal to the system and normally users many need only a few of them, but users with complicated databases and needs may benefit at least an awareness of their functionality.</p>
+
+<h2 id="ground-shaking-estimation-tool">Ground Shaking Estimation Tool</h2>
+
+<p><strong>NAME</strong></p>
+
+<p>facility_feature_shaking.pl – Ground Shaking Estimation Tool for Facilities with Complex Geometry</p>
+
+<p><strong>SYNOPSIS</strong></p>
+
+<p>facility_feature_shaking.pl <operation> [option ...]</operation></p>
+
+<p><strong>DESCRIPTION</strong></p>
+
+<p>The <strong>facility_feature_shaking.pl</strong> utility is used to generate ground-shaking estimates for facilities with complex geometry.  It reads one event id and one version from the command line.  Output of the script is saved in facility_feature_shaking.xml under the directory of the specified event.</p>
+
+<p>The default grid processing routine of ShakeCast handles facilities with either point or rectangle shapes.  Recognized complex shapes include circle, polyline, and polygon.  The shaking information is considered as secondary and cannot be used as notification thresholds.</p>
+
+<p>This script is usually invoked by ShakeCast as part of the automated process.  It can be run manually or by the system workers through dispatcher tasks.</p>
+
+<p><strong>OPERATIONS</strong></p>
+
+<p><strong>event</strong></p>
+
+<p>Specify ID of the event to process.</p>
+
+<p><strong>version</strong></p>
+
+<p>Specify Version of the event to process.</p>
+
+<p><strong>OPTIONS</strong></p>
+
+<p><strong>–verbose</strong></p>
+
+<p>Display more detailed information about the progress of the analysis.  This option may be repeated to increase detail further.</p>
+
+<p><strong>–help</strong></p>
+
+<p>Print a synopsis of program usage and invocation options</p>
+
+<h2 id="probabilistic-fragility-estimation-tool">Probabilistic Fragility Estimation Tool</h2>
+
+<p><strong>NAME</strong></p>
+
+<p>facility_fragility_stat.pl – Probabilistic Fragility Estimation Tool for Facilities with Probability Fragility Curves</p>
+
+<p><strong>SYNOPSIS</strong></p>
+
+<p>facility_fragility_stat.pl <operation> [option ...]</operation></p>
+
+<p><strong>DESCRIPTION</strong></p>
+
+<p>The <strong>facility_fragility_stat.pl</strong> utility is used to evaluate both CDF and distribution of likelihood of damage states for each identified components of the facility. It reads one event id and one version from the command line.  Full fragility curve interpretation is one of the most time consuming processes of ShakeCast.  The utility saves results of the analysis in both binary form “frag_prob.hash” and in text form “frag_prob.json”.  The binary data is a fully structured data storage that captures a snapshot of the final data output that can be used by subsequent processes without repeating the same computation.  The text-based JSON output is designed for presentations through the web interface.</p>
+
+<p>The shaking information is considered as secondary and cannot be used as notification thresholds.  The probability fragility tool provides detailed evaluations to complement the basic fragility and notification processes.</p>
+
+<p>This script is usually invoked by ShakeCast as part of the automated process.  It can be run manually or by the system workers through dispatcher tasks.</p>
+
+<p><strong>OPERATIONS</strong></p>
+
+<p><strong>event</strong></p>
+
+<p>Specify ID of the event to process.</p>
+
+<p><strong>version</strong></p>
+
+<p>Specify Version of the event to process.</p>
+
+<p><strong>OPTIONS</strong></p>
+
+<p><strong>–verbose</strong></p>
+
+<p>Display more detailed information about the progress of the analysis.  This option may be repeated to increase detail further.</p>
+
+<p><strong>–help</strong></p>
+
+<p>Print a synopsis of program usage and invocation options</p>
+
+<h2 id="tool-for-evaluating-exceedance-of-regulatory-levels-nuclear-power-plants">Tool for Evaluating Exceedance of Regulatory Levels (Nuclear Power Plants)</h2>
+
+<p><strong>NAME</strong></p>
+
+<p>facility_regulatory_level.pl – Tool for Evaluating Exceedance of Regulatory Levels for Nuclear Power Plants</p>
+
+<p><strong>SYNOPSIS</strong></p>
+
+<p>facility_regulatory_level.pl <operation> [option ...]</operation></p>
+
+<p><strong>DESCRIPTION</strong></p>
+
+<p>The <strong>facility_regulatory_level.pl</strong> utility is used to evaluate exceedance of regulatory levels for nuclear power plants.  Regulatory levels include SL1/OBE, SL2/SSE, and Reg. 1.166 Appendix A. It reads one event id and one version from the command line.  Results of evaluations are saved in the output file “facility_regulatory_level.xml” to be used in preparing the PDF reports and to be displayed through the web interface.</p>
+
+<p>The shaking information is considered as secondary and cannot be used as notification thresholds.  Although the script is created for the nuclear industry as part of the project requirement, it can be modified to provide user-specific criteria as a rule-based analysis tool.  The regulatory level tool provides detailed evaluations to complement the basic fragility and notification processes.</p>
+
+<p>This script is usually invoked by ShakeCast as part of the automated process.  It can be run manually or by the system workers through dispatcher tasks.</p>
+
+<p><strong>OPERATIONS</strong></p>
+
+<p><strong>event</strong></p>
+
+<p>Specify ID of the event to process.</p>
+
+<p><strong>version</strong></p>
+
+<p>Specify Version of the event to process.</p>
+
+<p><strong>OPTIONS</strong></p>
+
+<p><strong>–verbose</strong></p>
+
+<p>Display more detailed information about the progress of the analysis.  This option may be repeated to increase detail further.</p>
+
+<p><strong>–help</strong></p>
+
+<p>Print a synopsis of program usage and invocation options</p>
+
+<h2 id="usgs-earthquake-json-feed-parser-tool">USGS Earthquake JSON Feed Parser Tool</h2>
+
+<p><strong>NAME</strong></p>
+
+<p>gs_json.pl – USGS Earthquake JSON Feed Parser Tool</p>
+
+<p><strong>SYNOPSIS</strong></p>
+
+<p>gs_json.pl</p>
+
+<p><strong>DESCRIPTION</strong></p>
+
+<p>The <strong>gs_json.pl</strong> utility is used to parse the USGS earthquake JSON feed and selected products from the web server.  Currently accepted earthquake product types include ShakeMap, DYFI?, PAGER, Earthquake Location Map, Historical Moment Tensor Map, Historical Seismicity Map, Tectonic Summary, Origin.  The parser follows the JSON feed of individual earthquake products to download the selected products for use by the local ShakeCast system.  Origin, ShakeMap, DYFI? and PAGER will invoke a Dispatcher task to handle the downloaded products.</p>
+
+<p>This script is usually invoked by ShakeCast as part of the automated process.  It can be run manually or queued to be handled by the system workers.</p>
+
+<h2 id="shakecast-heartbeat-generator">ShakeCast Heartbeat Generator</h2>
+
+<p><strong>NAME</strong></p>
+
+<p>heartbeat.pl - ShakeCast Heartbeat Generator</p>
+
+<p><strong>SYNOPSIS</strong></p>
+
+<p>heartbeat.pl</p>
+
+<p><strong>DESCRIPTION</strong></p>
+
+<p>The <strong>heartbeat.pl</strong> utility is used to generate a ShakeCast event XML with event type as “HEARTBEAT.”  The output is injected into the ShakeCast system via <strong>sm_inject.pl</strong> and a copy stored in the ShakeMap data directory.  This will trigger an event notification to users whom are subscribed to receiving heartbeat events.</p>
+
+<p>The script reads no options from the command line.  To create a customized heartbeat event, edit the script located inside the ShakeCast bin directory.</p>
+
+<h2 id="shakecast-log-file-rotation-tool">ShakeCast Log File Rotation Tool</h2>
+
+<p><strong>NAME</strong></p>
+
+<p>logrotate.pl - ShakeCast Log File Rotation Tool</p>
+
+<p><strong>SYNOPSIS</strong></p>
+
+<p>logrotate.pl [-conf config file]</p>
+
+<p><strong>DESCRIPTION</strong></p>
+
+<p>The <strong>logrotate.pl</strong> utility is used to generate rotating backup files of ShakeCast log files (sc.log, sc_access.log, and sc_error.log).  Configurable parameters include rotate-time, max_size, keep-files, compress, and status-file.  The administrator can schedule a routine run of this script for maintenance of ShakeCast log files.</p>
+
+<p>The script reads one optional configuration file from the command line.  The default configuration file is “sc.conf”.</p>
+
+<p><strong>rotate-time</strong></p>
+
+<p>Specify the time windows for keeping log entries.</p>
+
+<p><strong>max_size</strong></p>
+
+<p>Specify the size limit of log files.</p>
+
+<p><strong>keep-files</strong></p>
+
+<p>Specify the number of backup log files to retain.</p>
+
+<p><strong>compress</strong></p>
+
+<p>Specify the compression option of backup log files.</p>
+
+<p><strong>status-file</strong></p>
+
+<p>Specify the filename of process status.</p>
+
+<p><strong>OPTIONS</strong></p>
+
+<p><strong>–conf</strong></p>
+
+<p>Specify the filename of a custom configuration file to read process parameters for logstats.pl.</p>
+
+<h2 id="shakecast-chart-generator-for-system-statistics">ShakeCast Chart Generator for System Statistics</h2>
+
+<p><strong>NAME</strong></p>
+
+<p>logstats.pl - ShakeCast Chart Generator for System Statistics</p>
+
+<p><strong>SYNOPSIS</strong></p>
+
+<p>logstats.pl [-conf config file]</p>
+
+<p><strong>DESCRIPTION</strong></p>
+
+<p>The <strong>logstats.pl</strong> utility is used to process ShakeCast log files (sc.log, sc_access.log, and sc_error.log) specified in the system configuration file and generate a set of image files in both histogram and pie charts.  The daily activity chart is the default chart displayed in the default page of the Administration Web Interface.  The administrator can schedule a routine run of this script to generate new statistics charts.</p>
+
+<p>The script reads one optional configuration file from the command line.  The default configuration file is “sc.conf”.</p>
+
+<p><strong>OPTIONS</strong></p>
+
+<p><strong>–conf</strong></p>
+
+<p>Specify the filename of a custom configuration file to read process parameters for logstats.pl.</p>
+
+<h2 id="shakecast-event-management-tool">ShakeCast Event Management Tool</h2>
+
+<p><strong>NAME</strong></p>
+
+<p>manage_event.pl - ShakeCast Event Management Tool</p>
+
+<p><strong>SYNOPSIS</strong></p>
+
+<p>manage_event.pl [mode] [option …] event_id [event_id2 …]</p>
+
+<p><strong>DESCRIPTION</strong></p>
+
+<p>The <strong>manage_event.pl</strong> utility is used to re-alert, or delete processed ShakeMap events in the ShakeCast database.  It reads one or more event ids from the command line.  Mode is one of –resend or –delete.  manage_event.pl will return an error message if you do not specify a mode.</p>
+
+<p><strong>–resend</strong></p>
+
+<p>Reprocess notifications for the ShakeMaps and resend notifications to users who are on the recipient list.</p>
+
+<p><strong>–delete</strong></p>
+
+<p>Delete existing events.  All information for the processed ShakeMaps will be removed from the ShakeCast database but not downloaded products in the file system.</p>
+
+<p><strong>OPTIONS</strong></p>
+
+<p><strong>–verbose</strong></p>
+
+<p>Display more detailed information about the progress of the import.  This option may be repeated to increase detail further.</p>
+
+<p><strong>–help</strong></p>
+
+<p>Print a synopsis of program usage and invocation options</p>
+
+<h2 id="shakecast-facility-management-tool">ShakeCast Facility Management Tool</h2>
+
+<p><strong>NAME</strong></p>
+
+<p>manage_facility.pl - ShakeCast Facility Management Tool</p>
+
+<p><strong>SYNOPSIS</strong></p>
+
+<p>manage_facility.pl [mode] [option …] file.csv [file2.csv …]</p>
+
+<p><strong>DESCRIPTION</strong></p>
+
+<p>The <strong>manage_facility.pl</strong> utility is used to insert, update, or delete facility data in the ShakeCast database. It reads data from one or more CSV format files.  One or more files must be given on the command line. Multiple files can have different formats.  Mode is one of –insert, –replace, –delete, –update, or –skip.  manage_facility.pl will operate in replace mode if you do not specify a mode.</p>
+
+<p><strong>–insert</strong></p>
+
+<p>New facility records are inserted.  It is an error for the facility to already exist; if it does the input record is skipped.</p>
+
+<p><strong>–replace</strong></p>
+
+<p>New records are inserted.  If there is an existing facility it is first deleted, along with any associated attributes and fragility levels.  All required facility fields must be supplied.</p>
+
+<p><strong>–delete</strong></p>
+
+<p>Delete existing facilities.  All required facility fields must be supplied.</p>
+
+<p><strong>–skip</strong></p>
+
+<p>New facility records are inserted.  Records for existing facilities are skipped without generating an error.  The summary report will indicate how many records were skipped.</p>
+
+<p><strong>–update</strong></p>
+
+<p>Update existing facilities.  If the facility does not already exist an error is issued and the record is skipped.</p>
+
+<p>In this mode the only required fields are EXTERNAL_FACILITY_ID and FACILITY_TYPE.  Any group values are simply added to the existing set of attributes for the facility, unless the new value matches an existing value, in which case the group value is skipped.  For metrics, any metric that appears in the input will be completely replaced.</p>
+
+<p><strong>OPTIONS</strong></p>
+
+<p><strong>–verbose</strong></p>
+
+<p>Display more detailed information about the progress of the import.  This option may be repeated to increase detail further.</p>
+
+<p><strong>–help</strong></p>
+
+<p>Print a synopsis of program usage and invocation options</p>
+
+<p><strong>–limit=</strong>** n**</p>
+
+<p>Terminate the import after <strong>n</strong> errors in input records.  Set to 0 to allow an unlimited number of errors.</p>
+
+<p>This limit only applies to errors encountered when processing a data record from the input file.  More serious errors, such as omitting a required field, will always cause the entire input file to be skipped.</p>
+
+<p><strong>–quote=</strong>** x**</p>
+
+<p>Use <em>x</em> as the quote character in the input file. The default quote character is a quote (“).  This character is also used as the escape character within a quoted string.</p>
+
+<p><strong>–separator=</strong>** x**</p>
+
+<p>Use <em>x</em> as the field separator character in the input file.  The default separator character is a comma (,).</p>
+
+<p><strong>FILE FORMAT</strong></p>
+
+<p><strong>manage_facility.pl</strong> reads from one or more CSV-formatted files.  By default fields are separated by commas and field values that include commas are protected by enclosing them in quotes, but these defaults can be modified; see the <strong>–quote</strong> and <strong>–separator</strong> options below.</p>
+
+<p>The first record in the input file must contain column headers.  These headers tell manage_facility.pl how to interpret the rest of the records.  Each header field must specify a facility field, a facility metric field, or a group field.  The header fields are case-insensitive; facility_name and FACILITY_NAME are equivalent.  Fields can appear in any order.</p>
+
+<p><strong>Facility Fields</strong></p>
+
+<p>The following facility names are recognized.  These fields correspond to tables and columns in the ShakeCast database.  Please refer to the ShakeCast Database Description for a more detailed description of the structure of the ShakeCast Database.</p>
+
+<p><strong>external_facility_id (Text(32), required always)</strong></p>
+
+<p>This field identifies the facility.  It must be unique for a facility type but the same external_facility_id may be used for different types of facilities.</p>
+
+<p><strong>facility_type (Text(10), required always)</strong></p>
+
+<p>This field identifies the type of facility.  It must match one of the types in the facility_type table. Currently defined types are: BRIDGE, CAMPUS, CITY, COUNTY, DAM, DISTRICT, ENGINEERED, INDUSTRIAL, MULTIFAM, ROAD, SINGLEFAM, STRUCTURE, TANK, TUNNEL, UNKNOWN, and HAZUS building types.  Refer the HAZUS Damage Level document for the 128 HAZUS building types and code era.</p>
+
+<p><strong>facility_name (Text(128), required for insert/replace)</strong></p>
+
+<p>The value of this field is what the user sees.</p>
+
+<p><strong>short_name (Text(10), optional)</strong></p>
+
+<p>The value of this field is used by ShakeCast when a shorter version of the name is needed due to space limitations in the output.</p>
+
+<p><strong>description (Text(255), optional)</strong></p>
+
+<p>You can use this field to include a short description of the facility.</p>
+
+<p><strong>lat (Float, required for insert/replace)</strong></p>
+
+<p>Specifies the latitude of the facility in degrees and fractional degrees.</p>
+
+<p><strong>lon (Float, required for insert/replace)</strong></p>
+
+<p>Specifies the longitude of the facility in degrees and fractional degrees.</p>
+
+<p><strong>Fragility Fields</strong></p>
+
+<p>Each field beginning with METRIC: is taken to be a facility fragility specifier. The format of a fragility specifier is:</p>
+
+<p><strong>METRIC:</strong> <em>metric-name</em> <strong>:</strong> <em>damage-level</em></p>
+
+<p>where <em>metric-name</em> is a valid Shakemap metric (MMI, PGV, PGA, PSA03, PSA10, or PSA30) and <em>damage-level</em> is a valid damage level (GREEN, YELLOW, ORANGE, or RED).  Examples of Facility Fragility column labels are METRIC:MMI:RED and metric:pga:yellow.</p>
+
+<p>The metric-name values are defined by the ShakeMap system, and are generally not changed.  The above values are current as of summer 2007.  The damage-level values shown above are the default values shipped with ShakeCast.  These values are defined in your local ShakeCast database, and you may use the administration web interface to change those values and the color-names that refer to them.</p>
+
+<p><strong>Attribute Fields</strong></p>
+
+<p>A facility can have attributes associated with it.  These attributes can be used to group and filter facilities.</p>
+
+<p>Each field beginning with ATTR: is taken to be a facility attribute specifier.  The format of a facility attribute specifier is:</p>
+
+<p><strong>ATTR:</strong> <em>attribute-name</em> <strong>:</strong> <em>attribute-value</em></p>
+
+<p>where <em>attribute-name</em> is a string not more than 20 characters in length.</p>
+
+<p>Examples of Facility Attribute column labels are ATTR:COUNTY and ATTR:Construction.  Attribute values can be any string up to 30 characters long.</p>
+
+<p><strong>EXAMPLES</strong></p>
+
+<p><strong>Example 1 – Point Facilities</strong></p>
+
+<p>Assume we have a file named <em>ca_cities.csv</em> containing California cities that we want to load into the ShakeCast database.  The file is in CSV format and includes the name of each city and the latitude/longitude of its city center or city hall.  Records in the file are of the form</p>
+
+<p>Rancho Cucamonga,34.1233,-117.5794</p>
+
+<p>Pasadena,34.1561,-118.1318</p>
+
+<p>The file is missing two required fields, external_facility_id and facility_type.  Since the city name is unique we can add a new column that is a copy of the name column and use that as the external_facility_id.  Another column containing the value CITY for each row is added for the facility_type.  You can either make these changes using a spreadsheet program or with a simple script written in a text processing language like Perl.</p>
+
+<p>After making these modifications the records look like</p>
+
+<p>CITY,Rancho Cucamonga,Rancho Cucamonga,34.1233,-117.5794</p>
+
+<p>CITY,Pasadena,Pasadena,34.1561,-118.1318</p>
+
+<p>The input file also needs a header record; after adding one the input file looks like</p>
+
+<p>FACILITY_TYPE,EXTERNAL_FACILITY_ID,FACILITY_NAME,LAT,LON</p>
+
+<p>CITY,Rancho Cucamonga,Rancho Cucamonga,34.1233,-117.5794</p>
+
+<p>CITY,Pasadena,Pasadena,34.1561,-118.1318</p>
+
+<p>…</p>
+
+<p>The facilities in this file can now be loaded into ShakeCast using the command</p>
+
+<p>manage_facility.pl ca_cities.csv</p>
+
+<p><strong>Example 2 – Fragility Parameters</strong></p>
+
+<p>It is easy to load fragility parameters for your facilities using <strong>manage_facility.pl</strong>.  Building on the previous example, assume a simple model where Instrumental Intensity (MMI) above 7 corresponds to high-level alert (RED), MMI between 5 and 7 corresponds to medium-level alert (YELLOW), and MMI below 5 corresponds to little a low-level (GREEN).  The lower threshold of each range (1, 5, 7) is appended to every record in the input file and the header record is changed to reflect the added fields:</p>
+
+<p>FACILITY_TYPE,EXTERNAL_FACILITY_ID,FACILITY_NAME,LAT,LON, \</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>    METRIC:MMI:GREEN,METRIC:MMI:YELLOW,METRIC:MMI:RED
+</code></pre>
+</div>
+
+<p>CITY,Rancho Cucamonga,Rancho Cucamonga,34.1233,-117.5794,1,5,7</p>
+
+<p>CITY,Pasadena,Pasadena,34.1561,-118.1318,1,5,7</p>
+
+<p>…</p>
+
+<p>Import this file as before.  New facility data will replace existing ones.</p>
+
+<p><strong>Example 3 – Multiple Attributes and Multiple Metrics</strong></p>
+
+<p>You can include multiple attributes, multiple metrics, or multiple attributes and multiple metrics for each row of an import file.  For example,</p>
+
+<p>FACILITY_TYPE,EXTERNAL_FACILITY_ID,ATTR:COUNTY, ATTR:SIZE,\</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>    METRIC:MMI:GREEN, METRIC:MMI:YELLOW, METRIC:MMI:RED
+</code></pre>
+</div>
+
+<p>CITY,Rancho Cucamonga,San Bernardino,Small,1,2,6</p>
+
+<p>CITY,Pasadena,os Angeles,Medium,1,2,6</p>
+
+<p>This file would be loaded using the command</p>
+
+<p>manage_facility.pl –update city_county.csv</p>
+
+<p>The above example updates the existing city locations to associate them with a county attribute and a size attribute, and defines the green, yellow, and red alert level shaking thresholds.</p>
+
+<h2 id="shakecast-group-management-tool">ShakeCast Group Management Tool</h2>
+
+<p><strong>NAME</strong></p>
+
+<p>manage_group.pl - ShakeCast Group Management Tool</p>
+
+<p><strong>SYNOPSIS</strong></p>
+
+<p>manage_group.pl [mode] [option …] [profile.conf] [lat,lon …]</p>
+
+<p><strong>DESCRIPTION</strong></p>
+
+<p>The <strong>manage_group.pl</strong> utility is used to insert, update, or delete groups in the ShakeCast database and to associate facilities within the profile boundaries with the geometric profile.  It reads data from a group configuration file or lat/lon pairs of a polygon from the command line.  Mode is one of –insert, –delete, –update, or –poly.  manage_group.pl will operate in replace mode if you do not specify a mode.</p>
+
+<p><strong>–insert</strong></p>
+
+<p>New groups are inserted.  It is an error if the group already exists; if it does the input record is skipped.</p>
+
+<p><strong>–delete</strong></p>
+
+<p>Delete existing groups.  All required group fields must be supplied.</p>
+
+<p><strong>–poly</strong></p>
+
+<p>Read polygon data from the command line and output facility data within the polygon boundaries.</p>
+
+<p><strong>OPTIONS</strong></p>
+
+<p><strong>–conf</strong></p>
+
+<p>Specify the optional profile configuration file.</p>
+
+<p><strong>–verbose</strong></p>
+
+<p>Display more detailed information about the progress of the import.  This option may be repeated to increase detail further.</p>
+
+<p><strong>–help</strong></p>
+
+<p>Print a synopsis of program usage and invocation options</p>
+
+<p><strong>FILE FORMAT</strong></p>
+
+<p><strong>manage_group.pl</strong> reads data from a file in Apache config format.  Lines begin with ‘#’ and empty lines will be ignored.  Spaces at the beginning and the end of a line will also be ignored as well as tabulators.  If you need spaces at the end or the beginning of a value you can use apostrophe <strong>“</strong>. An option line starts with its name followed by a value. An ‘=’ sign is optional.  Some possible examples:</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>    user    max
+
+    user  = max
+
+    user            max
+</code></pre>
+</div>
+
+<p>If there is more than one statement with the same name, it will create an array instead of a scalar.</p>
+
+<p>Each group is defined as a <strong>block</strong> of options.  A <strong>block</strong> looks much like a block in the apache config format. It starts with &lt; <strong>blockname</strong> &gt; and ends with &lt;/ <strong>blockname</strong> &gt;. An example:</p>
+
+<CI>
+
+        POLY         35.8000 -116.4000        \
+
+                34.0815 -114.4717        \
+
+                32.0000 -114.3333        \
+
+                32.0000 -120.5000        \
+
+                34.5000 -121.2500        \
+
+                37.2167 -118.0167        \
+
+                36.6847 -117.7930        \
+
+                35.8000 -116.4000
+
+        <NOTIFICATION>
+
+                    NOTIFICATION_TYPE        NEW_EVENT
+
+                    DELIVERY_METHOD                EMAIL_HTML
+
+                EVENT_TYPE                ALL
+
+        </NOTIFICATION>
+
+        <NOTIFICATION>
+
+                    NOTIFICATION_TYPE        NEW_PROD
+
+                    DELIVERY_METHOD                EMAIL_HTML
+
+                    PRODUCT_TYPE                GRID_XML
+
+                EVENT_TYPE                ALL
+
+        </NOTIFICATION>
+
+ </CI>
+
+<p><strong>Group Tag Names</strong></p>
+
+<p>The following profile tag names are recognized.  These fields correspond to tables and columns in the ShakeCast database.  Please refer to the ShakeCast Database Description for a more detailed description of the structure of the ShakeCast Database.</p>
+
+<p><strong>poly (float pairs, required always)</strong></p>
+
+<p>This field identifies the boundaries of the profile geometry.  It must contain at least three anchor points in order to define a polygon.  The total number of anchor points should limit to less than 100, otherwise the administration interface may not be able to display the entire polygon during editing.  The manage_profile.pl will however process the polygon definition.</p>
+
+<p><strong>notification (Text(32), optional)</strong></p>
+
+<p>One notification block represents one notification request associated with the profile and applies to all facilities within the profile polygon.  Multiple notification blocks for a profile are permitted.</p>
+
+<p><strong>Notification Tag Names</strong></p>
+
+<p>Each notification block defines one notification request.  Tag names are corresponding to the field names of the table “profile_notification_request.”  Required tags for a notification block include NOTIFICATION_TYPE, DELIVERY_METHOD, and EVENT_TYPE.  Valid notification types are CAN_EVENT, NEW_EVENT, UPD_EVENT, SHAKING, NEW_PROD, and DAMAGE.</p>
+
+<p><strong>can_event</strong></p>
+
+<p>This notification request is triggered when an event is cancelled by the seismic network region in which the event was located and the ShakeMap removed from the USGS web site.  Require EVENT_TYPE and DELIVERY_METHOD tags.</p>
+
+<p><strong>new_event</strong></p>
+
+<p>This notification request is triggered when an event is located by a seismic network region and a ShakeMap becomes available on the USGS web site.  Require EVENT_TYPE and DELIVERY_METHOD tags.</p>
+
+<p><strong>upd_event</strong></p>
+
+<p>This notification request is triggered when the source parameters of an event is updated with a new version by the seismic network.  New versions of ShakeMaps for the event may or may not coincide with an updated event.  Require EVENT_TYPE and DELIVERY_METHOD tags.</p>
+
+<p><strong>new_prod</strong></p>
+
+<p>This notification request is triggered when a specified ShakeMap product of an event is available on the USGS web site.  Require EVENT_TYPE,DELIVERY_METHOD, and PRODUCT tags.</p>
+
+<p><strong>shaking</strong></p>
+
+<p>This notification request is triggered when the ground shaking parameter at the location of the facility exceeds the preset value.  Require EVENT_TYPE,DELIVERY_METHOD, METRIC, and LIMIT_VALUE tags.</p>
+
+<p><strong>damage</strong></p>
+
+<p>This notification request is triggered when the ground shaking parameter at the location of the facility falls between the high and low values of facility fragility settings.  Require EVENT_TYPE,DELIVERY_METHOD, and DAMAGE_LEVEL tags.</p>
+
+<h2 id="shakecast-user-management-tool">ShakeCast User Management Tool</h2>
+
+<p><strong>NAME</strong></p>
+
+<p>manage_user.pl - ShakeCast User Management Tool</p>
+
+<p><strong>SYNOPSIS</strong></p>
+
+<p>manage_user.pl [mode] [option …] file.csv [file2.csv …]</p>
+
+<p><strong>DESCRIPTION</strong></p>
+
+<p>The <strong>manage_user.pl</strong> utility is used to insert, update, or delete user data in the ShakeCast database. It reads data from one or more CSV format files.  One or more files must be given on the command line. Multiple files can have different formats.  Mode is one of –insert, –replace, –delete, –update, or –skip.  manage_user.pl will operate in replace mode if you do not specify a mode.</p>
+
+<p><strong>–insert</strong></p>
+
+<p>New user records are inserted.  It is an error for the user to already exist; if it does the input record is skipped.</p>
+
+<p><strong>–replace</strong></p>
+
+<p>New records are inserted.  If there is an existing user it is first deleted, along with any associated delivery addresses, notification requests and profiles.  All required user fields must be supplied.</p>
+
+<p><strong>–delete</strong></p>
+
+<p>Delete existing users.  All required user fields must be supplied.</p>
+
+<p><strong>–skip</strong></p>
+
+<p>New user records are inserted.  Records for existing users are skipped without generating an error.  The summary report will indicate how many records were skipped.</p>
+
+<p><strong>–update</strong></p>
+
+<p>Update existing users.  If the user does not already exist an error is issued and the record is skipped.</p>
+
+<p>In this mode the only required fields are USERNAME and USER_TYPE.  Any delivery methods, profiles and users for cloning that appears in the input will be completely replaced.</p>
+
+<p><strong>OPTIONS</strong></p>
+
+<p><strong>–verbose</strong></p>
+
+<p>Display more detailed information about the progress of the import.  This option may be repeated to increase detail further.</p>
+
+<p><strong>–help</strong></p>
+
+<p>Print a synopsis of program usage and invocation options</p>
+
+<p><strong>–limit=</strong>** n**</p>
+
+<p>Terminate the import after <strong>n</strong> errors in input records.  Set to 0 to allow an unlimited number of errors.</p>
+
+<p>This limit only applies to errors encountered when processing a data record from the input file.  More serious errors, such as omitting a required field, will always cause the entire input file to be skipped.</p>
+
+<p><strong>–quote=</strong>** x**</p>
+
+<p>Use <em>x</em> as the quote character in the input file. The default quote character is a quote (“).  This character is also used as the escape character within a quoted string.</p>
+
+<p><strong>–separator=</strong>** x**</p>
+
+<p>Use <em>x</em> as the field separator character in the input file.  The default separator character is a comma (,).</p>
+
+<p><strong>FILE FORMAT</strong></p>
+
+<p><strong>manage_ user.pl</strong> reads from one or more CSV-formatted files.  By default fields are separated by commas and field values that include commas are protected by enclosing them in quotes, but these defaults can be modified; see the <strong>–quote</strong> and <strong>–separator</strong> options below.</p>
+
+<p>The first record in the input file must contain column headers.  These headers tell manage_user.pl how to interpret the rest of the records.  Each header field must specify a user name field and a user type field.  The header fields are case-insensitive; username and USERNAME are equivalent.  Fields can appear in any order.</p>
+
+<p><strong>User Fields</strong></p>
+
+<p>The following facility names are recognized.  These fields correspond to tables and columns in the ShakeCast database.  Please refer to the ShakeCast Database Description for a more detailed description of the structure of the ShakeCast Database.</p>
+
+<p><strong>username (Text(32), required always)</strong></p>
+
+<p>This field identifies the user.  It must be unique for a user type.</p>
+
+<p><strong>user_type (Text(10), required always)</strong></p>
+
+<p>This field identifies the type of use.  It must match one of the types in the user_type table. Currently defined types are: ADMIN, USER, and SYSTEM.</p>
+
+<p><strong>full_name (Text(32), optional)</strong></p>
+
+<p>The value of this field is the user’s full name.</p>
+
+<p><strong>email_address (Text(10), optional)</strong></p>
+
+<p>The value of this field is the user’s email address for receiving communication from the ShakeCast system.</p>
+
+<p><strong>password (Text(10), optional)</strong></p>
+
+<p>The value of this field is used by ShakeCast to generate password for accessing the ShakeCast interface and the web site if password protected.</p>
+
+<p><strong>phone_number (Text(255), optional)</strong></p>
+
+<p>You can use this field to include a user’s phone number.</p>
+
+<p><strong>Delivery Method Fields</strong></p>
+
+<p>Each field beginning with DELIVERY: is taken to be a delivery method specifier. The format of a delivery method specifier is:</p>
+
+<p><strong>DELIVERY:</strong> <em>delivery-method</em></p>
+
+<p>where <em>delivery-method</em> is a valid message format (PAGER, EMAIL_HTML, or EMAIL_TEXT).  Examples of Delivery Method column labels are DELIVERY:EMAIL_HTML and delivery:email_html.</p>
+
+<p>The message format values are defined by the ShakeCast system, and are generally not changed.  The damage-level values shown above are the default values shipped with ShakeCast.  These values are defined in your local ShakeCast database, and you may use the administration web interface to change those values and the color-names that refer to them.</p>
+
+<p><strong>Profile Fields</strong></p>
+
+<p>A user can have notification requests replicated from an existing profile.  Each field beginning with PROFILE: is taken to be a profile specifier.  The format of a profile specifier is:</p>
+
+<p><strong>PROFILE:</strong> <em>profile-name</em></p>
+
+<p>where <em>profile-name</em> is a valid profile name.</p>
+
+<p><strong>User Fields</strong></p>
+
+<p>A user can have notification requests replicated from an existing user.  Each field beginning with USER: is taken to be a user specifier.  The format of a user specifier is:</p>
+
+<p><strong>USER:</strong> <em>shakecast-user</em></p>
+
+<p>where <em>shakecast-user</em> is a valid user id.</p>
+
+<h2 id="shakecast-image-tile-generation-tool">ShakeCast Image Tile Generation Tool</h2>
+
+<p><strong>NAME</strong></p>
+
+<p>map_tile.pl – ShakeCast Image Tile Generation Tool</p>
+
+<p><strong>SYNOPSIS</strong></p>
+
+<p>map_tile.pl -type map_type [option …]</p>
+
+<p><strong>DESCRIPTION</strong></p>
+
+<p>The <strong>map_tile.pl</strong> utility is used to generate images tiles to be used by the mapping engine of the web interface.  Initially, the generated map tiles are used by the Google Maps API and can also be used by other mapping engines, such as the OpenLayers or OpenStreetMap.  It reads one map_type from the command line.  The map type includes earthquake, facility, and station.</p>
+
+<p>Earthquake tiles are dynamically updated as soon as a new event is processed by the ShakeCast system.   Both facility and station tiles are considered semi-static.  Update of these tiles can be done manually or by creating a cron job in the database to schedule generation of tiles.</p>
+
+<p><strong>OPTIONS</strong></p>
+
+<p><strong>–map_type</strong></p>
+
+<p>Specify type of map tile to process.  The type must be either “event_tile”, “facility_tile”, or “station_tile”.</p>
+
+<p><strong>–min_zoom</strong></p>
+
+<p>Specify the minimum zoom level to process. The zoom level must be between 1 and 18.</p>
+
+<p><strong>–max_zoom</strong></p>
+
+<p>Specify the maximum zoom level to process. The zoom level must be between 1 and 18.</p>
+
+<p><strong>–rebuild</strong></p>
+
+<p>Delete all existing map tiles of the specified type before generating new map tiles.</p>
+
+<p><strong>–id</strong></p>
+
+<p>Create map tiles only for facility of the selected ID.</p>
+
+<p><strong>–verbose</strong></p>
+
+<p>Display more detailed information about the progress of the import.  This option may be repeated to increase detail further.</p>
+
+<p><strong>–help</strong></p>
+
+<p>Print a synopsis of program usage and invocation options</p>
+
+<h2 id="shakecast-pdf-report-generation-tool">ShakeCast PDF Report Generation Tool</h2>
+
+<p><strong>NAME</strong></p>
+
+<p>sc_pdf.pl – ShakeCast PDF Report Generation Tool</p>
+
+<p><strong>SYNOPSIS</strong></p>
+
+<p>sc_pdf.pl -event event_id –version [option …]</p>
+
+<p><strong>DESCRIPTION</strong></p>
+
+<p>The <strong>sc_pdf.pl</strong> utility is used to generate PDF reports for the selected earthquake.  It reads one event id and one version from the command line.  It will loop through all defined PDF templates in the PDF template directory.  If a PDF report is successfully created, it will be registered as a local product and saved into the earthquake-specific data directory.</p>
+
+<p>This script is usually invoked by ShakeCast as part of the automated process.  It can be run manually or queued to be handled by the system workers.</p>
+
+<p><strong>OPTIONS</strong></p>
+
+<p><strong>–event</strong></p>
+
+<p>Specify ID of the event to process.</p>
+
+<p><strong>–version</strong></p>
+
+<p>Specify Version of the event to process.</p>
+
+<p><strong>–verbose</strong></p>
+
+<p>Display more detailed information about the progress of the import.  This option may be repeated to increase detail further.</p>
+
+<p><strong>–help</strong></p>
+
+<p>Print a synopsis of program usage and invocation options</p>
+
+<h2 id="shakemap-gridproduct-injection-tool">ShakeMap Grid/Product Injection Tool</h2>
+
+<p><strong>NAME</strong></p>
+
+<p>scfeed_local.pl – ShakeMap Grid/Product Injection Tool</p>
+
+<p><strong>SYNOPSIS</strong></p>
+
+<p>scfeed_local.pl [-event event_id] [option …]</p>
+
+<p><strong>DESCRIPTION</strong></p>
+
+<p>The <strong>scfeed_local.pl</strong> utility is used to process downloaded ShakeMap products located in the ShakeCast data directory.  It reads one event id from the command line and creates XML messages before feeding them to ShakeCast.  The injection process triggers the ShakeCast process in the same manner as for a real earthquake with respect to facility damage assessment and user notifications.</p>
+
+<p>The name of an unprocessed ShakeMap must match the name of the event ID.  ShakeMaps can be downloaded via the USGS ShakeMap link from the ShakeCast Administration Panel or manually from other sources.  It will be renamed with the version number appended to the end of the directory name after <strong>scfeed_local.pl</strong> processed the ShakeMap.  Outputs of ShakeCast XML files will also be stored in the same directory.</p>
+
+<p>The script will quit gracefully if the ShakeMap has been processed earlier by the ShakeCast system and as a result no notifications will be delivered.  To reprocess a ShakeMap that already exists in the ShakeCast system, the administrator will need to either convert the ShakeMap into a test event or delete the event first.  In addition to the Administration Interface, an administrator can use the <strong>tester.pl</strong> utility to convert a ShakeMap to a test event and the <strong>manage_event.pl</strong> utility to delete a ShakeMap.  The ShakeCast data directory for the deleted ShakeMap also needs to be removed from the file system before starting the reprocess procedure described earlier.</p>
+
+<p><strong>OPTIONS</strong></p>
+
+<p><strong>–event</strong></p>
+
+<p>Specify ID of the event to process.</p>
+
+<p><strong>–scenario</strong></p>
+
+<p>Treat the ShakeMap as a scenario.</p>
+
+<p><strong>–force_run</strong></p>
+
+<p>Force ShakeCast to process the ShakeMap for events that do not meet the process criteria.</p>
+
+<p><strong>–verbose</strong></p>
+
+<p>Display more detailed information about the progress of the import.  This option may be repeated to increase detail further.</p>
+
+<p><strong>–help</strong></p>
+
+<p>Print a synopsis of program usage and invocation options</p>
+
+<h2 id="shakemap-retrievalinjection-tool">ShakeMap Retrieval/Injection Tool</h2>
+
+<p><strong>NAME</strong></p>
+
+<p>shake_fetch.pl – ShakeMap Retrieval/Injection Tool</p>
+
+<p><strong>SYNOPSIS</strong></p>
+
+<p>shake_fetch.pl -network net_id -event event_id [option …]</p>
+
+<p><strong>DESCRIPTION</strong></p>
+
+<p>The <strong>shake_fetch.pl</strong> utility is used to download and process ShakeMap located on the USGS web site.  It reads one network id and one event id from the command line.  ShakeMap products on the USGS web site are first downloaded before invoking the scfeed_local process to inject the ShakeMap into ShakeCast.  The injection process is exactly the same as the scfeed_local script.</p>
+
+<p><strong>OPTIONS</strong></p>
+
+<p><strong>–network</strong></p>
+
+<p>Specify ID of the network to process.</p>
+
+<p><strong>–event</strong></p>
+
+<p>Specify ID of the event to process.</p>
+
+<p><strong>–scenario</strong></p>
+
+<p>Treat the ShakeMap as a scenario.</p>
+
+<p><strong>–force_run</strong></p>
+
+<p>Force ShakeCast to process the ShakeMap for events that do not meet the process criteria.</p>
+
+<p><strong>–verbose</strong></p>
+
+<p>Display more detailed information about the progress of the import.  This option may be repeated to increase detail further.</p>
+
+<p><strong>–help</strong></p>
+
+<p>Print a synopsis of program usage and invocation options</p>
+
+<h2 id="shakecast-general-templating-tool">ShakeCast General Templating Tool</h2>
+
+<p><strong>NAME</strong></p>
+
+<p>template.pl – ShakeCast General Templating Tool</p>
+
+<p><strong>SYNOPSIS</strong></p>
+
+<p>template.pl [option …] –event event_id –template template</p>
+
+<p><strong>DESCRIPTION</strong></p>
+
+<p>The <strong>template.pl</strong> utility is used to generate ShakeCast facility summary for the specified event.  The script reads at least one event ID and one template file from the command line.  The output file is stored in the ShakeCast data directory for the specified event.</p>
+
+<p><strong>–event=s</strong></p>
+
+<p>Specify ID of the event to process.</p>
+
+<p><strong>–template=s</strong></p>
+
+<p>Specify filename of the template used to generate ShakeCast summary.  The template files are located under the ShakeCast “template/xml” directory.  The system comes with two default templates.  “shakecast.tt” is the template for generating “exposure.xml’ and the “kml.tt” for generating Google Earth kml format XML files.</p>
+
+<p><strong>OPTIONS</strong></p>
+
+<p><strong>–version=n</strong></p>
+
+<p>Specify version number of the event to process.</p>
+
+<p><strong>–output=s</strong></p>
+
+<p>Specify filename of the output of ShakeCast summary.  The output directory is the ShakeCast data directory for the specified event.</p>
+
+<p><strong>–help</strong></p>
+
+<p>Print a synopsis of program usage and invocation options</p>
+
+<p><strong>FILE FORMAT</strong></p>
+
+<p><strong>template.pl</strong> is based on the Perl Template Toolkit.  Please see the Template Manual manpage for the complete reference which goes into much greater details about the features and use of the Template Toolkit.</p>
+
+<p>This section covers a brief summary of the template directives.  ShakeCast specific identifiers include exposure, item, and type.  Facility specific identifiers include name, latitude, longitude, damage_level, MMI, PGA, PGV, PSA03, PSA10, and PSA30.</p>
+
+<p><strong>GET</strong></p>
+
+<p>Evaluate and print a variable or value.</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>[%   GET variable %]
+
+[%       variable %]
+
+[%       hash.key %]
+
+[%         list.n %]
+
+[%     code(args) %]
+
+[% obj.meth(args) %]
+
+[%  "value: $var" %]
+</code></pre>
+</div>
+
+<p><strong>CALL</strong></p>
+
+<p>As per GET but without printing result (e.g. call code)</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>[%  CALL variable %]
+</code></pre>
+</div>
+
+<p><strong>SET</strong></p>
+
+<p>Assign a values to variables.</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>[% SET variable = value %]    # 'SET' also optional
+
+[%     variable = other_variable
+
+       variable = 'literal text @ $100'
+
+       variable = "interpolated text: $var"
+
+       list     = [val, val, val, val, ...]
+
+       list     = [val..val]
+
+       hash     = { var =&gt; val, var =&gt; val, ... }
+
+%]
+</code></pre>
+</div>
+
+<p><strong>DEFAULT</strong></p>
+
+<p>Like SET above, but variables are only set if currently unset (i.e. have no true value).</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>[% DEFAULT variable = value %]
+</code></pre>
+</div>
+
+<p><strong>INSERT</strong></p>
+
+<p>Insert a file without any processing performed on the contents.</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>[% INSERT legalese.txt %]
+</code></pre>
+</div>
+
+<p><strong>INCLUDE</strong></p>
+
+<p>Process another template file or block and include the output. Variables are localised.</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>[% INCLUDE template %]
+
+[% INCLUDE template  var = val, ... %]
+</code></pre>
+</div>
+
+<p><strong>PROCESS</strong></p>
+
+<p>As INCLUDE above, but without localising variables.</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>[% PROCESS template %]
+
+[% PROCESS template  var = val, ... %]
+</code></pre>
+</div>
+
+<p><strong>WRAPPER</strong></p>
+
+<p>Process the enclosed block WRAPPER … END block then INCLUDE the named template, passing the block output in the ‘content’ variable.</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>[% WRAPPER template %]
+
+   content...
+
+[% END %]
+</code></pre>
+</div>
+
+<p><strong>BLOCK</strong></p>
+
+<p>Define a named template block for subsequent INCLUDE, PROCESS, etc.,</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>[% BLOCK template %]
+
+   content
+
+[% END %]
+</code></pre>
+</div>
+
+<p><strong>FOREACH</strong></p>
+
+<p>Repeat the enclosed FOREACH … END block for each value in the list.</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>[% FOREACH variable = [val, val, val] %]    # either
+
+[% FOREACH variable = list %]                 # or
+
+[% FOREACH list %]                            # or
+
+   content...
+
+   [% variable %]
+
+[% END %]
+</code></pre>
+</div>
+
+<p><strong>WHILE</strong></p>
+
+<p>Enclosed WHILE … END block is processed while condition is true.</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>[% WHILE condition %]
+
+   content
+
+[% END %]
+</code></pre>
+</div>
+
+<p><strong>IF / UNLESS / ELSIF / ELSE</strong></p>
+
+<p>Enclosed block is processed if the condition is true / false.</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>[% IF condition %]
+
+   content
+
+[% ELSIF condition %]
+
+     content
+
+[% ELSE %]
+
+     content
+
+[% END %]
+
+[% UNLESS condition %]
+
+   content
+
+[% # ELSIF/ELSE as per IF, above %]
+
+   content
+
+[% END %]
+</code></pre>
+</div>
+
+<p><strong>SWITCH / CASE</strong></p>
+
+<p>Multi-way switch/case statement.</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>[% SWITCH variable %]
+
+[% CASE val1 %]
+
+   content
+
+[% CASE [val2, val3] %]
+
+   content
+
+[% CASE %]         # or [% CASE DEFAULT %]
+
+   content
+
+[% END %]
+</code></pre>
+</div>
+
+<p><strong>MACRO</strong></p>
+
+<p>Define a named macro.</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>[% MACRO name &lt;directive&gt; %]
+
+[% MACRO name(arg1, arg2) &lt;directive&gt; %]
+
+...
+
+[% name %]
+
+[% name(val1, val2) %]
+</code></pre>
+</div>
+
+<p><strong>FILTER</strong></p>
+
+<p>Process enclosed FILTER … END block then pipe through a filter.</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>[% FILTER name %]                       # either
+
+[% FILTER name( params ) %]             # or
+
+[% FILTER alias = name( params ) %]     # or
+
+   content
+
+[% END %]
+</code></pre>
+</div>
+
+<p><strong>USE</strong></p>
+
+<p>Load a “plugin” module, or any regular Perl module if LOAD_PERL option is set.</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>[% USE name %]                          # either
+
+[% USE name( params ) %]                # or
+
+[% USE var = name( params ) %]          # or
+
+...
+
+[% name.method %]
+
+[% var.method %]
+</code></pre>
+</div>
+
+<p><strong>PERL / RAWPERL</strong></p>
+
+<p>Evaluate enclosed blocks as Perl code (requires EVAL_PERL option to be set).</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>[% PERL %]
+
+     # perl code goes here
+
+     $stash-&gt;set('foo', 10);
+
+     print "set 'foo' to ", $stash-&gt;get('foo'), "\n";
+
+     print $context-&gt;include('footer', { var =&gt; $val });
+
+[% END %]
+
+[% RAWPERL %]
+
+   # raw perl code goes here, no magic but fast.
+
+   $output .= 'some output';
+
+[% END %]
+</code></pre>
+</div>
+
+<p><strong>TRY / THROW / CATCH / FINAL</strong></p>
+
+<p>Exception handling.</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>[% TRY %]
+
+     content
+
+   [% THROW type info %]
+
+[% CATCH type %]
+
+     catch content
+
+   [% error.type %] [% error.info %]
+
+[% CATCH %] # or [% CATCH DEFAULT %]
+
+     content
+
+[% FINAL %]
+
+   this block is always processed
+
+[% END %]
+</code></pre>
+</div>
+
+<p><strong>NEXT</strong></p>
+
+<p>Jump straight to the next item in a FOREACH/WHILE loop.</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>[% NEXT %]
+</code></pre>
+</div>
+
+<p><strong>LAST</strong></p>
+
+<p>Break out of FOREACH/WHILE loop.</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>[% LAST %]
+</code></pre>
+</div>
+
+<p><strong>RETURN</strong></p>
+
+<p>Stop processing current template and return to including templates.</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>[% RETURN %]
+</code></pre>
+</div>
+
+<p><strong>STOP</strong></p>
+
+<p>Stop processing all templates and return to caller.</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>[% STOP %]
+</code></pre>
+</div>
+
+<p><strong>TAGS</strong></p>
+
+<p>Define new tag style or characters (default: [% %]).</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>[% TAGS html %]
+
+[% TAGS &lt;!-- --&gt; %]
+</code></pre>
+</div>
+
+<p><strong>COMMENTS</strong></p>
+
+<p>Ignored and deleted.</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>[% # this is a comment to the end of line
+
+   foo = 'bar'
+
+%]
+
+[%# placing the '#' immediately inside the directive
+
+    tag comments out the entire directive
+
+%]
+</code></pre>
+</div>
+
+<h2 id="shakecast-task-schedule-tool">ShakeCast Task Schedule Tool</h2>
+
+<p><strong>NAME</strong></p>
+
+<p>task_inject.pl – ShakeCast Task Schedule Tool</p>
+
+<p><strong>SYNOPSIS</strong></p>
+
+<p>task_inject.pl task [option …]</p>
+
+<p><strong>DESCRIPTION</strong></p>
+
+<p>The <strong>task_inject.pl</strong> utility is used to manually queue a task into the ShakeCast database.  The queued task needs to be recognized by the ShakeCast Dispatcher or it will return a FAILED status.</p>
+
+<p>The script is usually invoked from the administration interface but also can be executed directly.  Depending on the task type, additional parameters are read from the command line.</p>
+
+<p><strong>OPTIONS</strong></p>
+
+<p><strong>–task</strong></p>
+
+<p>Specify the type of task to process.  Default task type includes ‘comp_gmpe’, ‘logrotate’, ‘logstats’, ‘heartbeat’, ‘gs_json’, ‘maintain_event’, ‘facility_fragility_stat’, ‘facility_regulatory_level’, ‘facility_feature_shaking’, ‘screen_shot’, or ‘map_tile’.</p>
+
+<p><strong>comp_gmpe</strong></p>
+
+<p>Compute theoretical ground motions for facilities of the specified earthquake.  Additional event ID is read from the command line.</p>
+
+<p><strong>logrotate</strong></p>
+
+<p>Rotate the ShakeCast log files.  No additional parameters are required.</p>
+
+<p><strong>logstat</strong></p>
+
+<p>Generate log statistics plots. No additional parameters are required.</p>
+
+<p><strong>heartbeat</strong></p>
+
+<p>Trigger a ShakeCast heartbeat message.  No additional parameters are required.</p>
+
+<p><strong>gs_json</strong></p>
+
+<p>Refresh the USGS earthquake JSON feed and process new earthquakes.  No additional parameters are required.</p>
+
+<p><strong>maintain_event</strong></p>
+
+<p>Trigger to maintain the ShakeCast database.  Old ShakeMaps without exposure will be purged from the system.  No additional parameters are required.</p>
+
+<p><strong>facility_fragility_stat</strong></p>
+
+<p>Trigger the process to compute probabilistic facility fragility.  Additional one event ID and one Version parameters are read from the command line.</p>
+
+<p><strong>facility_regulatory_level</strong></p>
+
+<p>Trigger the process to compute exceedance of regulatory levels.  This function is specifically design for nuclear power plants.  Additional one event ID and one Version parameters are read from the command line. <strong>facility_feature_shaking</strong></p>
+
+<p>Trigger the process to compute facility feature shaking for the selected earthquake.  Additional one event ID and one Version parameters are read from the command line.</p>
+
+<p><strong>screen_shot</strong></p>
+
+<p>Take a screen shot for the selected earthquake and save the output image.  Additional one event ID and one Version parameters are read from the command line.</p>
+
+<p><strong>map_tile</strong></p>
+
+<p>Generate image tile overlay to be displayed on the web interface.  Additional tile type parameter is read from the command line.</p>
+
+<p><strong>–event</strong></p>
+
+<p>Specify ID and Version of the event to process.</p>
+
+<h2 id="shakecast-test-event-tool">ShakeCast Test Event Tool</h2>
+
+<p><strong>NAME</strong></p>
+
+<p>tester.pl – ShakeCast Test Event Tool</p>
+
+<p><strong>SYNOPSIS</strong></p>
+
+<p>tester.pl [option …]</p>
+
+<p><strong>DESCRIPTION</strong></p>
+
+<p>The <strong>tester.pl</strong> utility is used to handle ShakeCast test events and includes conversion, listing, and triggering of test events.  The script is usually invoked from the administration interface but also can be executed directly.  It reads one process type from the command line.</p>
+
+<p><strong>OPTIONS</strong></p>
+
+<p><strong>–type</strong></p>
+
+<p>Specify the type of action to process.  Process type is one of ‘event_menu’, ‘new_test’, ‘create_test’, ‘inject_next’, or ‘inject_first’.</p>
+
+<p><strong>event_menu</strong></p>
+
+<p>Output a list of test events available on the system.</p>
+
+<p><strong>new_test</strong></p>
+
+<p>Output a list of actual events on the system that have not been converted into test events.</p>
+
+<p><strong>create_test</strong></p>
+
+<p>Convert the specified event into a test event that can be triggered locally.  Require an additional –key option.  A new data directory for the event will be created under the “test_data” directory with the name of event ID and “_scte” postfix.</p>
+
+<p><strong>inject_first</strong></p>
+
+<p>Trigger a ShakeCast process for the specified test event as a new event.  Require an additional –key option.</p>
+
+<p><strong>inject_next</strong></p>
+
+<p>Trigger a ShakeCast process for the specified test event as an updated event.  Require an additional –key option.</p>
+
+<p><strong>–key</strong></p>
+
+<p>Specify ID of the event to process.  All information for the processed ShakeMaps will be removed from the ShakeCast database but not downloaded products in the file system.</p>
+
+
+
+<div class="tags">
+    
+    <b>Tags: </b>
+    
+    
+    
+    <a href="tag_troubleshooting" class="btn btn-default navbar-btn cursorNorm" role="button">troubleshooting</a>
+    
+    
+    
+    <a href="tag_shakecast_v3" class="btn btn-default navbar-btn cursorNorm" role="button">shakecast_v3</a>
+    
+    
+    
+</div>
+
+    
+
+</div>
+
+<hr class="shaded"/>
+
+<footer>
+            <div class="row">
+                <div class="col-lg-12 footer">
+               &copy;2016 U.S. Geological Survey. All rights reserved. <br />
+<p>Page last updated:</span> July 3, 2016<br/> Site last generated: Jul 14, 2016 <br />
+<p><img src="images/usgs.png" alt="USGS logo"/></p>
+                </div>
+            </div>
+</footer>
+
+
+    </div>
+    <!-- /.row -->
+</div>
+<!-- /.container -->
+    </div>
+    <script>
+    jQuery(function ($) {
+        $('.post-content').annotator()
+                .annotator('setupPlugins', {tokenUrl: 'http://example.com/api/token'})
+    });
+    </script>
+</body>
+</html>

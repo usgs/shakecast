@@ -1,0 +1,618 @@
+<!DOCTYPE html>
+<head>
+    <meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="">
+<meta name="keywords" content="getting_startedtroubleshootingshakecast_v3,  install, aws, linux, cloud">
+<title>Install ShakeCast on AWS | ShakeCast Documentation</title>
+<link rel="stylesheet" href="css/syntax.css">
+
+
+<link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
+<!--<link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">-->
+<link rel="stylesheet" href="css/modern-business.css">
+<link rel="stylesheet" href="css/lavish-bootstrap.css">
+<link rel="stylesheet" href="css/customstyles.css">
+<link rel="stylesheet" href="css/theme-blue.css">
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.min.js"></script>
+<script src="js/jquery.navgoco.min.js"></script>
+
+
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/anchor-js/2.0.0/anchor.min.js"></script>
+<script src="js/toc.js"></script>
+<script src="js/customscripts.js"></script>
+
+<link rel="shortcut icon" href="images/favicon.ico">
+
+<!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+<!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+<!--[if lt IE 9]>
+<script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+<script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+<![endif]-->
+
+<link rel="stylesheet" href="css/project.css">
+
+<link rel="alternate" type="application/rss+xml" title="" href="feed.xml">
+
+    <script>
+        $(document).ready(function() {
+            // Initialize navgoco with default options
+            $("#mysidebar").navgoco({
+                caretHtml: '',
+                accordion: true,
+                openClass: 'active', // open
+                save: false, // leave false or nav highlighting doesn't work right
+                cookie: {
+                    name: 'navgoco',
+                    expires: false,
+                    path: '/'
+                },
+                slide: {
+                    duration: 400,
+                    easing: 'swing'
+                }
+            });
+
+            $("#collapseAll").click(function(e) {
+                e.preventDefault();
+                $("#mysidebar").navgoco('toggle', false);
+            });
+
+            $("#expandAll").click(function(e) {
+                e.preventDefault();
+                $("#mysidebar").navgoco('toggle', true);
+            });
+
+        });
+
+    </script>
+    <script>
+        $(function () {
+            $('[data-toggle="tooltip"]').tooltip()
+        })
+    </script>
+    
+
+</head>
+<body>
+<!-- Navigation -->
+<nav class="navbar navbar-inverse navbar-fixed-top">
+    <div class="container topnavlinks">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="index.html"><img src="images/usgs_sc_logo.png">&nbsp;<span class="projectTitle"> ShakeCast Documentation</span></a>
+        </div>
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+            <ul class="nav navbar-nav navbar-right">
+                <!-- entries without drop-downs appear here -->
+                
+                
+                
+                <li><a href="news">News</a></li>
+                
+                
+                
+                <!-- entries with drop-downs appear here -->
+                <!-- conditional logic to control which topnav appears for the audience defined in the configuration file.-->
+                
+                
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">ShakeCast Resources<b class="caret"></b></a>
+                    <ul class="dropdown-menu">
+                        
+                        
+                        <li><a href="https://github.com/klin-usgs/ShakeCast" target="_blank">Github Repo</a></li>
+                        
+                        
+                        
+                        <li><a href="http://earthquake.usgs.gov/research/software/shakecast/" target="_blank">ShakeCast Web</a></li>
+                        
+                        
+                        
+                        <li><a href="ftp://ftpext.usgs.gov/pub/cr/co/Golden/ShakeCast" target="_blank">ShakeCast FTP</a></li>
+                        
+                        
+                        
+                        <li><a href="https://my.usgs.gov/confluence/display/ShakeCast/Home" target="_blank">ShakeCast Science Base</a></li>
+                        
+                        
+                    </ul>
+                </li>
+                
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">Products<b class="caret"></b></a>
+                    <ul class="dropdown-menu">
+                        
+                        
+                        <li><a href="doc_introduction.html">ShakeCast V3</a></li>
+                        
+                        
+                        
+                        <li><a href="apidocs">ShakeCast V4 (pyCast)</a></li>
+                        
+                        
+                        
+                        <li><a href="index.html">ShakeCast Workbook</a></li>
+                        
+                        
+                        
+                        <li><a href="index.html">ShakeCast Lite</a></li>
+                        
+                        
+                    </ul>
+                </li>
+                
+                
+                
+			<!-- Send feedback function -->
+<script>
+function SendLinkByMail(href) {
+var subject= "ShakeCast Documentation feedback";
+var body = "I have some feedback about the Install ShakeCast on AWS page: ";
+body += window.location.href;
+body += "";
+var uri = "mailto:shakecast-help@usgs.gov?subject=";
+uri += encodeURIComponent(subject);
+uri += "&body=";
+uri += encodeURIComponent(body);
+window.location.href = uri;
+}
+</script>
+
+<li><a href="javascript:void(0)" onclick="SendLinkByMail()"><i class="fa fa-envelope-o"></i> Feedback</a></li>
+
+		
+                <!--comment out this block if you want to hide search-->
+                <li>
+                    <!--start search-->
+                    <div id="search-demo-container">
+                        <input type="text" id="search-input" placeholder="search...">
+                        <ul id="results-container"></ul>
+                    </div>
+                    <script src="js/jekyll-search.js" type="text/javascript"></script>
+                    <script type="text/javascript">
+                            SimpleJekyllSearch.init({
+                                searchInput: document.getElementById('search-input'),
+                                resultsContainer: document.getElementById('results-container'),
+                                dataSource: './search.json',
+                                searchResultTemplate: '<li><a href="{url}" title="Install ShakeCast on AWS">{title}</a></li>',
+                    noResultsText: 'No results found.',
+                            limit: 10,
+                            fuzzy: true,
+                    })
+                    </script>
+                    <!--end search-->
+                </li>
+            </ul>
+        </div>
+        </div>
+        <!-- /.container -->
+</nav>
+
+<!-- Page Content -->
+<div class="container">
+    <div class="col-lg-12">&nbsp;</div>
+    <!-- Content Row -->
+    <div class="row">
+        <!-- Sidebar Column -->
+        <div class="col-md-3">
+
+          
+
+
+
+
+
+
+
+
+
+
+
+
+<ul id="mysidebar" class="nav">
+    <li class="sidebarTitle">ShakeCast Documentation 3.0</li>
+    
+    
+    
+        
+    
+    <li>
+        <a href="#">Overview</a>
+        <ul>
+            
+            
+            
+            <li><a href="index.html">Introduction</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="doc_about.html">About the authors</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="doc_support.html">Support</a></li>
+            
+            
+            
+            
+        </ul>
+        
+        
+    
+    <li>
+        <a href="#">Installation</a>
+        <ul>
+            
+            
+            
+            <li><a href="doc_requirements.html">System Requirements</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="doc_install_shakecast_on_windows.html">Install ShakeCast on Windows</a></li>
+            
+            
+            
+            
+            
+            
+            <li class="active"><a href="doc_install_shakecast_on_aws.html">Install ShakeCast on AWS</a></li>
+            
+            
+            
+            
+        </ul>
+        
+        
+    
+    <li>
+        <a href="#">Release Notes</a>
+        <ul>
+            
+            
+            
+            <li><a href="doc_release_notes_3.html">V3 Release notes</a></li>
+            
+            
+            
+            
+        </ul>
+        
+        
+    
+    <li>
+        <a href="#">User Guide</a>
+        <ul>
+            
+            
+            
+            <li><a href="doc_pages.html">User Guide</a></li>
+            
+            
+            
+            
+        </ul>
+        
+        
+    
+    <li>
+        <a href="#">Technical Guide</a>
+        <ul>
+            
+            
+            
+            <li><a href="doc_operator_install.html">Installation</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="doc_operator_config.html">System Configuration</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="doc_operator_custom.html">Customization</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="doc_operator_admin.html">Administration</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="doc_operator_appenda.html">Append. Inventory Format</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="doc_operator_appendb.html">Append. Metadata Format</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="doc_operator_appendc.html">Append. Utility Scripts</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="doc_operator_appendd.html">Append. HAZUS MBT</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="doc_operator_appende.html">Append. MBT Fragility</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="doc_operator_appendf.html">Append. Template Keywords</a></li>
+            
+            
+            
+            
+        </ul>
+        
+        
+    
+    <li>
+        <a href="#">Troubleshooting</a>
+        <ul>
+            
+            
+            
+            <li><a href="doc_v2_to_v3.html">V2 to V3</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="doc_faq.html">FAQ</a></li>
+            
+            
+            
+            
+        </ul>
+        
+        
+        
+        <!-- if you aren't using the accordion, uncomment this block:
+           <p class="external">
+               <a href="#" id="collapseAll">Collapse All</a> | <a href="#" id="expandAll">Expand All</a>
+           </p>
+           -->
+    </li>
+</ul>
+</div>
+
+<!-- this highlights the active parent class in the navgoco sidebar. this is critical so that the parent expands when you're viewing a page. This must appear below the sidebar code above. Otherwise, if placed inside customscripts.js, the script runs before the sidebar code runs and the class never gets inserted.-->
+<script>$("li.active").parents('li').toggleClass("active");</script>
+
+    <!-- Content Column -->
+    <div class="col-md-9">
+        
+        <div class="post-header">
+   <h1 class="post-title-main">Install ShakeCast on AWS</h1>
+</div>
+
+
+
+<div class="post-content">
+
+   
+
+    
+    
+<!-- this handles the automatic toc. use ## for subheads to auto-generate the on-page minitoc. if you use html tags, you must supply an ID for the heading element in order for it to appear in the minitoc. -->
+<script>
+$( document ).ready(function() {
+  // Handler for .ready() called.
+
+$('#toc').toc({ minimumHeaders: 0, listType: 'ul', showSpeed: 0, headers: 'h2,h3,h4' });
+
+/* this offset helps account for the space taken up by the floating toolbar. */
+$('#toc').on('click', 'a', function() {
+  var target = $(this.getAttribute('href'))
+    , scroll_target = target.offset().top
+
+  $(window).scrollTop(scroll_target - 10);
+  return false
+})
+  
+});
+</script>
+
+<div id="toc"></div>
+
+    
+
+    
+    <a target="_blank" href="https://github.com/klin-usgs/shakecast/blob/gh-pages//pages/doc//doc_install_shakecast_on_aws.md" class="btn btn-default githubEditButton" role="button"><i class="fa fa-github fa-lg"></i> Edit me</a>
+    
+    
+
+  <h2 id="shakecast-cloud-installation">ShakeCast Cloud Installation</h2>
+
+<p>ShakeCast V3 is shipped primarily as a pre-packaged Linux system image. Among tested distributions, CentOS (open-source equivalent of the RedHat Enterprise Linux) is the default operating system (OS). With the ready-to-use ShakeCast V3 system image, users can evaluate the software without excessive IT commitment to determine the use case that will satisfy their needs for post-earthquake response.</p>
+
+<p>Amazon Web Services (AWS) offers a one-year, free-tier elastic compute cloud product (EC2) suitable for the ShakeCast program. A custom built private ShakeCast system image using Amazon EC2 streamlines installation and system updates. Users can launch their own ShakeCast system as a “micro” instance on Amazon EC2 without incurring charges during the evaluation period of up to one year.</p>
+
+<h2 id="shakecast-amazon-web-services-aws-cloud-installation-steps">ShakeCast Amazon Web Services (AWS) Cloud Installation Steps</h2>
+
+<p>This documentation reflects the current AWS configuration. Updated and installation instructions reflecting any changes to the AWS or ShakeCast system are available as a standalone document at:  <em>http://earthquake.usgs.gov/research/software/shakecast/</em></p>
+
+<p>Installing ShakeCast V3 on Amazon Web Services (AWS)</p>
+
+<ol>
+  <li>
+    <p><strong>Sign up for an Amazon Web Services (AWS) account</strong>
+You must have an AWS account to check out the ShakeCast system image. Sign up at <a href="http://aws.amazon.com">http://aws.amazon.com</a></p>
+  </li>
+  <li>
+    <p><strong>Request Access to the ShakeCast private system image (AMI)</strong>
+Once you have your AWS account, send a request to shakecast-help@usgs.gov to access the ShakeCast private system image (AMI). Include the AWS account number in the email request, as you will be using this account to launch your own instance of the ShakeCast system.</p>
+  </li>
+  <li>
+    <p><strong>Access the ShakeCast AMI</strong>
+The ShakeCast AMI will appear under the EC2 Dashboard after you receive the confirmation email from the ShakeCast team.</p>
+  </li>
+</ol>
+
+<p>To verify access to the ShakeCast AMI:</p>
+
+<ul>
+  <li>Select <strong>EC2</strong> Dashboard from AWS Service Console.</li>
+  <li>Select <strong>AMIs</strong> under the Images tab and use the filter <strong>Private Images</strong>. Contact ShakeCast team if the ShakeCast AMI is not shown in the image list.</li>
+</ul>
+
+<p><strong>Note</strong> : Make sure the Region in the top right is set to <strong>N. Virginia</strong> in order to see the private image</p>
+
+<ol>
+  <li><strong>Create ShakeCast Security Group</strong>
+Begin the ShakeCast installation process by creating a custom security policy permitting only ShakeCast traffic over the Internet, SSH, HTTP, and HTTPS. Select <strong>Security Groups</strong> link under Network Security left-hand navigation list.</li>
+</ol>
+
+<p>Click the Create Security Group button to create the ShakeCast Security Group.</p>
+
+<p>This step should be evaluated by an IT Administrator before using for a production system. For development purposes, allowing SSH, HTTP, and HTTPS will suffice. For development purposes create a custom security policy permitting only ShakeCast-specific traffic over the Internet, SSH, HTTP, and HTTPS. Select <strong>Create a new security group</strong>.</p>
+
+<p>Select the newly created ShakeCast Security Group. Click the Inbound tab to add security rules. This will allow customization of the security groups</p>
+
+<ol>
+  <li><strong>Create SSH Key Pairs</strong>
+SSH key pairs are used to remotely log into the ShakeCast system to gain system-level access to perform tasks not available from the web interface. Tasks include both ShakeCast and system related work and access to the system is likely required at some point during the operation. Since the ShakeCast system image does not include a graphical user interface for system level access, operations can only be performed from the command line and are reserved primarily for IT administrators and expert ShakeCast users.</li>
+</ol>
+
+<p>Select <strong>Key Pairs</strong> under the Network Security left-hand navigation list.</p>
+
+<p>Click the <strong>Create Key Pair</strong> button to create an SSH key pair for accessing the ShakeCast system from the command line.</p>
+
+<p>Download and save the private key for later use. The created key pair will be displayed in the key pair list window.</p>
+
+<ol>
+  <li><strong>Launch the ShakeCast Instance</strong></li>
+</ol>
+
+<ul>
+  <li>Select the ShakeCast AMI from the AMI image window and click the Launch button to launch a new ShakeCast instance.</li>
+  <li>Select <strong>T1 Micro</strong> as the Instance Type. Click the Continue button. Fill in instance details and tags for user-related information if applicable. Free tier eligible customers will get a maximum amount of 30GB of storage. Select <strong>Next: Tag Instance</strong>.</li>
+  <li>Fill in instance details and tags for user-related information if applicable. Select <strong>Next: Configure Security Group</strong>. An IT Administrator should evaluate this step before using in a production system. For development purposes, allowing SSH, HTTP, and HTTPS will suffice. For development purposes create a custom security policy permitting only ShakeCast-specific traffic over the Internet, SSH, HTTP, and HTTPS. Select <strong>Create a new security group</strong>.</li>
+  <li>Select the security group policy created earlier as the firewall setup for your ShakeCast instance.</li>
+  <li>Review the setup of your instance. Click the <strong>Launch</strong> button to launch your ShakeCast instance. To abort the launch at any step during setup, select the <strong>Cancel</strong> checkbox. Repeat Step 8-14 to launch another new instance.</li>
+  <li>Select the key pair created earlier for accessing your ShakeCast instance. Select the checkbox for acknowledgement for access to the private key file. If the launch fails it is due to not accepting the terms. Copy and paste the URL in a browser.</li>
+  <li>Select <strong>Continue</strong>. Select <strong>Accept Terms &amp; Launch with 1-Click</strong>. Close the screen with the green checkbox. You are now subscribed to the CentOS product.</li>
+</ul>
+
+<p>Congratulations! You have successfully launched your first ShakeCast instance. For details on Amazon EC2, refer to AWS documentation at <em>https://aws.amazon.com/documentation/</em></p>
+
+<ol>
+  <li><strong>Access the ShakeCast Web Interface</strong></li>
+</ol>
+
+<ul>
+  <li>Select the ShakeCast instance from the <strong>Instances</strong> window. The public domain information of the selected instance will be displayed in the status window beneath the instances window.</li>
+  <li>Copy the ShakeCast domain and open the URL using another browser window.</li>
+  <li>Use the default username <strong>scadmin</strong> and password <strong>scadmin</strong> to log into the system. “scadmin” is the default administrator account for the ShakeCast system and has full access privileges.</li>
+</ul>
+
+<p><strong>NOTE</strong> : The secure layer is turned on by default, and you will need to switch to the https protocol and append /html to the end of the Public DNS name for browser access using the browser.</p>
+
+<p>For example –&gt;  https://ec2-####.###/###/###compute-1.amazonaws.com/html/</p>
+
+<ol>
+  <li><strong>Access the ShakeCast System Using the Key Pair</strong></li>
+</ol>
+
+<p>Select the ShakeCast instance from Instances window. Select Connect from the Actions pull-down menu. Follow the instructions to use the SSH client and the pre-configured key pair to access the operating system.</p>
+
+
+
+<div class="tags">
+    
+    <b>Tags: </b>
+    
+    
+    
+    <a href="tag_getting_started" class="btn btn-default navbar-btn cursorNorm" role="button">getting_started</a>
+    
+    
+    
+    <a href="tag_troubleshooting" class="btn btn-default navbar-btn cursorNorm" role="button">troubleshooting</a>
+    
+    
+    
+    <a href="tag_shakecast_v3" class="btn btn-default navbar-btn cursorNorm" role="button">shakecast_v3</a>
+    
+    
+    
+</div>
+
+    
+
+</div>
+
+<hr class="shaded"/>
+
+<footer>
+            <div class="row">
+                <div class="col-lg-12 footer">
+               &copy;2016 U.S. Geological Survey. All rights reserved. <br />
+ Site last generated: Jul 14, 2016 <br />
+<p><img src="images/usgs.png" alt="USGS logo"/></p>
+                </div>
+            </div>
+</footer>
+
+
+    </div>
+    <!-- /.row -->
+</div>
+<!-- /.container -->
+    </div>
+    <script>
+    jQuery(function ($) {
+        $('.post-content').annotator()
+                .annotator('setupPlugins', {tokenUrl: 'http://example.com/api/token'})
+    });
+    </script>
+</body>
+</html>
