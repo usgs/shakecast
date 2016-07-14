@@ -1,0 +1,278 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>CLI Documentation &mdash; pyCast 1 documentation</title>
+  
+
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+    <link rel="top" title="pyCast 1 documentation" href="index.html"/>
+        <link rel="prev" title="Server Documentation" href="server.html"/> 
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="index.html" class="icon icon-home"> pyCast
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                1
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+                <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="app.html">Starting ShakeCast</a></li>
+<li class="toctree-l1"><a class="reference internal" href="objects.html">Objects</a></li>
+<li class="toctree-l1"><a class="reference internal" href="functions.html">Functions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="db.html">Database API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="server.html">Server Documentation</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="">CLI Documentation</a></li>
+<li class="toctree-l1"><a class="reference external" href="http://klin-usgs.github.io/ShakeCast">User and Admin Docs</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="index.html">pyCast</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="index.html">Docs</a> &raquo;</li>
+      
+    <li>CLI Documentation</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="_sources/cli.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="module-ui">
+<span id="cli-documentation"></span><h1>CLI Documentation<a class="headerlink" href="#module-ui" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="ui.UI">
+<em class="property">class </em><code class="descclassname">ui.</code><code class="descname">UI</code><a class="headerlink" href="#ui.UI" title="Permalink to this definition">¶</a></dt>
+<dd><p>A command line interface to interact with the ShakeCast server.</p>
+<dl class="docutils">
+<dt>Commands:</dt>
+<dd><dl class="first last docutils">
+<dt>info</dt>
+<dd>Gets information from the server about the Tasks it&#8217;s
+currently running</dd>
+<dt>stop_task &lt;task_name&gt;</dt>
+<dd>Sets the specified Task status to &#8216;Finished&#8217; to
+remove it from the Server&#8217;s queue</dd>
+<dt>exit</dt>
+<dd>Exits the CLI; this will not shutdown the Server unless
+the Server was started within the UI</dd>
+<dt>shutdown</dt>
+<dd>Shuts the server down allowing running tasks to finish</dd>
+</dl>
+</dd>
+</dl>
+<dl class="method">
+<dt id="ui.UI.connect_to_server">
+<code class="descname">connect_to_server</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ui.UI.connect_to_server" title="Permalink to this definition">¶</a></dt>
+<dd><p>Attempt to connect to the server</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="ui.UI.get_input">
+<code class="descname">get_input</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ui.UI.get_input" title="Permalink to this definition">¶</a></dt>
+<dd><p>Checks for input from the user and determines when to send
+input to the server</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="ui.UI.get_message">
+<code class="descname">get_message</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ui.UI.get_message" title="Permalink to this definition">¶</a></dt>
+<dd><p>Receive a message from the server</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="ui.UI.get_message_loop">
+<code class="descname">get_message_loop</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ui.UI.get_message_loop" title="Permalink to this definition">¶</a></dt>
+<dd><p>Build and print a message from the Server</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="ui.UI.send">
+<code class="descname">send</code><span class="sig-paren">(</span><em>msg</em><span class="sig-paren">)</span><a class="headerlink" href="#ui.UI.send" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sends an input message to the Server. This is where the
+hard-wired commands are translated into the Server API</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="ui.UI.server_check">
+<code class="descname">server_check</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ui.UI.server_check" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check our connection to the Server</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="ui.UI.start">
+<code class="descname">start</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ui.UI.start" title="Permalink to this definition">¶</a></dt>
+<dd><p>Starts the CLI loop</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="ui.UI.start_server">
+<code class="descname">start_server</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ui.UI.start_server" title="Permalink to this definition">¶</a></dt>
+<dd><p>Starts a Server if there isn&#8217;t one running</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+      
+        <a href="server.html" class="btn btn-neutral" title="Server Documentation" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2016, Daniel Slosky.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'1',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/underscore.js"></script>
+      <script type="text/javascript" src="_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>
