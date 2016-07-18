@@ -87,11 +87,38 @@ def earthquakes():
 def home():
     return render_template('home.html')
 
-@app.route('/get/eqdata/')
+@app.route('/get/eqdata')
 @login_required
-def eq_data():
+def get_eq_data():
     session = Session()
-    eqs = session.query(Event).filter(Event.event_id != 'heartbeat').order_by(Event.time.desc()).all()
+    pdb.set_trace()
+    filter_ = json.loads(request.args.get('filter', '{}'))
+    if filter_:
+        if filter_.get('group', None):
+            eqs = (session.query(Event)
+                            .filter(Event.shakecast_id > request.args.get('last_id', 0))
+                            .filter(Event.groups.any(Group.name.like(filter_['group'])))
+                            .filter(Event.event_id != 'heartbeat')
+                            .limit(50)
+                            .all())
+            
+        else:
+            eqs = (session.query(Event)
+                            .filter(Event.shakecast_id > request.args.get('last_id', 0))
+                            .filter(Event.event_id != 'heartbeat')
+                            .limit(50)
+                            .all())
+    else:
+        eqs = (session.query(Event)
+                    .filter(Event.shakecast_id > request.args.get('last_id', 0))
+                    .filter(Event.event_id != 'heartbeat')
+                    .limit(50)
+                    .all())
+    
+    
+    
+    if filter_.get('all_events', False) is False:
+        eqs = [eq for eq in eqs if eq.shakemaps]
     
     eq_dicts = []
     for eq in eqs:

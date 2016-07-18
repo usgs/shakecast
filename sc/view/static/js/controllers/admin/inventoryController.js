@@ -4,7 +4,7 @@ app.controller('inventoryController', function($scope, $http) {
     $scope.fac_data = []
     $scope.filter = {}
     $scope.use_filter = false
-    $scope.getFacs = function(lastID=0, filter={}) {
+    $scope.getFacs = function(lastID=0, filter={all_events: true}) {
         $http.get('/admin/get/inventory', {params: {last_id: lastID, filter: filter}})
             .then(
                 function(response){

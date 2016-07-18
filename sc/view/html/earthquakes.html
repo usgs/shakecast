@@ -9,6 +9,24 @@
     </div>
 </div>
 
+<form action="">
+    <label for="all_events">Show: </label>
+    <label><input type="radio" name="all_events" ng-model="filter.all_events" ng-value="true">All Events</label>
+    <label><input type="radio" name="all_events" ng-model="filter.all_events" ng-value="false">Events with Shakemaps</label><br>
+    
+    <label for="group">Groups Affected: </label><input id="group" class="group" ng-model="filter.group"/>
+    
+    <div ng-show="!filter.all_events">
+    <p>Contains the point</p>
+    <label for="lat">Latitude: </label><input id="lat" class="lat" ng-model="filter.lat"/>
+    <label for="lon">Longitude</label><input id="lon" class="lon" ng-model="filter.lon"/>
+    </div>
+    
+    <button class="button" ng-click="getEQsFilter(lastID=0, filter=filter)">Go</button>
+    
+    <button class="button" ng-click="clearFilter()">Clear</button>
+</form>
+
 <table class="eq-table table table-hover">
     <thead>
         <tr>
@@ -29,3 +47,5 @@
         </tr>
     </tbody>
 </table>
+
+<h2 ng-click="getEQs(index=lastID, filter=filter)" class="more-facilities">LOAD MORE</h2>
