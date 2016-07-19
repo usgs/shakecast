@@ -91,7 +91,6 @@ def home():
 @login_required
 def get_eq_data():
     session = Session()
-    pdb.set_trace()
     filter_ = json.loads(request.args.get('filter', '{}'))
     if filter_:
         if filter_.get('group', None):
@@ -458,9 +457,9 @@ def get_user_groups(user_id):
 @app.route('/admin/get/inventory')
 def get_inventory():
     session = Session()
-    filter_ = literal_eval(request.args.get('filter', 'None'))
+    filter_ = json.loads(request.args.get('filter', '{}'))
     if filter_:
-        if filter_.get('group', None):
+        if filter_.get('group', None) is not None:
             facilities = (session.query(Facility)
                             .filter(Facility.shakecast_id > request.args.get('last_id', 0))
                             .filter(Facility.lat_min > (float(filter_['lat']) - float(filter_['lat_pm'])))
