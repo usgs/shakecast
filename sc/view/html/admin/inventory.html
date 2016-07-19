@@ -73,16 +73,14 @@
         </tr>
         <tr>
             <td colspan="4" class='filter' ng-show="showFilter">
-                <form action="">
-                    <label for="group">Group: </label><input id="group" class="group" ng-model="filter.group"/>
-                    <label for="lat">Latitude: </label><input id="lat" class="lat" ng-model="filter.lat"/>
-                    <label for="lat-pm">+-</label><input id="lat-pm" class="lat-pm" ng-model="filter.lat_pm"/>
-                    <label for="lon">Longitude</label><input id="lon" class="lon" ng-model="filter.lon"/>
-                    <label for="lon-pm">+-</label><input id="lon-pm" class="lon-pm" ng-model="filter.lon_pm"/>
-                    <button class="button" ng-click="getFacsFilter(lastID=0, filter=filter)">Go</button>
-                    
-                    <button class="button" ng-click="clearFilter()">Clear</button>
-                </form>
+                <label for="group">Group: </label><input id="group" class="group" ng-model="filter.group"/>
+                <label for="lat">Latitude: </label><input id="lat" class="lat" ng-model="filter.lat"/>
+                <label for="lat-pm">+-</label><input id="lat-pm" class="lat-pm" ng-model="filter.lat_pm"/>
+                <label for="lon">Longitude</label><input id="lon" class="lon" ng-model="filter.lon"/>
+                <label for="lon-pm">+-</label><input id="lon-pm" class="lon-pm" ng-model="filter.lon_pm"/>
+                <button class="button" ng-click="getFacsFilter(lastID=0, filter=filter)">Go</button>
+                
+                <button class="button" ng-click="clearFilter()">Clear</button>
             </td>
         </tr>
     </thead>
