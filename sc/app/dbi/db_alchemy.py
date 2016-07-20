@@ -7,6 +7,12 @@ modules_dir = os.path.join(db_sc_dir(), 'modules')
 if modules_dir not in sys.path:
     sys.path += [modules_dir]
     
+app_dir = os.path.join(db_sc_dir(), 'app')
+if app_dir not in sys.path:
+    sys.path += [app_dir]
+    
+from objects import *
+    
 from sqlalchemy import *
 import logging
 from sqlalchemy.ext.declarative import *
@@ -705,6 +711,11 @@ class Event(Base):
             return False
         else:
             return True
+        
+    def timestamp(self):
+        clock = Clock()
+        return (clock.from_time(self.time)
+                    .strftime('%Y-%m-%d %H:%M:%S'))
 
 
 class ShakeMap(Base):

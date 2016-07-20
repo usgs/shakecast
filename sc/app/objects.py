@@ -12,6 +12,7 @@ import xml.etree.ElementTree as ET
 import smtplib
 import datetime
 import time
+from jinja2 import Template
 from functions_util import *
 from dbi.db_alchemy import *
 modules_dir = os.path.join(sc_dir(), 'modules')
@@ -916,6 +917,31 @@ class SC(object):
         directory = os.path.normpath(delim.join(path))
         
         return directory
+
+
+class NotificationBuilder(object):
+    """
+    Uses Jinja to build notifications
+    """
+    def __init__(self):
+        pass
+    
+    def build_new_event_html(self, events=[], group=None):
+        conf_file = os.path.join(sc_dir(),
+                                 'templates',
+                                 'new_event',
+                                 'default.json')
+        conf_str = open(conf_file, 'r')
+        config = json.loads(conf_str.read())
+        conf_str.close()
+        
+        
+        temp_file = os.path.join(sc_dir(), 'templates', 'new_event', 'default.html')
+        temp_str = open(temp_file, 'r')
+        template = Template(temp_str.read())
+        temp_str.close()
+        
+        return template.render(events=events, group=group, sc=SC(), config=config)
 
 
 class Notification_Builder(object):
