@@ -98,6 +98,7 @@ def get_eq_data():
                             .filter(Event.shakecast_id > request.args.get('last_id', 0))
                             .filter(Event.groups.any(Group.name.like(filter_['group'])))
                             .filter(Event.event_id != 'heartbeat')
+                            .order_by(desc(Event.time))
                             .limit(50)
                             .all())
             
@@ -105,12 +106,14 @@ def get_eq_data():
             eqs = (session.query(Event)
                             .filter(Event.shakecast_id > request.args.get('last_id', 0))
                             .filter(Event.event_id != 'heartbeat')
+                            .order_by(desc(Event.time))
                             .limit(50)
                             .all())
     else:
         eqs = (session.query(Event)
                     .filter(Event.shakecast_id > request.args.get('last_id', 0))
                     .filter(Event.event_id != 'heartbeat')
+                    .order_by(desc(Event.time))
                     .limit(50)
                     .all())
     
@@ -342,7 +345,7 @@ def inspection():
 @admin_only
 @login_required
 def admin_eqs():
-    return '<h1>earthquakes</h1>'
+    return render_template('admin/earthquakes.html')
 
 @admin_only
 @login_required
