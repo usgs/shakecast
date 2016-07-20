@@ -34,7 +34,7 @@ app.config(function($routeProvider){
         animation: 'main'
     })
     .when('/earthquakes/',{
-        templateUrl:'/admin/earthquakes/',
+        templateUrl:'/admin/earthquakes',
         controller: 'eqController',
         animation: 'main'
     })

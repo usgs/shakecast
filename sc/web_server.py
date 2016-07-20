@@ -87,11 +87,40 @@ def earthquakes():
 def home():
     return render_template('home.html')
 
-@app.route('/get/eqdata/')
+@app.route('/get/eqdata')
 @login_required
-def eq_data():
+def get_eq_data():
     session = Session()
-    eqs = session.query(Event).filter(Event.event_id != 'heartbeat').order_by(Event.time.desc()).all()
+    filter_ = json.loads(request.args.get('filter', '{}'))
+    if filter_:
+        if filter_.get('group', None):
+            eqs = (session.query(Event)
+                            .filter(Event.shakecast_id > request.args.get('last_id', 0))
+                            .filter(Event.groups.any(Group.name.like(filter_['group'])))
+                            .filter(Event.event_id != 'heartbeat')
+                            .order_by(desc(Event.time))
+                            .limit(50)
+                            .all())
+            
+        else:
+            eqs = (session.query(Event)
+                            .filter(Event.shakecast_id > request.args.get('last_id', 0))
+                            .filter(Event.event_id != 'heartbeat')
+                            .order_by(desc(Event.time))
+                            .limit(50)
+                            .all())
+    else:
+        eqs = (session.query(Event)
+                    .filter(Event.shakecast_id > request.args.get('last_id', 0))
+                    .filter(Event.event_id != 'heartbeat')
+                    .order_by(desc(Event.time))
+                    .limit(50)
+                    .all())
+    
+    
+    
+    if filter_.get('all_events', False) is False:
+        eqs = [eq for eq in eqs if eq.shakemaps]
     
     eq_dicts = []
     for eq in eqs:
@@ -316,7 +345,7 @@ def inspection():
 @admin_only
 @login_required
 def admin_eqs():
-    return '<h1>earthquakes</h1>'
+    return render_template('admin/earthquakes.html')
 
 @admin_only
 @login_required
@@ -431,9 +460,9 @@ def get_user_groups(user_id):
 @app.route('/admin/get/inventory')
 def get_inventory():
     session = Session()
-    filter_ = literal_eval(request.args.get('filter', 'None'))
+    filter_ = json.loads(request.args.get('filter', '{}'))
     if filter_:
-        if filter_.get('group', None):
+        if filter_.get('group', None) is not None:
             facilities = (session.query(Facility)
                             .filter(Facility.shakecast_id > request.args.get('last_id', 0))
                             .filter(Facility.lat_min > (float(filter_['lat']) - float(filter_['lat_pm'])))
