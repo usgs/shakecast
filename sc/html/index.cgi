@@ -39,6 +39,8 @@ print $cgi->header(-cookie=>$cookie);
         $session->param("referer", $ENV{REQUEST_URI});
     }
 
+    $session->param("gm_key", SC->config->{"GM_KEY"}) if (SC->config->{"GM_KEY"});
+    
 	my $dest = $cgi->param("dest") || 'index';
 	my $admin = ($dest =~ /^admin_/) ? 1 : 0;
 	$dest = (-e "$tmpl_dir/$dest.tmpl") ? "$tmpl_dir/$dest.tmpl" :

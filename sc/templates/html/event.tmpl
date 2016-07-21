@@ -166,7 +166,7 @@
 	prefix = "https://";
       else
 	prefix = "http://";
-      script += prefix + 'maps.google.com/maps/api/js?sensor=false"><' + '/script>';
+      script += prefix + 'maps.google.com/maps/api/js?sensor=false&key=<TMPL_VAR NAME=GM_KEY>"><' + '/script>';
       document.write(script);
     </script>
     <script type="text/javascript" src="./js/jquery-1.10.2.min.js"></script>
