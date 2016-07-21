@@ -38,7 +38,7 @@
             <td>{[ $index + 1 ]}</td>
             <td>{[ eq['event_id'] ]}</td>
             <td>{[ eq['magnitude'] ]}</td>
-            <td>{[ eq['time'] * 1000 | date]}</td>
+            <td>{[ eq['time'] * 1000 | date : "short" ]}</td>
             <td>{[ eq['place'] ]}</td>
         </tr>
     </tbody>
