@@ -12,6 +12,7 @@ import xml.etree.ElementTree as ET
 import smtplib
 import datetime
 import time
+from jinja2 import Template
 from functions_util import *
 from dbi.db_alchemy import *
 modules_dir = os.path.join(sc_dir(), 'modules')
@@ -918,498 +919,65 @@ class SC(object):
         return directory
 
 
-class Notification_Builder(object):
+class NotificationBuilder(object):
     """
-    Holds HTML shell for new events as well as notification configuration
-    settings for a new event message
-    
-    Attributes:
-        html (str): generated HTML new event notification
-        html_shell (str): HTML before it is filled in with info for notification and user specifications
+    Uses Jinja to build notifications
     """
-    
     def __init__(self):
-        self.html = ''
-        self.html_shell_ne = """
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
-<html>
-<head>
-</head>
-<body style="background-color:%s;width:700px">
-    <table style="table-layout:fixed;width:100%%">
-        <tr>
-            <td>
-                <table>
-                    <tr>
-                        <td>
-                            <div style="width: 80px">
-                                <img style="border-radius:50%%" src="cid:sc_logo">
-                            </div>
-                        </td>
-                        <td>
-                            <h1 style="color:#444444;font-size:50px;font-family:Arial;margin:0px">ShakeCast Alert</h1>
-                        </td>
-                    </tr>
-                </table>
-            </td>
-        </tr>
-        <tr>
-            <td>
-                <table style="width:95%%;margin-left:2.5%%">
-                    <tr>
-                        <td>
-                            <h2 style="font-family:Arial;color:%s;background-color:%s;padding:10px;margin-top:20px;margin-bottom:5px">Preliminary Earthquake Notification</h2>
-                        </td>
-                    </tr>
-                </table>
-            </td>
-        </tr>
-        <tr style="background-color:%s">
-            <td>
-                <table style="width:90%%;margin-left:5%%">
-                    <tr>
-                        <td>
-                            <p style="font-family:Arial;color:%s;margin:0px">%s %s</p>
-                        </td>
-                    </tr>
-                </table>
-            </td>
-        </tr>
-        
-
-        <tr style="text-align:center">
-            <td>
-                <h2 style="color:%s;border-bottom:2px solid %s;width:200px;margin-left:auto;margin-right:auto;font-family:Arial">Earthquake Details</h2>
-            </td>
-        </tr>
-        <tr>
-        
-            <td>
-                <table style="text-align:center;border: 2px solid #444444;border-collapse: collapse;padding: 5px;font-family:Arial; width:100%%">
-                    <tbody style="position: relative">
-                        <tr style="border: 2px solid #444444">
-                            <th style="border: 2px solid #444444;padding: 5px;">Map</th>
-                            <th style="border: 2px solid #444444;padding: 5px;">ID</th>
-                            <th style="border: 2px solid #444444;padding: 5px;">Time</th>
-                            <th style="border: 2px solid #444444;padding: 5px;">Mag</th>
-                            <th style="border: 2px solid #444444;padding: 5px;">Lat</th>
-                            <th style="border: 2px solid #444444;padding: 5px;">Lon</th>
-                            <th style="border: 2px solid #444444;padding: 5px;">Location</th>
-                        </tr>
-                        %s
-                        </tbody>
-                </table>
-            </td>
-        </tr>
-        <tr>
-            <td>
-                <h3 style="color:%s;font-family:Arial;margin-top:50px;margin-bottom:0px">ShakeCast Server:</h3>
-            </td>
-        </tr>
-        
-        <tr>
-            <td>
-                <table style="color:%s;margin-left:10px">
-                    <tr>
-                        <td>
-                            <p style="margin-bottom:2px;margin-top:0px;font-size: small;font-family: Arial;">ShakeCast Web: <a href="%s" target="_blank">%s</a></p>
-                            <p style="margin-bottom:2px;margin-top:0px;font-size: small;font-family: Arial;">Software: %s</p>
-                            <p style="margin-bottom:2px;margin-top:0px;font-size: small;font-family: Arial;">Notification Generated: %s</p>
-                            <p style="margin-bottom:2px;margin-top:0px;font-size: small;font-family: Arial;">Reported by: %s</p>
-                            <p style="margin-bottom:2px;margin-top:0px;font-size: small;font-family: Arial;">Template Type: %s</p>
-                        </td>
-                    </tr>
-                </table>
-            </td>
-        </tr>
-        <tr>
-            <td>
-                <p style="font-size: medium;font-family: Arial;">Questions about ShakeCast?  Contact Administrator at <a href="mailto:%s?subject=ShakeCast+V3+Inquiry" target="_blank">%s</a>.</p> 
-            </td>
-        </tr>
-
-    </table>
-
-</body>
-</html>
-"""
-        self.html_shell_insp = """
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
-<html>
-<head>
-</head>
-<body style="background-color:{0};width:700px;font-family:Arial">
-    <table style="table-layout:fixed;width:100%%">
-        <tr>
-            <td>
-                <table>
-                    <tr>
-                        <td>
-                            <div style="width: 80px">
-                                <img style="border-radius:50%" src="cid:sc_logo">
-                            </div>
-                        </td>
-                        <td>
-                            <h1 style="color:#444444;font-size:50px;font-family:Arial;margin:0px">ShakeCast Alert</h1>
-                        </td>
-                    </tr>
-                </table>
-            </td>
-        </tr>
-        <tr>
-            <td>
-                <table style="width:95%;margin-left:2.5%">
-                    <tr>
-                        <td>
-                            <h2 style="font-family:Arial;color:{1};background-color:{2};padding:10px;margin-top:20px;margin-bottom:5px">Inspection Notification</h2>
-                        </td>
-                    </tr>
-                </table>
-            </td>
-        </tr>
-        <tr>
-            <td>
-                <table style="width:90%;margin-left:5%;font-family:Arial;color:#444444;font-weight:bold">
-                    <tr>
-                        <td>
-                            <h2 style="background-color:#ffffff;margin-top:20px;margin-bottom:0px">Magnitude {3}</h2>
-                            <h2 style="background-color:#ffffff;margin-top:5px;margin-bottom:5px;border-bottom:2px solid #444444">{4}</h2>
-                            <table>
-                                <tr>
-                                    <td>Number of Facilities Evaluated</td>
-                                    <td>: {5}</td>
-                                </tr>
-                                <tr>
-                                    <td style="color:red">High Impact</td>
-                                    <td>: {6}</td>
-                                </tr>
-                                <tr>
-                                    <td style="color:orange">Moderate-High Impact</td>
-                                    <td>: {7}</td>
-                                </tr>
-                                <tr>
-                                    <td style="color:gold">Moderate Impact</td>
-                                    <td>: {8}</td>
-                                </tr>
-                                <tr>
-                                    <td style="color:green">Low Impact</td>
-                                    <td>: {9}</td>
-                                </tr>
-                                <tr>
-                                    <td style="color:grey">No Impact</td>
-                                    <td>: {10}</td>
-                                </tr>
-                            </table>
-                        </td>
-                    </tr>
-                </table>
-            </td>
-        </tr>
-        
-        <tr>
-            <td style="text-align:center;padding-top:20px">
-                <img src="cid:shakemap">
-            </td>
-        </tr>
-        
-        <tr>
-            <td>
-                <h2 style="color:#444444;margin-top:20px;margin-bottom:15px;border-bottom:2px solid #444444;margin-left:2.5%;width:90%">Impact Estimates:</h2>
-            </td>
-        </tr>
-        
-        <tr>
-            <td>
-                <table style="text-align:center;border: 2px solid #444444;border-collapse:collapse;padding:5px;margin-left:5%">
-                    {20}
-                    {11}
-                </table>
-            </td>
-        </tr>
-        
-        <tr>
-            <td>
-                <h3 style="color:{12};font-family:Arial;margin-top:50px;margin-bottom:0px">ShakeCast Server:</h3>
-            </td>
-        </tr>
-        
-        <tr>
-            <td>
-                <table style="color:{13};margin-left:10px">
-                    <tr>
-                        <td>
-                            <p style="margin-bottom:2px;margin-top:0px;font-size: small;font-family: Arial;">ShakeCast Web: <a href="{14}" target="_blank">{14}</a></p>
-                            <p style="margin-bottom:2px;margin-top:0px;font-size: small;font-family: Arial;">Software: {15}</p>
-                            <p style="margin-bottom:2px;margin-top:0px;font-size: small;font-family: Arial;">Notification Generated: {16}</p>
-                            <p style="margin-bottom:2px;margin-top:0px;font-size: small;font-family: Arial;">Reported by: {17}</p>
-                            <p style="margin-bottom:2px;margin-top:0px;font-size: small;font-family: Arial;">Template Type: {18}</p>
-                        </td>
-                    </tr>
-                </table>
-            </td>
-        </tr>
-        <tr>
-            <td>
-                <p style="font-size: medium;font-family: Arial;">Questions about ShakeCast?  Contact Administrator at <a href="mailto:{19}?subject=ShakeCast+V3+Inquiry" target="_blank">{19}</a>.</p> 
-            </td>
-        </tr>
-
-    </table>
-
-</body>
-</html>
-"""
-
-    def buildNewEventHTML(self, events=[]):
-        """
-        Builds the HTML notification using the html_shell.
-        
-        Args:
-            events (list): List of Event objects for the notification being created
-        """
-        sc = SC()
-        temp_dir = self.get_temp_dir()  + 'new_event' + get_delim()
-        temp_file = open(temp_dir + sc.default_template_new_event, 'r')
-        temp_str = temp_file.read()
-        temp_json = json.loads(temp_str)
-
-        sc_link = temp_json['intro']['sc_link'] % sc.server_dns
-        
-        table_str = ''' <tr>
-                            <td style="border: 2px solid #444444">
-                                <img src="cid:gmap{0}">
-                            </td>
-                            <td style="border: 2px solid #444444;padding: 5px;">{1}</td>
-                            <td style="border: 2px solid #444444;padding: 5px;">{2}</td>
-                            <td style="border: 2px solid #444444;padding: 5px;">{3}</td>
-                            <td style="border: 2px solid #444444;padding: 5px;">{4}</td>
-                            <td style="border: 2px solid #444444;padding: 5px;">{5}</td>
-                            <td style="border: 2px solid #444444;padding: 5px;">{6}</td>
-                        </tr>
-                '''
-        table = ''
-        
-        clock = Clock()
-        for count,event in enumerate(events):
-            
-            timestamp = (clock.from_time(event.time)
-                            .strftime('%Y-%m-%d %H:%M:%S'))
-            
-            if event.event_id == 'heartbeat':
-                magnitude = 'None'
-            else:
-                magnitude = event.magnitude
-            
-            table += table_str.format(count,
-                                      event.event_id,
-                                      timestamp,
-                                      magnitude,
-                                      event.lat,
-                                      event.lon,
-                                      event.place)
-        
-        self.html = self.html_shell_ne % (
-            temp_json['body_color'],
-            temp_json['section_head']['font_color'],
-            temp_json['section_head']['back_color'],
-            temp_json['intro']['back_color'],
-            temp_json['intro']['font_color'],
-            temp_json['intro']['text'], sc_link,
-            temp_json['second_head']['font_color'],
-            temp_json['second_head']['border_color'],
-            table,
-            temp_json['footer']['header_color'],
-            temp_json['footer']['font_color'],
-            sc.server_dns, sc.server_dns,
-            sc.software_version,
-            '',
-            sc.server_name,
-            '',
-            temp_json['admin_email'], temp_json['admin_email']
-        )
-        
-    def buildInspHTML(self, shakemap):
-        """
-        Builds the HTML notification using the html_shell_insp.
-        
-        Args:
-            shakemap (ShakeMap): ShakeMap object for the notification being created
-        """
-        
-        sc = SC()
-        temp_dir = self.get_temp_dir()  + 'inspection' + get_delim()
-        temp_file = open(temp_dir + sc.default_template_inspection, 'r')
-        temp_str = temp_file.read()
-        temp_json = json.loads(temp_str)
-        
-        # make facility string
-        stmt = (select([Facility.__table__.c.facility_id,
-                       Facility.__table__.c.name,
-                       Facility.__table__.c.facility_type,
-                       Facility_Shaking.__table__.c.alert_level,
-                       Facility_Shaking.__table__.c.metric,
-                       Facility_Shaking.__table__.c.mmi,
-                       Facility_Shaking.__table__.c.pga,
-                       Facility_Shaking.__table__.c.pgv,
-                       Facility_Shaking.__table__.c.psa03,
-                       Facility_Shaking.__table__.c.psa10,
-                       Facility_Shaking.__table__.c.psa30,
-                       ]).where(and_(Facility_Shaking.__table__.c.facility_id ==
-                                        Facility.__table__.c.shakecast_id,
-                                        Facility_Shaking.__table__.c.shakemap_id ==
-                                        shakemap.shakecast_id))
-                         .order_by(desc('weight')))
-        result = engine.execute(stmt)
-        
-        
-        # load header from template and create html
-        head_lst = temp_json['table_head']
-        table_header = """
-                    <tr>
-                        """
-        if 'name' in head_lst:
-            table_header += '<th style="border: 2px solid #444444;padding: 5px;">Facility</th>'
-        if 'facility_id' in head_lst:
-            table_header += '<th style="border: 2px solid #444444;padding: 5px;">ID</th>'
-        if 'facility_type' in head_lst:
-            table_header += '<th style="border: 2px solid #444444;padding: 5px;">Facility_Type</th>'
-        if 'inspection_priority' in head_lst:
-            table_header += '<th style="border: 2px solid #444444;padding: 5px;">Inspection Priority</th>'
-        if 'MMI' in head_lst:
-            table_header += '<th style="border: 2px solid #444444;padding: 5px;">MMI</th>'
-        if 'PGA' in head_lst:
-            table_header += '<th style="border: 2px solid #444444;padding: 5px;">PGA</th>'
-        if 'PGV' in head_lst:
-            table_header += '<th style="border: 2px solid #444444;padding: 5px;">PGV</th>'
-        if 'PSA03' in head_lst:
-            table_header += '<th style="border: 2px solid #444444;padding: 5px;">PSA03</th>'
-        if 'PSA10' in head_lst:
-            table_header += '<th style="border: 2px solid #444444;padding: 5px;">PSA10</th>'
-        if 'PSA30' in head_lst:
-            table_header += '<th style="border: 2px solid #444444;padding: 5px;">PSA30</th>'
-        if 'metric' in head_lst:
-            table_header += '<th style="border: 2px solid #444444;padding: 5px;">Metric</th>'
-        if 'shaking_value' in head_lst:
-            table_header += '<th style="border: 2px solid #444444;padding: 5px;">Shaking Value</th>'
-
-        table_header += """
-                    </tr>"""
-
-        fac_str = ''
-        grey_count = 0
-        green_count = 0
-        yellow_count = 0
-        orange_count = 0
-        red_count = 0
-        for row in result:
-            if row[3] == 'green':
-                color = '#44dd66'
-                green_count += 1
-                impact = 'Low'
-            elif row[3] == 'yellow':
-                color = 'yellow'
-                impact = 'Moderate'
-                yellow_count += 1
-            elif row[3] == 'orange':
-                color = 'orange'
-                impact = 'Moderate - High'
-                orange_count += 1
-            elif row[3] == 'red':
-                color = '#ff4444'
-                red_count += 1
-                impact = 'High'
-            else:
-                color = '#dddddd'
-                grey_count += 1
-                impact = 'None'
-                
-            fac_row = """
-                    <tr>
-                        """
-            if 'name' in head_lst:
-                fac_row += '<td style="border: 2px solid #444444;padding: 5px;">{1}</td>'
-            if 'facility_id' in head_lst:
-                fac_row += '<td style="border: 2px solid #444444;padding: 5px;">{0}</td>'
-            if 'facility_type' in head_lst:
-                fac_row += '<td style="border: 2px solid #444444;padding: 5px;">{2}</td>'
-            if 'inspection_priority' in head_lst:
-                fac_row += '<td style="border: 2px solid #444444;padding: 5px;background-color:{11}">{12}</td>'
-            if 'MMI' in head_lst:
-                fac_row += '<td style="border: 2px solid #444444;padding: 5px;">{5}</td>'
-            if 'PGA' in head_lst:
-                fac_row += '<td style="border: 2px solid #444444;padding: 5px;">{6}</td>'
-            if 'PGV' in head_lst:
-                fac_row += '<td style="border: 2px solid #444444;padding: 5px;">{7}</td>'
-            if 'PSA03' in head_lst:
-                fac_row += '<td style="border: 2px solid #444444;padding: 5px;">{8}</td>'
-            if 'PSA10' in head_lst:
-                fac_row += '<td style="border: 2px solid #444444;padding: 5px;">{9}</td>'
-            if 'PSA30' in head_lst:
-                fac_row += '<td style="border: 2px solid #444444;padding: 5px;">{10}</td>'
-            if 'metric' in head_lst:
-                fac_row += '<td style="border: 2px solid #444444;padding: 5px;">{4}</td>'
-            if 'shaking_value' in head_lst:
-                fac_row += '<td style="border: 2px solid #444444;padding: 5px;">{13}</td>'
-
-            fac_row += """
-                        </tr>"""
-            
-            shaking_dict = {'MMI': row[5],
-                            'PGA': row[6],
-                            'PGV': row[7],
-                            'PSA03': row[8],
-                            'PSA10': row[9],
-                            'PSA30': row[10]}
-            shaking = shaking_dict[row[4]]
-            
-            fac_str += fac_row.format(row[0], row[1], row[2],
-                                        row[3], row[4], row[5],
-                                        row[6], row[7], row[8], row[9],
-                                        row[10], color, impact, shaking)
-            
-        result.close()
-        
-        self.html = self.html_shell_insp.format(
-            temp_json['body_color'],
-            temp_json['section_head']['font_color'],
-            temp_json['section_head']['back_color'],
-            shakemap.event.magnitude,
-            shakemap.event.place,
-            str(grey_count + green_count + yellow_count + orange_count + red_count),
-            red_count,
-            orange_count,
-            yellow_count,
-            green_count,
-            grey_count,
-            fac_str,
-            temp_json['footer']['header_color'],
-            temp_json['footer']['font_color'],
-            sc.server_dns,
-            sc.software_version,
-            '',
-            sc.server_name,
-            '',
-            temp_json['admin_email'],
-            table_header
-        )
+        pass
     
-    def get_temp_dir(self):
-        """
-        Determine where the template directory is
+    def build_new_event_html(self, events=[], group=None):
+        conf_file = os.path.join(sc_dir(),
+                                 'templates',
+                                 'new_event',
+                                 'default.json')
+        conf_str = open(conf_file, 'r')
+        config = json.loads(conf_str.read())
+        conf_str.close()
         
-        Returns:
-            string: The absolute path the the template directory
-        """
         
-        # Get directory location for database
-        path = os.path.dirname(os.path.abspath(__file__))
-        delim = get_delim()
-        path = path.split(delim)
-        path[-1] = 'templates'
-        directory = delim.join(path) + delim
+        temp_file = os.path.join(sc_dir(),
+                                 'templates',
+                                 'new_event',
+                                 'default.html')
+        temp_str = open(temp_file, 'r')
+        template = Template(temp_str.read())
+        temp_str.close()
         
-        return directory
-
+        return template.render(events=events, group=group, sc=SC(), config=config)
+    
+    def build_insp_html(self, shakemap):
+        conf_file = os.path.join(sc_dir(),
+                                 'templates',
+                                 'inspection',
+                                 'default.json')
+        conf_str = open(conf_file, 'r')
+        config = json.loads(conf_str.read())
+        conf_str.close()
+        
+        
+        temp_file = os.path.join(sc_dir(),
+                                 'templates',
+                                 'inspection',
+                                 'default.html')
+        temp_str = open(temp_file, 'r')
+        template = Template(temp_str.read())
+        temp_str.close()
+        
+        facility_shaking = shakemap.facility_shaking
+        fac_details = {'all': 0, 'grey': 0, 'green': 0,
+                       'yellow': 0, 'orange': 0, 'red': 0}
+        
+        for fs in facility_shaking:
+            fac_details['all'] += 1
+            fac_details[fs.alert_level] += 1
+        
+        return template.render(shakemap=shakemap,
+                               facility_shaking=facility_shaking,
+                               fac_details=fac_details,
+                               sc=SC(),
+                               config=config)
+    
     
 class URLOpener(object):
     """

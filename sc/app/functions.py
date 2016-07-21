@@ -438,8 +438,8 @@ def new_event_notification(notifications = [],
         n.status = 'aggregated'
 
     # create HTML for the event email
-    not_builder = Notification_Builder()
-    not_builder.buildNewEventHTML(events)
+    not_builder = NotificationBuilder()
+    html = not_builder.build_new_event_html(events=events)
     
     notification.status = 'HTML success'
 
@@ -447,7 +447,7 @@ def new_event_notification(notifications = [],
     msg = MIMEMultipart()
     
     # attach html
-    msg_html = MIMEText(not_builder.html, 'html')
+    msg_html = MIMEText(html, 'html')
     msg.attach(msg_html)
 
     # get and attach map
@@ -508,8 +508,8 @@ def inspection_notification(notification=Notification(),
     shakemap = notification.shakemap
     group = notification.group
     try:
-        not_builder = Notification_Builder()
-        not_builder.buildInspHTML(shakemap)
+        not_builder = NotificationBuilder()
+        html = not_builder.build_insp_html(shakemap)
     
         notification.status = 'file success'
     except:
@@ -522,7 +522,7 @@ def inspection_notification(notification=Notification(),
             msg = MIMEMultipart()
             
             # attach html
-            msg_html = MIMEText(not_builder.html, 'html')
+            msg_html = MIMEText(html, 'html')
             msg.attach(msg_html)
             
             # get and attach shakemap
