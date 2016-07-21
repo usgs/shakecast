@@ -2,14 +2,15 @@ app.controller('eqController', function($scope, $http, $timeout) {
     
     $scope.eq_data = []
     $scope.filter = {}
-    $scope.filter['all_events'] = true
+    $scope.filter['all_events'] = false
+    $scope.filter['timeframe'] = ''
     // create a message to display in our view
-    $scope.getEQs = function(lastID=0, filter=$scope.filter) {
-        $http.get('/get/eqdata', {params: {last_id: lastID, filter: filter}})
+    $scope.getEQs = function(time=$scope.time, filter=$scope.filter) {
+        $http.get('/get/eqdata', {params: {time: time, filter: filter}})
             .then(
                 function(response){
                     
-                    if (lastID == 0) {
+                    if (time == 0) {
                         cur_pos = 0
                     } else {
                         cur_pos = $scope.eq_data.length
@@ -27,7 +28,7 @@ app.controller('eqController', function($scope, $http, $timeout) {
                     }
                     
                     $scope.loadEQ(index=cur_pos)
-                    $scope.lastID = $scope.eq_data.slice(-1)[0].shakecast_id
+                    $scope.time = $scope.eq_data.slice(-1)[0].time
                 }, 
                 function(response){
                   $scope.eq_data = []
@@ -35,9 +36,9 @@ app.controller('eqController', function($scope, $http, $timeout) {
              );
     };
     
-    $scope.getEQsFilter = function(lastID=0, filter=$scope.filter) {
+    $scope.getEQsFilter = function(time=0, filter=$scope.filter) {
         $scope.eq_data = []
-        $scope.getEQs(lastID=lastID, filter=filter)
+        $scope.getEQs(time=time, filter=filter)
     }
     
     $scope.clearFilter = function() {
