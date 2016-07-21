@@ -508,8 +508,8 @@ def inspection_notification(notification=Notification(),
     shakemap = notification.shakemap
     group = notification.group
     try:
-        not_builder = Notification_Builder()
-        not_builder.buildInspHTML(shakemap)
+        not_builder = NotificationBuilder()
+        html = not_builder.build_insp_html(shakemap)
     
         notification.status = 'file success'
     except:
@@ -522,7 +522,7 @@ def inspection_notification(notification=Notification(),
             msg = MIMEMultipart()
             
             # attach html
-            msg_html = MIMEText(not_builder.html, 'html')
+            msg_html = MIMEText(html, 'html')
             msg.attach(msg_html)
             
             # get and attach shakemap

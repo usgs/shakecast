@@ -936,14 +936,49 @@ class NotificationBuilder(object):
         conf_str.close()
         
         
-        temp_file = os.path.join(sc_dir(), 'templates', 'new_event', 'default.html')
+        temp_file = os.path.join(sc_dir(),
+                                 'templates',
+                                 'new_event',
+                                 'default.html')
         temp_str = open(temp_file, 'r')
         template = Template(temp_str.read())
         temp_str.close()
         
         return template.render(events=events, group=group, sc=SC(), config=config)
-
-
+    
+    def build_insp_html(self, shakemap):
+        conf_file = os.path.join(sc_dir(),
+                                 'templates',
+                                 'inspection',
+                                 'default.json')
+        conf_str = open(conf_file, 'r')
+        config = json.loads(conf_str.read())
+        conf_str.close()
+        
+        
+        temp_file = os.path.join(sc_dir(),
+                                 'templates',
+                                 'inspection',
+                                 'default.html')
+        temp_str = open(temp_file, 'r')
+        template = Template(temp_str.read())
+        temp_str.close()
+        
+        facility_shaking = shakemap.facility_shaking
+        fac_details = {'all': 0, 'grey': 0, 'green': 0,
+                       'yellow': 0, 'orange': 0, 'red': 0}
+        
+        for fs in facility_shaking:
+            fac_details['all'] += 1
+            fac_details[fs.alert_level] += 1
+        
+        return template.render(shakemap=shakemap,
+                               facility_shaking=facility_shaking,
+                               fac_details=fac_details,
+                               sc=SC(),
+                               config=config)
+    
+    
 class Notification_Builder(object):
     """
     Holds HTML shell for new events as well as notification configuration
