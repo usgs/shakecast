@@ -238,7 +238,7 @@ td,th {
             margin-top: 5px;
 }
 
-.more-facilities {
+.load-more {
             width: 100%;
             text-align: center;
             cursor: pointer;
@@ -247,7 +247,7 @@ td,th {
             padding: 10px;
 }
 
-.more-facilities:hover {
+.load-more:hover {
             background-color: rgb(220,220,220);
 }
 
