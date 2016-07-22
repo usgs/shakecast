@@ -312,13 +312,16 @@ class TestImport(unittest.TestCase):
         Session.remove()
     
     def step2_userImport(self):
-        import_user_xml('test_users.xml')
+        user_file = os.path.join(sc_dir(), 'test', 'test_users.xml')
+        import_user_xml(user_file)
         
     def step3_groupImport(self):
-        import_group_xml('test_groups.xml')
+        group_file = os.path.join(sc_dir(), 'test', 'test_groups.xml')
+        import_group_xml(group_file)
         
     def step4_facImport(self):
-        import_facility_xml('test_facs.xml')
+        fac_file = os.path.join(sc_dir(), 'test', 'test_facs.xml')
+        import_facility_xml(fac_file)
     
     def step5_checkUser(self):
         session = Session()
@@ -505,8 +508,8 @@ if __name__ == '__main__':
                  'org' in email or
                  'edu' in email)):
             unittest.TestCase.email = email
-        else:
-            unittest.TestCase.email = 'test@test.com'
+    else:
+        unittest.TestCase.email = 'test@test.com'
             
     unittest.main()
         
