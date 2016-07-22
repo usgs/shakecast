@@ -495,13 +495,18 @@ if __name__ == '__main__':
     
     # If the user wants to make sure they can get emails, they should
     # be able to specify an email address for each test run
-    email_query = ''
-    while email_query != 'y' and email_query != 'n':
-        email_query = raw_input('\nEnter email address for testing? (y/n): ')
-    if email_query == 'y':
-        unittest.TestCase.email = raw_input('\nEnter email address: ')
-    else:
-        unittest.TestCase.email = 'test@test.com'
-    
+    if len(sys.argv) > 1:
+        email = sys.argv[1]
+        del sys.argv[1]
+        if (('@' in email) and
+                ('.' in email) and
+                ('com' in email or
+                 'gov' in email or
+                 'org' in email or
+                 'edu' in email)):
+            unittest.TestCase.email = email
+        else:
+            unittest.TestCase.email = 'test@test.com'
+            
     unittest.main()
         
