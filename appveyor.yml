@@ -10,11 +10,11 @@ environment:
     # Python 2.7.10 is the latest version and is not pre-installed.
 
     - PYTHON: "C:\\Python27.10"
-      PYTHON_VERSION: "2.7.x"
+      PYTHON_VERSION: "2.7.10"
       PYTHON_ARCH: "32"
 
     - PYTHON: "C:\\Python27.10"
-      PYTHON_VERSION: "2.7.x"
+      PYTHON_VERSION: "2.7.10"
       PYTHON_ARCH: "64"
 
 
