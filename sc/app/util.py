@@ -33,3 +33,7 @@ def sc_dir():
     directory = os.path.normpath(delim.join(path))
     
     return directory
+
+def lognorm_opt(med=0, spread=0, step=.01, just_norm=False, shaking=False):
+    p_norm = (math.erf((shaking-med)/(math.sqrt(2) * spread)) + 1)/2
+    return p_norm * 100  

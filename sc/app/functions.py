@@ -7,9 +7,9 @@ import xml.etree.ElementTree as ET
 from email.mime.text import MIMEText
 from email.MIMEImage import MIMEImage
 from email.MIMEMultipart import MIMEMultipart
-from dbi.db_alchemy import *
+from orm import *
 from objects import *
-from functions_util import *
+from util import *
 import sys
 
 modules_dir = os.path.join(sc_dir() + 'modules')
