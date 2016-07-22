@@ -6,7 +6,7 @@ import sys
 from newthread import New_Thread
 from task import Task
 from functions import *
-from functions_util import *
+from util import *
 
 class Server(object):
     
