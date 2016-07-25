@@ -65,7 +65,7 @@ test_script:
    - ps: "ls"
    - ECHO %EMAIL%
    - ECHO %PASS%
-   - "%CMD_IN_ENV% python -c \"import app.functions; functions.sc_config({'SMTP': {'username': '%EMAIL%', 'from': '%EMAIL%', 'password': '%PASS%'}}) \""
+  # - "%CMD_IN_ENV% python -c \"import app.functions; functions.sc_config({'SMTP': {'username': '%EMAIL%', 'from': '%EMAIL%', 'password': '%PASS%'}}) \""
    - "%CMD_IN_ENV% python test\\test.py dslosky@usgs.gov"
 
 #after_test:
