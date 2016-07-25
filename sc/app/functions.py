@@ -609,6 +609,28 @@ def create_grid(shakemap=None):
     
     return grid    
 
+def sc_config(new_configs={}):
+    '''
+    Allows a user (or AppVeyor) to specify configurations through the
+    command line
+    
+    Usage: python -c "import functions; functions.sc_config({keys: values})"
+    '''
+    sc = SC()
+    sc_config = json.loads(sc.json)
+    for key, value in new_configs.iteritems():
+        if key in sc_config:
+            if not isinstance(new_configs[key], dict):
+                sc_config[key] = new_configs[key]
+            else:
+                for i_key, i_value in new_configs[key].iteritems():
+                    sc_config[key][i_key] = new_configs[key][i_key]
+                    
+    sc.json = json.dumps(sc_config)
+    if sc.validate() is True:
+        sc.save()
+    
+    
 #######################################################################
 ######################## Import Inventory Data ########################
 
@@ -1082,9 +1104,7 @@ def determine_xml(xml_file=''):
         xml_type = 'unknown'
         
     return xml_type
-    
-    
-              
+               
 def add_facs_to_groups(session=None):
     '''
     Associate all groups with the facilities that fall inside their
@@ -1126,8 +1146,6 @@ def add_users_to_groups(session=None):
                                         .all())
                     if group:
                         user.groups.append(group[0])
-
-
 
 
 #######################################################################

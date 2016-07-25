@@ -61,7 +61,9 @@ build: off
 
 test_script:
   # Run the project tests
-   - "%CMD_IN_ENV% python C:\\projects\\shakecast\\sc\\test\\test.py dslosky@usgs.gov"
+   - "cd C:\\projects\\shakecast\\sc\\"
+   - "%CMD_IN_ENV% python -c \"import app.functions; functions.sc_config({'SMTP': {'username': '%EMAIL%', 'from': '%EMAIL%', 'password': '%PASS%'}}) \""
+   - "%CMD_IN_ENV% python test\\test.py dslosky@usgs.gov"
 
 #after_test:
   # If tests are successful, create binary packages for the project.
