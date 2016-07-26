@@ -608,27 +608,6 @@ def create_grid(shakemap=None):
     grid.load(shakemap.directory_name + get_delim() + 'grid.xml')
     
     return grid    
-
-def sc_config(new_configs={}):
-    '''
-    Allows a user (or AppVeyor) to specify configurations through the
-    command line
-    
-    Usage: python -c "import functions; functions.sc_config({keys: values})"
-    '''
-    sc = SC()
-    sc_config = json.loads(sc.json)
-    for key, value in new_configs.iteritems():
-        if key in sc_config:
-            if not isinstance(new_configs[key], dict):
-                sc_config[key] = new_configs[key]
-            else:
-                for i_key, i_value in new_configs[key].iteritems():
-                    sc_config[key][i_key] = new_configs[key][i_key]
-                    
-    sc.json = json.dumps(sc_config)
-    if sc.validate() is True:
-        sc.save()
     
     
 #######################################################################
