@@ -1,4 +1,8 @@
 environment:
+  EMAIL: pyCast.USGS@gmail.com
+  PASS:
+    secure: ks5EvVJ8ScYH0t0zdt+cPA==
+
   global:
     # SDK v7.0 MSVC Express 2008's SetEnv.cmd script will fail if the
     # /E:ON and /V:ON options are not enabled in the batch script intepreter
@@ -63,8 +67,8 @@ test_script:
   # Run the project tests
    - "cd C:\\projects\\shakecast\\sc\\"
    - ps: "ls"
-   - ECHO %EMAIL%
    - ECHO %PASS%
+   - ECHO %EMAIL%
    - python -c "import app.functions; functions.sc_config({'SMTP': {'username': '%EMAIL%', 'from': '%EMAIL%', 'password': '%PASS%'}})"
    - python test\\test.py dslosky@usgs.gov"
 
