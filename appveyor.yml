@@ -67,9 +67,9 @@ test_script:
   # Run the project tests
    - "cd C:\\projects\\shakecast\\sc\\"
    - ps: "ls"
-   - ECHO %PASS%
    - ECHO %EMAIL%
-   - python -c "import app.functions; functions.sc_config({'SMTP': {'username': '%EMAIL%', 'from': '%EMAIL%', 'password': '%PASS%'}})"
+   - ECHO %PASS%
+   - python -c "import app.functions; app.functions.sc_config({'SMTP': {'username': '%EMAIL%', 'from': '%EMAIL%', 'password': '%PASS%'}})"
    - python test\\test.py dslosky@usgs.gov"
 
 #after_test:
