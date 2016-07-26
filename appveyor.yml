@@ -66,7 +66,7 @@ build: off
 test_script:
   # Run the project tests
    - "cd C:\\projects\\shakecast\\sc\\"
-   - "python sc_config.py --smtpu %EMAIL% --smtpp %PASS%"
+   - "python app\\sc_config.py --smtpu %EMAIL% --smtpp %PASS%"
    - "python test\\test.py dslosky@usgs.gov"
 
 #after_test:
