@@ -1,0 +1,11 @@
+click==6.6
+Flask==0.10.1
+Flask-Login==0.3.2
+Flask-Uploads==0.2.0
+itsdangerous==0.24
+Jinja2==2.8
+MarkupSafe==0.23
+PySocks==1.5.7
+SQLAlchemy==1.0.14
+Werkzeug==0.11.10
+wheel==0.26.0

@@ -608,7 +608,8 @@ def create_grid(shakemap=None):
     grid.load(shakemap.directory_name + get_delim() + 'grid.xml')
     
     return grid    
-
+    
+    
 #######################################################################
 ######################## Import Inventory Data ########################
 
@@ -1082,9 +1083,7 @@ def determine_xml(xml_file=''):
         xml_type = 'unknown'
         
     return xml_type
-    
-    
-              
+               
 def add_facs_to_groups(session=None):
     '''
     Associate all groups with the facilities that fall inside their
@@ -1126,8 +1125,6 @@ def add_users_to_groups(session=None):
                                         .all())
                     if group:
                         user.groups.append(group[0])
-
-
 
 
 #######################################################################

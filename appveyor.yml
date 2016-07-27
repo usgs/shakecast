@@ -1,4 +1,5 @@
 environment:
+
   global:
     # SDK v7.0 MSVC Express 2008's SetEnv.cmd script will fail if the
     # /E:ON and /V:ON options are not enabled in the batch script intepreter
@@ -10,11 +11,11 @@ environment:
     # Python 2.7.10 is the latest version and is not pre-installed.
 
     - PYTHON: "C:\\Python27.10"
-      PYTHON_VERSION: "2.7.x"
+      PYTHON_VERSION: "2.7.10"
       PYTHON_ARCH: "32"
 
     - PYTHON: "C:\\Python27.10"
-      PYTHON_VERSION: "2.7.x"
+      PYTHON_VERSION: "2.7.10"
       PYTHON_ARCH: "64"
 
 
@@ -57,24 +58,20 @@ install:
   # target Python version and architecture
   - "%CMD_IN_ENV% pip install -r requirements.txt"
 
-build_script:
-  # Build the compiled extension
-  #- "%CMD_IN_ENV% python setup.py build"
+build: off
 
 test_script:
   # Run the project tests
-  # - "%CMD_IN_ENV% python setup.py nosetests"
+   - "cd C:\\projects\\shakecast\\sc\\"
+   - "python app\\sc_config.py --smtpu testing.only.shakecast@gmail.com --smtpp testingpass"
+   - "python test\\test.py dslosky@usgs.gov"
 
-after_test:
+#after_test:
   # If tests are successful, create binary packages for the project.
   #- "%CMD_IN_ENV% python setup.py bdist_wheel"
   #- "%CMD_IN_ENV% python setup.py bdist_wininst"
   #- "%CMD_IN_ENV% python setup.py bdist_msi"
   #- ps: "ls dist"
-
-artifacts:
-  # Archive the generated packages in the ci.appveyor.com build report.
-  #- path: dist\*
 
 #on_success:
 #  - TODO: upload the content of dist/*.whl to a public wheelhouse

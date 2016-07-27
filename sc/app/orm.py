@@ -875,9 +875,10 @@ db_name = 'shakecast.db'
 testing = False
 insp = inspect_mod.stack()
 for stack in insp:
-    if 'test.py' in stack:
-        db_name = 'test.db'
-        testing = True
+    for entry in stack:
+        if 'test.py' in str(entry):
+            db_name = 'test.db'
+            testing = True
         
 # logging from DB
 #logging.basicConfig(level=logging.DEBUG)

@@ -15,7 +15,7 @@ from functools import wraps
 import time
 import datetime
 from ast import literal_eval
-from app.dbi.db_alchemy import *
+from app.orm import *
 from app.server import Server
 from app.functions_util import *
 from app.objects import Clock, SC
