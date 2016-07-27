@@ -1,7 +1,6 @@
 environment:
-  EMAIL: pyCast.USGS@gmail.com
-  PASS:
-    secure: ks5EvVJ8ScYH0t0zdt+cPA==
+  EMAIL: testing.only.shakecast@gmail.com
+  PASS: testingpass
 
   global:
     # SDK v7.0 MSVC Express 2008's SetEnv.cmd script will fail if the
