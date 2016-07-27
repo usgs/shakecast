@@ -1,6 +1,4 @@
 environment:
-  EMAIL: testing.only.shakecast@gmail.com
-  PASS: testingpass
 
   global:
     # SDK v7.0 MSVC Express 2008's SetEnv.cmd script will fail if the
@@ -65,7 +63,7 @@ build: off
 test_script:
   # Run the project tests
    - "cd C:\\projects\\shakecast\\sc\\"
-   - "python app\\sc_config.py --smtpu %EMAIL% --smtpp %PASS%"
+   - "python app\\sc_config.py --smtpu testing.only.shakecast@gmail.com --smtpp testingpass"
    - "python test\\test.py dslosky@usgs.gov"
 
 #after_test:
