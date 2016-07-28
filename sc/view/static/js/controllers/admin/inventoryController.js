@@ -25,8 +25,12 @@ app.controller('inventoryController', function($scope, $http) {
                         $scope.cur_fac = $scope.fac_data[cur_fac_pos] 
                     }
                     
-                    $scope.loadFac(index=cur_fac_pos)
-                    $scope.lastID = $scope.fac_data.slice(-1)[0].shakecast_id
+                    if ($scope.fac_data.length > 0) {
+                        $scope.loadFac(index=cur_fac_pos)
+                        $scope.lastID = $scope.fac_data.slice(-1)[0].shakecast_id
+                    } else {
+                        
+                    }
                 }, 
                 function(response){
                     $scope.fac_data = []
@@ -74,7 +78,7 @@ app.controller('inventoryController', function($scope, $http) {
                             lat: 0,
                             lng: 0,
                             message: '',
-                            focus: true,
+                            focus: false,
                             draggable: false
                         }
                     }

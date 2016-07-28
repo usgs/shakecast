@@ -1,5 +1,5 @@
-from app.functions_util import *
 from app.objects import AlchemyEncoder
+from app.util import *
 import os
 import sys
 import json
@@ -15,9 +15,8 @@ from functools import wraps
 import time
 import datetime
 from ast import literal_eval
-from app.dbi.db_alchemy import *
+from app.orm import *
 from app.server import Server
-from app.functions_util import *
 from app.objects import Clock, SC
 from app.functions import determine_xml
 from ui import UI
@@ -87,11 +86,50 @@ def earthquakes():
 def home():
     return render_template('home.html')
 
-@app.route('/get/eqdata/')
+@app.route('/get/eqdata')
 @login_required
-def eq_data():
+def get_eq_data():
     session = Session()
-    eqs = session.query(Event).filter(Event.event_id != 'heartbeat').order_by(Event.time.desc()).all()
+    filter_ = json.loads(request.args.get('filter', '{}'))
+    DAY = 24*60*60
+    
+    query = session.query(Event)
+    if filter_:
+        if filter_.get('group', None):
+            query = query.filter(Event.groups.any(Group.name.like(filter_['group'])))
+        if filter_.get('lat_max', None):
+            query = query.filter(Event.lat < filter_['lat_max'])
+        if filter_.get('lat_min', None):
+            query = query.filter(Event.lat > filter_['lat_min'])
+        if filter_.get('lon_max', None):
+            query = query.filter(Event.lon < filter_['lon_max'])
+        if filter_.get('lon_min', None):
+            query = query.filter(Event.lat > filter_['lon_min'])
+
+        if filter_.get('timeframe', None):
+            timeframe = filter_.get('timeframe')
+            if timeframe == 'day':
+                query = query.filter(Event.time > time.time() - DAY)
+            elif timeframe == 'week':
+                query = query.filter(Event.time > time.time() - 7*DAY)    
+            elif timeframe == 'month':
+                query = query.filter(Event.time > time.time() - 31*DAY)    
+            elif timeframe == 'year':
+                query = query.filter(Event.time > time.time() - 365*DAY)    
+        if filter_.get('all_events', False) is False:
+            query = query.filter(Event.shakemaps)
+    
+    # get the time of the last earthquake in UI,
+    # should be 0 for a new request
+    eq_time = float(request.args.get('time', 0))
+    if eq_time < 1:
+        eq_time = time.time()
+        
+    eqs = (query.filter(Event.time < eq_time)
+                .filter(Event.event_id != 'heartbeat')
+                .order_by(desc(Event.time))
+                .limit(50)
+                .all())
     
     eq_dicts = []
     for eq in eqs:
@@ -316,7 +354,7 @@ def inspection():
 @admin_only
 @login_required
 def admin_eqs():
-    return '<h1>earthquakes</h1>'
+    return render_template('admin/earthquakes.html')
 
 @admin_only
 @login_required
@@ -431,9 +469,9 @@ def get_user_groups(user_id):
 @app.route('/admin/get/inventory')
 def get_inventory():
     session = Session()
-    filter_ = literal_eval(request.args.get('filter', 'None'))
+    filter_ = json.loads(request.args.get('filter', '{}'))
     if filter_:
-        if filter_.get('group', None):
+        if filter_.get('group', None) is not None:
             facilities = (session.query(Facility)
                             .filter(Facility.shakecast_id > request.args.get('last_id', 0))
                             .filter(Facility.lat_min > (float(filter_['lat']) - float(filter_['lat_pm'])))

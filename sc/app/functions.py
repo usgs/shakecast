@@ -7,9 +7,9 @@ import xml.etree.ElementTree as ET
 from email.mime.text import MIMEText
 from email.MIMEImage import MIMEImage
 from email.MIMEMultipart import MIMEMultipart
-from dbi.db_alchemy import *
+from orm import *
 from objects import *
-from functions_util import *
+from util import *
 import sys
 
 modules_dir = os.path.join(sc_dir() + 'modules')
@@ -438,8 +438,8 @@ def new_event_notification(notifications = [],
         n.status = 'aggregated'
 
     # create HTML for the event email
-    not_builder = Notification_Builder()
-    not_builder.buildNewEventHTML(events)
+    not_builder = NotificationBuilder()
+    html = not_builder.build_new_event_html(events=events)
     
     notification.status = 'HTML success'
 
@@ -447,7 +447,7 @@ def new_event_notification(notifications = [],
     msg = MIMEMultipart()
     
     # attach html
-    msg_html = MIMEText(not_builder.html, 'html')
+    msg_html = MIMEText(html, 'html')
     msg.attach(msg_html)
 
     # get and attach map
@@ -508,8 +508,8 @@ def inspection_notification(notification=Notification(),
     shakemap = notification.shakemap
     group = notification.group
     try:
-        not_builder = Notification_Builder()
-        not_builder.buildInspHTML(shakemap)
+        not_builder = NotificationBuilder()
+        html = not_builder.build_insp_html(shakemap)
     
         notification.status = 'file success'
     except:
@@ -522,7 +522,7 @@ def inspection_notification(notification=Notification(),
             msg = MIMEMultipart()
             
             # attach html
-            msg_html = MIMEText(not_builder.html, 'html')
+            msg_html = MIMEText(html, 'html')
             msg.attach(msg_html)
             
             # get and attach shakemap
@@ -608,7 +608,8 @@ def create_grid(shakemap=None):
     grid.load(shakemap.directory_name + get_delim() + 'grid.xml')
     
     return grid    
-
+    
+    
 #######################################################################
 ######################## Import Inventory Data ########################
 
@@ -1082,9 +1083,7 @@ def determine_xml(xml_file=''):
         xml_type = 'unknown'
         
     return xml_type
-    
-    
-              
+               
 def add_facs_to_groups(session=None):
     '''
     Associate all groups with the facilities that fall inside their
@@ -1126,8 +1125,6 @@ def add_users_to_groups(session=None):
                                         .all())
                     if group:
                         user.groups.append(group[0])
-
-
 
 
 #######################################################################

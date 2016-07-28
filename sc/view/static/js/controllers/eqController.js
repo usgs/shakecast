@@ -1,17 +1,51 @@
 app.controller('eqController', function($scope, $http, $timeout) {
+    
+    $scope.eq_data = []
+    $scope.filter = {}
+    $scope.filter['all_events'] = false
+    $scope.filter['timeframe'] = ''
     // create a message to display in our view
-    $http.get('/get/eqdata')
-        .then(
-            function(response){
-                $scope.eq_data = response.data
-                $scope.cur_eq = $scope.eq_data[0]
-                
-                $scope.loadEQ(0)
-            }, 
-            function(response){
-              $scope.eq_data = 'None'
-            }
-         );
+    $scope.getEQs = function(time=$scope.time, filter=$scope.filter) {
+        $http.get('/get/eqdata', {params: {time: time, filter: filter}})
+            .then(
+                function(response){
+                    
+                    if (time == 0) {
+                        cur_pos = 0
+                    } else {
+                        cur_pos = $scope.eq_data.length
+                    }
+                    
+                    $scope.eq_data = $scope.eq_data.concat(response.data)
+                    
+                    // make sure we don't try to select a fac that
+                    // isn't there
+                    if ($scope.eq_data.length <= cur_pos) {
+                        $scope.cur_eq = $scope.eq_data.slice(-1)[0]
+                        cur_pos = $scope.eq_data.length -1
+                    } else {
+                        $scope.cur_eq = $scope.eq_data[cur_pos] 
+                    }
+                    
+                    $scope.loadEQ(index=cur_pos)
+                    $scope.time = $scope.eq_data.slice(-1)[0].time
+                }, 
+                function(response){
+                  $scope.eq_data = []
+                }
+             );
+    };
+    
+    $scope.getEQsFilter = function(time=0, filter=$scope.filter) {
+        $scope.eq_data = []
+        $scope.getEQs(time=time, filter=filter)
+    }
+    
+    $scope.clearFilter = function() {
+        $scope.filter = {'all_events': true}
+        $scope.eq_data = []
+        $scope.getEQs(0)
+    }
 
     angular.extend($scope, {
         center: {
@@ -22,6 +56,8 @@ app.controller('eqController', function($scope, $http, $timeout) {
             scrollWheelZoom: false
         }
     });
+    
+    $scope.getEQs();
     
     // set default map values that will be overwritten when eq data
     // loads
@@ -108,7 +144,7 @@ app.controller('eqController', function($scope, $http, $timeout) {
                 function(response) {
                     shakemaps = response.data
                     if (shakemaps.length > 0) {
-                        var image_url = 'get/shakemaps/' + $scope.cur_eq.event_id + '/overlay'
+                        var image_url = '/get/shakemaps/' + $scope.cur_eq.event_id + '/overlay'
                         
                         $scope.layers.overlays['shakemap'] = {
                             name: 'ShakeMap',

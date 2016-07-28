@@ -2,12 +2,10 @@ data/
 tmp/
 logs/
 docs/
-sc/modules/
+modules/
+docs/
+pypy/
 .DS_Store
 *.pyc
 *~
 *.db
-sc/db/*
-sc/logs/*
-sc.json
-pypy/

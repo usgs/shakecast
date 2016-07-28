@@ -1,27 +1,30 @@
-from db_util import *
+from util import *
 import os
 import sys
 import inspect as inspect_mod
 
-modules_dir = os.path.join(db_sc_dir(), 'modules')
+modules_dir = os.path.join(sc_dir(), 'modules')
 if modules_dir not in sys.path:
     sys.path += [modules_dir]
     
+app_dir = os.path.join(sc_dir(), 'app')
+if app_dir not in sys.path:
+    sys.path += [app_dir]
+    
 from sqlalchemy import *
-import logging
 from sqlalchemy.ext.declarative import *
 from sqlalchemy.ext.hybrid import hybrid_method
 from sqlalchemy.orm import *
 from sqlalchemy.sql import and_, or_, not_
 import time
 from werkzeug.security import generate_password_hash
+import logging
 
 # Get directory location for database
 path = os.path.dirname(os.path.abspath(__file__))
 delim = get_delim()
 path = path.split(delim)
-path[-2] = 'db'
-del path[-1]
+path[-1] = 'db'
 directory = delim.join(path)
 
 # create a metadata object
@@ -705,6 +708,11 @@ class Event(Base):
             return False
         else:
             return True
+        
+    def timestamp(self):
+        clock = Clock()
+        return (clock.from_time(self.time)
+                    .strftime('%Y-%m-%d %H:%M:%S'))
 
 
 class ShakeMap(Base):
@@ -858,7 +866,8 @@ class Plugins(Base):
     shakecast_id = Column(Integer, primary_key=True)
     plugin_name = Column(String(100))
     use = Column(String(10))
-    
+
+
 #######################################################################
 
 # name the database, but switch to a test database if run from test.py
@@ -866,9 +875,10 @@ db_name = 'shakecast.db'
 testing = False
 insp = inspect_mod.stack()
 for stack in insp:
-    if 'test.py' in stack:
-        db_name = 'test.db'
-        testing = True
+    for entry in stack:
+        if 'test.py' in str(entry):
+            db_name = 'test.db'
+            testing = True
         
 # logging from DB
 #logging.basicConfig(level=logging.DEBUG)
@@ -903,3 +913,5 @@ if not us:
     session.commit()
 Session.remove()
 
+
+from objects import *

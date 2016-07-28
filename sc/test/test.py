@@ -312,13 +312,16 @@ class TestImport(unittest.TestCase):
         Session.remove()
     
     def step2_userImport(self):
-        import_user_xml('test_users.xml')
+        user_file = os.path.join(sc_dir(), 'test', 'test_users.xml')
+        import_user_xml(user_file)
         
     def step3_groupImport(self):
-        import_group_xml('test_groups.xml')
+        group_file = os.path.join(sc_dir(), 'test', 'test_groups.xml')
+        import_group_xml(group_file)
         
     def step4_facImport(self):
-        import_facility_xml('test_facs.xml')
+        fac_file = os.path.join(sc_dir(), 'test', 'test_facs.xml')
+        import_facility_xml(fac_file)
     
     def step5_checkUser(self):
         session = Session()
@@ -495,13 +498,18 @@ if __name__ == '__main__':
     
     # If the user wants to make sure they can get emails, they should
     # be able to specify an email address for each test run
-    email_query = ''
-    while email_query != 'y' and email_query != 'n':
-        email_query = raw_input('\nEnter email address for testing? (y/n): ')
-    if email_query == 'y':
-        unittest.TestCase.email = raw_input('\nEnter email address: ')
+    if len(sys.argv) > 1:
+        email = sys.argv[1]
+        del sys.argv[1]
+        if (('@' in email) and
+                ('.' in email) and
+                ('com' in email or
+                 'gov' in email or
+                 'org' in email or
+                 'edu' in email)):
+            unittest.TestCase.email = email
     else:
         unittest.TestCase.email = 'test@test.com'
-    
+            
     unittest.main()
         
