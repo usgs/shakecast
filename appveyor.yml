@@ -62,7 +62,7 @@ build: off
 
 test_script:
   # Run the project tests
-   - "cd %APPVEYOR_BUILD_FOLDER%\sc\"
+   - "cd %APPVEYOR_BUILD_FOLDER%\\sc"
    - "set"
    - "python app\\sc_config.py --smtpu testing.only.shakecast@gmail.com --smtpp testingpass"
    - "python test\\test.py dslosky@usgs.gov"
