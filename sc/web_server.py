@@ -1,5 +1,5 @@
-from app.functions_util import *
 from app.objects import AlchemyEncoder
+from app.util import *
 import os
 import sys
 import json
@@ -17,7 +17,6 @@ import datetime
 from ast import literal_eval
 from app.orm import *
 from app.server import Server
-from app.util import *
 from app.objects import Clock, SC
 from app.functions import determine_xml
 from ui import UI
