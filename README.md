@@ -2,4 +2,7 @@
 [![codecov](https://codecov.io/gh/dslosky-usgs/shakecast/branch/master/graph/badge.svg)](https://codecov.io/gh/dslosky-usgs/shakecast)
 
 # ShakeCast V4
+An application for automating ShakeMap delivery to critical users and for facilitating notification of shaking levels at user-selected facilities.
+
+Checkout our [user and developer documentation](http://usgs.github.io/shakecast/)
 
