@@ -14,21 +14,21 @@ from app.task import Task
 
 class TestProductGrabber(unittest.TestCase):
     '''
-    Test functions for the Product_Grabber class
+    Test functions for the ProductGrabber class
     '''
     def test_initProductGrabber(self):
         '''
         Test product grabber initialization
         Fails when there is an error in the code
         '''
-        pg = Product_Grabber()
+        pg = ProductGrabber()
         
     def test_getJSONFeed(self):
         '''
         Tests access to the USGS JSON feed. Failure points to error in
         code, lack of internet access, or a down USGS server
         '''
-        pg = Product_Grabber()
+        pg = ProductGrabber()
         pg.get_json_feed()
         
         self.assertNotEqual(pg.json_feed, '')
