@@ -20,7 +20,6 @@ from app.server import Server
 from app.objects import Clock, SC
 from app.functions import determine_xml
 from ui import UI
-import pdb
 
 app = Flask(__name__,
             template_folder=os.path.join(sc_dir(),'view','html'),

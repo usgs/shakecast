@@ -37,7 +37,7 @@ def geo_json():
     new_events = []
     new_shakemaps = []
     try:
-        pg = Product_Grabber()
+        pg = ProductGrabber()
         pg.get_json_feed()
         new_event_log = ''
         new_shakemaps_log = ''
@@ -380,7 +380,7 @@ def make_inspection_prios(facility=None,
     Args:
         facility (Facility): A facility to be processed
         shakemap (ShakeMap): The ShakeMap which is associated with the shaking
-        grid (SM_Grid): The grid built from the ShakeMap
+        grid (ShakeMapGrid): The grid built from the ShakeMap
         notifications (list): List of Notification objects which should be associated with the shaking
         
     Returns:
@@ -494,13 +494,13 @@ def new_event_notification(notifications = [],
     notification.status = 'sent'
     
 def inspection_notification(notification=Notification(),
-                            grid=SM_Grid()):
+                            grid=ShakeMapGrid()):
     '''
     Create local products and send inspection notification
     
     Args:
         notification (Notification): The Notification that will be sent
-        grid (SM_Grid): create from the ShakeMap
+        grid (ShakeMapGrid): create from the ShakeMap
 
     Returns:
         None
@@ -602,9 +602,9 @@ def create_grid(shakemap=None):
         shakemap (ShakeMap): A ShakeMap with a grid.xml to laod
     
     Returns:
-        SM_Grid: With loaded grid.xml
+        ShakeMapGrid: With loaded grid.xml
     """
-    grid = SM_Grid()
+    grid = ShakeMapGrid()
     grid.load(shakemap.directory_name + get_delim() + 'grid.xml')
     
     return grid    
