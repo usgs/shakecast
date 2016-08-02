@@ -318,12 +318,7 @@ def upload():
     else:
         import_data = {'error': 'root'}
         
-    time.sleep(1)
-    message = ui.get_message()
-    if message:
-        return message
-    else:
-        return 'no message'
+    return 'file uploaded'
         
     
 
