@@ -20,7 +20,7 @@ if modules_dir not in sys.path:
     sys.path += [modules_dir]
 import socks
 
-class Product_Grabber(object):
+class ProductGrabber(object):
     
     """
     Able to access the USGS web, download products, and make entries
@@ -373,7 +373,7 @@ class Product_Grabber(object):
         session.commit()
         
         # create event from shakemap's grid.xml
-        grid = SM_Grid()
+        grid = ShakeMapGrid()
         grid.load(shakemap.directory_name + get_delim() + 'grid.xml')
   
         shakemap.lat_min = grid.lat_min
@@ -415,8 +415,8 @@ class Point(object):
     
     '''
     Keeps track of shaking data associated with a location. A list of
-    these is made in the SM_Grid class and can be sorted by a metric
-    using the SM_Grid.sort_by method
+    these is made in the ShakeMapGrid class and can be sorted by a metric
+    using the ShakeMapGrid.sort_by method
     '''
     
     sort_by = ''
@@ -439,7 +439,7 @@ class Point(object):
             return 0
 
 
-class SM_Grid(object):
+class ShakeMapGrid(object):
     
     '''
     Object that reads a grid.xml file and compares shaking data with
@@ -503,7 +503,7 @@ class SM_Grid(object):
             self.tree = ET.parse(file_)
             root = self.tree.getroot()
             
-            # set the SM_Grid's attributes
+            # set the ShakeMapGrid's attributes
             all_atts = {}
             [all_atts.update(child.attrib) for child in root]
             
