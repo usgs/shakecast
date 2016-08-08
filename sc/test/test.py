@@ -198,14 +198,20 @@ class TestFull(unittest.TestCase):
         data = geo_json()
         self.assertEqual(data['error'], '')
         
+        # check if there are shakemaps
+        shakemaps = session.query(ShakeMap).all()
+        if not shakemaps:
+            geo_json(query_period='week')
+        
     def step5_createFacility(self):
         session = Session()
-        sm = session.query(ShakeMap).first()
-        if sm:
-            grid = create_grid(sm)
-            f = create_fac(grid=grid)
-            f.name = 'TEST FAC'
-            session.add(f)
+        sms = session.query(ShakeMap).all()
+        if sms:
+            for sm in sms:
+                grid = create_grid(sm)
+                f = create_fac(grid=grid)
+                f.name = 'TEST FAC'
+                session.add(f)
             session.commit()
         else:
             print '\nNo ShakeMaps to test facility processing'
