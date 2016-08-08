@@ -42,6 +42,7 @@ class ProductGrabber(object):
         self.data_dir = ''
         self.delim = ''
         self.log = ''
+        self.query_period = 'day'
         
         if not self.req_products:
             self.req_products = sc.eq_req_products
@@ -66,7 +67,7 @@ class ProductGrabber(object):
         variable. Also makes a list of the earthquakes' IDs
         """
         url_opener = URLOpener()
-        json_str = url_opener.open(self.json_feed_url)
+        json_str = url_opener.open(self.json_feed_url.format(self.query_period))
         
         self.json_feed = json.loads(json_str)
         

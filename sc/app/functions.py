@@ -18,7 +18,7 @@ if modules_dir not in sys.path:
 from werkzeug.security import generate_password_hash
 
 
-def geo_json():
+def geo_json(query_period='day'):
     '''Get earthquake feed from USGS and check for new earthquakes
     
     Gets new earthquakes from the JSON feed and logs them in the DB
@@ -38,6 +38,7 @@ def geo_json():
     new_shakemaps = []
     try:
         pg = ProductGrabber()
+        pg.query_period = query_period
         pg.get_json_feed()
         new_event_log = ''
         new_shakemaps_log = ''
@@ -264,19 +265,19 @@ def process_shakemaps(shakemaps=[], session=None, scenario=False):
                     .filter(Notification.status != 'sent')
                     .all())
         
-        if notifications:
-            # get a set of all affected facilities
-            affected_facilities = set(itertools
-                                        .chain
-                                        .from_iterable(
-                                            [(session.query(Facility)
-                                                .filter(Facility.in_grid(grid))
-                                                .filter(Facility.groups
-                                                            .any(Group.shakecast_id == group.shakecast_id))
-                                                .all())
-                                             for g in
-                                             groups_affected]))
-            
+        # get a set of all affected facilities
+        affected_facilities = set(itertools
+                                    .chain
+                                    .from_iterable(
+                                        [(session.query(Facility)
+                                            .filter(Facility.in_grid(grid))
+                                            .filter(Facility.groups
+                                                        .any(Group.shakecast_id == group.shakecast_id))
+                                            .all())
+                                         for g in
+                                         groups_affected]))
+        
+        if affected_facilities:
             # find the largest shaking id
             shaking_id = (session
                             .query(Facility_Shaking.shakecast_id,
@@ -358,15 +359,16 @@ def process_shakemaps(shakemaps=[], session=None, scenario=False):
             if relationships:
                 engine.execute(rel_stmt, relationships)
             session.commit()
-            
+                
+            shakemap.status = 'processed'    
+        else:
+            shakemap.status = 'no facs'
+        
+        if notifications:
             # send inspection notifications for the shaking levels we
             # just computed
             [inspection_notification(notification=n,
                                      grid=grid) for n in notifications]
-                
-            shakemap.status = 'processed'    
-        else:
-            shakemap.status = 'no groups'
         
         session.commit()
         
