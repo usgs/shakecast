@@ -994,41 +994,46 @@ class URLOpener(object):
         Returns:
             str: the string read from the webpage
         """
-        sc = SC()
-        if sc.use_proxy is True:
-            if sc.proxy_username and sc.proxy_password:
-                proxy = urllib2.ProxyHandler({
-                            'http': "http://{0}:{1}@{2}:{3}".format(sc.proxy_username,
-                                                                    sc.proxy_password,
-                                                                    sc.proxy_server,
-                                                                    sc.proxy_port),
-                            'https': "http://{0}:{1}@{2}:{3}".format(sc.proxy_username,
-                                                                     sc.proxy_password,
-                                                                     sc.proxy_server,
-                                                                     sc.proxy_port)})
-                auth = urllib2.HTTPBasicAuthHandler()
-                opener = urllib2.build_opener(proxy, auth, urllib2.HTTPHandler)
-                
-                url_obj = opener.open(url, timeout=60)
-                url_read = url_obj.read()
-                url_obj.close()
-                return url_read
-                
+        try:
+            sc = SC()
+            if sc.use_proxy is True:
+                if sc.proxy_username and sc.proxy_password:
+                    proxy = urllib2.ProxyHandler({
+                                'http': "http://{0}:{1}@{2}:{3}".format(sc.proxy_username,
+                                                                        sc.proxy_password,
+                                                                        sc.proxy_server,
+                                                                        sc.proxy_port),
+                                'https': "http://{0}:{1}@{2}:{3}".format(sc.proxy_username,
+                                                                         sc.proxy_password,
+                                                                         sc.proxy_server,
+                                                                         sc.proxy_port)})
+                    auth = urllib2.HTTPBasicAuthHandler()
+                    opener = urllib2.build_opener(proxy, auth, urllib2.HTTPHandler)
+                    
+                    url_obj = opener.open(url, timeout=60)
+                    url_read = url_obj.read()
+                    url_obj.close()
+                    return url_read
+                    
+                else:
+                    proxy = urllib2.ProxyHandler({'http': 'http://{0}:{1}'.format(sc.proxy_server,sc.proxy_port),
+                                                  'https': 'https://{0}:{1}'.format(sc.proxy_server,sc.proxy_port)})
+                    opener = urllib2.build_opener(proxy)
+                    
+                    url_obj = opener.open(url, timeout=60)
+                    url_read = url_obj.read()
+                    url_obj.close()
+                    return url_read
+    
             else:
-                proxy = urllib2.ProxyHandler({'http': 'http://{0}:{1}'.format(sc.proxy_server,sc.proxy_port),
-                                              'https': 'https://{0}:{1}'.format(sc.proxy_server,sc.proxy_port)})
-                opener = urllib2.build_opener(proxy)
-                
-                url_obj = opener.open(url, timeout=60)
+                url_obj = urllib2.urlopen(url, timeout=60)
                 url_read = url_obj.read()
                 url_obj.close()
                 return url_read
-
-        else:
-            url_obj = urllib2.urlopen(url, timeout=60)
-            url_read = url_obj.read()
-            url_obj.close()
-            return url_read
+        except Exception as e:
+            raise Exception('URLOpener Error({}: {}, url: {})'.format(type(e),
+                                                             e,
+                                                             url))
         
 
 class Clock(object):
