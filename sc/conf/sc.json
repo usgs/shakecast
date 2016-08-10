@@ -1,5 +1,6 @@
 {
     "timezone": 0,
+    "gmap_key": "AIzaSyDLDpOUwK7PlOju_E7z02lEJOxgrtBIPkY",
     "Logging": {
         "log_file": "sc.log",
         "log_level": "normal",
