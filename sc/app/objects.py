@@ -776,6 +776,7 @@ class SC(object):
         server_name (str): What the admin chooses to call the instance
         server_dns (str): How the instance is accessed
         software_version (str): Implemented pyCast software
+        gmap_key (str): Holds the google maps key, used for static maps
     """
     
     def __init__(self):
@@ -820,6 +821,7 @@ class SC(object):
         self.software_version = ''
         self.json = ''
         self.conf_file_location = ''
+        self.gmap_key = ''
     
         self.load()
     
@@ -840,6 +842,7 @@ class SC(object):
         
         # timezone
         self.timezone = conf_json['timezone']
+        self.gmap_key = conf_json['gmap_key']
         
         # Services
         self.new_eq_mag_cutoff = conf_json['Services']['new_eq_mag_cutoff']
