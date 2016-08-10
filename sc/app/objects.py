@@ -12,12 +12,13 @@ import xml.etree.ElementTree as ET
 import smtplib
 import datetime
 import time
-from jinja2 import Template
 from util import *
 from orm import *
 modules_dir = os.path.join(sc_dir(), 'modules')
 if modules_dir not in sys.path:
     sys.path += [modules_dir]
+    
+from jinja2 import Template
 import socks
 
 class ProductGrabber(object):
