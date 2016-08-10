@@ -1,0 +1,12 @@
+; Default Text Email Notification -- header
+;
+;From: ShakeCast <%HEADER_FROM%>
+;To: %HEADER_TO%
+%_ITEMNO% New Event(s)
+
+The following %_ITEMNO% New Event(s) occurred 
+beginning at %EVENT_TIMESTAMP%:
+
+Reported by: Server ID = %SERVER_ID%, DNS = %DNS_ADDRESS%
+
+;;;;;

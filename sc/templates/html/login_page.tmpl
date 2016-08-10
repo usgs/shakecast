@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="shortcut icon" href="/images/sc_logo.png">
+
+    <title>ShakeCast Overview</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="./bootstrap3/css/bootstrap.css" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+	<link rel="stylesheet" href="./bootstrap3/css/navbar-fixed-top.css">
+	<link rel="stylesheet" href="./css/main.css">
+    <!-- <link rel="stylesheet" href="./css/docs.css"> -->
+
+    <!-- Just for debugging purposes. Don't actually copy this line! -->
+    <!--[if lt IE 9]><script src="../../docs-assets/js/ie8-responsive-file-warning.js"></script><![endif]-->
+
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+      <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
+    <![endif]-->
+  </head>
+
+  <body>
+  <!-- Fixed navbar -->
+  <div class="navbar navbar-default navbar-inverse navbar-fixed-top" role="navigation">
+    <div class="container">
+      <div class="navbar-header">
+	<button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+	  <span class="sr-only">Toggle navigation</span>
+	  <span class="icon-bar"></span>
+	  <span class="icon-bar"></span>
+	  <span class="icon-bar"></span>
+	</button>
+	<a class="navbar-brand" href="?dest=index"><img src="/images/sc_logo.png" class="img-circle logo" /> ShakeCast</a>
+      </div>
+    </div>
+  </div>
+<div class="container">
+	<section id="content">
+		<form action="<TMPL_VAR NAME=REFERER>" method="POST" class="form-group">
+			<h1>Login Form</h1>
+  			<div class="form-group">
+    		<label for="InputUsername">Username</label>
+				<input class="form-control" type="text" placeholder="Username" required="" id="lg_name" name="lg_name" />
+			</div>
+  			<div class="form-group">
+    		<label for="InputPassword">Password</label>
+				<input class="form-control" type="password" placeholder="Password" required="" id="lg_password" name="lg_password" />
+			</div>
+			<div class="form-group">
+				<input type="submit" value="Log in" class="btn btn-default"/>
+			</div>
+		</form><!-- form -->
+	</section><!-- content -->
+</div><!-- container -->
+</body>
+</html>

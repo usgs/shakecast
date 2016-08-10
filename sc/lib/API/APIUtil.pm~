@@ -1,0 +1,114 @@
+#package APIUtil;
+
+#       $Id: APIUtil.pm 148 2009-12-14 17:00:46Z klin $     TriNet
+
+package API::APIUtil;
+
+use vars qw($VERSION @ISA @EXPORT @EXPORT_OK);
+
+require Exporter;
+
+@ISA       = qw(Exporter);
+$VERSION   = '0.01';
+
+@EXPORT    = qw(stringfy config_options);
+@EXPORT_OK = qw();
+
+use Data::Dumper;
+
+sub stringfy {
+	my ($obj) = @_;
+	my $json_str;
+	
+	if (ref $obj eq "ARRAY") {
+		my @events;
+		foreach my $event (@$obj) {
+			my %event = %$event;
+			my $event_str;
+			
+			#print Data::Dumper->Dump([\%event], [qw(json_str)]);
+			#eval Data::Dumper->Dump([\%event], [qw(event_str)]);
+			push @events, $event_str;
+		}
+		return \@events;
+	} else {
+		my %obj = %$obj;
+		#eval Data::Dumper->Dump([\%obj], [qw(json_str)]);
+		#return $json_str;
+		return {%$obj};
+	}
+	
+	return;
+}
+
+sub config_options {
+	use SC;
+
+    undef $SC::errstr;
+	my %config_options;
+    my $sql =  qq/
+        select *
+		FROM 
+			phpbb_config
+		/;
+    eval {
+	my $sth = SC->dbh->prepare($sql);
+	$sth->execute();
+	while (my $p = $sth->fetchrow_hashref('NAME_lc')) {
+	    $config_options{lc($p->{'config_name'})} = $p->{'config_value'};
+	}
+	$sth->finish;
+    };
+    if ($@) {
+	$SC::errstr = $@;
+	return undef;
+    }
+    return \%config_options;
+}
+
+
+1;
+
+__END__
+
+=head1 NAME
+
+SC::ScriptUtil - a collection of utility routines used by the server scripts
+
+=head1 DESCRIPTION
+
+This module contains utility routines that are used
+by the server-to-server scripts in C</scripts/s>.
+All documented methods are exported by default.
+
+=head1 FUNCTIONS
+
+=over 4
+
+=item C<read_xml_input>
+
+  $xml = read_xml_input;
+
+This routine reads a well-formed XML document from STDIN and returns it.
+If the document begins with an XML declaration that is stripped out.
+The resulting string may contain embedded newlines.
+
+=item C<reply>
+
+  reply( $status, $message )
+  reply( $status, $message, $return_value )
+
+This routine writes a standard ShakeCast XML status or response document to
+STDOUT, along with the necessary HTTP headers.  The first version outputs
+a C<shakecast_status> document.  The second version writes a
+C<shakecast_response> document, with C<$return_value> as the body of the
+response.  In this case the C<$return_value> is assumed to be valid XML
+that does not require any further processing (for example, the result of
+a query issued by a remote polling server).
+
+The message is XML-escaped as needed.  The C<$status> value is assumed to be
+a valid status value.
+
+=back
+
+=cut

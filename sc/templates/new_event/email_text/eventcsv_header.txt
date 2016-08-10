@@ -1,0 +1,23 @@
+; Default CSV Email Notification -- header
+;
+From: ShakeCast <%HEADER_FROM%>
+To: %HEADER_TO%
+Subject: %_ITEMNO% New Event(s)
+MIME-Version: 1.0
+Content-Type: multipart/mixed;
+ boundary="----------%_MIME_BOUNDARY%"
+
+------------%_MIME_BOUNDARY%
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+
+The following %_ITEMNO% New Event(s) occurred 
+beginning at %EVENT_TIMESTAMP%.
+
+Reported by: Server ID = %SERVER_ID%, DNS = %DNS_ADDRESS%
+------------%_MIME_BOUNDARY%
+Content-Type: application/vnd.ms-excel; name="events.csv"
+Content-transfer-encoding: 7bit
+Content-Disposition: attachment; filename="events.csv"
+
+Event_ID,Ver,Time,Mag,Lat,Lon,Location

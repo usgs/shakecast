@@ -1,0 +1,381 @@
+#!/usr/local/bin/perl
+
+use warnings;
+use strict;
+use CGI;
+use CGI::Session;
+use JSON::XS;
+
+use FindBin;
+use lib "$FindBin::Bin/../../lib";
+
+use SC;
+use API::User;
+use API::APIUtil;
+
+SC->initialize;
+
+my $self = new CGI;
+my $session = new CGI::Session(undef, $self);
+$session->expires("+10m");
+print "Content-Type: application/json\n\n";
+
+my $web_home = "$ENV{DOCUMENT_ROOT}";
+my $sc_home = SC->config->{'RootDir'};
+# Authenticated
+#my $username = $self->param('username') || '';
+#my $password = $self->param('password') || '';
+#my $valid = API::User->validate($username, $password, 1);
+#exit 1 unless $valid;
+unless ( $session->param("~logged-in") && $session->param("admin_user")) {
+    exit(0);
+}
+
+#Getting parametres from form
+my $filename = $self->param("pic");
+$filename =~ s/^.*(\\|\/)//;
+#my $name = $2;
+
+my $UPLOAD_FH = $self->upload("pic");
+
+umask 0000; #This is needed to ensure permission in new file
+
+open my $NEWFILE_FH, ">", "$sc_home/tmp/$filename" 
+    or die "Problems creating file '$filename': $!";
+binmode $NEWFILE_FH;
+
+while ( <$UPLOAD_FH> ) {
+    print $NEWFILE_FH "$_";
+}
+
+close $NEWFILE_FH or die "I cannot close filehandle: $!";
+
+my $ext = substr $filename, -4;
+$ext =~ s/\.//g;
+$ext = 'img' if ($ext =~ /png|jpg|gif/i);
+
+my $proc_sub = "process_".lc($ext); 
+	no strict 'refs';
+my $result;
+	    # perform the requested action
+	    eval {
+$result = &{$proc_sub}("$sc_home/tmp/$filename", $filename);
+	    };
+
+my $org_name;
+if ($ext =~ /zip/i) {
+    $org_name = $filename;
+    $filename =~ s/\.zip$//i;
+}
+
+##this is the only way to send msg back to the client
+my $json = {'status' => 'File was uploaded successfuly!',
+	    'filename' => "$filename",
+	    #'username' => "$username",
+	    'action'	=> $result,
+	    'ext' => "$ext",
+	    };
+
+print JSON::XS->new->utf8->encode(API::APIUtil::stringfy($json));
+
+exit;
+
+sub process_img {
+    my ($file, $filename) = @_;
+
+    my @members;
+    my %result;
+    my $img_dir = "$sc_home/images";
+    eval {
+	# a "perl file move" example
+	use File::Copy;
+	
+	my $new_file = "$img_dir/$filename";
+	
+	# the perl move file function
+	move($file, $new_file);
+    };
+    if ($@) {
+	SC->log(0,"process_conf $@");
+	$result{'status'} = $@;
+	return 0;
+    }
+
+    $result{'img'}{'result'} = 1;
+    
+    #return 0 if $err_cnt;
+    return \%result;
+
+}
+
+sub process_zip {
+    my ($file) = @_;
+
+    use File::Copy;
+    use File::Path;
+    my $test_dir = "$sc_home/test_data";
+    my $data_dir = SC->config->{'DataRoot'};
+    my @members;
+    my %result;
+    my $evt_name = $file;
+    $evt_name =~ s/\.zip$//i;
+    mkdir "$evt_name";
+    eval {
+	use Archive::Zip;
+        my $zip = new Archive::Zip($file);
+	@members = $zip->memberNames();
+	foreach my $member ($zip->members) {
+	    if ($member->isDirectory) {mkpath("$sc_home/tmp/".$member->fileName); next;}
+	    (my $extractName = $member->fileName) =~ s{.*/}{};
+	    $member->extractToFileNamed( "$evt_name/$extractName");
+	SC->log(0, $extractName);
+	}
+	SC->log(0, 'members '.(join ',', @members));
+    };
+    if ($@) {
+	SC->log(0,"process_zip $@");
+	$result{'status'} = $@;
+	return 0;
+    }
+
+    # specify required columns, 1=always required, 2=not required for update
+    my %apps = (
+	"scenario_event" => {
+	    '_se'		=> 1,
+	},
+	"test_event" => {
+	    '_scte'		=> 1,
+	},
+    );
+
+    # check for required fields
+    foreach my $app (keys %apps) {
+	$result{$app}{'result'} = 1;
+	my @fields;
+	my $err_cnt;
+    while (my ($req, $req_type) = each %{$apps{$app}}) {
+	foreach my $group (@members) {
+        unless ($group =~ /$req/) {
+            SC->log(0,  "required field $req is missing");
+	    push @fields, $req;
+	    $result{$app}{'result'} = 0;
+            $err_cnt++;
+	}
+        }
+    }
+     $result{$app}{'err_cnt'} = \@fields;
+     $result{$app}{'member'} = \@members;
+   }
+
+    #return 0 if $err_cnt;
+    return \%result;
+
+}
+
+sub process_xml {
+    my ($file) = @_;
+    my %result;
+
+    use XML::LibXML::Simple;
+   # eval {
+    my $xml = XMLin($file, ForceArray => 1);
+    #my $worksheet = $xml->{Worksheet};
+	my $key = (keys %$xml)[0];
+	my $data = $xml->{$key};
+
+	my $facility = shift @$data;
+
+    # specify required columns, 1=always required, 2=not required for update
+    my %apps = (
+	"manage_facility_xml" => {
+	'EXTERNAL_FACILITY_ID'      => 1,
+	'FACILITY_TYPE'             => 1,
+	},
+	"manage_group_xml" => {
+	'GROUP_NAME'      => 1,
+	'NOTIFICATION'             => 1,
+	},
+	"manage_user_xml" => {
+	'USER_TYPE'      => 1,
+	'USERNAME'             => 1,
+	},
+	"manage_inventory_xml" => {
+	'FacilityT'      => 1,
+	'GroupRow'      => 1,
+	'UserRow'      => 1,
+	},
+    );
+
+        SC->log(0,  keys %$facility);
+    # check for required fields
+    foreach my $app (keys %apps) {
+	$result{$app}{'result'} = 1 unless ($app eq 'manage_inventory_xml');
+	my @fields;
+	my $err_cnt;
+    while (my ($req, $req_type) = each %{$apps{$app}}) {
+	if ($app eq 'manage_inventory_xml') {
+	    $result{$app}{'result'} = 1
+		if (defined $facility->{$req});
+
+	} else {
+	    unless (defined $facility->{$req}) {
+	    SC->log(0,  "required field $req is missing");
+		push @fields, $req;
+		$result{$app}{'result'} = 0;
+		    $err_cnt++;
+	    }
+	}
+    }
+     $result{$app}{'err_cnt'} = \@fields;
+   }
+
+    #return 0 if $err_cnt;
+    return \%result;
+  #  };
+    
+    if ($@) {
+	SC->log(0,"process_xml $@");
+	$result{'status'} = $@;
+	return 0;
+    }
+
+
+}
+
+sub process_conf {
+    my ($file) = @_;
+
+    use Config::General;
+
+    my $conf;
+    my %config;
+    my %result;
+    eval {
+	$conf = new Config::General($file);
+	%config = $conf->getall;
+    };
+    if ($@) {
+	SC->log(0,"process_conf $@");
+	$result{'status'} = $@;
+	return 0;
+    }
+
+    # specify required columns, 1=always required, 2=not required for update
+    my %apps = (
+	"manage_group" => {
+	    'POLY'		=> 1,
+	},
+    );
+
+    # check for required fields
+    foreach my $app (keys %apps) {
+	$result{$app}{'result'} = 1;
+	my @fields;
+	my $err_cnt;
+    while (my ($req, $req_type) = each %{$apps{$app}}) {
+	foreach my $group (keys %config) {
+        unless (defined $config{$group}->{$req}) {
+            SC->log(0,  "required field $req is missing");
+	    push @fields, $req;
+	    $result{$app}{'result'} = 0;
+            $err_cnt++;
+	}
+        }
+    }
+     $result{$app}{'err_cnt'} = \@fields;
+   }
+
+    #return 0 if $err_cnt;
+    return \%result;
+
+}
+
+sub process_csv {
+    my ($file) = @_;
+    
+# specify required columns, 1=always required, 2=not required for update
+my %apps = (
+    "manage_user" => {
+	'USERNAME'		=> 1,
+	'USER_TYPE'		=> 1,
+    },
+    "manage_facility" => {
+	'EXTERNAL_FACILITY_ID'      => 1,
+	'FACILITY_TYPE'             => 1,
+	'LAT_MIN'                       => 1,
+	'LON_MIN'                       => 1,
+	'LAT_MAX'                       => 1,
+	'LON_MAX'                       => 1
+    },
+);
+
+    use IO::File;
+    use Text::CSV_XS;
+    my $csv = Text::CSV_XS->new({
+	'quote_char'  => '"',
+        'escape_char' => '"',
+        'sep_char'    => ','
+    });
+
+    my $fh = new IO::File;
+    unless ($fh->open($file, 'r')) {
+        SC->log(0, "cannot open $file\: $!");
+        next;
+    }
+
+    my $header = $fh->getline;
+    $fh->close;
+    return 1 unless $header;      # empty file not an error
+    
+    # parse header line
+    SC->log(0, $header);
+    unless ($csv->parse($header)) {
+        SC->log(0,  "CSV header parse error on field '", $csv->error_input, "'");
+        return 0;
+    }
+
+    my $ix = 0;         # field index
+    my %columns;
+    # uppercase and trim header field names
+    my @fields = map { uc $_ } $csv->fields;
+    foreach my $field (@fields) {
+        $ix++;
+        $field =~ s/^\s+//;
+        $field =~ s/\s+$//;
+	$columns{$field} = $ix;
+    }
+    
+    # map lat/lon to min/max
+    if (exists $columns{'LAT'}) {
+        $columns{'LAT_MIN'} = $columns{'LAT'};
+        $columns{'LAT_MAX'} = $columns{'LAT'};
+        #delete $columns{'LAT'};
+    }
+    if (exists $columns{'LON'}) {
+        $columns{'LON_MIN'} = $columns{'LON'};
+        $columns{'LON_MAX'} = $columns{'LON'};
+        #delete $columns{'LON'};
+    }
+	
+    my %result;
+    # check for required fields
+    foreach my $app (keys %apps) {
+	$result{$app}{'result'} = 1;
+	my @fields;
+	my $err_cnt;
+    while (my ($req, $req_type) = each %{$apps{$app}}) {
+        unless (defined $columns{$req}) {
+            SC->log(0,  "required field $req is missing");
+	    push @fields, $req;
+	    $result{$app}{'result'} = 0;
+            $err_cnt++;
+        }
+    }
+     $result{$app}{'err_cnt'} = \@fields;
+   }
+
+    #return 0 if $err_cnt;
+    return \%result;
+
+}
+

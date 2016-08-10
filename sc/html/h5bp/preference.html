@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<!-- saved from url=(0065)http://twitter.github.com/bootstrap/getting-started.html#examples -->
+<html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta charset="utf-8">
+    <title>System Configuration</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <!-- Le styles -->
+    <link href="css/bootstrap.css" rel="stylesheet">
+    <link href="css/bootstrap-responsive.css" rel="stylesheet">
+    <link href="css/docs.css" rel="stylesheet">
+    <link href="css/prettify.css" rel="stylesheet">
+
+    <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="assets/js/html5shiv.js"></script>
+    <![endif]-->
+
+    <!-- Le fav and touch icons -->
+    <link rel="apple-touch-icon-precomposed" sizes="144x144" href="http://twitter.github.com/bootstrap/assets/ico/apple-touch-icon-144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="http://twitter.github.com/bootstrap/assets/ico/apple-touch-icon-114-precomposed.png">
+      <link rel="apple-touch-icon-precomposed" sizes="72x72" href="http://twitter.github.com/bootstrap/assets/ico/apple-touch-icon-72-precomposed.png">
+                    <link rel="apple-touch-icon-precomposed" href="http://twitter.github.com/bootstrap/assets/ico/apple-touch-icon-57-precomposed.png">
+        <link rel="shortcut icon" href="/images/sc_logo.png">
+
+  <style id="holderjs-style" type="text/css">
+	.holderjs-fluid {font-size:16px;font-weight:bold;text-align:center;font-family:sans-serif;margin:0}
+				img.logo{ 
+				vertical-align: text-bottom;
+				text-align: center;
+				height: 24px;
+			}
+
+  </style></head>
+
+  <body data-spy="scroll" data-target=".bs-docs-sidebar" data-twttr-rendered="true">
+
+        <!-- This code is taken from http://twitter.github.com/bootstrap/examples/hero.html -->
+
+        <div class="navbar navbar-inverse navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <div class="nav-collapse collapse">
+                        <ul class="nav">
+				<li class="logo"><a class="brand" href="/index.php"><img src="/images/sc_logo.png" class="img-circle logo" /> ShakeCast</a></li>
+                            <li class="active"><a href="/index.php">Home</a></li>
+                            <li><a href="#about">About</a></li>
+                            <li class="dropdown">
+                                <a href="/list.php" class="dropdown-toggle" data-toggle="dropdown">Earthquake List <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/list.php">Recent Events</a></li>
+                                    <li class="divider"></li>
+									<li><a href="/list.php?type=major">Significant Events</a></li>
+									<li><a href="/list.php?type=scenario">Scenarios</a></li>
+                                    <li class="divider"></li>
+                                    <li><a href="/html/h5bp/preference.html">Settings</a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+<!-- Subhead
+================================================== -->
+<header class="jumbotron subhead" id="overview">
+  <div class="container">
+    <h1>User Preference</h1>
+    <p class="lead">Customize personal preference of the system, its components, and how to customize it.</p>
+  </div>
+</header>
+
+
+  <div class="container">
+
+        <!-- ShakeCast Database
+        ================================================== -->
+        <section id="database-connection">
+          <div class="page-header">
+            <h1>1. User Credentials</h1>
+          </div>
+          <p class="lead">Specify User information for the ShakeCast system.</p>
+
+          <div class="row-fluid">
+<div class="span2" id="server-form">
+<form>
+  <fieldset>
+    <table class="table table-hover">
+    <thead>
+    <tr>
+    <th>Username</th>
+    <th>Password</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+    <td><input type="text" placeholder="Username" id="db_username" ></td>
+    <td><input type="password" placeholder="Password" id="db_password" ></td>
+    </tr>
+    </tbody>
+    </table>
+	<button type="button" class="btn config_update">Update</button>
+	<div class="server_result"></div>
+  </fieldset>
+</form>
+          </div>
+          </div>
+        </section>
+
+
+        <!-- Email Server
+        ================================================== -->
+        <section id="email-server">
+          <div class="page-header">
+            <h1>2. Map Layers</h1>
+          </div>
+          <p class="lead">Specify default zoom level, and map layers.</p>
+
+          <div class="row-fluid">
+<div class="span10" id="server-form">
+<form>
+  <fieldset>
+    <table class="table table-hover">
+    <thead>
+    <tr>
+    <th>Default Zoom</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+    <td>3<input placeholder="Default Zoom" id="map_default_zoom" type="range" min="3" max="12" step="1"
+	    onchange="$('#map_default_zoom_value').val($(this).val())"/>12
+    <input type="text" placeholder="Default Zoom" id="map_default_zoom_value" style="width: 2em;" />
+    </td>
+    </tr>
+    </tbody>
+    </table>
+    <table class="table table-hover">
+    <thead>
+    <tr>
+    <th>Default Map Center (Latitude)</th>
+    <th>Default Map Center (Longitude)</th>
+    <th>Fixed Map Location</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+    <td><input type="text" placeholder="Latitude" id="lat" ></td>
+    <td><input type="text" placeholder="Longitude" id="lon" ></td>
+    <td><input type="checkbox" id="fixed_pos_flag" > </td>
+    </tr>
+    </tbody>
+    </table>
+    <table class="table table-hover">
+    <thead>
+    <tr>
+    <th>Default Tile Zoom</th>
+    <th>Show Event Layer</th>
+    <th>Show Facility Layer</th>
+    <th>Show Station Layer</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+    <td>1<input placeholder="Default Tile Zoom" id="map_default_tile_zoom" type="range" min="1" max="11" step="1"
+	        onchange="$('#map_default_tile_zoom_value').val($(this).val())"/>11
+    <input type="text" placeholder="Default Tile Zoom" id="map_default_tile_zoom_value" style="width: 2em;" /> 
+    </td>
+    <td><input type="checkbox" id="event_layer_flag" > </td>
+    <td><input type="checkbox" id="facility_layer_flag" > </td>
+    <td><input type="checkbox" id="station_layer_flag" > </td>
+    </tr>
+    </tbody>
+    </table>
+	<button type="button" class="btn config_update">Update</button>
+	<div class="server_result"></div>
+  </fieldset>
+</form>
+          </div>
+          </div>
+        </section>
+
+
+
+        <!-- ShakeMap Server
+        ================================================== -->
+        <section id="shakemap-server">
+          <div class="page-header">
+            <h1>3. ShakeMap List</h1>
+          </div>
+          <p class="lead">Specify ShakeMap list, refresh interval, and slide show settings.</p>
+
+          <div class="row-fluid">
+<div class="span8" id="server-form">
+<form>
+  <fieldset>
+    <table class="table table-hover">
+    <thead>
+    <tr>
+    <th>Recent Eearthquake List (day)</th>
+    <th>Earthquake Type</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+    <td><input type="text" placeholder="Recent Earthquakes" id="recent_events" ></td>
+    <td><select class="input-small" placeholder="Event Type" id="event_type"  style="width: 100%;">
+		<option value="actual">Actual Event</option>
+		<option value="major">Major Event</option>
+		<option value="test">Test Event</option>
+		<option value="scenario">Scenario Event</option>
+    </select></td>
+    </tr>
+    </tbody>
+    </table>
+    <table class="table table-hover">
+    <thead>
+    <tr>
+    <th>Refresh Interval for List (min.)</th>
+    <th>Display Interval between Event (min.)</th>
+    <th>Enable Slide Show</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+    <td><input type="text" placeholder="Refresh Interval" id="refresh_int" ></td>
+    <td><input type="text" placeholder="Event Display Interval" id="event_int" ></td>
+    <td><input type="checkbox" id="slideshow_flag" > </td>
+    </tr>
+    </tbody>
+    </table>
+	<button type="button" class="btn config_update">Update</button>
+	<div class="server_result"></div>
+  </fieldset>
+</form>
+          </div>
+          </div>
+        </section>
+
+
+
+
+      </div>
+    </div>
+
+  </div>
+
+
+
+
+
+
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script type="text/javascript" src="./example_files/widgets.js"></script>
+    <script src="./example_files/jquery.js"></script>
+    <script src="./example_files/bootstrap-transition.js"></script>
+    <script src="./example_files/bootstrap-alert.js"></script>
+    <script src="./example_files/bootstrap-modal.js"></script>
+    <script src="./example_files/bootstrap-dropdown.js"></script>
+    <script src="./example_files/bootstrap-scrollspy.js"></script>
+    <script src="./example_files/bootstrap-tab.js"></script>
+    <script src="./example_files/bootstrap-tooltip.js"></script>
+    <script src="./example_files/bootstrap-popover.js"></script>
+    <script src="./example_files/bootstrap-button.js"></script>
+    <script src="./example_files/bootstrap-collapse.js"></script>
+    <script src="./example_files/bootstrap-carousel.js"></script>
+    <script src="./example_files/bootstrap-typeahead.js"></script>
+    <script src="./example_files/bootstrap-affix.js"></script>
+
+    <script src="example_files/holder.js"></script>
+    <script src="example_files/prettify.js"></script>
+
+    <script src="./example_files/application.js"></script>
+    <script src="/js/storage.js"></script>
+
+    <script>
+
+	$(window).load(function() {
+
+	    SC_DEF.init();
+	    
+	    $("#db_username").val(SC_DEF.user);
+	    $("#db_password").val(SC_DEF.pass);
+	    $("#map_default_zoom").val(parseInt(SC_DEF.DEFAULT_ZOOM));
+	    $("#lat").val(parseFloat(SC_DEF.lat));
+	    $("#lon").val(parseFloat(SC_DEF.lon));
+	    $("#map_default_tile_zoom").val(parseInt(SC_DEF.DEFAULT_TILE_ZOOM));
+	    $("#map_default_zoom_value").val(SC_DEF.DEFAULT_ZOOM);
+	    $("#map_default_tile_zoom_value").val(SC_DEF.DEFAULT_TILE_ZOOM);
+	    $("#refresh_int").val(SC_DEF.refresh_int);
+	    $("#event_int").val(SC_DEF.event_int);
+	    $("#recent_events").val(SC_DEF.recent_events);
+	    $("#event_type").val(SC_DEF.event_type);
+	    $("#fixed_pos_flag").attr('checked', SC_DEF.fixed_pos_flag);
+	    $("#slideshow_flag").attr('checked', SC_DEF.slideshow_flag);
+	    $("#event_layer_flag").attr('checked', SC_DEF.event_layer_flag);
+	    $("#facility_layer_flag").attr('checked', SC_DEF.facility_layer_flag);
+	    $("#station_layer_flag").attr('checked', SC_DEF.station_layer_flag);
+
+    	});
+
+
+	/* Add a click handler for the delete row */
+	$('.config_update').bind('click', function() {
+	    var param = {
+		'user': $("#db_username").val(),
+		'pass': $("#db_password").val(),
+		'DEFAULT_ZOOM': $("#map_default_zoom").val(),
+		'lat': $("#lat").val(),
+		'lon': $("#lon").val(),
+		'DEFAULT_TILE_ZOOM': $("#map_default_tile_zoom").val(),
+		'refresh_int': $("#refresh_int").val(),
+		'event_int': $("#event_int").val(),
+		'recent_events': $("#recent_events").val(),
+		'event_type': $("#event_type").val(),
+		'fixed_pos_flag': $("#fixed_pos_flag").is(':checked'),
+		'slideshow_flag': $("#slideshow_flag").is(':checked'),
+		'event_layer_flag': $("#event_layer_flag").is(':checked'),
+		'facility_layer_flag': $("#facility_layer_flag").is(':checked'),
+		'station_layer_flag': $("#station_layer_flag").is(':checked'),
+	    };
+	    SC_DEF.updateAllItems(param); 
+	    alert("User Preference Saved.");
+	} );
+
+ 	</script>
+ 
+
+<div id="directions_extension" style="display: none;"></div></body></html>

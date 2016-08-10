@@ -1,0 +1,854 @@
+# $Id: GenericDaemon.pm 64 2007-06-05 14:58:38Z klin $
+
+
+##############################################################################
+# 
+# Terms and Conditions of Software Use
+# ====================================
+# 
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+# 
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+# 
+# Disclaimer of Earthquake Information
+# ====================================
+# 
+# The data and maps provided through this system are preliminary data
+# and are subject to revision. They are computer generated and may not
+# have received human review or official approval. Inaccuracies in the
+# data may be present because of instrument or computer
+# malfunctions. Subsequent review may result in significant revisions to
+# the data. All efforts have been made to provide accurate information,
+# but reliance on, or interpretation of earthquake data from a single
+# source is not advised. Data users are cautioned to consider carefully
+# the provisional nature of the information before using it for
+# decisions that concern personal or public safety or the conduct of
+# business that involves substantial monetary or operational
+# consequences.
+# 
+# Disclaimer of Software and its Capabilities
+# ===========================================
+# 
+# This software is provided as an "as is" basis.  Attempts have been
+# made to rid the program of software defects and bugs, however the
+# U.S. Geological Survey (USGS) and Gatekeeper Systems have no
+# obligations to provide maintenance, support, updates, enhancements or
+# modifications. In no event shall USGS or Gatekeeper Systems be liable
+# to any party for direct, indirect, special, incidental or consequential
+# damages, including lost profits, arising out of the use of this
+# software, its documentation, or data obtained though the use of this
+# software, even if USGS or Gatekeeper Systems have been advised of the
+# possibility of such damage. By downloading, installing or using this
+# program, the user acknowledges and understands the purpose and
+# limitations of this software.
+# 
+# Contact Information
+# ===================
+# 
+# Coordination of this effort is under the auspices of the USGS Advanced
+# National Seismic System (ANSS) coordinated in Golden, Colorado, which
+# functions as the clearing house for development, distribution,
+# documentation, and support. For questions, comments, or reports of
+# potential bugs regarding this software please contact wald@usgs.gov or
+# klin@usgs.gov.  
+#
+#############################################################################
+
+# Daemon common behaviors
+# 
+# * Run under GKS::Service (which uses Win32::Daemon), so needs to periodically
+#   poll the service to see if there are requests from the SCM and act on them
+#   if so.
+#
+# * Install or deinstall the service via CLI.
+#
+# * Be able to run as a command-line application, not as a service.
+#   
+# * Control the daemon remotely.  One way is to use the telnet-based approach
+#   we used with the PCorp daemons.  This has the (good? bad?) side-effect of
+#   prohibiting multiple copies of an identically configured daemon from
+#   running, since they cannot share a TCP connection.
+#   
+# * Have an external means of configuring the daemon (config file, info in
+#   a db table, separate Perl module, or other method).
+#   
+# * Must be able to run more than one copy of the daemon, supplying different
+#   configuration info via a command-line option.
+#   
+# * Have a log file where errors and progress messages are recorded.  This
+#   file has a standard format.  There are multiple logging levels.  The log
+#   file is optional.
+#
+# * Have an error file where errors are written.  Same format as log file.
+#
+# * Perform some process on a periodic basis.  This could be triggered by a
+#   timer going off (do X every 5 minutes), or by waiting for some external
+#   event (select() from a port until data is received or the read times out).
+#   In either case service polling will need to happen during this wait; service
+#   polling interval is ~10 sec, waits could be many minutes.
+#
+# * Provide a way for external program to reliably determine daemon state
+#   and progress.  Current implementations mostly rely on log sniffing but
+#   also check .pid file, db state (e.g., usacheck checks to see most recent
+#   ticket loaded into DB).  [Might incorporate some form of heartbeat recording
+#   into service polling loop?  Where to store -- filesystem or database?]
+#
+# Customizations:
+# 
+# * specific initialization, processing, and cleanup
+#
+# * add command-line options and processing.  Also provide a way to augment the
+#   usage message for the added options
+#
+# * add telnet interface commands
+#
+
+package GenericDaemon;
+
+use strict;
+
+use vars qw($VERSION @ISA @EXPORT @EXPORT_OK);
+
+require Exporter;
+
+@ISA       = qw(Exporter);
+$VERSION   = '0.05';
+
+@EXPORT    = qw();
+@EXPORT_OK = qw(
+		%Options
+		&initialize &run &add_command
+		&vpr &epr &cpr &spoll);
+
+use Getopt::Long;
+
+use Time::Local;
+
+use Socket;
+
+use POSIX;
+
+use DBI;
+
+BEGIN {
+    if ($^O eq 'MSWin32') {
+        require GKS::Service;
+    }
+} 
+
+use Carp;
+
+use Logger;
+
+
+'$Revision: 1.15 $' =~ /^\$Revision\: (.*) \$$/;
+my $rcsver = $1;
+'$Date: 2004/08/30 18:55:17 $' =~ /^\$Date\: (.*) \$$/;
+my $rcsdate = $1;
+
+my $VER = "generic $rcsver ($rcsdate)";
+
+
+use vars qw(%Options);
+
+my $PARMNAME = 'daemonparms';
+my $PARMDIR  = '.';	# Must override when running as a service!
+
+
+my $CLIENT_PROMPT_STRING = "Waiting for connect from control process...";
+
+
+# Command status values
+
+use vars qw($HELLO $OK $DOWN $CONT $ERR);
+$HELLO = 200;
+$OK    = 220;
+$DOWN  = 222;
+$CONT  = 300;
+$ERR   = 500;
+
+my $LONG_TIME = 86400;
+
+my $INADDR_DEFAULT = INADDR_LOOPBACK;
+
+use vars qw($verb @args);
+
+use vars qw($logger);
+
+use vars qw($p_process $timeleft $paused $exit_command_loop);
+
+local *CLIENT;
+
+sub cpr;
+sub epr;
+sub max;
+sub min;
+sub process_all;
+sub process_command;
+sub quit;
+sub spoll;
+sub vpr; 
+
+
+use vars qw($opt_help $opt_verbose $opt_version);
+use vars qw($port $inaddr $log $logging $poll $prompting $installing
+	    $parmname $parmdir $removing $service_name $service_title
+	    $run_as_service $spoll $autostart $trace_level $pid_file
+	    $run_as_daemon);
+use vars qw($ver $conf);
+
+use vars qw(%symtab);
+use vars qw(%commands);
+
+
+my $pname = $0;
+$pname = $1 if $pname =~ /\\([^\\]+)$/;
+
+# Initialize the module.  Arguments are supplied in name=>value format.
+# Possible arguments:
+#   version => version string shown in place of the generic default
+#   conf    => config file name to use in place of parameter.pm file
+sub initialize {
+    carp "Odd (wrong?) number of parameters in new()" if (@_ & 1); 
+    while (@_) {
+	my $name = lc shift;
+	my $value = shift;
+	$ver = $value, next		if $name eq 'version';
+	$conf = $value, next		if $name eq 'conf';
+    }
+
+    Getopt::Long::Configure('pass_through');
+    GetOptions("help",
+	       "version",
+	       "daemon", \$run_as_daemon,
+	       "port=s", \$port,
+	       "log=s", \$log,
+	       "logging!", \$logging,
+	       "poll=i", \$poll,
+	       "prompting!", \$prompting,
+	       "verbose!",
+	       "install!", \$installing,
+	       "parmname=s", \$parmname,
+	       "parmdir=s", \$parmdir,
+	       "pid-file=s", \$pid_file,
+	       "remove!", \$removing,
+	       "sname=s", \$service_name,
+	       "stitle=s", \$service_title,
+	       "service!", \$run_as_service,
+	       "spoll=i", \$spoll,
+	       "start!", \$autostart,
+	       "trace=i", \$trace_level) or
+	quit "Terminated: Bad Option(s)\n";
+    carp "unused args: @ARGV" unless scalar @ARGV == 0;
+
+    # Configuration info can either be supplied via a hashref supplied in the
+    # method invocation (persumably read from a config file by the main
+    # program, or by reading a .pm file whose location is given by parmdir
+    # and parmname.
+    if ($conf) {
+	# config hash
+	%Options = %$conf;
+	carp "--parmdir, --parmname ignored when config passed to initialize"
+		if $parmdir or $parmname;
+    } else {
+	# in .pm file
+	$parmname ||= $PARMNAME;
+	$parmdir  ||= $PARMDIR;
+
+	eval "use lib '$parmdir'";
+	croak "Can't load parameters: $@" if $@;
+	eval "use $parmname";
+	croak "Can't load parameters: $@" if $@;
+    }
+
+    $run_as_service = 0 unless $^O eq 'MSWin32';
+
+    $run_as_daemon = 0 if $^O eq 'MSWin32';
+
+    $service_name ||= $Options{SERVICE_NAME};
+
+    $service_title ||= $Options{SERVICE_TITLE};
+
+    # Tracing: If trace= option is given then use that, else if verbose
+    #   option is given use that (noverbose -> level 0, verbose -> level 1),
+    #   else if MSGLEVEL is given use that, else set to 0.
+    #   
+    if (not defined $trace_level) {
+	if (defined $opt_verbose) {
+	    $trace_level = $opt_verbose;
+	} elsif (exists $Options{MSGLEVEL}) {
+	    $trace_level = $Options{MSGLEVEL};
+	} else {
+            $trace_level = 0;
+        }
+    } 
+
+    $autostart = $Options{AUTOSTART} unless defined $autostart;
+
+    $prompting = 1 unless defined $prompting;
+
+    $log = $Options{LOG} unless defined $log;
+
+    $logging = $Options{LOGGING} unless defined $logging;
+
+    $logging = 0 unless $log;
+
+    $spoll ||= $Options{SPOLL};
+
+    $port ||= $Options{PORT};
+
+    $poll ||= $Options{POLL};
+
+    $paused = ! $autostart;
+
+    $ver ||= $VER;
+
+    if (exists $Options{ALLOW_REMOTE_CONTROL}) {
+        if ($Options{ALLOW_REMOTE_CONTROL}) {
+            $inaddr = INADDR_ANY;
+        } else {
+            $inaddr = INADDR_LOOPBACK;
+        }
+    } else {
+        $inaddr = $INADDR_DEFAULT;
+    }
+
+    if ($opt_version) {
+	printversion();
+	exit;
+    }
+
+    if ($opt_help) {
+	help();
+	exit;
+    }
+
+    $logger = new Logger($log, $trace_level, $service_name);
+    quit "Can't open log file '$log': $!\n" unless defined $logger;
+    if ($logging) {
+	vpr "Logging started on '$log'";
+	vpr "Version: $ver";
+    }
+
+    if ($^O eq 'MSWin32') {
+        if ($installing) {
+            my $rc;
+            if ($conf) {
+                $rc = GKS::Service::install_service($service_name,
+                                                    $service_title,
+                                                    qq[--service]);
+            } else {
+                $rc = GKS::Service::install_service($service_name,
+                                                    $service_title,
+                                                    qq[--service],
+                                                    qq[--parmname=$parmname],
+                                                    qq[--parmdir=$parmdir]);
+            }
+            if ($rc) {
+                quit("Error installing service '$service_name' ($service_title): ",
+                    $rc);
+            } else {
+                vpr "Service '$service_name' ($service_title) installed";
+            }
+            exit;
+        }
+
+        if ($removing) {
+            if (my $rc = GKS::Service::remove_service($service_name)) {
+                epr("Error removing service '$service_name': ",
+                    $rc);
+            }
+            else {
+                vpr "Service '$service_name' removed";
+            }
+            exit;
+        }
+
+        if ($run_as_service) {
+            if (my $rc = GKS::Service::start_service()) {
+                quit "Can't start as service: $rc";
+            }
+            GKS::Service::register_service_callbacks(\&service_stopping,
+                                                     \&service_pausing,
+                                                     \&service_continuing);
+            vpr "Starting as a service" if $run_as_service;
+        }
+    } else {
+	if ($run_as_daemon) {
+	    chdir '/'			or quit "can't chdir to /: $!";
+	    open STDIN,  '/dev/null' 	or quit "can't close SDTIN: $!";
+	    open STDOUT, '>>/dev/null' 	or quit "can't close STDOUT: $!";
+	    open STDERR, '>>/dev/null' 	or quit "can't close STDERR: $!";
+	    defined (my $pid = fork)	or quit "can't fork: $!";
+	    exit if $pid;
+	    setsid			or quit "can't setsid: $!";
+	    umask 0;
+        }		
+    }
+
+    if ($pid_file) {
+	open PID, "> $pid_file" or quit "Can't create pid file $pid_file: $!";
+	print PID "$$";
+	close PID;
+    }
+
+
+    # Define generic commands.  Daemon-specific commands can be added via
+    # add_command method after initialization.
+    #
+    # Key is command name (commands are case-insensitive, the keys are always
+    # lower case).  Value is array ref:
+    #     slot 0 - coderef to command sub (takes one arg that is the remainder
+    #     		of the command line)
+    #     slot 1 - Help message for this command that will be output as part of
+    #     		the 'help' command)
+
+    %commands = (
+	'cycle'	=>
+	    [\&cmd_cycle,
+	    'Process now (unless the daemon is paused)'],
+	'comment'	=>
+	    [\&cmd_comment,
+	    'Insert a message into the log file at log level 0'],
+	'exit'	=>
+	    [\&cmd_exit,
+	    'Exit the command processor'],
+	'quit'	=>
+	    [\&cmd_exit,
+	    'Exit the command processor'],
+	'help'	=>
+	    [\&cmd_help,
+	    'Display command-line help'],
+	'logrotate'	=>
+	    [\&cmd_logrotate,
+	    'Rotate log file'],
+	'start'	=>
+	    [\&cmd_start,
+	    'Start or resume processing'],
+	'resume'	=>
+	    [\&cmd_start,
+	    'Start or resume processing'],
+	'stop'	=>
+	    [\&cmd_stop,
+	    'Pause processing (does not terminate the daemon)'],
+	'pause'	=>
+	    [\&cmd_stop,
+	    'Pause processing (does not terminate the daemon)'],
+	'shutdown'	=>
+	    [\&cmd_shutdown,
+	    'Terminate the daemon'],
+	'terminate'	=>
+	    [\&cmd_shutdown,
+	    'Terminate the daemon'],
+	'set'	=>
+	    [\&cmd_set,
+	    'Set parameter=value (or set parameter value)'],
+	'poll'	=>
+	    [\&cmd_poll,
+	    'Show or set the polling interval'],
+
+    );
+}
+
+
+
+sub run {
+    $p_process = shift;
+
+    quit "GenericDaemon::run requires a CODEREF" unless ref $p_process eq 'CODE';
+    bind_port();
+    run_main_loop(shift);
+    # Normal termination does not return from main processing loop
+    epr "Accept failed: $!";
+}
+
+
+END {
+    GKS::Service::stop_service() if $run_as_service;
+#    unlink $pid_file if $pid_file;
+}
+
+# Waits $poll seconds for input on $fileno.  Returns the number of
+# seconds remaining (0 if the wait expired).  Also handles service polling.
+sub wait_input {
+    my ($fileno, $poll) = @_;
+    my ($rin, $win, $ein);
+    my ($rout, $wout, $eout);
+    my ($tnow, $nfound);
+
+    $rin = $win = $ein = "";
+    vec($rin, $fileno, 1) = 1;
+    $ein = $rin | $win;
+    $logger->log(4, "Selecting for $poll") if $logger;
+    while ($poll > 0) {
+	$tnow = time;
+	$nfound = select($rout=$rin, $wout=$win, $eout=$ein, min($spoll,$poll));
+	$poll = max $poll - (time - $tnow), 0;
+	$logger->log(4, "Selected: $nfound, time remaining: $poll") if $logger;
+	spoll;
+	if ($nfound > 0) {
+	    return $poll;
+	}
+    }
+    return 0;
+}
+
+
+sub run_main_loop {
+    my ($paddr, $iaddr, $iport, $iname);
+    my $prompted = 0;
+
+    vpr $paused ? "Paused" : "Started";
+    for (;;) {
+	vpr $CLIENT_PROMPT_STRING unless $prompted++;
+	$timeleft = wait_input(fileno(SERVER), $poll);
+	if ($timeleft == 0) {
+	    process_all unless $paused;
+	    next;
+	}
+	
+	# Set up command connection from client
+	$paddr = accept(CLIENT, SERVER);
+	last unless $paddr;
+	($iport, $iaddr) = sockaddr_in($paddr);
+	$iname = gethostbyaddr($iaddr, AF_INET);
+	vpr "Connect from $iname \[", inet_ntoa($iaddr), "\] at port $iport";
+	CLIENT->autoflush(1); 
+	cpr $HELLO, "$ver ready at ", tstamp();
+
+	$prompted = 0;
+	for (;;) {
+	    if ($prompting) {
+		unless ($prompted) {
+		    print CLIENT $Options{PROMPT}; # unless $last_was_data;
+		    $prompted = 1;
+		}
+	    }
+	    $timeleft = wait_input(fileno(CLIENT), $timeleft);
+	    if ($timeleft == 0) {
+		# Timer expired -- do work
+		process_all unless $paused;
+		$timeleft = $poll;
+	    } else {
+		# Input pending -- read and execute a command
+		last unless process_command;
+		$prompted = 0;
+	    }
+	}
+	close CLIENT;
+	vpr "Connection closed by remote.";
+    }
+}
+
+
+sub bind_port {
+    if ($port =~ /\D/) { $port = getservbyname($port, 'tcp') }
+    my $proto = getprotobyname('tcp');
+    socket(SERVER, PF_INET, SOCK_STREAM, $proto) or
+	quit "Can't create socket: $!\n";
+    # Uncomment the next two lines to allow SO_REUSEADDR to be set.
+    # That will let you start the daemon if TCP is playing FIN_WAIT
+    # games, etc.  However, it also means you can have more than
+    # one daemon running at once so the watchdog process will not
+    # work!
+#   setsockopt(SERVER, SOL_SOCKET, SO_REUSEADDR, pack("l", 1)) or
+#	quit "Can't setsockopt: $!\n";
+    unless (bind(SERVER, sockaddr_in($port, $inaddr))) {
+	epr "Can't bind to port $port: $!";
+	exit;
+    }
+    listen(SERVER, SOMAXCONN) or quit "Can't listen: $!\n";
+    $logger->log(1, "Server listening on port $port") if $logger;
+}
+
+
+
+# Read a command from the CLIENT filehandle.  Returns 1 if a command was
+# read, 0 if the read failed.
+sub get_command {
+    my ($buff, $rest);
+
+    $verb = '';
+    {
+    	local $/ = "\r\n";
+       	$buff = <CLIENT>;
+    	return 0 unless defined $buff;
+    	chomp $buff;
+	# next is to remove extraneous 0x0d,0x00 that comes from rcmd
+	# (not sure exactly how/why...)
+	$buff =~ s/\r\0$//g;
+    }
+    $buff = '' if $buff =~ /\cC/;
+    ($verb, $rest) = split /\s+/, $buff, 2;
+    $verb = lc $verb;
+    @args = (defined $rest && length $rest > 0) ? split(/[\s=]+/, $rest) : ();
+    return 1;
+}
+
+
+
+
+sub help {
+    printversion();
+    print qq{
+$service_title
+Usage: $pname [options...]
+
+Option names may be uniquely abbreviated and are case insensitive.
+You may use either --option or -option. If -option, then use
+"-option n" in place of "--option=n".
+}
+}
+
+sub printversion {
+    print qq{
+Program: $pname
+Version: $ver
+}
+}
+
+
+sub max {
+    $_[0] >= $_[1] ? $_[0] : $_[1];
+}
+
+
+sub min {
+    $_[0] <= $_[1] ? $_[0] : $_[1];
+}
+
+
+sub pr_dsn {
+    my $dsn = shift;
+    $dsn =~ s/(PWD=)[^;]*/$1***/i;
+    return $dsn;
+}
+
+
+sub process_all {
+    # run user's code
+    eval {
+        &$p_process();
+    };
+    quit $@ if $@;
+    $timeleft = $poll;
+    $logger->log(2, "End Daemon Processing Cycle") if $logger;
+}
+
+
+
+# Process one command.  Will not be called unless there is something to read
+# from the command input filehandle. Return non-zero to continue the command
+# loop, return zero to exit the command processor (has no effect on the daemon
+# itself).
+sub process_command {
+    $exit_command_loop = 0;
+
+    return 0 unless get_command;
+    if ($verb ne '') {
+	my $cp = $commands{$verb};
+	if (not defined $cp) {
+	    cpr $ERR, "unrecognized command '$verb'";
+	} else {
+	    &{$cp->[0]}(@args);
+	}
+    }
+    return not $exit_command_loop;
+}
+
+sub add_command {
+    my ($verb, $ptr, $cmd_help) = @_;
+    # TODO should we allow replacing a command or treat as an error?
+    $commands{lc $verb} = [$ptr, $cmd_help];
+}
+
+
+sub s_get { return $symtab{lc $_[0]}; }
+sub s_put { $symtab{lc $_[0]} = $_[1]; }
+sub s_exists { return exists $symtab{lc $_[0]}; }
+
+sub cmd_set {
+    my ($sym, $val) = @_;
+    if (not defined $sym) {
+	# bare 'set' command dumps current values
+	foreach my $s (sort keys %symtab) {
+	    cpr $OK, "\t", $s, ":\t", s_get($s);
+	}
+	return;
+    }
+    if (not s_exists($sym)) {
+	if ($sym =~ /^no(.*)/i and not defined $val) {
+	    $sym = $1;
+	    $val = 0;
+	    if (not s_exists($sym)) {
+		epr "'$sym' is not a recognized SET keyword";
+		return;
+	    }
+	} else {
+	    epr "'$sym' is not a recognized SET keyword";
+	    return;
+	}
+    }
+    $val = 1 if not defined $val;
+    s_put($sym, $val);
+}
+
+sub cmd_comment {
+    vpr @_;
+}
+
+sub cmd_cycle {
+    if ($paused) {
+	cpr $ERR, "Daemon is paused";
+    } else {
+	process_all;
+    }
+}
+
+sub cmd_exit {
+    $exit_command_loop = 1;
+}
+
+sub cmd_help {
+    foreach my $cmd (sort keys %commands) {
+	cpr $OK,  sprintf("%-10s %s", $cmd, $commands{$cmd}->[1]);
+    }
+}
+
+sub cmd_logrotate {
+    $logger->rotate if $logger;
+}
+
+sub cmd_start {
+    $paused = 0;
+    cpr $OK, "Daemon has been resumed";
+    vpr "Daemon has been resumed";
+}
+
+sub cmd_stop {
+    $paused = 1;
+    cpr $OK, "Daemon has been paused";
+    vpr "Daemon has been paused";
+}
+
+sub cmd_shutdown {
+    if (defined $_[0] and $_[0] eq "daemon") {
+	vpr "Terminate command read.  Shutting down.";
+	cpr $CONT, "Shutting down daemon.";
+	# TODO how best to hook in?
+	cpr $DOWN, "Down";
+	sleep 1;
+	exit;
+    }
+    else { cpr $ERR, "Correct command is '$verb daemon'" }
+}
+
+sub cmd_poll {
+    my $n = shift;
+    
+    if (defined $n) {
+	# POLL NN specifies new polling interval
+	if ($n <= 0) { 
+	    cpr $ERR, "Positive poll time in seconds required.";
+	} else { 
+	    $poll = $n;
+	    cpr $OK, "OK";
+	}
+	$timeleft = $poll;
+    } else {
+	# POLL reports time left in current polling cycle
+	cpr $OK, $timeleft ? "$timeleft" : "$poll"
+    }
+    vpr "polling interval set to $poll";
+
+}
+
+
+
+sub service_continuing {
+    vpr "service continuing";
+}
+
+
+sub service_pausing {
+    vpr "service pausing";
+    # XXX Depending on what was happening at the time the service was paused
+    # we might be leaving things like DB cursors open.
+}
+
+
+sub service_stopping {
+    vpr "service stopping";
+    # XXX Might want to clean up before shutting down.  User code won't get
+    # another chance to run after this point -- GKS::Service will exit(0)
+}
+
+
+sub spoll {
+    GKS::Service::poll_service() if $run_as_service;
+}
+
+# return time (now if not specified) as formatted localtime
+sub tstamp {
+    my $time = (@_ ? shift : time);
+    my($sec, $min, $hr, $mday, $mon, $yr);
+
+    ($sec, $min, $hr, $mday, $mon, $yr) = localtime $time;
+    sprintf ("%04d-%02d-%02d %02d:%02d:%02d",
+	     $yr+1900, $mon+1, $mday,
+	     $hr, $min, $sec);
+}
+
+
+# Write to command socket for user to see -- no-op if control connection
+# is not open.
+sub cpr {
+    my($code, @msg) = @_;
+    print CLIENT $code, " ", @msg, "\r\n" # if defined CLIENT;
+}
+
+
+# Write error message to log at level 0 and also to STDERR
+sub epr {
+    {
+	local $, = ' ';
+#        chomp $_[$#_];
+	print STDERR tstamp(), "[$$]:", @_, "\n";
+    }
+    $logger->log(0, @_) if defined $logger;
+}
+
+# Log a message at level 1
+sub vpr {
+    $logger->log(1, @_) if defined $logger;
+}
+
+
+sub quit {
+    epr "Fatal Error: ", @_;
+    if ($^O eq 'MSWin32') {
+        # Suicide here so that under Windows the Service Control Manager
+        # detects an "abnormal termination" and triggers its recovery
+        # processing -- die'ing isn't sufficient.
+        kill 9, $$;
+    } else {
+        die @_;
+    }
+}
+
+# Returns the Logger
+sub logger {
+    return $logger;
+}
+
+1;

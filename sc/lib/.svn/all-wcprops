@@ -1,0 +1,29 @@
+K 25
+svn:wc:ra_dav:version-url
+V 42
+/svn/ShakeCast/!svn/ver/353/trunk/unix/lib
+END
+Graphics_2D.pm
+K 25
+svn:wc:ra_dav:version-url
+V 57
+/svn/ShakeCast/!svn/ver/338/trunk/unix/lib/Graphics_2D.pm
+END
+SC.pm
+K 25
+svn:wc:ra_dav:version-url
+V 48
+/svn/ShakeCast/!svn/ver/338/trunk/unix/lib/SC.pm
+END
+Logger.pm
+K 25
+svn:wc:ra_dav:version-url
+V 52
+/svn/ShakeCast/!svn/ver/338/trunk/unix/lib/Logger.pm
+END
+GenericDaemon.pm
+K 25
+svn:wc:ra_dav:version-url
+V 59
+/svn/ShakeCast/!svn/ver/338/trunk/unix/lib/GenericDaemon.pm
+END

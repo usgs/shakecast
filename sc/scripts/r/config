@@ -1,0 +1,230 @@
+#!/usr/local/bin/perl
+
+use strict;
+#use warnings;
+
+use FindBin;
+use lib "$FindBin::Bin/../../lib";
+
+use Carp;
+
+use CGI;
+use CGI::Session;
+use JSON::XS;
+use Data::Dumper;
+use Storable;
+
+use SC;
+use API::User;
+use API::APIUtil;
+use API::Server;
+
+SC->initialize;
+my $config = SC->config;
+my $default_options = API::APIUtil::config_options();
+
+my $self = new CGI;
+my $session = new CGI::Session(undef, $self);
+$session->expires("+10m");
+my $arg = ($ENV{PATH_INFO}) ? $ENV{PATH_INFO} : $ARGV[0];
+my (@args) = split '/', $arg;
+shift @args;
+my $action = shift @args;
+
+print "Content-Type: application/json\n\n";
+
+# Authenticated
+#my $username = $self->param('username') || '';
+#my $password = $self->param('password') || '';
+#my $valid = API::User->validate($username, $password, 1);
+#exit 1 unless $valid;
+unless ( $session->param("~logged-in") && $session->param("admin_user")) {
+    exit(0);
+}
+
+if (not defined *{$action}) {
+} else {
+    SC->log(0, "user: task is $action $args[0]");
+
+	no strict 'refs';
+    # perform the requested action
+    #eval {
+	my $json =  &{ $action }( @args );
+	print JSON::XS->new->utf8->encode(API::APIUtil::stringfy($json));
+    #};
+}
+
+
+sub server_list {
+    # Authenticated
+	my $server_list = new API::Server->server_list();
+	$config->{'server'} = $server_list;
+	my $json = API::APIUtil::stringfy($server_list);
+	
+	return $json;
+  };
+  
+sub config {
+    # Authenticated
+	my $server_list = new API::Server->server_list();
+	$config->{'server'} = $server_list;
+	my $json = API::APIUtil::stringfy($config);
+	
+	return $json;
+  };
+  
+sub dispatch_task {
+    # Authenticated
+    my (@task_summary, @dispatch_task, %task);
+	my $sql = qq/
+		SELECT request, status, count(status) as count
+		FROM 
+			dispatch_task
+                GROUP BY status
+		/;
+    eval {
+	my $sth = SC->dbh->prepare($sql);
+	#$sth->execute(@args);
+	$sth->execute();
+	while (my $p = $sth->fetchrow_hashref('NAME_lc')) {
+	    push @task_summary, $p;
+	}
+	$sth->finish;
+    };
+       $sql = qq/
+		SELECT request, status
+		FROM 
+			dispatch_task
+                where status = 'PLAN'
+		/;
+    eval {
+	my $sth = SC->dbh->prepare($sql);
+	#$sth->execute(@args);
+	$sth->execute();
+	while (my $p = $sth->fetchrow_hashref('NAME_lc')) {
+            my %hash_ref = % {Storable::thaw $p->{'request'}};
+            $p->{'action'} = $hash_ref{'ACTION'};
+	    push @dispatch_task, $p;
+	}
+	$sth->finish;
+    };
+    if ($@) {
+	$SC::errstr = $@;
+    }
+	$task{'summary'} = \@task_summary;
+	$task{'plan'} = \@dispatch_task;
+        
+	return \%task;
+  };
+  
+sub server_update {
+    # Authenticated
+    my $server_id = $self->param('server_id');
+    my $dns_address = $self->param('dns_address');
+    my $query_flag = $self->param('query_flag');
+		my $event;
+	my $server = new API::Server->from_id($server_id);
+	my $result = $server->update_info($server_id, $dns_address, $query_flag);
+	#$event->{'result'} = new API::Product->toggle_product_display($product_id, $save_flag);
+	$event->{'query_flag'} = $query_flag;
+	$event->{'dns_address'} = $dns_address;
+	$server->{'update_result'} = $result;
+	my $json = API::APIUtil::stringfy($server);
+	
+
+	use Config::General qw(SaveConfig);
+	undef $config->{'server'};
+	SaveConfig($config->{'RootDir'}.'/conf/sc.conf', $config);
+
+	return $json;
+  };
+  
+sub config_update {
+    # Authenticated
+    my $param_groupid = $self->param('param_groupid');
+    my $param_gnuplot = $self->param('param_gnuplot');
+    my $param_wkhtmltopdf = $self->param('param_wkhtmltopdf');
+    my $param_redundant_check = $self->param('param_redundant_check');
+    my $param_perlbin = $self->param('param_perlbin');
+    my $param_userid = $self->param('param_userid');
+	$config->{'GroupID'} = $param_groupid;
+	$config->{'UserID'} = $param_userid;
+	$config->{'gnuplot'} = $param_gnuplot;
+	$config->{'wkhtmltopdf'} = $param_wkhtmltopdf;
+	$config->{'REDUNDANT_CHECK'} = $param_redundant_check;
+	$config->{'perlbin'} = $param_perlbin;
+
+    my $param_dataroot = $self->param('param_dataroot');
+    my $param_logfile = $self->param('param_logfile');
+    my $param_rootdir = $self->param('param_rootdir');
+    my $param_templatedir = $self->param('param_templatedir');
+    my $param_loglevel = $self->param('param_loglevel');
+    my $param_logdir = $self->param('param_logdir');
+	$config->{'DataRoot'} = $param_dataroot;
+	$config->{'LogFile'} = $param_logfile;
+	$config->{'RootDir'} = $param_rootdir;
+	$config->{'TemplateDir'} = $param_templatedir;
+	$config->{'LogLevel'} = $param_loglevel;
+	$config->{'LogDir'} = $param_logdir;
+
+    my $sm_time_window = $self->param('sm_time_window');
+    my $sm_region = $self->param('sm_region');
+	$config->{'rss'}->{'TIME_WINDOW'} = $sm_time_window;
+	$config->{'rss'}->{'REGION'} = $sm_region;
+
+    my $param_update_threshold = $self->param('param_update_threshold');
+    my $param_mag_threshold = $self->param('param_mag_threshold');
+	$config->{'Threshold'} = $param_update_threshold;
+	$config->{'MAG_CUTOFF'} = $param_mag_threshold;
+
+    my $email_smtpserver = $self->param('email_smtpserver');
+    my $email_security = $self->param('email_security');
+    my $email_port = $self->param('email_port');
+    my $email_username = $self->param('email_username');
+    my $email_password = $self->param('email_password');
+    my $email_defaultemailtemplate = $self->param('email_defaultemailtemplate');
+    my $email_defaultscripttemplate = $self->param('email_defaultscripttemplate');
+    my $email_from = $self->param('email_from');
+    my $email_envelopefrom = $self->param('email_envelopefrom');
+	$config->{'Notification'}->{'SmtpServer'} = $email_smtpserver;
+	if ($email_security) {
+		$config->{'Notification'}->{'Security'} = $email_security;
+	} else {
+		delete $config->{'Notification'}->{'Security'};
+	}
+	if ($email_port) {
+		$config->{'Notification'}->{'Port'} = $email_port;
+	} else {
+		delete $config->{'Notification'}->{'Port'};
+	}
+	if ($email_username) {
+		$config->{'Notification'}->{'Username'} = $email_username;
+	} else {
+		delete $config->{'Notification'}->{'Username'};
+	}
+	if ($email_password) {
+		$config->{'Notification'}->{'Password'} = $email_password;
+	} else {
+		delete $config->{'Notification'}->{'Password'};
+	}
+	$config->{'Notification'}->{'DefaultEmailTemplate'} = $email_defaultemailtemplate;
+	$config->{'Notification'}->{'DefaultScriptTemplate'} = $email_defaultscripttemplate;
+	$config->{'Notification'}->{'From'} = $email_from;
+	$config->{'Notification'}->{'EnvelopeFrom'} = $email_envelopefrom;
+
+    my $db_connection_string = $self->param('db_connection_string');
+    my $db_type = $self->param('db_type');
+    my $db_username = $self->param('db_username');
+    my $db_password = $self->param('db_password');
+	$config->{'DBConnection'}->{'ConnectString'} = $db_connection_string;
+	$config->{'DBConnection'}->{'Type'} = $db_type;
+	$config->{'DBConnection'}->{'Username'} = $db_username;
+	$config->{'DBConnection'}->{'Password'} = $db_password;
+
+	my $json = API::APIUtil::stringfy($config);
+	
+	use Config::General qw(SaveConfig);
+	SaveConfig($config->{'RootDir'}.'/conf/sc.conf', $config);
+
+	return $json;
+  };

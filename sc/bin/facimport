@@ -1,0 +1,2 @@
+#!/bin/sh
+C:/ShakeCast/perl/bin/perl C:/ShakeCast/sc/bin/facimport.pl $*

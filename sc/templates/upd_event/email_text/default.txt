@@ -1,0 +1,22 @@
+; Default Text Email Notification
+;
+From: ShakeCast <%HEADER_FROM%>
+To: %HEADER_TO%
+Subject: Updated Event: %EVENT_ID%
+
+The following Updated Event occurred at %EVENT_TIMESTAMP%:
+
+Event ID:   %EVENT_ID%   Version: %EVENT_VERSION%
+
+Reported by: Server ID = %SERVER_ID%, DNS = %DNS_ADDRESS%
+
+Name:       %EVENT_NAME%
+Magnitude:  %MAGNITUDE%
+Lat:        %LAT%      Lon: %LON%
+Location:   %EVENT_LOCATION_DESCRIPTION%
+#ifdef FACILITY_ID
+
+Facility: %FACILITY_NAME%
+#endif
+=====
+

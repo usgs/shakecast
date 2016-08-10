@@ -1,0 +1,1210 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta content="text/html; charset=UTF-8" http-equiv="content-type">
+    <title>ShakeCast Mobile Application</title>
+    <link rel="stylesheet" href="css/jquery.mobile-1.0a4.1.min.css">
+    <script src="js/jquery-1.5.2.min.js"></script>
+    <script src="js/jquery.mobile-1.0a4.1.min.js"></script>
+    <script src="js/json2.js"></script>
+    <script type="text/javascript" src="./js/main.js"></script>
+    <script type="text/javascript" src="./js/sc_constant.js"></script>
+    <script type="text/javascript" src="./js/storage.js"></script>
+    <style>
+.ui-li .ui-btn-text a.ui-link-inherit { 
+  white-space: normal;
+  padding-left: 85px;
+}
+.div-detail { 
+  white-space: normal;
+  display: none;
+	border: 1px solid #333;
+	width: 98%;
+	margin: 5px;
+}
+
+.ul-detail { 
+  white-space: normal;
+  padding-left: 15px;
+}
+
+.ui-li-thumb {
+	margin-top: 10px;
+	margin-left: 10px;
+}
+    .map img{
+      -webkit-border-radius: 0.3em;
+      -moz-border-radius: 0.3em;
+      border-radius: 0.3em;
+	  vertical-align:middle;
+    }
+    .image_fit {
+	width:100%;
+    }
+	
+.table-action h2 {
+  font-size: 1.1em;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+  width: 82%; }
+
+.table-action .relative-distance {
+  color: gray;
+  font-size: 0.9em;
+  font-weight: normal; }
+
+.damage-summary { 
+    margin-left: 1em;
+	width: 98%;
+	#display: none;
+}
+
+.GREEN{
+    background: #008800;
+    background-image: -moz-linear-gradient(top, #00ff00, #009900 50%, #008800 50%, #006600);
+    background: -webkit-gradient(linear, left top, left bottom, color-stop(0.0, #00ff00), color-stop(0.5, #009900), color-stop(0.5, #008800), color-stop(1.0, #006600));
+    -webkit-box-shadow: 0 2px 2px #333333;
+    font-size: 1.1em;
+    color: white;
+    padding: 8px;
+    margin: 6px 0 6px 0;
+    text-align: center;
+}
+
+.YELLOW{
+    background: #eeee00;
+    background-image: -moz-linear-gradient(top, #ffff00, #fafa00 50%, #eeee00 50%, #999900);
+    background: -webkit-gradient(linear, left top, left bottom, color-stop(0.0, #ffff00), color-stop(0.5, #fafa00), color-stop(0.5, #eeee00), color-stop(1.0, #999900));
+    -webkit-box-shadow: 0 2px 2px #333333;
+    font-size: 1.1em;
+    color: white;
+    padding: 8px;
+    margin: 6px 0 6px 0;
+    text-align: center;
+}
+
+.NA {
+    background: #888888;
+    background-image: -moz-linear-gradient(top, #cccccc, #aaaaaa 50%, #888888 50%, #666666);
+    background: -webkit-gradient(linear, left top, left bottom, color-stop(0.0, #cccccc), color-stop(0.5, #aaaaaa), color-stop(0.5, #888888), color-stop(1.0, #666666));
+    -webkit-box-shadow: 0 2px 2px #333333;
+    -border-radius: 6px;
+    -webkit-border-radius: 6px;
+    -moz-border-radius: 6px;
+    font-size: 1.1em;
+    color: white;
+    padding: 8px;
+    margin: 6px 0 6px 0;
+    text-align: center;
+}
+
+.fac_sum {
+    background: #eee;
+	border: 1px solid #888;
+    padding: 0.1em;
+    margin: 0.2em;
+    text-align: left;
+}
+
+.fac_summary {
+	border-bottom: 1px solid #888;
+    padding: 0.1em;
+    margin: 0.2em;
+    text-align: left;
+}
+
+.metric-summary { 
+    margin-left: 1em;
+	width: 98%;
+}
+
+.metric-legend { 
+width:10%; margin-left:1em;
+}
+
+.metric-mask, .metric-mask-left, .metric-mask-right { 
+    background: #555;
+	opacity: 0.7;
+    margin: 0;
+    text-align: center;
+border:2px solid;
+border-radius:15px;
+-moz-border-radius:15px; /* Firefox 3.6 and earlier */
+}
+
+.metric-mask-left, .metric-mask-right { 
+    padding-right: 0.2em;
+	text-align: right;
+}
+
+.metric-mask-right { 
+    margin-right: 0;
+    padding-left: 0.2em;
+	text-align: left;
+	float: right;
+}
+
+.INTENSITY, .PGM, .STD, .SVEL {
+    background: #eeeeee;
+    color: white;
+    text-align: left;
+	margin: 0.2em 1em 0.3em 0em;
+	text-shadow: 0.1em 0.1em #333;
+	padding-top: 0.2em;
+	padding-bottom: 0.2em;
+border:2px solid;
+border-radius:25px;
+-moz-border-radius:25px; /* Firefox 3.6 and earlier */
+}
+
+.INTENSITY {
+    background-image: -moz-linear-gradient(left, #ffffff, #ffffff 10%, #bfccff 20%, #a0e6ff 30%, #80ffff 40%, 
+		#7aff93 50%, #ffff00 60%, #ffc800 70%, #ff9100 80%, #ff0000 90%, #c80000);
+    background: -webkit-gradient(linear, left center, right center, color-stop(0%, #ffffff), color-stop(10%, #ffffff), color-stop(20%, #bfccff), 
+		color-stop(30%, #a0e6ff), color-stop(40%, #80ffff), color-stop(50%, #7aff93), color-stop(60%, #ffff00), color-stop(70%, #ffc800), color-stop(80%, #ff9100), 
+		color-stop(90%, #ff0000), to(#c80000));
+    //-webkit-box-shadow: 0 2px 2px #333333;
+}
+
+.PGM {
+    background-image: -moz-linear-gradient(left, #0000ff, #eeeeee 20%, #ff0000 70%, #c80000);
+    background: -webkit-gradient(linear, left center, right center, color-stop(0%, #0000ff), color-stop(20%, #eeeeee), 
+		color-stop(70%, #ff0000), to(#c80000));
+    //-webkit-box-shadow: 0 2px 2px #333333;
+}
+
+.STD {
+    background-image: -moz-linear-gradient(left, #000080, #0000ff 40%, #f0f0f0 50%, #ff0000 60%, #800000);
+    background: -webkit-gradient(linear, left center, right center, color-stop(0%, #000080), color-stop(40%, #0000ff), 
+		color-stop(50%, #f0f0f0), color-stop(60%, #ff0000), to(#800000));
+    //-webkit-box-shadow: 0 2px 2px #333333;
+}
+
+.SVEL {
+    background-image: -moz-linear-gradient(left, #ff0000, #ff0000 18%, #00ff00 18%, #00ff00 36%, #0000ff 36%, #0000ff 76%, #0000c0 76%, #0000c0);
+    background: -webkit-gradient(linear, left center, right center, color-stop(0%, #ff0000), color-stop(18%, #ff0000), 
+		color-stop(18%, #00ff00), color-stop(36%, #00ff00), color-stop(36%, #0000ff), color-stop(76%, #0000ff), 
+		color-stop(76%, #0000c0), to(#0000c0));
+    //-webkit-box-shadow: 0 2px 2px #333333;
+}
+
+	</style>
+  </head>
+  <body>
+    <!-- Begin: Main tweet list view -->
+    <section id="pageEQList" data-role="page">
+      <header data-role="header"> <a href="#" data-transition="flip" data-role="button"
+
+          data-icon="refresh" class="ui-btn-left" id="update-time" data-theme="b">Time</a>
+        <h1>Earthquake List</h1>
+        <a href="#pageSettings" data-transition="flip" data-role="button" data-icon="gear"
+
+          data-iconpos="notext" class="ui-btn-right">Options</a> </header>
+      <div class="content" data-role="content">
+        <ul>
+        </ul>
+      </div>
+      <footer data-role="footer">
+        <h1 class="map"><img src="/images/sc_logo.png" width="26" height="26">
+          ShakeCast <i>Mobile</i></h1>
+      </footer>
+    </section>
+    <!-- End: Main tweet list view -->
+    <!-- Begin: ShakeCast detail view -->
+    <section id="pageSCDetail" data-role="page">
+      <header data-role="header">
+        <h1>ShakeCast Information</h1>
+        <nav data-role="navbar">
+          <ul>
+            <li><a href="#pageSCDetail" class="ui-btn-active" data-theme="b">ShakeCast
+                Info</a></li>
+            <li><a href="#pageSMDetail">ShakeMap Info</a></li>
+            <li><a href="#pageEQDetail">Earthquake Info</a></li>
+          </ul>
+        </nav>
+      </header>
+      <div class="content" data-role="content">
+        <ul>
+        </ul>
+      </div>
+      <footer data-role="footer">
+        <h1 class="map"><img src="/images/sc_logo.png" width="26" height="26">
+          ShakeCast <i>Mobile</i></h1>
+      </footer>
+    </section>
+    <!-- End: ShakeCast detail view -->
+    <!-- Begin: ShakeMap detail view -->
+    <section id="pageSMDetail" data-role="page">
+      <header data-role="header">
+        <h1>ShakeMap Information</h1>
+        <nav data-role="navbar">
+          <ul>
+            <li><a href="#pageSCDetail">ShakeCast Info</a></li>
+            <li><a href="#pageSMDetail" class="ui-btn-active" data-theme="b">ShakeMap
+                Info</a></li>
+            <li><a href="#pageEQDetail">Earthquake Info</a></li>
+          </ul>
+        </nav>
+      </header>
+      <div class="content" data-role="content">
+        <ul>
+        </ul>
+      </div>
+      <footer data-role="footer">
+        <h1 class="map"><img src="/images/sc_logo.png" width="26" height="26">
+          ShakeCast <i>Mobile</i></h1>
+      </footer>
+    </section>
+    <!-- End: ShakeMap detail view -->
+    <!-- Begin: Earthquake detail view -->
+    <section id="pageEQDetail" data-role="page">
+      <header data-role="header">
+        <h1>Earthquake Information</h1>
+        <nav data-role="navbar">
+          <ul>
+            <li><a href="#pageSCDetail">ShakeCast Info</a></li>
+            <li><a href="#pageSMDetail">ShakeMap Info</a></li>
+            <li><a href="#pageEQDetail" class="ui-btn-active" data-theme="b">Earthquake
+                Info</a></li>
+          </ul>
+        </nav>
+      </header>
+      <div class="content" data-role="content">
+        <ul>
+        </ul>
+      </div>
+      <footer data-role="footer">
+        <h1 class="map"><img src="/images/sc_logo.png" width="26" height="26">
+          ShakeCast <i>Mobile</i></h1>
+      </footer>
+    </section>
+    <!-- End: Earthquake detail view -->
+    <!-- Begin: Settings page -->
+    <section id="pageSettings" data-role="page">
+      <header data-role="header">
+        <h1>Display Settings</h1>
+      </header>
+      <div class="content" data-role="content">
+        <h3>Settings</h3>
+        <div data-role="fieldcontain"> <label for="username">ShakeCast User
+            Name:</label> <input id="username" value="" type="text"> </div>
+        <div data-role="fieldcontain"> <label for="slider">Number of EQ to
+            display:</label> <input id="slider" name="slider" min="5" max="50"
+
+            value="" type="range"> </div>
+        <div data-role="fieldcontain"> <label for="refresh-slider">Refresh
+            Interval:</label> <input id="refresh-slider" name="refresh-slider"
+
+            min="1" max="20" value="" type="range"> </div>
+      </div>
+      <footer data-role="footer">
+        <h1 class="map"><img src="/images/sc_logo.png" width="26" height="26">
+          ShakeCast <i>Mobile</i></h1>
+      </footer>
+    </section>
+    <!-- End: Preferences page --> <a href="#pageError" id="show-error-page" data-role="button"
+
+      data-rel="dialog" data-transition="pop" style="display: none">Show error
+      page</a>
+    <!-- Begin: Error page -->
+    <section id="pageError" data-role="page" data-theme="e">
+      <header data-role="header">
+        <h1>Error Message</h1>
+      </header>
+      <div class="content" data-role="content"> </div>
+      <footer data-role="footer">
+        <h1 class="map"><img src="/images/sc_logo.png" width="26" height="26">
+          ShakeCast <i>Mobile</i></h1>
+      </footer>
+    </section>
+    <!-- End: Error page -->
+    <script>
+	    SC_DEF.init();
+        //var sm_url = '/scripts/shakemap.pl/from_id/' + sc_id;
+        var username = SC_DEF.user ? SC_DEF.user : 'guest';
+        var password = SC_DEF.pass ? SC_DEF.pass : 'guest';
+        var sm_url = '/scripts/r/user/from_id/'+username;
+        var submit_data = {
+        };
+
+function update_time() {
+  var $page = $("#pageEQList");
+	  var timestamp = (new Date).getTime();
+	  var last = $page.data("update-timestamp");
+
+	var min = parseInt((timestamp-last)/60000);
+	var time_str;
+	if (min < 1) {
+		time_str = "< 1 min.";
+	} else if (min < 60) {
+		time_str =  min + " min.";
+	} else {
+		time_str =  parseInt(min/60) + " hr.";
+	}
+	
+	$("#update-time .ui-btn-text").text(time_str);
+}
+
+(function($) {
+	var update_interval;
+  var methods = {
+    initMainPage : function(options) {
+      var settings = {
+        callback: function() {}
+      };
+      if ( options ) {
+        $.extend( settings, options );
+      }
+	  
+	  var $page = $("#pageEQList");
+	  var $list = $page.find(".content ul");
+	  
+	  // Set some defaults
+	  $page.data("rpp", 20);
+	  $page.data("twitterUser", "jreid01");
+	  $page.data("boolUpdate", false);
+	  $page.data("update-timestamp", (new Date).getTime());
+	  $page.data("update-interval", 5);
+	  
+	  // Update the twitter feed for the first time
+	  updateEQFeed();
+	  update_time();
+	  
+	  // Every time we show this page we need to check to see if we need to update.
+	  $page.bind("pageshow", function(event, ui) {
+	    if ($page.data("boolUpdate")) {
+		  updateEQFeed();
+		  $page.data("boolUpdate", false);
+			//setInterval(updateEQFeed,60000);
+		}
+	  })
+	  
+		setInterval(update_time,60000);
+		update_interval = setInterval(updateEQFeed,$page.data("update-interval")*60000);
+    },
+	
+	
+    initSCDetailPage : function(options) {
+      var settings = {
+        callback: function() {}
+      };
+      if ( options ) {
+        $.extend( settings, options );
+      }
+	  
+	  var $page = $("#pageSCDetail");
+	  
+	  // Every time this page shows, we need to display a tweet detail
+	  $page.bind("pageshow", function(event, ui) {
+		  updateSCDetail();
+	  });
+	},
+	
+    initSMDetailPage : function(options) {
+      var settings = {
+        callback: function() {}
+      };
+      if ( options ) {
+        $.extend( settings, options );
+      }
+	  
+	  var $page = $("#pageSMDetail");
+	  
+	  // Every time this page shows, we need to display a tweet detail
+	  $page.bind("pageshow", function(event, ui) {
+		  updateSMDetail();
+	  });
+	},
+	
+    initEQDetailPage : function(options) {
+      var settings = {
+        callback: function() {}
+      };
+      if ( options ) {
+        $.extend( settings, options );
+      }
+	  
+	  var $page = $("#pageEQDetail");
+	  
+	  // Every time this page shows, we need to display a tweet detail
+	  $page.bind("pageshow", function(event, ui) {
+		  updateEQDetail();
+	  });
+	},
+	
+	initSettingsPage : function(options) {
+      var settings = {
+        callback: function() {}
+      };
+      if ( options ) {
+        $.extend( settings, options );
+      }
+	  
+	  // Current page
+	  var $page = $("#pageSettings");
+      // Page where data is stored
+      var $datapage = $("#pageEQList");
+	  
+	  // If the user changes the username we need
+	  // to update the data stored in $datapage
+	  $page.find("#username").change(function() {
+	  	var newVal = $(this).val();
+		$datapage.data("twitterUser", newVal);
+		// Set the refresh boolean
+		$datapage.data("boolUpdate", true);
+	  });
+	  
+	  // jQuery Mobile doesn't have a change() event 
+	  // for the slider yet, so we need to check it
+	  // when the user leaves this page
+	  $page.bind("pagebeforehide", function(event, ui) {
+        var sliderValue = $page.find("#slider").val();
+		if (parseInt(sliderValue, 10) != parseInt($datapage.data("rpp"), 10)) {
+          // Update the data and set for refresh
+          $datapage.data("rpp", sliderValue);
+		  $datapage.data("boolUpdate", true);
+		}
+        sliderValue = $page.find("#refresh-slider").val();
+		if (parseInt(sliderValue, 10) != parseInt($datapage.data("update-interval"), 10)) {
+          // Update the data and set for refresh
+          $datapage.data("update-interval", sliderValue);
+		  $datapage.data("boolUpdate", true);
+		  clearInterval(update_interval);
+		update_interval = setInterval(updateEQFeed,sliderValue*60000);
+		}
+	  })
+	  
+	  // On page show we need to update the elements on
+	  // this page to reflect current data
+	  $page.bind("pageshow", function(event, ui) {
+        $page.find("#slider").val($datapage.data("rpp")).slider("refresh");
+        $page.find("#refresh-slider").val($datapage.data("update-interval")).slider("refresh");
+		$page.find("#username").val($datapage.data("twitterUser"));
+	  })
+	  
+	},
+	
+	
+    initAll : function(options) {
+      var settings = {
+        callback: function() {}
+      };
+      if ( options ) {
+        $.extend( settings, options );
+      }
+	  
+	  $().initApp("initMainPage");
+	  $().initApp("initSCDetailPage");
+	  $().initApp("initSMDetailPage");
+	  $().initApp("initEQDetailPage");
+	  $().initApp("initSettingsPage");
+
+	}
+  }
+  
+  
+	
+  $.fn.initApp = function(method) {
+    // Method calling logic
+    if ( methods[method] ) {
+      return methods[ method ].apply( this, Array.prototype.slice.call( arguments, 1 ));
+    } else if ( typeof method === 'object' || ! method ) {
+      return methods.initAll.apply( this, arguments );
+    } else {
+      $.error( 'Method ' +  method + ' does not exist' );
+    } 
+  }
+  
+  $(function() {
+    $.ajaxSetup({
+        error: function(jqXHR, exception) {
+			  $.mobile.pageLoading(true);
+        }
+    });
+});
+
+})(jQuery);
+
+$(document).ready(function() {
+	$().initApp();
+})
+
+var updateEQDetail = function() {
+  // First, call the page loading dialog
+  $.mobile.pageLoading();
+  
+  // Get the page and list we need to work with
+  var $page = $("#pageEQDetail");
+	
+	  	var objTweet = JSON.parse($page.data("EQJSON"));
+		var epi_png = '/images/epicenter/' + parseInt(objTweet.lon/5+0.5)*5 +'_'+ 
+			parseInt(objTweet.lat/5+0.5)*5 + '.png';
+        var strHtml = '<p>';
+		$page.find("header h1").html('M' + objTweet.magnitude + ' - ' + 
+			objTweet.event_location_description + ' (<i>' + objTweet.event_id + '</i>)');
+        //strHtml += '<img src="http://maps.google.com/maps/api/staticmap?center='+epicenter+
+		//		'&zoom=4&size=72x72&maptype=terrain&sensor=false' + 
+		//		'&markers=icon:http://shakecast.awardspace.com/images/epicenter.png|'+mrkcenter+'">';
+  var strUrl = '/data/eq_product/' + objTweet.event_id + '/event.json';
+
+  // Get the EQ and append them to the list
+  $.ajax({
+    url: strUrl,
+    dataType: 'json',
+    success: function(data) {
+
+	  // Delete the existing list, if any
+      $page.find(".content").empty();
+
+      // Are there even any EQ to display?
+	  if (data.products.length == 0) {
+	  	
+	  	// display an error message in the error dialog
+	  	var strHtml = "<h3>No EQ Found</h3>";
+		strHtml += "<p>No earthquakes found for the user name " + $page.data("twitterUser") + ".</p>";
+		$("#pageError .content").html(strHtml);
+		$("#show-error-page").click();
+		
+		// Update the list page to reflect that no EQ were found
+		$page.find(".content").html("<h3>No EQ Found</h3>");
+		
+		// Hide the page loading dialog
+		$.mobile.pageLoading(true);
+		
+		// and we're done.
+		return;
+	  }
+
+      // Create a new list
+		var $winwidth = $(window).width();
+	  $page.find(".content").html('<ul data-role="listview"></ul>');
+	  $list = $page.find(".content ul");
+      $.each(data.properties.products, function(key, obj) {
+        // Build HTML that contains the desired information
+		//var epi_png = '/images/epicenter/' + parseInt(data.products[i].geometry.coordinates[1]/5+0.5)*5 +'_'+ 
+		//	parseInt(data.products[i].geometry.coordinates[0]/5+0.5)*5 + '.png';
+        var strHtml;
+		switch (key) {
+			case 'dyfi':
+				strHtml += '<li>Did You Feel It!</li>';
+				strHtml += '<div id="'+key+'" class="div-detail"><img src="/data/eq_product/' + objTweet.event_id + '/' +
+					objTweet.event_id + '_ciim.jpg" class="image_fit"></div>\n';
+				break;
+			case 'losspager':
+				strHtml += '<li>Loss PAGER</li>';
+				strHtml += '<div id="'+key+'" class="ui-grid-a div-detail">';
+				strHtml += '<div class="ui-block-a"><b>Fatality</b><img src="/data/eq_product/' + objTweet.event_id + 
+					'/alertfatal_small.png" class="image_fit"></div>\n';
+				strHtml += '<div class="ui-block-b"><b>Economic Loss</b><img src="/data/eq_product/' + objTweet.event_id + 
+					'/alertecon_small.png" class="image_fit"></div>\n';
+				strHtml += '<div ><img src="/data/eq_product/' + objTweet.event_id + 
+					'/exposure.png" class="image_fit"></div>\n';
+				strHtml += '</div>';
+				break;
+			case 'historical-moment-tensor-map':
+				strHtml += '<li>Historical Moment Tensor Map</li>';
+				strHtml += '<div id="'+key+'" class="div-detail"><img src="/data/eq_product/' + objTweet.event_id + 
+					'/historicMoments.jpg" class="image_fit"></div>\n';
+				break;
+			case 'historical-seismicity-map':
+				strHtml += '<li>Historical Seismicity Map</li>';
+				strHtml += '<div id="'+key+'" class="div-detail"><img src="/data/eq_product/' + objTweet.event_id + 
+					'/historicSeismicityFrom1990.jpg" class="image_fit"></div>\n';
+				break;
+			case 'tectonic-summary':
+				strHtml += '<li>Tectonic Summary</li>';
+				strHtml += '<div id="'+key+'" class="div-detail"></div>\n';
+				break;
+		}
+
+        if (strHtml) {// Make it into a jQuery object...
+			var tweet = $(strHtml);
+			
+			// ...so we can append it to our list.
+			$list.append(tweet);
+			  
+			// Store the JSON data for this tweet
+			$list.find("li:last").data("EQJSON", JSON.stringify(obj));
+
+			$list.find("li:last").click(function() {
+				$("#"+key).toggle("reverse out in");
+			});
+			
+		}
+		
+		if (key == 'tectonic-summary') {
+			$("#"+key).load('/data/eq_product/' + objTweet.event_id + '/tectonic_summary.html');
+		}
+      });
+	  
+	  // Call the listview widget.
+	  $list.listview();
+				//$(".div-detail").imagefit();
+	  // Now that it's all done, hide the page loading dialog
+	  $.mobile.pageLoading(true);
+	  
+      // When the user taps on a tweet, it will go to the detail page.
+      $list.find("a").click(function() {
+        var $this = $(this);
+		// Pass the EQJSON object over to the detail page so that it
+		// has the information it needs
+		//$("#pageSCDetail").data("EQJSON", $this.data("EQJSON"));
+	  })
+    },
+  });
+}
+
+var updateEQFeed = function() {
+  // First, call the page loading dialog
+  $.mobile.pageLoading();
+  
+  // Get the page and list we need to work with
+  var $page = $("#pageEQList");
+	
+  // Build the URL we need
+  //var strUrl = "http://search.twitter.com/search.json?callback=?&rpp=";
+  //var strUrl = "/data/eq_product/earthquake.usgs.gov.json";
+  //var strUrl = "/shakemap_json.php";
+  //var strUrl = "/scripts/event.pl/event_list";
+  var strUrl = "/scripts/r/event/event_list";
+  //var strUrl = "http://earthquake.usgs.gov/earthquakes/feed/geojson/1.0/day";
+  //strUrl += $page.data("rpp");
+  //strUrl += "&q=from:" + $page.data("twitterUser");
+ 
+  // Get the EQ and append them to the list
+  $.ajax({
+    url: strUrl,
+    dataType: 'json',
+    success: function(data) {
+
+	  // Delete the existing list, if any
+      $page.find(".content").empty();
+
+      // Are there even any EQ to display?
+	  if (data.length == 0) {
+	  	
+	  	// display an error message in the error dialog
+	  	var strHtml = "<h3>No EQ Found</h3>";
+		strHtml += "<p>No earthquakes found for the user name " + $page.data("twitterUser") + ".</p>";
+		$("#pageError .content").html(strHtml);
+		$("#show-error-page").click();
+		
+		// Update the list page to reflect that no EQ were found
+		$page.find(".content").html("<h3>No EQ Found</h3>");
+		
+		// Hide the page loading dialog
+		$.mobile.pageLoading(true);
+		
+		// and we're done.
+		return;
+	  }
+
+      // Create a new list
+	  $page.find(".content").html('<ul class="table-action"></ul>');
+	  $list = $page.find(".content ul");
+      for (var i = 0; i < data.length && i < $page.data("rpp"); i++) {
+	  	
+        // Build HTML that contains the desired information
+		//var epi_png = '/images/epicenter/' + parseInt(data.features[i].geometry.coordinates[1]/5+0.5)*5 +'_'+ 
+		//	parseInt(data.features[i].geometry.coordinates[0]/5+0.5)*5 + '.png';
+		var epi_png = '/data/eq_product/' + data[i].event_id +'/gm_epicenter.png'; 
+        var strHtml = '<li><a href="#pageSCDetail" class="map">';
+        //strHtml += '<img src="http://maps.google.com/maps/api/staticmap?center='+epicenter+
+		//		'&zoom=4&size=72x72&maptype=terrain&sensor=false' + 
+		//		'&markers=icon:http://shakecast.awardspace.com/images/epicenter.png|'+mrkcenter+'">';
+		strHtml += '<img src="'+ epi_png +'"><h2>';
+        strHtml += 'M' + data[i].magnitude;
+		strHtml += ' - ' + data[i].event_location_description + '</h2>';
+        strHtml += '<span class="relative-distance">' + data[i].ago + '</span>';
+		strHtml += '<span class="ui-li-count"></span></a></li>\n';
+
+        // Make it into a jQuery object...
+        var tweet = $(strHtml);
+		
+        // ...so we can append it to our list.
+        $list.append(tweet);
+		  
+        // Store the JSON data for this tweet
+        $list.find("a:last").data("EQJSON", JSON.stringify(data[i]));
+		$list.find("span:last").each(function() {
+			//var event_sum_url = '/scripts/shaking.pl/shaking_summary/'+data[i].shakemap_id + '-' + data[i].shakemap_version;
+			var event_sum_url = '/scripts/r/shaking/shaking_summary/'+data[i].shakemap_id + '-' + data[i].shakemap_version;
+			//var event_sum_url = '/server_event_summary.php?feed=json&event='+data[i].event_id
+			var evt_row = $(this);
+			$.ajax({
+				url: event_sum_url,
+				dataType: 'json',
+				success: function(evt_data) {
+					var total_count = 0;
+					// Are there even any EQ to display?
+					if (evt_data.length > 0) {
+						for (var i=0; i < evt_data.length; i++) {
+						total_count += parseInt(evt_data[i].count);
+						}
+					}
+					$(evt_row).html(total_count);
+				}
+			});
+		});
+      }
+	  
+	  // Call the listview widget.
+	  $list.listview();
+
+	  // Now that it's all done, hide the page loading dialog
+	  $.mobile.pageLoading(true);
+	  $page.data("update-timestamp", (new Date).getTime());
+	  
+      // When the user taps on a tweet, it will go to the detail page.
+      $list.find("a").click(function() {
+        var $this = $(this);
+		// Pass the EQJSON object over to the detail page so that it
+		// has the information it needs
+		$("#pageSCDetail").data("EQJSON", $this.data("EQJSON"));
+		$("#pageSMDetail").data("EQJSON", $this.data("EQJSON"));
+		$("#pageEQDetail").data("EQJSON", $this.data("EQJSON"));
+	  })
+    },
+	error: function() { 
+	
+	  // Get the page
+      var $page = $("#pageError .content");
+	  
+	  // Build an error message
+	  var strHtml = "<h3>Update failed</h3>";
+	  strHtml += "<p>We were unable to update the twitter feed.  Please try again.</p>"
+	  
+	  // append it to the error dialog
+	  $page.html(strHtml);
+	  
+	  // Show the dialog
+      $("#show-error-page").click();
+	  
+	  // Hide the page loading dialog
+	  $.mobile.pageLoading(true);
+    }
+  });
+}
+
+var updateSMDetail = function() {
+  // First, call the page loading dialog
+  $.mobile.pageLoading();
+  
+  // Get the page and list we need to work with
+  var $page = $("#pageSMDetail");
+	
+	  	var objTweet = JSON.parse($page.data("EQJSON"));
+		var epi_png = '/images/epicenter/' + parseInt(objTweet.lon/5+0.5)*5 +'_'+ 
+			parseInt(objTweet.lat/5+0.5)*5 + '.png';
+        var strHtml = '<p>';
+		$page.find("header h1").html('M' + objTweet.magnitude + ' - ' + 
+			objTweet.event_location_description + ' (<i>' + objTweet.event_id + '</i>)');
+        //strHtml += '<img src="http://maps.google.com/maps/api/staticmap?center='+epicenter+
+		//		'&zoom=4&size=72x72&maptype=terrain&sensor=false' + 
+		//		'&markers=icon:http://shakecast.awardspace.com/images/epicenter.png|'+mrkcenter+'">';
+  var strUrl = '/data/' + objTweet.shakemap_id + '-' + objTweet.shakemap_version + '/info.xml';
+
+      $page.find(".content").empty();
+	  $page.find(".content").html('<ul data-role="listview"></ul>');
+	  var map_list = ['intensity', 'pga', 'pgv'];
+	  $list = $page.find(".content ul");
+  // Get the EQ and append them to the list
+  $.ajax({
+    url: strUrl,
+    dataType: 'xml',
+    success: function(xml) {
+
+	  // Delete the existing list, if any
+      // Are there even any EQ to display?
+	  if ($(xml).find('tag').length == 0) {
+	  	
+	  	// display an error message in the error dialog
+	  	var strHtml = "<h3>No EQ Found</h3>";
+		strHtml += "<p>No earthquakes found for the user name " + $page.data("twitterUser") + ".</p>";
+		$("#pageError .content").html(strHtml);
+		$("#show-error-page").click();
+		
+		// Update the list page to reflect that no EQ were found
+		$page.find(".content").html("<h3>No EQ Found</h3>");
+		
+		// Hide the page loading dialog
+		$.mobile.pageLoading(true);
+		
+		// and we're done.
+		return;
+	  }
+
+      // Create a new list
+		var $winwidth = $(window).width();
+	  $list = $page.find(".content ul");
+        var strHtml = '<li id="bias">ShakeMap Summary</li><div id="info-xml" class="div-detail ui-grid-a">';
+      $.each($(xml).find('tag'), function() {
+		var key = $(this).attr('name');
+        // Build HTML that contains the desired information
+		//var epi_png = '/images/epicenter/' + parseInt(data.products[i].geometry.coordinates[1]/5+0.5)*5 +'_'+ 
+		//	parseInt(data.products[i].geometry.coordinates[0]/5+0.5)*5 + '.png';
+		switch (key) {
+			case 'site_correction':
+				strHtml += '<div class="ui-block-a">Site correction applied</div>';
+				strHtml += '<div class="ui-block-b">'+$(this).attr('value')+'</div>';
+				break;
+			case 'sitecorr_regime':
+				strHtml += '<div class="ui-block-a">Site correction regime</div>';
+				strHtml += '<div class="ui-block-b">'+$(this).attr('value')+'</div>';
+				break;
+			case 'map_bound':
+				strHtml += '<div class="ui-block-a">'+$(this).attr('desc')+'</div>';
+				strHtml += '<div class="ui-block-b">'+$(this).attr('value')+'</div>';
+				break;
+			case 'bias':
+				strHtml += '<div class="ui-block-a">'+$(this).attr('desc')+'</div>';
+				strHtml += '<div class="ui-block-b">'+$(this).attr('value')+'</div>';
+				break;
+			case 'mi_bias':
+				strHtml += '<div class="ui-block-a">'+$(this).attr('desc')+'</div>';
+				strHtml += '<div class="ui-block-b">'+$(this).attr('value')+'</div>';
+				break;
+			case 'GMPE':
+				strHtml += '<div class="ui-block-a">'+$(this).attr('desc')+'</div>';
+				strHtml += '<div class="ui-block-b">'+$(this).attr('value')+'</div>';
+				break;
+			case 'pgm2mi':
+				strHtml += '<div class="ui-block-a">'+$(this).attr('desc')+'</div>';
+				strHtml += '<div class="ui-block-b">'+$(this).attr('value')+'</div>';
+				break;
+			case 'mi2pgm':
+				strHtml += '<div class="ui-block-a">'+$(this).attr('desc')+'</div>';
+				strHtml += '<div class="ui-block-b">'+$(this).attr('value')+'</div>';
+				break;
+			case 'GMPE':
+				strHtml += '<div class="ui-block-a">'+$(this).attr('desc')+'</div>';
+				strHtml += '<div class="ui-block-b">'+$(this).attr('value')+'</div>';
+				break;
+			case 'mean_uncertainty':
+				strHtml += '<div class="ui-block-a">'+$(this).attr('desc')+'</div>';
+				strHtml += '<div class="ui-block-b">'+$(this).attr('value')+'</div>';
+				break;
+			case 'grade':
+				strHtml += '<div class="ui-block-a">'+$(this).attr('desc')+'</div>';
+				strHtml += '<div class="ui-block-b">'+$(this).attr('value')+'</div>';
+				break;
+			case 'mi_max':
+				strHtml += '<div class="ui-block-a">Intensity Maximum value of grid</div>';
+				strHtml += '<div class="ui-block-b">'+$(this).attr('value')+'</div>';
+				break;
+			case 'pga_max':
+				strHtml += '<div class="ui-block-a">PGA Maximum value of grid</div>';
+				strHtml += '<div class="ui-block-b">'+$(this).attr('value')+'</div>';
+				break;
+			case 'pgv_max':
+				strHtml += '<div class="ui-block-a">PGV Maximum value of grid</div>';
+				strHtml += '<div class="ui-block-b">'+$(this).attr('value')+'</div>';
+				break;
+			case 'psa03_max':
+				strHtml += '<div class="ui-block-a">PSA03 Maximum value of grid</div>';
+				strHtml += '<div class="ui-block-b">'+$(this).attr('value')+'</div>';
+				map_list.push('psa03');
+				break;
+			case 'psa10_max':
+				strHtml += '<div class="ui-block-a">PSA10 Maximum value of grid</div>';
+				strHtml += '<div class="ui-block-b">'+$(this).attr('value')+'</div>';
+				map_list.push('psa10');
+				break;
+			case 'psa30_max':
+				strHtml += '<div class="ui-block-a">PSA30 Maximum value of grid</div>';
+				strHtml += '<div class="ui-block-b">'+$(this).attr('value')+'</div>';
+				map_list.push('psa30');
+				break;
+		}
+		});
+		strHtml += '</div>\n';
+		
+		var tweet = $(strHtml);
+		
+		// ...so we can append it to our list.
+		$list.append(tweet);
+		  
+		$list.find("li#bias").click(function() {
+			$("#info-xml").toggle("reverse out in");
+		});
+			
+		
+	  $.each(map_list, function(ind, key) {
+		var strHtml;
+		switch (key) {
+			case 'intensity':
+				strHtml += '<li>Intensity Map</li>';
+				break;
+			case 'pga':
+				strHtml += '<li>Peak Acceleration Map</li>';
+				break;
+			case 'pgv':
+				strHtml += '<li>Peak Velocity Map</li>';
+				break;
+			case 'psa03':
+				strHtml += '<li>Peak Spectral Acceleration Map (0.3s)</li>';
+				break;
+			case 'psa10':
+				strHtml += '<li>Peak Spectral Acceleration Map (1.0s)</li>';
+				break;
+			case 'psa30':
+				strHtml += '<li>Peak Spectral Acceleration Map (3.0s)</li>';
+				break;
+		}
+				
+
+        if (strHtml) {// Make it into a jQuery object...
+			strHtml += '<div id="'+key+'" class="div-detail">';
+			strHtml += '<a href="/data/' + objTweet.shakemap_id + '-' + objTweet.shakemap_version + '/' + key + '.jpg" target="_blank">';
+			strHtml += '<img src="/data/' + objTweet.shakemap_id + '-' + objTweet.shakemap_version + '/' + key + '.jpg" class="image_fit">';
+			strHtml += '</a></div>\n';
+			var tweet = $(strHtml);
+			
+			// ...so we can append it to our list.
+			$list.append(tweet);
+			  
+			$list.find("li:last").click(function() {
+				$("#"+key).toggle("reverse out in");
+			});
+
+			//$("#"+key).load('/data/' + objTweet.id + '-' + objTweet.version + '/' + key + '.jpg');
+			
+		}
+  });
+  
+	  $.mobile.pageLoading(true);
+
+	  // Call the listview widget.
+	  $list.listview();
+				//$(".div-detail").imagefit();
+	  // Now that it's all done, hide the page loading dialog
+	  
+	  }
+	  });
+
+}
+
+var updateSCDetail = function() {
+  // First, call the page loading dialog
+  $.mobile.pageLoading();
+  
+  // Get the page and list we need to work with
+  var $page = $("#pageSCDetail");
+	
+	  	var objTweet = JSON.parse($page.data("EQJSON"));
+		var epi_png = '/images/epicenter/' + parseInt(objTweet.lon/5+0.5)*5 +'_'+ 
+			parseInt(objTweet.lat/5+0.5)*5 + '.png';
+        var strHtml = '<p>';
+		$page.find("header h1").html('M' + objTweet.magnitude + ' - ' + 
+			objTweet.event_location_description + ' (<i>' + objTweet.event_id + '</i>)');
+        //strHtml += '<img src="http://maps.google.com/maps/api/staticmap?center='+epicenter+
+		//		'&zoom=4&size=72x72&maptype=terrain&sensor=false' + 
+		//		'&markers=icon:http://shakecast.awardspace.com/images/epicenter.png|'+mrkcenter+'">';
+  //var strUrl = '/server_event_summary.php?feed=json&event=';
+  //var strUrl = '/scripts/shakemap.pl/from_id/' + objTweet.shakemap_id + 
+  var strUrl = '/scripts/r/shakemap/from_id/' + objTweet.shakemap_id + 
+			'-' + objTweet.shakemap_version;
+	//strUrl += objTweet.event_id;
+
+  // Get the EQ and append them to the list
+  $.ajax({
+    url: strUrl,
+    dataType: 'json',
+    success: function(data) {
+
+	  // Delete the existing list, if any
+      $page.find(".content").empty();
+
+      // Are there even any EQ to display?
+	  if (data.metric.length == 0) {
+	  	
+	  	// display an error message in the error dialog
+	  	var strHtml = "<h3>No EQ Found</h3>";
+		strHtml += "<p>No earthquakes found for the user name " + $page.data("twitterUser") + ".</p>";
+		$("#pageError .content").html(strHtml);
+		$("#show-error-page").click();
+		
+		// Update the list page to reflect that no EQ were found
+		$page.find(".content").html("<h3>No EQ Found</h3>");
+		
+		// Hide the page loading dialog
+		$.mobile.pageLoading(true);
+		
+		// and we're done.
+		return;
+	  }
+
+		// Create a new list
+		$page.find(".content").html('<ul data-role="listview"></ul>');
+		$list = $page.find(".content ul");
+		// Build HTML that contains the desired information
+		//var strHtml = '<li id="sc-summary">Assessment Summary</li>';
+		//	strHtml += '<div id="sc-summary" class="ui-grid-d damage-summary">';
+		//if (typeof data.damage === "undefined") {
+		//	strHtml += '<li>No exposed facilities.</li>';
+		//} else {
+		//  for (var i = 0; i < data.damage.length; i++) {
+		//		switch(data.damage[i].damage_level) {
+		//		case 'GREEN':
+		//		strHtml += '<div class="ui-block-a '+ data.damage[i].damage_level +'" style="width:' + data.damage[i].facility_count/data.damage[i].total_count* 90 + '%">' + data.damage[i].facility_count + '</div>';
+		//		break;
+		//		case 'YELLOW':
+		//		strHtml += '<div class="ui-block-b '+ data.damage[i].damage_level +'" style="width:' + data.damage[i].facility_count/data.damage[i].total_count* 90 + '%">' + data.damage[i].facility_count + '</div>';
+		//		break;
+		//	}
+		//  }
+		//}
+		//strHtml += '</div>';
+
+		// ...so we can append it to our list.
+		//$list.append($(strHtml));
+		  
+		// Store the JSON data for this tweet
+		//$list.find("li#sc-summary").data("EQJSON", JSON.stringify(data.damage));
+
+		//$list.find("li#sc-summary").click(function() {
+		//	$("div#sc-summary").toggle("reverse out in");
+		//});
+				
+			var strHtml = '<li id="metric-summary">Ground Motion Summary</li>';
+			strHtml += '<div id="metric-summary" class="damage-summary">';
+		if (data.metric.length > 0) {
+		  for (var i = 0; i < data.metric.length; i++) {
+				switch(data.metric[i].metric_name) {
+				case 'MMI':
+				strHtml += '<div class="ui-grid-b INTENSITY">' + data.metric[i].max_value;
+				strHtml += '<div class="ui-block-b metric-mask" style="margin-left:' + 
+					data.metric[i].min_dec_value*10.0 + '%; width:' +
+					(data.metric[i].max_dec_value - data.metric[i].min_dec_value)*10.0 + '%' +
+					'">MMI</div>';
+				//strHtml += '<div class="ui-block-a metric-mask-left" style="width:' + data.metric[i].min_dec_value*10.0 + '%">' + data.metric[i].min_value + '</div>';
+				//strHtml += '<div class="ui-block-c metric-mask-right" style="width:' + (10-data.metric[i].max_dec_value)*10.0 + '%">' + data.metric[i].max_value + '</div>';
+				strHtml += '</div>';
+				//alert(data.metric[i].min_dec_value + ' ' + data.metric[i].max_dec_value);
+				break;
+				case 'STDPGA':
+				//strHtml += '<div class="ui-grid-b STD">' + data.metric[i].max_value;
+				//strHtml += '<div class="ui-block-b metric-mask" style="margin-left:' + 
+				//	data.metric[i].min_value*50 + '%; width:' +
+				//	(data.metric[i].max_value - data.metric[i].min_value)*50 + '%' +
+				//	'">'+ data.metric[i].metric_name +'</div>';
+				//strHtml += '</div>';
+				break;
+				case 'SVEL':
+				strHtml += '<div class="ui-grid-b SVEL">';
+				//if (data.metric[i].min_value > 1) {
+				//strHtml += '<div class="ui-block-a metric-mask-left" style="width:' + data.metric[i].min_value*0.090 + '%">' + data.metric[i].min_value + '</div>';
+				//}
+				strHtml += '<div class="ui-block-b metric-mask" style="margin-left:' + 
+					data.metric[i].min_value*0.1 + '%; width:' +
+					(data.metric[i].max_value - data.metric[i].min_value)*0.1 + '%' +
+					'">'+ data.metric[i].metric_name + ' ' + data.metric[i].min_value + ' - ' +
+					data.metric[i].max_value + '</div>';
+				//strHtml += '<div class="ui-block-c metric-mask-right" style="width:' + (1000-data.metric[i].max_value)*0.090 + '%">' + data.metric[i].max_value + '</div>';
+				strHtml += '</div>';
+				break;
+				default:
+				strHtml += '<div class="ui-grid-b PGM"> ';
+				if (data.metric[i].max_value > 1) {
+				strHtml += data.metric[i].max_value;
+				//strHtml += '<div class="ui-block-a metric-mask-left" style="width:' + data.metric[i].min_value*0.90 + '%">' + data.metric[i].min_value + '</div>';
+				}
+				strHtml += '<div class="ui-block-b metric-mask" style="margin-left:' + 
+					data.metric[i].min_value + '%; width:' +
+					(data.metric[i].max_value - data.metric[i].min_value) + '%' +
+					'">'+ data.metric[i].metric_name +'</div>';
+				//strHtml += '<div class="ui-block-c metric-mask-right" style="width:' + (100-data.metric[i].max_value)*0.90 + '%">' + data.metric[i].max_value + '</div>';
+				strHtml += '</div>';
+				break;
+			}
+		  }
+		} else {
+			strHtml += 'No exposed facilities.';
+		}
+				strHtml += '</ol>';
+		strHtml += '</div></li>\n';
+
+
+		var tweet = $(strHtml);
+		
+		// ...so we can append it to our list.
+		$list.append(tweet);
+		  
+		// Store the JSON data for this tweet
+		$list.find("li#metric-summary").data("EQJSON", JSON.stringify(data.damage));
+
+		$list.find("li#metric-summary").click(function() {
+			$("div#metric-summary").toggle("reverse out in");
+		});
+		
+		//$("div#metric-summary").toggle("reverse");
+		
+			strHtml = '<li id="fac-summary">Facility Summary</li>';
+			strHtml += '<div id="fac-summary" class="ui-grid-b damage-summary"></div>';
+			$list.append($(strHtml));
+			//$.getJSON("/scripts/damage.pl/from_id/"+objTweet.shakemap_id+"-"+objTweet.shakemap_version,
+			$.getJSON("/scripts/r/damage/from_id/"+objTweet.shakemap_id+"-"+objTweet.shakemap_version,
+				function(result) {
+					strHtml = '';
+					//strHtml = '<div class="ui-block-a" style:"width:95%">';
+					//strHtml = '<li>Ground Motion Summary</li>';
+					var damage = result.facility_damage;
+					for (var i in damage) {
+						if (damage[i].damage_level != '') {
+						strHtml += '<div class="ui-block-a '+ damage[i].damage_level +'" style="text-align:left; width:40%"><p>';
+						} else {
+						strHtml += '<div class="ui-block-a NA" style="text-align:left; width:40%""><p>';
+						}
+						strHtml += '<img src="/images/'+ damage[i].facility_type.toLowerCase() + '.png">';
+						strHtml += damage[i].facility_name + '</p><span>Epicentral Distance: '+damage[i].dist+' km</span></div>';
+						strHtml += '<div class="ui-block-b fac_sum">';
+						strHtml += '<ul><li class="fac_summary"><b>MMI</b> : ' + damage[i].mmi + '</li>';
+						strHtml += '<li class="fac_summary"><b>PGA</b> : ' + damage[i].pga + '</li>';
+						strHtml += '<li class="fac_summary"><b>PGV</b> : ' + damage[i].pgv + '</li>';
+						if (damage[i].psa03) {
+						strHtml += '<li class="fac_summary"><b>PSA03</b> : ' + damage[i].psa03 + '</li>';
+						}
+						if (damage[i].psa10) {
+						strHtml += '<li class="fac_summary"><b>PSA10</b> : ' + damage[i].psa10 + '</li>';
+						}
+						if (damage[i].psa30) {
+						strHtml += '<li class="fac_summary"><b>PSA30</b> : ' + damage[i].psa30 + '</li>';
+						}
+						if (damage[i].stdpga) {
+						strHtml += '<li class="fac_summary"><b>STDPGA</b> : ' + damage[i].stdpga + '</li>';
+						}
+						if (damage[i].svel) {
+						strHtml += '<li class="fac_summary"><b>SVEL</b> : ' + damage[i].svel + '</li>';
+						}
+						strHtml += '</ul></div>';
+					}
+					strHtml += '</div>';
+					$list.find("div#fac-summary").append($(strHtml));
+			});
+			$list.find("li#fac-summary").click(function() {
+				$("div#fac-summary").toggle("reverse out in");
+			});
+				
+
+	  
+	  // Call the listview widget.
+	  $list.listview();
+				//$(".div-detail").imagefit();
+	  // Now that it's all done, hide the page loading dialog
+	  $.mobile.pageLoading(true);
+      // When the user taps on a tweet, it will go to the detail page.
+      $list.find("a").click(function() {
+        var $this = $(this);
+		// Pass the EQJSON object over to the detail page so that it
+		// has the information it needs
+		//$("#pageSCDetail").data("EQJSON", $this.data("EQJSON"));
+	  });
+	  
+    },
+  });
+
+}
+  </script>
+  </body>
+</html>

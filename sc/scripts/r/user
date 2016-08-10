@@ -1,0 +1,126 @@
+#!/usr/local/bin/perl
+
+use strict;
+#use warnings;
+
+use FindBin;
+use lib "$FindBin::Bin/../../lib";
+
+use Carp;
+
+use CGI;
+use CGI::Session;
+use JSON::XS;
+use Data::Dumper;
+
+use SC;
+use API::User;
+use API::APIUtil;
+
+SC->initialize;
+my $default_options = API::APIUtil::config_options();
+
+my $self = new CGI;
+my $session = new CGI::Session(undef, $self);
+$session->expires("+10m");
+my $arg = ($ENV{PATH_INFO}) ? $ENV{PATH_INFO} : $ARGV[0];
+my (@args) = split '/', $arg;
+shift @args;
+my $action = shift @args;
+
+print "Content-Type: application/json\n\n";
+
+# Authenticated
+#my $username = $self->param('username') || '';
+#my $password = $self->param('password') || '';
+#my $valid = API::User->validate($username, $password, 1);
+#return 1 unless $valid;
+unless ( $session->param("~logged-in") && $session->param("admin_user")) {
+    exit(0);
+}
+
+
+if (not defined *{$action}) {
+} else {
+    SC->log(0, "user: task is $action $args[0]");
+
+	no strict 'refs';
+    # perform the requested action
+    #eval {
+	my $json =  &{ $action }( @args );
+	print JSON::XS->new->utf8->encode(API::APIUtil::stringfy($json));
+    #};
+}
+
+    # Authenticated
+sub from_id {
+	my ($user_id) = @_;
+	my $json = new API::User->from_id($user_id);
+	$json->{user_id}=$user_id;
+
+	return $json;
+}
+
+
+    # Authenticated
+sub user_group {
+	my ($user_id) = @_;
+	my $user_list = new API::User->user_group();
+	my $json = API::APIUtil::stringfy($user_list);
+
+	return $json;
+}
+
+    # Authenticated
+sub user_type {
+	my $type = $self->param('type') ? $self->param('type')  : '';
+	my $json = new API::User->user_type_list($type);
+	$json = API::APIUtil::stringfy($json);
+
+	return $json;
+}
+
+sub erase_type {
+
+    #my $valid = API::User->validate($username, $password, 1);
+    #return 1 unless $valid;
+	
+    # Authenticated
+	my $event_results;
+    my $type = $self->param('type');
+	$type =~ s/\s//g;
+
+	my $event = new API::User->erase_type($type);
+	$event_results->{"type"} = $type;
+	$event_results->{"status"} = $event;
+ 
+	return $event_results;
+  };
+  
+    # Authenticated
+sub erase {
+    my $user_id = $self->param('id');
+    my $user_type = $self->param('type');
+    my $user_name = $self->param('sc_username');
+   #my $valid = API::User->validate($username, $password, 1);
+    #return 1 unless $valid;
+	SC->log(0, "$user_id, $user_type, $user_name");
+    # Authenticated
+	my $event_results;
+	my $event = new API::User->erase_user($user_id);
+		$event_results->{"id"} = $user_id;
+		$event_results->{"status"} = $event;
+    
+    my $group;	
+    if ($user_type =~ /group/i) {
+	$group = new API::User->erase_group($user_id, $user_name);
+	$event_results->{"group"} = $user_name;
+	$event_results->{"status"} = $group;
+    }
+    
+	$event_results = API::APIUtil::stringfy($event_results);
+ 
+	return $event_results;
+}
+
+

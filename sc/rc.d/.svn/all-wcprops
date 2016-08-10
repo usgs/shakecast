@@ -1,0 +1,53 @@
+K 25
+svn:wc:ra_dav:version-url
+V 43
+/svn/ShakeCast/!svn/ver/342/trunk/unix/rc.d
+END
+sc-dispd.sh
+K 25
+svn:wc:ra_dav:version-url
+V 54
+/svn/ShakeCast/!svn/ver/22/trunk/unix/rc.d/sc-dispd.sh
+END
+sc-stop.sh
+K 25
+svn:wc:ra_dav:version-url
+V 54
+/svn/ShakeCast/!svn/ver/341/trunk/unix/rc.d/sc-stop.sh
+END
+sc-notify.sh
+K 25
+svn:wc:ra_dav:version-url
+V 55
+/svn/ShakeCast/!svn/ver/22/trunk/unix/rc.d/sc-notify.sh
+END
+sc-start-watcher.sh
+K 25
+svn:wc:ra_dav:version-url
+V 62
+/svn/ShakeCast/!svn/ver/22/trunk/unix/rc.d/sc-start-watcher.sh
+END
+sc-polld.sh
+K 25
+svn:wc:ra_dav:version-url
+V 54
+/svn/ShakeCast/!svn/ver/22/trunk/unix/rc.d/sc-polld.sh
+END
+sc-rssd.sh
+K 25
+svn:wc:ra_dav:version-url
+V 54
+/svn/ShakeCast/!svn/ver/342/trunk/unix/rc.d/sc-rssd.sh
+END
+sc-notifyqueue.sh
+K 25
+svn:wc:ra_dav:version-url
+V 60
+/svn/ShakeCast/!svn/ver/22/trunk/unix/rc.d/sc-notifyqueue.sh
+END
+sc-watcher.sh
+K 25
+svn:wc:ra_dav:version-url
+V 57
+/svn/ShakeCast/!svn/ver/342/trunk/unix/rc.d/sc-watcher.sh
+END

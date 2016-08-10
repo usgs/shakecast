@@ -1,0 +1,82 @@
+; Default HTML Email Notification
+; Based on Caltrans template
+;
+From: ShakeCast V3 <%HEADER_FROM%>
+To: %HEADER_TO%
+Subject: NEW EVENT: M%MAGNITUDE%, %EVENT_LOCATION_DESCRIPTION% (%EVENT_ID%) 
+Attach: /usr/local/shakecast/sc/images/header.jpg
+Attach: /usr/local/shakecast/sc/data/%SHAKEMAP_ID%-%SHAKEMAP_VERSION%/intensity.jpg
+; End -- header
+
+
+
+<table width=700 border=1 bordercolor=black cellpadding=15 cellspacing=0 bgcolor=white>
+
+<tr><td>
+<img alt="ShakeCast" height=60 width=700 src="cid:header.jpg">
+</td></tr>
+
+<tr><td height=30 bgcolor=black>
+<font size=3 face="Arial" color="white"><b>Preliminary Earthquake Notification</b></font>
+</td></tr>
+
+<tr><td>
+<font size=2 face="Arial">
+This report supersedes any earlier reports about this event.  This is a computer-generated message and has not yet been reviewed by an Engineer or Seismologist.  Epicenter and magnitude are published by the <a href=http://earthquake.usgs.gov/earthquakes/>USGS</a>.  Reported magnitude may be revised and will not be reported through ShakeCast. The <a href=http://earthquake.usgs.gov/earthquakes/>USGS</a> website should be referenced for the most up-to-date information.  Inspection prioritization emails will be sent shortly if ShakeCast determines significant shaking occurred at user's infrastructure.  An interactive version of this report is accessible on the <a href=https://%DNS_ADDRESS%>ShakeCast internet/intranet website</a>.  
+</font>
+<br>
+</td></tr>
+
+<tr><td height=30 bgcolor=black>
+<font size=3 face="Arial" color="white"><b>Earthquake Details</b></font>
+</td></tr>
+
+<tr><td>
+#ifdef SHAKEMAP_ID
+<img alt="The USGS ShakeMap was not be available at the time this message was generated." src="cid:intensity.jpg">
+#else
+<img alt="The USGS ShakeMap was not be available at the time this message was generated." src="http://maps.google.com/maps/api/staticmap?center=%LAT%,%LON%&zoom=5&size=400x200&maptype=terrain&sensor=false&markers=icon:http://earthquake.usgs.gov/research/software/shakecast/icons/epicenter.png|%LAT%,%LON%">
+#endif
+
+<br>
+<font size=2 face="Arial">
+<table border=1 bordercolor=black cellpadding=5 cellspacing=0>
+<tr>
+  <th>ID
+  <th>Time
+  <th>Mag
+  <th>Lat
+  <th>Lon
+  <th>Location
+</tr>
+<tr>
+  <td>%EVENT_ID%
+  <td>%EVENT_TIMESTAMP%
+  <td>%MAGNITUDE%
+  <td>%LAT%
+  <td>%LON%
+  <td>%EVENT_LOCATION_DESCRIPTION%
+</tr>
+</table>
+<table>
+<br>
+</td></tr>
+
+<tr><td height=30 bgcolor=black>
+<font size=3 face="Arial" color="white"><b>ShakeCast Server</b></font>
+</td></tr>
+
+<tr><td>
+<font size=2 face="Arial">
+ShakeCast Web: <b><a href=https://%DNS_ADDRESS%>https://%DNS_ADDRESS%</a></b><br>
+Software:  <b>ShakeCast V3</b><br>
+Notification Generated: <b>%GENERATION_TIMESTAMP:|NULL|;(not available at this time)%</b><br>
+Reported by: <b>Server ID %SERVER_ID%</b><br>
+Template Type:  <b>default.txt</b><br>
+Template Modified:  <b>10-26-2015</b>
+<br><br>
+Questions about ShakeCast?  Contact Administrator at <a href="mailto:%HEADER_FROM%?subject=ShakeCast V3 Inquiry">%HEADER_FROM%</a>.
+</font>
+</td></tr>
+
+</table>

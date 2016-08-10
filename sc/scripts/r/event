@@ -1,0 +1,507 @@
+#!/usr/local/bin/perl
+
+use strict;
+use warnings;
+
+use FindBin;
+use lib "$FindBin::Bin/../../lib";
+
+use Carp;
+
+use CGI;
+use CGI::Session;
+use JSON::XS;
+use Data::Dumper;
+use File::Copy;
+use File::Path;
+
+use SC;
+use API::Event;
+use API::APIUtil;
+use SC::Event;
+use SC::Shakemap;
+use SC::Product;
+use SC::Server;
+
+
+SC->initialize;
+my $test_dir = SC->config->{'RootDir'} . '/test_data';
+my $data_dir = SC->config->{'DataRoot'};
+my $default_options = API::APIUtil::config_options();
+
+my $self = new CGI;
+my $session = new CGI::Session(undef, $self);
+$session->expires("+10m");
+my $arg = ($ENV{PATH_INFO}) ? $ENV{PATH_INFO} : $ARGV[0];
+my (@args) = split '/', $arg;
+shift @args;
+my $action = shift @args;
+
+print "Content-Type: application/json\n\n";
+unless ( $session->param("~logged-in")) {
+    exit(0);
+}
+
+if (not defined *{$action} ) {
+} else {
+    SC->log(0, "user: task is $action $args[0]");
+
+	no strict 'refs';
+    # perform the requested action
+    #eval {
+	my $json =  &{ $action }( @args );
+	print JSON::XS->new->utf8->encode(API::APIUtil::stringfy($json));
+    #};
+}
+
+
+    # Authenticated
+sub event_summary {
+    my $events;
+    my $count;
+		$events = new API::Event->event_summary();
+
+	return $events;
+}
+
+    # Authenticated
+sub event_list {
+    my $start = ($self->param('start')) ? ($self->param('start'))-1 : 0;
+    my $length = ($self->param('length')) ? $self->param('length') : 100000;
+    my $type = ($self->param('type')) ? lc($self->param('type')) : '';
+    my $age = $self->param('age') || 'week';
+    my $timestamp = age_trans($age);
+    my $options = {'start' => $start,
+		    'length' => $length,
+		    'type' => $type,
+		    'age' => $age,
+		    'timestamp' => $timestamp,
+		    };
+    my $events;
+    my $count;
+	if ($type =~ /scenario|major/i) {
+		$events = new API::Event->event_list($type);
+	} elsif ($type =~ /test/i) {
+		$events = get_test_events();
+	} elsif ($age) {
+		($count, $events) = new API::Event->newer_than($options);
+	}
+
+	return $events;
+}
+
+    # Authenticated
+sub comcat_list {
+    my $start = ($self->param('start')) ? ($self->param('start'))-1 : 0;
+    my $length = ($self->param('length')) ? $self->param('length') : 100000;
+    my $type = ($self->param('type')) ? lc($self->param('type')) : '';
+    my $age = $self->param('age') || 'week';
+    my $timestamp = age_trans($age);
+    my $options = {'start' => $start,
+		    'length' => $length,
+		    'type' => $type,
+		    'age' => $age,
+		    'timestamp' => $timestamp,
+		    };
+    my $events;
+    my $count;
+	if ($type =~ /scenario|major/i) {
+		$events = new API::Event->event_list($type);
+	} elsif ($type =~ /test/i) {
+		$events = get_test_events();
+	} elsif ($age) {
+		($count, $events) = new API::Event->newer_than($options);
+	}
+
+	return $events;
+}
+
+sub erase {
+
+	unless ( $session->param("admin_user")) {
+		return 0;
+	}
+
+    # Authenticated
+    my @event_list = split ',', $self->param('event_id');
+	my $event_results;
+	foreach my $event_id (@event_list) {
+		$event_id = make_param($event_id);
+		my $event = new API::Event->erase_event($event_id);
+		$event_results->{"id"} = $event_id;
+		$event_results->{"status"} = $event;
+	}
+ 
+	return $event_results;
+  };
+  
+sub toggle {
+
+	unless ( $session->param("admin_user")) {
+		return 0;
+	}
+
+    # Authenticated
+    my @event_list = split ',', $self->param('event_id');
+	my $event_results;
+	foreach my $event_id (@event_list) {
+		$event_id = make_param($event_id);
+		my $event = new API::Event->toggle_major_event($event_id);
+		$event_results->{$event_id} = $event;
+	}
+	return $event_results;
+  };
+  
+sub trigger_scenario {
+
+	unless ( $session->param("admin_user")) {
+		return 0;
+	}
+
+    # Authenticated
+    my @event_list = split ',', $self->param('event_id');
+	my $event_results;
+	my $result;
+	foreach my $event_id (@event_list) {
+		$event_id = make_param($event_id);
+		my $shakemap = new API::Event->from_id($event_id);
+		$event_results = $shakemap;
+		my $evt_dir = "$data_dir/".$shakemap->{'shakemap_id'}.'-'.$shakemap->{'shakemap_version'};
+		my $tmp_dir = "$data_dir/temp";
+		rmtree($tmp_dir) if (-e $tmp_dir);
+		$event_results->{'evt_dir'} = $evt_dir;
+		$result = move($evt_dir, $tmp_dir);
+		$event_results->{'move'} = $result;
+		$result = new API::Event->erase_event($event_id);
+		$event_results->{'erase'} = $result;
+		my $cmd = SC->config->{'RootDir'}.'/bin/scfeed_local.pl -verbose -force_run -scenario -event temp';
+		$result = `$cmd`;
+		$event_results->{'scfeed_local'} = $result;
+	}
+	return $event_results;
+  };
+  
+sub inject_test {
+
+	unless ( $session->param("admin_user")) {
+		return 0;
+	}
+
+    # Authenticated
+    my @event_list = split ',', $self->param('event_id');
+	my $event_results;
+    my $xml;
+    my $event_version = 1;
+    my $event;
+    my $product_dir;
+	
+	foreach my $event_id (@event_list) {
+		$event_id = make_param($event_id);
+		# see if this event already exists in the database
+		$event = SC::Event->current_version($event_id);
+		if ($event) {
+			# must delete any existing events and related data
+			API::Event->erase_test_event($event_id) or quit $SC::errstr;
+		}
+	
+		$xml = read_xml($event_id, 'event') or exit;
+		$xml =~ s/\?event_version/$event_version/g;
+		$event = SC::Event->from_xml($xml) or exit;
+		$event->event_type("TEST"); # make sure it is a TEST!
+		$event->process_new_event;
+		$xml = read_xml($event_id, 'shakemap') or exit;
+		$xml =~ s/\?event_version/$event_version/g;
+		SC::Shakemap->from_xml($xml)->process_new_shakemap;
+		$xml = read_xml($event_id, 'product') or exit;
+		my @product_types = product_types();
+		$event->{'product'} = \@product_types;
+		foreach my $product_type (@product_types) {
+			#next;   # temporarily skip products
+			my $xml2 = $xml;
+			my $product;
+			$xml2 =~ s/\?event_version/$event_version/g;
+			$xml2 =~ s/\?product_type/$product_type/g;
+			SC->log(4, $xml2);
+			$product = SC::Product->from_xml($xml2);
+			unless ($product_dir) {
+				$product_dir = $product->dir_name;
+				SC->log(4, "product dir: $product_dir");
+				unless (-d $product_dir) {
+					eval { mkpath($product_dir) };
+					SC->log(4, "mkpath product dir: $product_dir");
+					#exit if $@;
+				}
+			}
+			SC->log(4, 'product',$product->file_name,
+					   'exists:',$product->product_file_exists);
+			unless ($product->product_file_exists) {
+				my $src = $test_dir.'/'.$product->shakemap_id.'/'.$product->file_name;
+				SC->log(4, "copy from $src");
+				if (-r $src) {
+					copy($src, $product_dir) or SC->log(0,"Copy $src failed: $!");
+				} else {
+					SC->log(0, "missing product file $src");
+				}
+			}
+			$product->process_new_product(SC::Server->this_server)
+				;
+		}
+		my @local_products = local_products();
+		$event->{'local_products'} = \@local_products;
+		foreach my $local_product (@local_products) {
+			copy $test_dir .'/' . $event_id . '/' . $local_product, $product_dir;
+		}
+	}
+	return $event;
+  };
+
+    # Authenticated
+sub datatables {
+    my $start = ($self->param('start')) ? ($self->param('start'))-1 : 0;
+    my $length = ($self->param('length')) ? $self->param('length') : 
+      (($default_options->{'topics_per_page'}) ? $default_options->{'topics_per_page'} : 200);
+    my $type = ($self->param('type')) ? lc($self->param('type')) : '';
+    my $age = $self->param('age') || 'week';
+    my $timestamp = age_trans($age);
+    my $options = {'start' => $start,
+		    'length' => $length,
+		    'type' => $type,
+		    'age' => $age,
+		    'timestamp' => $timestamp,
+		    };
+    my $events;
+    my $count;
+	if ($type =~ /scenario|major/i) {
+		$events = new API::Event->event_list($type);
+	} elsif ($type =~ /test/i) {
+		$events = get_test_events();
+	} elsif ($age) {
+		($count, $events) = new API::Event->newer_than($options);
+	}
+	my $datatables = {};
+	my @aData;
+	$datatables->{"total"} = $count;
+	$datatables->{"start"} = $start;
+	$datatables->{"length"} = scalar @$events;
+	$datatables->{"data"} = API::APIUtil::stringfy($events);
+
+	return $datatables;
+}
+
+sub age_trans {
+    my $age = (@_ ? shift : 'day');
+	my $span;
+	if ($age =~ /day/i) {
+		$span = 1;
+	} elsif ($age =~ /week/i) {
+		$span = 7;
+	} elsif ($age =~ /month/i) {
+		$span = 30;
+	} elsif ($age =~ /year/i) {
+		$span = 365;
+	} elsif ($age =~ /all/i) {
+		$span = time/86400;
+	} elsif ($age =~ /\d+/) {
+	  $span = $age;
+	}
+    my $time = time - $span*86400;
+    my ($sec, $min, $hr, $mday, $mon, $yr);
+		($sec, $min, $hr, $mday, $mon, $yr) = gmtime $time;
+
+    sprintf ("%04d-%02d-%02d",
+	     $yr+1900, $mon+1, $mday);
+
+
+}
+
+sub check_test_dir {
+	unless ( $session->param("admin_user")) {
+		return 0;
+	}
+
+    unless (-d $test_dir) {
+        mkdir $test_dir or exit;
+    }
+}
+
+sub get_test_events {
+	unless ( $session->param("admin_user")) {
+		return 0;
+	}
+
+    my @test_events;
+    my $xml;
+
+    check_test_dir();
+    opendir TESTDIR, $test_dir or quit("Can't open $test_dir\: $!");
+    # exclude .* files
+    my @files = grep !/^\./, readdir TESTDIR;
+    # exclude non-directories
+    my @dirs = grep -d, map "$test_dir/$_", @files;
+    foreach my $dir (@dirs) {
+        $dir =~ m#([^/\\]+$)#;     # last component only
+        $xml = read_xml($1, 'event');
+        SC->log(4, "event XML: $xml");
+        $xml =~ s/\?event_version/1/g;
+        SC->log(4, "event XML: $xml");
+        eval {
+            my $event = API::Event->from_xml($xml)
+                or exit;
+			$event->{shakemap_id}=$event->{event_id};
+			$event->{shakemap_version} = 1;
+            push @test_events, $event;
+			$event->{product} = copy_test($event->{event_id});
+        };
+        return if $@;
+    }
+    return \@test_events;
+}
+    
+sub read_xml {
+	unless ( $session->param("admin_user")) {
+		return 0;
+	}
+
+    my ($event_id, $type) = @_;
+
+    my $fname = "$test_dir/$event_id/${type}_template.xml";
+    open XML, "< $fname" or exit;
+    my @lines = <XML>;
+    close XML;
+    chomp @lines;
+    return join(' ', @lines);
+}
+
+sub copy_test {
+	unless ( $session->param("admin_user")) {
+		return 0;
+	}
+
+    my ($event_id) = @_;
+    my $xml;
+    my $event;
+    my $source_dir = "$test_dir/$event_id";
+    my $dest_dir = "$data_dir/$event_id"."-1";
+
+	return if (-d $dest_dir);
+	eval {mkpath($dest_dir);};
+	SC->log(4, "mkpath product dir: $dest_dir");
+	return if $@;
+	
+    opendir TESTDIR, $source_dir or quit("Can't open $source_dir\: $!");
+    # exclude .* files
+    my @files = grep !/^\./, readdir TESTDIR;
+    # exclude non-files
+	#print @files,"\n";
+    my @products = grep -f, map "$source_dir/$_", @files;
+    foreach my $product (@products) {
+        copy $product, $dest_dir;
+    }
+    return \@products;
+}
+
+# returns a list of all products that should be polled for new events, etc.
+sub product_types {
+	my @products;
+	
+    undef $SC::errstr;
+    eval {
+		my $sth = SC->dbh->prepare(qq/
+			select product_type
+			  from product_type/);
+		$sth->execute;
+		while (my @p = $sth->fetchrow_array()) {
+			push @products, @p;
+		}
+    };
+    return @products;
+}
+
+sub local_products {
+	my $temp_dir = SC->config->{'TemplateDir'} . '/xml';
+	my @local_products;
+	if (-d $temp_dir) {
+		if (opendir TEMPDIR, $temp_dir) {
+			# exclude .* files
+			my @files = grep !/^\./, readdir TEMPDIR;
+			# exclude non-directories
+			closedir(TEMPDIR);
+		
+			foreach my $file (@files) {
+				if ($file =~ m#([^/\\]+)\.tt$#) {     # last component only
+					my $temp_file = $1.".tt";
+					my $output_file = $1;
+					$output_file =~ s/_/\./;
+					push @local_products, $output_file;
+				}
+			}
+		}
+	}
+    return \@local_products;
+}
+
+sub create_test {
+    my ($event_id) = @_;
+	
+	unless ( $session->param("admin_user")) {
+		return 0;
+	}
+
+    check_test_dir();
+    my $template_dir = "$test_dir/${event_id}_scte";
+    exit if (-d $template_dir);
+    mkdir $template_dir or exit;
+    my $event = SC::Event->current_version($event_id);
+    exit unless $event;
+    my $xml = make_test_xml($event->to_xml);
+    open OUT, "> $template_dir/event_template.xml" or exit;
+    print OUT "$xml\n";
+    close OUT;
+    my $shakemap = SC::Shakemap->current_version($event_id);
+    return "No shakemap with ID $event_id" unless $shakemap;
+    $xml = make_test_xml($shakemap->to_xml);
+    open OUT, "> $template_dir/shakemap_template.xml" or exit;
+    print OUT "$xml\n";
+    close OUT;
+    my @products = SC::Product->current_version($event_id);
+    exit if $SC::errstr;
+    exit unless @products > 0;
+    $xml = make_test_xml($products[0]->to_xml);
+    open OUT, "> $template_dir/product_template.xml" or exit;
+    print OUT "$xml\n";
+    close OUT;
+    foreach my $product (@products) {
+        copy $product->abs_file_path, $template_dir;
+    }
+		my @local_products = local_products();
+    foreach my $local_product (@local_products) {
+        copy $shakemap->product_dir .'/' . $local_product, $template_dir;
+    }
+	return;
+}
+
+
+
+sub make_test_xml {
+    my ($xml) = @_;
+	unless ( $session->param("admin_user")) {
+		return 0;
+	}
+
+    $xml =~ s/event_id="([^"]+)"/event_id="$1_scte"/gm;
+    $xml =~ s/shakemap_id="([^"]+)"/shakemap_id="$1_scte"/gm;
+    $xml =~ s/event_version="([^"]+)"/event_version="?event_version"/gm;
+    $xml =~ s/shakemap_version="([^"]+)"/shakemap_version="?event_version"/gm;
+    $xml =~ s/event_type="[^"]+"/event_type="TEST"/gm;
+    $xml =~ s/product_type="[^"]+"/product_type="?product_type"/gm;
+    return $xml;
+}
+
+sub make_param {
+    my ($xml) = @_;
+    $xml =~ s/ /\+/g;
+    return $xml;
+}
+
+
+

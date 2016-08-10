@@ -1,0 +1,23 @@
+; Default Text Email Notification -- header
+;
+From: ShakeCast <%HEADER_FROM%>
+To: %HEADER_TO%
+Subject: ShakeCast Damage Summary
+
+ShakeCast Event: Magnitude %MAGNITUDE%
+ShakeMap %EVENT_NAME:|NULL|;(Unnamed Event) %Version %SHAKEMAP_VERSION%
+Event Location: %EVENT_LOCATION_DESCRIPTION%
+Event Time: %EVENT_TIMESTAMP%
+Generated at %GENERATION_TIMESTAMP%
+Reported by: Server ID = %SERVER_ID%, DNS = %DNS_ADDRESS%
+
+Damage Summary
+  Number of Facilities Reported: %_ITEMNO%
+  Max Value: MMI: %_MAX_METRIC_MMI%; Acceleration: %_MAX_METRIC_PGA:|NULL|;(not measured)%
+  Number of Reports of Likely Damage: %_NUM_DAMAGE_LEVEL_RED%
+  Number of Reports of Possible Damage: %_NUM_DAMAGE_LEVEL_YELLOW%
+
+Facility Summary
+  Facility, Damage Level, Metric, Value, Exceedance Ratio
+
+;;;;;

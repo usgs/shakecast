@@ -1,0 +1,24 @@
+; Default Text Email Notification
+;
+From: ShakeCast <%HEADER_FROM%>
+To: %HEADER_TO%
+Subject: High Shaking at %FACILITY_NAME%
+
+Grid generated at %GENERATION_TIMESTAMP% shows that
+%METRIC% shaking at %FACILITY_NAME% was %GRID_VALUE%,
+which excedes the specified limit value of %LIMIT_VALUE%.
+
+Event ID:   %EVENT_ID%   Version: %EVENT_VERSION%
+
+Shakemap ID: %SHAKEMAP_ID%  Version: %SHAKEMAP_VERSION%
+
+Reported by: Server ID = %SERVER_ID%, DNS = %DNS_ADDRESS%
+
+Event Info:
+
+Name:       %EVENT_NAME%
+Magnitude:  %MAGNITUDE%
+Lat:        %LAT%      Lon: %LON%
+Location:   %EVENT_LOCATION_DESCRIPTION%
+=====
+

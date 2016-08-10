@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js"> <!--<![endif]-->
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="shortcut icon" href="/images/sc_logo.png">
+
+    <title>Product Administration</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="./bootstrap3/css/bootstrap.css" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+	<link rel="stylesheet" href="./bootstrap3/css/navbar-fixed-top.css">
+	<link rel="stylesheet" href="./css/main.css">
+	<link rel="stylesheet" href="./css/application.css"> 
+	<link rel="stylesheet" href="./css/jquery-ui-1.8.16.custom.css">
+	<link rel="stylesheet" href="./css/demo_table.css">
+
+    <!-- Just for debugging purposes. Don't actually copy this line! -->
+    <!--[if lt IE 9]><script src="../../docs-assets/js/ie8-responsive-file-warning.js"></script><![endif]-->
+
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+      <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
+    <![endif]-->
+  </head>
+
+  <body>
+
+  <!-- Fixed navbar -->
+  <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+    <div class="container">
+      <div class="navbar-header">
+	<button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+	  <span class="sr-only">Toggle navigation</span>
+	  <span class="icon-bar"></span>
+	  <span class="icon-bar"></span>
+	  <span class="icon-bar"></span>
+	</button>
+	<a class="navbar-brand" href="?dest=index"><img src="/images/sc_logo.png" class="img-circle logo" /> ShakeCast</a>
+      </div>
+      <div class="navbar-collapse collapse">
+	<ul id="nav_menu" class="nav navbar-nav">
+	    <li><a href="?dest=admin_index">Admin Home</a></li>
+	    <li><a href="?dest=admin_config">General Settings</a></li>
+	    <li>
+	    <a href="?dest=admin_earthquake">Earthquakes</a>
+	    </li>
+	    <li class="">
+	    <a href="?dest=admin_facility">Facilities</a>
+	    </li>
+	    <li class="active">
+	    <a href="?dest=admin_product">Products</a>
+	    </li>
+	    <li class="">
+	    <a href="?dest=admin_user">Users</a>
+	    </li>
+	    <li class="">
+	    <a href="?dest=admin_post_file">Upload</a>
+	    </li>
+		<TMPL_VAR NAME=LOGOUT>
+	</ul>
+      </div><!--/.nav-collapse -->
+    </div>
+  </div>
+
+  <!-- Subhead
+  ================================================== -->
+  <header class="header" id="overview">
+    <div class="container">
+      <h2>Product Administration <small>Overview of products received and processed by the system and their presentation</small></h2>
+      <ol class="breadcrumb">
+	<li><a href="?dest=admin_index">Admin Home</a></li>
+	<li>Product Administration</li>
+      </ol>
+    </div>
+  </header>
+  
+<div class="container">
+
+      <div class="row">
+        <div class="col-md-2">
+          <div class="panel panel-default">
+	    <div class="panel-heading">Earthquake Product</div>
+	    <div class="list-group" id="sidebar">
+	    </div>
+          </div><!--/.well -->
+        </div><!--/span-->
+
+        <div class="col-md-10">
+            <!-- Example row of columns -->
+            <div class="panel panel-default">
+	      <ul class="nav nav-pills">
+		<li><a class="btn btn-primary" href="javascript:void(0)" id="update">Update Product Display</a></li>
+		<!-- <li class="pull-right"><a class="btn btn-danger" href="javascript:void(0)" id="delete">Delete Selected Products</a></li> -->
+	      </ul>
+	      <table cellpadding="0" cellspacing="0" border="0" class="display" id="eq_content_table"></table>
+            </div>
+
+	<div id="spinner" class="spinner ui-widget ui-widget-content ui-corner-all" style="width:50px;background:#fff;height:50px;">
+		<img id="img-spinner" src="/images/usgs.gif" alt="Loading" style="margin:10px auto;"/>
+	</div>
+
+        </div> <!-- /container -->
+      </div> <!-- /container -->
+
+    <!-- Footer
+    ================================================== -->
+    <footer class="footer">
+      <div class="container">
+        <ul class="footer-links">
+          <li><a href="http://earthquake.usgs.gov">&copy; USGS 2013</a></li>
+          <li class="muted">&middot;</li>
+          <li>Desktop</li>
+          <li class="muted">&middot;</li>
+          <li><a href="?dest=mobile">Mobile</a></li>
+        </ul>
+     </div>
+    </footer>
+
+<script type="text/javascript" src="./js/jquery-1.10.2.min.js"></script>
+<script type="text/javascript" src="./bootstrap3/js/bootstrap.min.js"></script>
+<script type="text/javascript" src="./js/jquery-ui.js"></script>
+<script type="text/javascript" src="./js/main.js"></script>
+<script type="text/javascript" src="./js/sc_constant.js"></script>
+<script type="text/javascript" src="./js/storage.js"></script>
+<script type="text/javascript" src="./js/jquery.dataTables.min.js"></script>
+
+<script>
+  var map;
+  var sc_id = gup('event');
+  var type = gup('type');
+  var age = gup('age');
+  var fac_des = [];
+  
+  var prod_mode = 'product_display';
+  //var product_type = {'INFO_XML':1, 'INTEN_JPG':1, 'PGA_JPG':1, 'PGV_JPG':1, 
+  //	'PSA03_JPG':1, 'PSA10_JPG':1, 'PSA30_JPG':1, 'STN_XML':1,};
+  var oTable;
+  var anOpen = [];
+  
+  SC_DEF.init();
+  //var sm_url = '/scripts/shakemap.pl/from_id/' + sc_id;
+  var username = SC_DEF.user ? SC_DEF.user : 'guest';
+  var password = SC_DEF.pass ? SC_DEF.pass : 'guest';
+  var submit_data = {
+  };
+
+  $(window).load(function() {
+    //user_auth(submit_data);
+	load_list();
+  });
+  
+  function load_list() {
+
+    //map = MAPAPP.init(sc_id);
+	    //google.maps.event.trigger(map, 'resize');
+
+    //var sm_url = '/scripts/shakemap.pl/from_id/' + sc_id;
+    //var sm_url = '/scripts/event.pl/event_list?type='+type+'&age='+age;
+    //var sm_url = '/scripts/product.pl/';
+    var sm_url = '/scripts/r/product/product_source_list';
+
+    $.post(sm_url, submit_data, function(data) {
+
+      // Are there even any EQ to display?
+      if (data.length <= 0) {
+	return;
+      }
+      var total_count = 0;
+      for (var i=0; i < data.length; i++) {
+	total_count += parseInt(data[i].count);
+      }
+      data.push({product_source: 'ALL', count:total_count});
+	    
+      var product_source = [];
+      for (var i=0; i < data.length; i++) {
+	var event = data[i];
+	if (! product_source[event.product_source]) {
+	  $("#sidebar").append('<a class="list-group-item station_network" id="' + event.product_source +
+	    '" href="#">' + event.product_source +
+	    ' (' + event.count + ')</a>');
+	    product_source[event.product_source] = 1; 
+	}
+      }
+      
+      $('#sidebar a').on('click', function (e) {
+	var type = this;
+	$("#sidebar a").removeClass("active");
+	$("#"+type.id).addClass("active");
+	//var sm_url = '/scripts/product.pl/type/' + type.id;
+	var sm_url = '/scripts/r/product/product_type/' + type.id;
+	$.post(sm_url, submit_data, function(data) {
+
+	  // Are there even any EQ to display?
+	  if (data.length <= 0) {
+	    return;
+	  }
+	  
+	  var eqTable = [];
+	  for (var i=0; i < data.length; i++) {
+	    var facility = data[i];
+	    eqTable.push({
+	      //"select_box":'<input type="checkbox" class="btn btn-primary display_box" value="' + 
+	        //    facility.product_type + '" ' + ((facility.display) ? 'checked' : '')+ '/>', 
+	      "product_type":facility.product_type, 
+	      "index":i+1,
+	      "product_source":facility.product_source,  
+	      "name":facility.name,  
+	      "description":facility.description, 
+	      "filename":facility.filename, 
+	      "metric":facility.metric, 
+	      "url":facility.url, 
+	      //"display":facility.display, 
+	      //"display":'<button type="button" class="btn btn-primary" data-toggle="button">Single Toggle</button>', 
+	      "display":(facility.display) ? 'Yes' : '', 
+	    });
+	  }
+	  var eqDiv = {
+	    "bJQueryUI": true,
+	    "iDisplayLength": 25,
+	    "sScrollY": ($("#map_canvas").height() > 0) ? $("#map_canvas").height() : $(window).height()/3,
+	    "sScrollX": "100%",
+	    //"aaSorting": [[ 5, "desc" ]],
+	    "bUseRendered": false,
+	    aaData: eqTable, 
+	    aoColumns: [
+	      //{'sTitle': 'Select',"mDataProp": "select_box"},
+	      //{'sTitle': 'Product Type',"mDataProp": "product_type"},
+	      {'sTitle': 'Index',"mDataProp": "index"},
+	      {'sTitle': 'Product Source',"mDataProp": "product_source"},
+	      {'sTitle': 'Name',"mDataProp": "name"},
+	      {'sTitle': 'Description',"mDataProp": "description"},
+	      {'sTitle': 'Filename',"mDataProp": "filename"}, 
+	      {'sTitle': 'Metric',"mDataProp": "metric"}, 
+	      {'sTitle': 'URL',"mDataProp": "url"}, 
+	      {'sTitle': 'Display',"mDataProp": "display"}, 
+	  ]};
+
+	  if (oTable) oTable.fnDestroy();
+	  
+	  oTable = $('#eq_content_table').dataTable(eqDiv);
+
+	  oTable.$('tr').click( function () {
+	    var data = oTable.fnGetData( this );
+	    //fnAccordion(data.id);
+	    //load_marker(data.id);
+	    row_click(this);
+	  });
+
+	}, 'json');
+      });
+      	$("#sidebar a").first().trigger('click');
+      $(window).trigger('resize');
+    }, 'json');
+
+  }
+		
+	  function row_click (data) {
+	    if ( $(data).hasClass('row_selected') ) {
+	      $(data).removeClass('row_selected');
+	    }
+	    else {
+	      //oTable.$('tr.row_selected').removeClass('row_selected');
+	      $(data).addClass('row_selected');
+	      var oData = oTable.fnGetData( data );
+	    }
+	  }
+
+	  /* Add a click handler for the delete row */
+	  $('#update').bind('click', function() {
+	    var anSelected = fnGetSelected( oTable );
+	    for (var i=0; i < anSelected.length; i++) {
+	      var oData = oTable.fnGetData( anSelected[i] );
+	      //var sm_url = '/scripts/shakemap.pl/from_id/' + sc_id;
+	      //var evt_url = '/scripts/event.pl/toggle?event_id='+oData.event_id;
+	      var evt_url = '/scripts/r/product/toggle';
+	      var arch_f = (oData.display) ? '' : 'Yes';
+	      oTable.fnUpdate(arch_f, anSelected[i], 7);
+	      
+	      $.post(evt_url, {product_id:oData.product_type},
+			function(data) {
+		// Are there even any EQ to display?
+		if (data.length <= 0) {
+			return;
+		}
+	      }, 'json');
+	    }
+	  } );
+      
+	  $('#product_display').bind('click', function (e) {
+	    var flag;
+	    var checked_box = $(".display_box").closest('tr');
+	    for (var i=0; i<(checked_box.length); i++) {
+	      var rowData = checked_box[i];
+	      var checkData = $(rowData).find('.display_box');
+	      var oData = oTable.fnGetData(checked_box[i]);
+	      //var oData = oTable.fnGetData($(checked_box[i]));
+	      checkData[0].checked = (oData.display) ? true : false;
+	    }
+	    prod_mode = 'product_display';
+	  });
+
+	  $('#product_inventory').bind('click', function (e) {
+	    $('#unselect_all').trigger('click');
+	    prod_mode = 'product_inventory';
+	  });
+	  
+	  $('#product_content').bind('click', function (e) {
+	    $('#unselect_all').trigger('click');
+	    prod_mode = 'product_content';
+	  });
+	  
+	  /*$('#select_all').bind('click', function (e) {
+	    var flag = true;
+	    var checked_box = $(".display_box");
+	    for (var i=0; i<(checked_box.length); i++) {
+	      checked_box[i].checked = flag;
+	    }
+	    console.log(prod_mode);
+	  });
+
+	  $('#unselect_all').bind('click', function (e) {
+	    var flag = false;
+	    var checked_box = $(".display_box");
+	    for (var i=0; i<(checked_box.length); i++) {
+		  checked_box[i].checked = flag;
+	    }
+	  });*/
+	  
+	  /* Add a click handler for the delete row */
+	  $('#delete').bind('click', fnDeleteRow);
+	  
+	  /* Get the rows which are currently selected */
+	  function fnGetSelected( oTableLocal ) {
+	    return oTableLocal.$(".row_selected");
+	  }
+	  
+	  /* Get the rows which are currently selected */
+	  function fnDeleteRow() {
+	    var anSelected = fnGetSelected( oTable );
+	    for (var i=0; i < anSelected.length; i++) {
+	      var oData = oTable.fnGetData( anSelected[i] );
+	      //MAPAPP.infowindow.close(map);
+	      //MAPAPP.removeMarker(oData.facility_id);
+	      //MAPAPP.removeSM();
+	      //MAPAPP.removeMarker(oData.event_id);
+	      oTable.fnDeleteRow( anSelected[i] );
+	    }
+	  }
+
+  $(window).resize(function() {
+    //oTable.fnAdjustColumnSizing();
+    //$("#eq_content_table").width($(".row").width());
+    $("#map_canvas").width($("#main_pane").width());
+    $("#map_canvas").height(($("#map_canvas").width())/2);
+    //console.log($("#map_canvas").width());
+    var cont_height = $("#map_canvas").height() + $(".accordion").height();
+    if ($("#sidebar").length) {
+      cont_height = ($("#sidebar").height() > cont_height) ? $("#sidebar").height() : cont_height;
+    }
+    $('html').css('height', cont_height);
+  });
+
+</script>
+    </body>
+</html>

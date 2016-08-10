@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js"> <!--<![endif]-->
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+        <title>ShakeCast</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width">
+
+        <link rel="stylesheet" href="css/bootstrap.min.css">
+        <link rel="shortcut icon" href="/images/sc_logo.png">
+        <style>
+            body {
+                padding-top: 60px;
+                padding-bottom: 40px;
+            }
+			.logo{ 
+				vertical-align: text-bottom;
+				text-align: center;
+				height: 24px;
+			}
+        </style>
+        <link rel="stylesheet" href="css/bootstrap-responsive.min.css">
+        <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="themes/default/default.css" type="text/css" media="screen" />
+    <link rel="stylesheet" href="css/nivo-slider.css" type="text/css" media="screen" />
+
+        <script src="js/vendor/modernizr-2.6.1-respond-1.1.0.min.js"></script>
+    </head>
+    <body>
+        <!--[if lt IE 7]>
+            <p class="chromeframe">You are using an outdated browser. <a href="http://browsehappy.com/">Upgrade your browser today</a> or <a href="http://www.google.com/chromeframe/?redirect=true">install Google Chrome Frame</a> to better experience this site.</p>
+        <![endif]-->
+
+        <!-- This code is taken from http://twitter.github.com/bootstrap/examples/hero.html -->
+
+        <div class="navbar navbar-inverse navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <div class="nav-collapse collapse">
+                        <ul class="nav">
+                    <li></li><a class="brand" href="#"><img src="/images/sc_logo.png" class="img-circle logo" /> ShakeCast</a></li>
+                            <li><a href="#">Home</a></li>
+                            <li><a href="#about">About</a></li>
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">Earthquake List <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="list.html">Recent Events</a></li>
+                                    <li class="divider"></li>
+									<li><a href="list.html?type=major">Significant Events</a></li>
+									<li><a href="list.html?type=scenario">Scenarios</a></li>
+                                    <li class="divider"></li>
+                                    <li><a href="#">Settings</a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                        <form class="navbar-form pull-right">
+                            <input class="span2" type="text" placeholder="Email">
+                            <input class="span2" type="password" placeholder="Password">
+                            <button type="submit" class="btn">Sign in</button>
+                        </form>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <div class="container">
+
+            <!-- Main hero unit for a primary marketing message or call to action -->
+            <div class="hero-unit slider-wrapper theme-default" style="padding: 30px;padding-bottom: 0px;margin-bottom: 15px;">
+            <div id="slider" class="nivoSlider">
+                <a href="http://dev7studios.com"><img src="/data/usb000d75b-5/screenshot.jpg" data-thumb="images/toystory.jpg" alt="" /></a>
+                <a href="http://dev7studios.com"><img src="/data/ak10586396-1/screenshot.jpg" data-thumb="images/up.jpg" alt="" title="This is an example of a caption" /></a>
+                <a href="http://dev7studios.com"><img src="/data/usb000dd6w-1/screenshot.jpg" data-thumb="images/up.jpg" alt="" title="This is an example of a caption" /></a>
+                <a href="http://dev7studios.com"><img src="/data/usb000dc6x-2/screenshot.jpg" data-thumb="images/up.jpg" alt="" title="#htmlcaption" /></a>
+            </div>
+            <div id="htmlcaption" class="nivo-html-caption">
+                <strong>This</strong> is an example of a <em>HTML</em> caption with <a href="#">a link</a>. 
+            </div>
+            </div>
+
+            <!-- Example row of columns -->
+            <div class="row">
+                <div class="span4">
+                    <h3>ShakeMap Archive</h3>
+                    <p>ShakeMap is a product of the U.S. Geological Survey Earthquake Hazards Program in conjunction with regional seismic network operators. ShakeMap sites provide near-real-time maps of ground motion and shaking intensity following significant earthquakes. These maps are used by federal, state, and local organizations, both public and private, for post-earthquake response and recovery, public and scientific information, as well as for preparedness exercises and disaster planning.</p>
+                    <p><a class="btn" href="list.html">View Archive &raquo;</a> <a class="btn" href="list.html?type=scenario">View Scenario &raquo;</a></p>
+                </div>
+                <div class="span4">
+                    <h3>Scientific Background</h3>
+                    <p>Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus. Etiam porta sem malesuada magna mollis euismod. Donec sed odio dui. </p>
+               </div>
+                <div class="span4">
+                    <h3>Product Formats</h3>
+                    <p>Donec sed odio dui. Cras justo odio, dapibus ac facilisis in, egestas eget quam. Vestibulum id ligula porta felis euismod semper. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus.</p>
+                    <p><a class="btn" href="#">View details &raquo;</a></p>
+                </div>
+                <div class="span4">
+                    <h3>Related Resources</h3>
+                    <p>Donec sed odio dui. Cras justo odio, dapibus ac facilisis in, egestas eget quam. Vestibulum id ligula porta felis euismod semper. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus.</p>
+                    <p><a class="btn" href="#">View details &raquo;</a></p>
+                </div>
+            </div>
+
+            <hr>
+
+            <footer>
+                <p>&copy; USGS 2012</p>
+            </footer>
+
+        </div> <!-- /container -->
+
+        <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
+        <script>window.jQuery || document.write('<script src="js/vendor/jquery-1.8.2.min.js"><\/script>')</script>
+
+        <script src="js/vendor/bootstrap.min.js"></script>
+
+        <script src="js/plugins.js"></script>
+        <script src="js/main.js"></script>
+    <script type="text/javascript" src="js/jquery.nivo.slider.js"></script>
+
+	<script>
+
+		$(window).load(function() {
+		var shakemap_url = '/scripts/shakemap.pl/newer_than';
+  // Get the EQ and append them to the list
+  $.getJSON(shakemap_url, function(data) {
+
+  // Get the page and list we need to work with
+  var $page = $("#slider");
+
+	  // Delete the existing list, if any
+      $page.empty();
+
+      // Are there even any EQ to display?
+	  if (data.length == 0) {
+	  	
+		// and we're done.
+		return;
+	  }
+
+      // Create a new list
+      var strHtml = '';
+	  for (var i = 0; i < data.length; i++) {
+	  	
+		var shakemap = data[i].shakemap_id + '-' + data[i].shakemap_version;
+        // Build HTML that contains the desired information
+		strHtml +=  '<a href="./event.html?event=' + shakemap + '"><img src="/data/' + 
+			shakemap + '/screenshot.jpg" data-thumb="images/toystory.jpg" alt="" ' +
+			 'title="M'+ data[i].magnitude + ' ' + data[i].event_location_description +', ' + data[i].event_timestamp +
+			 '" onerror="this.src=\'/data/'+shakemap+'/bluemarble.png\'" /></a>';
+		//console.log(data[i].shakemap_id + '-' + data[i].shakemap_version);
+      }
+        // Make it into a jQuery object...
+        var tweet = $(strHtml);
+		
+        // ...so we can append it to our list.
+        $page.append(tweet);
+		  
+			$('#slider').nivoSlider({animSpeed: 200,
+			pauseTime: 10000}
+		);
+    }
+	);
+
+		});
+    </script>
+    </body>
+</html>

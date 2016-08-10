@@ -1,0 +1,100 @@
+
+
+/* ==========================================================================
+   Author's custom styles
+   ========================================================================== */
+
+
+            body {
+                /*padding-top: 60px;*/
+                padding-bottom: 40px;margin:0px;
+            }
+			.logo{ 
+				vertical-align: text-bottom;
+				text-align: center;
+				height: 24px;
+			}
+			html { overflow-y: scroll; height: 300%; font-size: 100%; -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%; }
+			table { clear: both }
+			 .GREEN { background-color: #008800; }
+			 .YELLOW { background-color: #eeee00; }
+			 .ORANGE { background-color: #ee9900; }
+			 .RED { background-color: #cc0000; }
+			 .NA { background-color: #888888; }
+			 .GREY { background-color: #888888; }
+			.accordion h3 { padding-left: 2em; }
+.fac_summary {
+	border-bottom: 1px solid #888;
+    text-align: left;
+}
+.fac_summary:nth-child(odd) {
+	background-color: #eeeeee;
+}
+
+#caption {
+	background-color: #eee;
+	position: relative;
+}
+
+.metric
+{
+    margin:10px;
+    padding:5px;	
+	height: 50px;
+	border: 1px solid #888;
+	font-size: 80%;
+}
+
+.histogram
+{
+    position:relative;
+    margin:5px;
+    padding:5px;	
+	height: 75px;
+	border-bottom: 1px solid #888;
+   background:#eee;
+	font-size: 70%;
+	width: 175px;
+}
+
+.histogram li
+{
+    position:absolute;
+   list-style:none;
+   background:lightblue;
+   width:30px;
+   text-align:center;
+   visibility: hidden;
+-moz-box-shadow:    3px 3px 5px 6px #ccc;
+  -webkit-box-shadow: 1px #ccc;
+  box-shadow:         1px 1px 1px 1px #ccc;
+}
+
+.thumbnailClass{ text-align: center; }
+
+.progress .bar-yellow {
+  background-color: #dd514c;
+  background-image: -moz-linear-gradient(top, #eeee5b, #c4c435);
+  background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#ffef5b), to(#ffef35));
+  background-image: -webkit-linear-gradient(top, #ffef5b, #ffef35);
+  background-image: -o-linear-gradient(top, #ffef5b, #ffef35);
+  background-image: linear-gradient(to bottom, #ffef5b, #ffef35);
+  background-repeat: repeat-x;
+  filter: progid:dximagetransform.microsoft.gradient(startColorstr='#ffee5f5b', endColorstr='#ffc43c35', GradientType=0);
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

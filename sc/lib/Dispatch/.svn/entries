@@ -1,0 +1,40 @@
+8
+
+dir
+360
+http://gldrd2.cr.usgs.gov/svn/ShakeCast/trunk/unix/lib/Dispatch
+http://gldrd2.cr.usgs.gov/svn/ShakeCast
+
+
+
+2008-01-29T17:54:59.498926Z
+337
+klin
+
+
+svn:special svn:externals svn:needs-lock
+
+
+
+
+
+
+
+
+
+
+
+7a1c5ede-3121-0410-8f5d-f6392fb5e30c
+
+Client.pm
+file
+
+
+
+
+2008-01-31T19:59:49.000000Z
+6635801770551f9865af7062fb86c04c
+2008-01-29T17:54:59.498926Z
+337
+klin
+

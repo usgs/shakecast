@@ -1,0 +1,26 @@
+; Default HTML Email Notification
+;
+From: ShakeCast <%HEADER_FROM%>
+To: %HEADER_TO%
+Subject: Shaking M%MAGNITUDE% - %EVENT_LOCATION_DESCRIPTION% (%EVENT_ID%) 
+; End -- header
+
+Grid generated at %GENERATION_TIMESTAMP% shows that
+%METRIC% shaking at <b>%FACILITY_NAME%</b> resulted in a
+shaking level of <b>%GRID_VALUE%</b>.
+<p>
+Event ID:   %EVENT_ID%   Version: %EVENT_VERSION%
+<p>
+Shakemap ID: %SHAKEMAP_ID%  Version: %SHAKEMAP_VERSION%
+<p>
+Event Info:
+<table border=1 bordercolor=black cellpadding=5 cellspacing=0>
+<tr><td>Name<td>%EVENT_NAME%
+<tr><td>Magnitude<td>%MAGNITUDE%
+<tr><td>Lat<td>%LAT%
+<tr><td>Lon<td>%LON%
+<tr><td>Location<td>%EVENT_LOCATION_DESCRIPTION%
+</table>
+<p>
+Reported by: Server ID = %SERVER_ID%, DNS = %DNS_ADDRESS%
+

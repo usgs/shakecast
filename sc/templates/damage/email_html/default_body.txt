@@ -1,0 +1,9 @@
+<tr bgcolor=#F0F0F0><font size=2 face="Arial">
+	<td width=280 align="left">%FACILITY_NAME%</td>
+	<td width=80 align="left">%EXTERNAL_FACILITY_ID%</td>
+	<td width=120 align="left">%SHORT_NAME%</td>
+	<td align="center" width=100 bgcolor=%DAMAGE_LEVEL:RED;red;ORANGE;darkorange;YELLOW;gold;GREEN;green%><b>%DAMAGE_LEVEL:RED;High;ORANGE;Medium-High;YELLOW;Medium;GREEN;Low%</b></td>
+	<td width=50 align="center">%GRID_VALUE%</td>
+</font>
+</tr>
+

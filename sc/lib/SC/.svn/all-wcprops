@@ -1,0 +1,41 @@
+K 25
+svn:wc:ra_dav:version-url
+V 45
+/svn/ShakeCast/!svn/ver/375/trunk/unix/lib/SC
+END
+Server.pm
+K 25
+svn:wc:ra_dav:version-url
+V 55
+/svn/ShakeCast/!svn/ver/397/trunk/unix/lib/SC/Server.pm
+END
+RSS.pm
+K 25
+svn:wc:ra_dav:version-url
+V 52
+/svn/ShakeCast/!svn/ver/375/trunk/unix/lib/SC/RSS.pm
+END
+Shakemap.pm
+K 25
+svn:wc:ra_dav:version-url
+V 57
+/svn/ShakeCast/!svn/ver/335/trunk/unix/lib/SC/Shakemap.pm
+END
+Product.pm
+K 25
+svn:wc:ra_dav:version-url
+V 56
+/svn/ShakeCast/!svn/ver/375/trunk/unix/lib/SC/Product.pm
+END
+Event.pm
+K 25
+svn:wc:ra_dav:version-url
+V 54
+/svn/ShakeCast/!svn/ver/335/trunk/unix/lib/SC/Event.pm
+END
+ScriptUtil.pm
+K 25
+svn:wc:ra_dav:version-url
+V 59
+/svn/ShakeCast/!svn/ver/335/trunk/unix/lib/SC/ScriptUtil.pm
+END

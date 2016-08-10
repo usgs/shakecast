@@ -1,0 +1,4 @@
+Number of Events: %_ITEMNO%
+Max Magnitude:    %_MAX_MAGNITUDE%
+==========
+;;;;;

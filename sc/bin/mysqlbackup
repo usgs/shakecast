@@ -1,0 +1,54 @@
+#!/usr/bin/perl
+
+use strict;
+use FileHandle;
+use Sys::Hostname;
+
+open STDERR, ">&STDOUT" or die "Can't dup stdout";
+STDERR->autoflush(1);
+STDOUT->autoflush(1);
+
+#-----------------------------------------------------------------------
+# Make a rotating list of backup files, one for each day of the week.
+#-----------------------------------------------------------------------
+my $dow    = (localtime)[6];
+my $host   = hostname();
+my $bufile = "/home/shake/DATA/mysql_backup/shakemap_${host}_${dow}.sql.gz";
+#-----------------------------------------------------------------------
+# These are system specific:
+#-----------------------------------------------------------------------
+my $dump   = "/usr/bin/mysqldump";
+my $gzip   = "/usr/bin/gzip";
+my $scp    = "/usr/bin/scp";
+
+#-----------------------------------------------------------------------
+# If $rmt_mach is set, the backup file will be scp'd to the directory 
+# given by $rmt_user@$rmt_mach:$rmt_path 
+#-----------------------------------------------------------------------
+#my $rmt_mach = "willow";
+#my $rmt_user = "shake";
+#my $rmt_path = "/opt/ShakeMap/data/mysql_backup";
+
+print "Subject: ShakeMap Database Backup for $host  ";
+
+my $results = `$dump --add-drop-table -u shake --password="22.kt-b4" --databases sc | $gzip - > $bufile`;
+
+if ($results) {
+  print "\n\nError Summary:\n$results\n";
+} else {
+  print "\n\nCreated backup file $bufile\n"; 
+}
+
+#if ($rmt_mach) {
+#  $results = `$scp $bufile $rmt_user\@$rmt_mach:$rmt_path`;
+
+#  if ($results) {
+#    print "\nCopy to $rmt_mach failed:\n$results\n";
+#  } else {
+#    print "\nCopied backup file to $rmt_mach\n"; 
+#  }
+#}
+
+print "\nFinished at " . scalar localtime(time) . "\n";
+0;
+

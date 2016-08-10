@@ -1,0 +1,23 @@
+; Default HTML Email Notification -- header
+;
+From: ShakeCast <%HEADER_FROM%>
+To: %HEADER_TO%
+Subject: Update M%MAGNITUDE% - %EVENT_LOCATION_DESCRIPTION% (%EVENT_ID%) 
+; End -- header
+
+The following <font color=red>%_ITEMNO%</font> Updated Event(s) occurred 
+beginning at <b>%EVENT_TIMESTAMP%</b>:
+<p>
+Reported by: <i>Server ID = %SERVER_ID%, DNS = %DNS_ADDRESS%</i>
+<p>
+<table border=1 bordercolor=black cellpadding=5 cellspacing=0>
+<tr>
+  <th>ID
+  <th>Ver
+  <th>Time
+  <th>Mag
+  <th>Lat
+  <th>Lon
+  <th>Location
+</tr>
+;;;;;

@@ -1,0 +1,31 @@
+; Default HTML Email Notification -- header
+;
+From: ShakeCast <%HEADER_FROM%>
+To: %HEADER_TO%
+Subject: System %LOG_MESSAGE_TYPE%
+Content-Type: text/html
+
+The following <font color=red>System %LOG_MESSAGE_TYPE%</font> occurred 
+beginning at <b>%RECEIVE_TIMESTAMP%</b>:
+<p>
+Reported by: <i>Server ID = %SERVER_ID%, DNS = %DNS_ADDRESS%</i>
+<p>
+<table border=1 bordercolor=black cellpadding=5 cellspacing=0>
+<tr>
+  <th>ID
+  <th>Server ID
+  <th>Time
+  <th>Description
+</tr>
+<tr>
+  <td>%LOG_MESSAGE_ID%
+  <td>%SERVER_ID%
+  <td>%RECEIVE_TIMESTAMP%
+  <td>%DESCRIPTION%
+</tr>
+</table>
+<p>
+<table>
+</table>
+#####
+;;;;;

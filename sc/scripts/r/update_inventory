@@ -1,0 +1,287 @@
+#!/usr/local/bin/perl
+
+use strict;
+#use warnings;
+
+use FindBin;
+use lib "$FindBin::Bin/../../lib";
+
+use Carp;
+
+use CGI;
+use CGI::Session;
+use JSON::XS;
+use Data::Dumper;
+use XML::LibXML;
+use XML::LibXML::Simple;
+use XML::Simple;
+
+use SC;
+use API::User;
+use API::APIUtil;
+use API::Event;
+
+SC->initialize;
+my $default_options = API::APIUtil::config_options();
+
+my $self = new CGI;
+my $session = new CGI::Session(undef, $self);
+$session->expires("+10m");
+my $action = ($self->param('program')) ? $self->param('program') : $ARGV[0];
+my $filename = ($self->param('filename')) ? $self->param('filename') : $ARGV[1];
+my $param = ($self->param('option')) ? $self->param('option') : $ARGV[2];
+$param = '-'.$param if ($param);
+
+my @args = ($action, $filename, $param);
+my $action = shift @args;
+my $sc_home = SC->config->{'RootDir'};
+my $data_home = SC->config->{'DataRoot'};
+
+print "Content-Type: application/json\n\n";
+
+# Authenticated
+#my $username = $self->param('username') || '';
+#my $password = $self->param('password') || '';
+#my $valid = API::User->validate($username, $password, 1);
+#return 1 unless $valid;
+unless ( $session->param("~logged-in") && $session->param("admin_user")) {
+    exit(0);
+}
+
+if (not defined *{$action}) {
+} else {
+    SC->log(0, "user: task is $action $args[0]");
+
+	no strict 'refs';
+    # perform the requested action
+    #eval {
+	my $json =  &{ $action }( @args );
+	print JSON::XS->new->utf8->encode(API::APIUtil::stringfy($json));
+    #};
+}
+
+exit;
+    # Authenticated
+sub shake_fetch {
+    my ($event_id, $net_id) = @_;
+    
+    $net_id =~ s/^\-//;
+    my $sc_id = $net_id;
+    if ($net_id =~ /sc/i) {
+	$sc_id = 'ci';
+    } elsif ($net_id =~ /global/i) {
+	$sc_id = 'us';
+    }
+    $sc_id .= $event_id;
+    
+    my $result = `$sc_home/bin/manage_event.pl -delete -verbose $sc_id`;
+
+    SC->log(0, "erase event: $sc_id, $result");
+	
+	my $cmd = "$sc_home/bin/shake_fetch.pl -force_run -scenario -verbose -network $net_id -event $event_id";
+	SC->log(0, $cmd);
+	$result =  `$cmd`;
+	
+	my $json = {};
+	$json->{prog} = $cmd;
+	$json->{result} = $result;
+
+	return $json;
+}
+
+    # Authenticated
+sub atlas_fetch {
+    my ($event_id) = @_;
+    
+    my $sc_id = $event_id;
+    $sc_id =~ s/^\atlas//i;
+    $sc_id = 'us'.$sc_id;
+    
+    my $result = `$sc_home/bin/manage_event.pl -delete -verbose $sc_id`;
+
+    SC->log(0, "erase event: $sc_id, $result");
+	
+	my $cmd = "$sc_home/bin/gs_json.pl $event_id";
+	SC->log(0, $cmd);
+	$result =  `$cmd`;
+	
+	my $json = {};
+	$json->{prog} = $cmd;
+	$json->{result} = 1;
+
+	return $json;
+}
+
+    # Authenticated
+sub scenario_event {
+	my ($filename) = @_;
+	
+	my $result = new API::Event->erase_event($filename);
+	use File::Copy;
+	$result = move ("$sc_home/tmp/$filename", "$data_home/$filename");
+    SC->log(0, "scenario_event: $sc_home/tmp/$filename, $data_home/$filename, $result");
+	
+	my $bin_file = "$sc_home/bin/scfeed_local.pl -force_run -scenario -event ";
+	my $cmd = "$bin_file $filename";
+	
+	my $json = {};
+	$json->{prog} = $cmd;
+	$json->{result} = `$cmd -verbose`;
+
+	return $json;
+}
+
+    # Authenticated
+sub test_event {
+	my ($filename) = @_;
+	
+	use File::Copy;
+	my $result = move ("$sc_home/tmp/$filename", "$sc_home/test_data/$filename");
+	
+	my $json = {};
+	$json->{result} = $result;
+
+	return $json;
+}
+
+    # Authenticated
+sub manage_facility_xml {
+	my ($filename, $param) = @_;
+	my $bin_file = "$sc_home/bin/manage_facility_xml.pl";
+	my $file_path = "$sc_home/tmp/$filename";
+	my $cmd = "$bin_file $param \"$file_path\"";
+	
+	my $json = {};
+	$json->{prog} = $cmd;
+	$json->{result} = `$cmd -verbose`;
+
+	return $json;
+}
+
+
+    # Authenticated
+sub manage_group_xml {
+	my ($filename, $param) = @_;
+	my $bin_file = "$sc_home/bin/manage_group_xml.pl";
+	my $file_path = "$sc_home/tmp/$filename";
+	my $cmd = "$bin_file $param \"$file_path\"";
+	
+	my $json = {};
+	$json->{prog} = $cmd;
+	$json->{result} = `$cmd -verbose`;
+
+	return $json;
+}
+
+
+    # Authenticated
+sub manage_user_xml {
+	my ($filename, $param) = @_;
+	my $bin_file = "$sc_home/bin/manage_user_xml.pl";
+	my $file_path = "$sc_home/tmp/$filename";
+	my $cmd = "$bin_file $param \"$file_path\"";
+	
+	my $json = {};
+	$json->{prog} = $cmd;
+	$json->{result} = `$cmd -verbose`;
+
+	return $json;
+}
+
+
+    # Authenticated
+sub manage_inventory_xml {
+    my ($filename, $param) = @_;
+    my $xml = XML::LibXML::Simple::XMLin("$sc_home/tmp/$filename");
+	SC->log(0, "save facility $filename");
+    save_data_as_xml($xml->{FacilityTable}, "$sc_home/tmp/facility.xml");
+    save_data_as_xml($xml->{GroupTable}, "$sc_home/tmp/group.xml");
+    save_data_as_xml($xml->{UserTable}, "$sc_home/tmp/user.xml");
+
+	my $json = {};
+	my $bin_file = "$sc_home/bin/manage_facility_xml.pl";
+	my $file_path = "$sc_home/tmp/facility.xml";
+	my $cmd = "$bin_file $param \"$file_path\"";
+	
+	$json->{prog} .= $cmd;
+	$json->{result} .= `$cmd -verbose`;
+	
+	$bin_file = "$sc_home/bin/manage_group_xml.pl";
+	$file_path = "$sc_home/tmp/group.xml";
+	$cmd = "$bin_file $param \"$file_path\"";
+	
+	$json->{prog} .= $cmd;
+	$json->{result} .= `$cmd -verbose`;
+
+	$bin_file = "$sc_home/bin/manage_user_xml.pl";
+	$file_path = "$sc_home/tmp/user.xml";
+	$cmd = "$bin_file $param \"$file_path\"";
+	
+	$json->{prog} .= $cmd;
+	$json->{result} .= `$cmd -verbose`;
+
+	return $json;
+}
+
+
+    # Authenticated
+sub manage_facility {
+	my ($filename, $param) = @_;
+	my $bin_file = "$sc_home/bin/manage_facility.pl";
+	my $file_path = "$sc_home/tmp/$filename";
+	my $cmd = "$bin_file $param \"$file_path\"";
+	
+	my $json = {};
+	$json->{prog} = $cmd;
+	$json->{result} = `$cmd -verbose`;
+
+	return $json;
+}
+
+
+    # Authenticated
+sub manage_user {
+	my ($filename, $param) = @_;
+	my $bin_file = "$sc_home/bin/manage_user.pl";
+	my $file_path = "$sc_home/tmp/$filename";
+	my $cmd = "$bin_file $param \"$file_path\"";
+	
+	my $json = {};
+	$json->{prog} = $cmd;
+	$json->{result} = `$cmd -verbose`;
+
+	return $json;
+}
+
+    # Authenticated
+sub manage_group {
+	my ($filename, $param) = @_;
+	my $bin_file = "$sc_home/bin/manage_group.pl";
+	my $file_path = "$sc_home/tmp/$filename";
+	my $cmd = "$bin_file $param -conf \"$file_path\"";
+	
+	my $json = {};
+	$json->{prog} = $cmd;
+	$json->{result} = `$cmd -verbose`;
+
+	return $json;
+}
+
+
+sub save_data_as_xml {
+    my $data = shift || return;
+    my $file = shift || return;
+    my $new_raw_xml = XML::Simple::XMLout($data);
+    SC->log(0, $new_raw_xml);
+    my $parser = XML::LibXML->new();
+    $parser->recover(1);
+    my $new_node = $parser->parse_string($new_raw_xml);
+    _save($new_node, $file);
+}
+
+sub _save {
+    my $doc = shift;
+    my $file = shift || return;
+    $doc->toFile($file);
+}
+
