@@ -458,47 +458,56 @@ class TestImport(unittest.TestCase):
         if failed is True:
             # fail the test with the accumulated exception message
             self.fail(fail_message)
-        
+            
 
-def cg():
-    session = Session()
-    group = Group()
-    group.name = 'GLOBAL'
-    group.facility_type = 'All'
-    group.lon_min = -179.99
-    group.lon_max = 179.99
-    group.lat_min = -89.99
-    group.lat_max = 89.99
-    session.add(group)
+class TestSCConfig(unittest.TestCase):
+    '''
+    Tests for the sc configuration script that runs during CI
+    '''
+    def test_setup_config_test(self):
+        '''
+        Make a copy of the sc.json file to save user configs
+        '''
+        sc = SC()
+        # store smtp information for later testing
+        self.username = sc.smtp_username
+        self.password = sc.smtp_password
+        sc.make_backup()
     
-    gs = Group_Specification()
-    gs.notification_type = 'NEW_EVENT'
-    gs.minimum_magnitude = 3
-    gs.notificaiton_format = 'EMAIL_HTML'
-    group.specs.append(gs)
+    def test_sc_config_clear(self):
+        '''
+        Clear the smtp username and password
+        '''
+        sc_conf_path = os.path.join(sc_dir(), 'app', 'config.py')
+        test_user = ''
+        test_pass = ''
+        os.system('python {} --smtpu {} --smtpp {}'.format(sc_conf_path,
+                                                           test_user,
+                                                           test_pass))
+        sc = SC()
+        self.assertEqual(sc.smtp_username, '')
+        self.assertEqual(sc.smtp_password, '')
     
-    insp_prios = ['GREY', 'GREEN', 'YELLOW', 'ORANGE', 'RED']
-    for insp_prio in insp_prios:
-        gs = Group_Specification()
-        gs.notification_type = 'DAMAGE'
-        gs.minimum_magnitude = 3
-        gs.notificaiton_format = 'EMAIL_HTML'
-        gs.inspection_priority = insp_prio
-        group.specs.append(gs)
+    def test_sc_config_set(self):
+        '''
+        Set the smtp username and password
+        '''
+        sc_conf_path = os.path.join(sc_dir(), 'app', 'sc_config.py')
+        test_user = 'testemail@gmail.com'
+        test_pass = 'testpass'
+        os.system('python {} --smtpu {} --smtpp {}'.format(sc_conf_path,
+                                                           test_user,
+                                                           test_pass))
+        sc = SC(testing=True)
+        self.assertEqual(sc.smtp_username, test_user)
+        self.assertEqual(sc.smtp_password, test_pass)
         
-    session.commit()
-    Session.remove()
-    
-def cu():
-    session = Session()
-    user = User()
-    user.username = 'test_user'
-    user.email = 'test@test.com'
-    user.user_type = 'ADMIN'
-    user.group_string = 'GLOBAL'
-    session.add(user)
-    session.commit()
-    Session.remove()
+    def test_sc_revert(self):
+        sc = SC()
+        sc.revert()
+        
+        self.assertEqual(sc.smtp_username, self.username)
+        self.assertEqual(sc.smtp_password, self.password)
     
 if __name__ == '__main__':
     
