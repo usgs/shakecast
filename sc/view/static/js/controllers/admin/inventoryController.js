@@ -1,51 +1,51 @@
-app.controller('inventoryController', function($scope, $http) {
+app.controller("inventoryController", function($scope, $http) {
     
 /////// GET FACILITY DATA ////////////
-    $scope.fac_data = []
+    $scope.facData = []
     $scope.filter = {}
     $scope.use_filter = false
     $scope.getFacs = function(lastID=0, filter={}) {
-        $http.get('/admin/get/inventory', {params: {last_id: lastID, filter: filter}})
+        $http.get("/admin/get/inventory", {params: {last_id: lastID, filter: filter}})
             .then(
                 function(response){
                     if (lastID == 0) {
-                        cur_fac_pos = 0
+                        curFacPos = 0
                     } else {
-                        cur_fac_pos = $scope.fac_data.length
+                        curFacPos = $scope.facData.length
                     }
                     
-                    $scope.fac_data = $scope.fac_data.concat(response.data)
+                    $scope.facData = $scope.facData.concat(response.data)
                     
                     // make sure we don't try to select a fac that
                     // isn't there
-                    if ($scope.fac_data.length <= cur_fac_pos) {
-                        $scope.cur_fac = $scope.fac_data.slice(-1)[0]
-                        cur_fac_pos = $scope.fac_data.length -1
+                    if ($scope.facData.length <= curFacPos) {
+                        $scope.curFac = $scope.facData.slice(-1)[0]
+                        curFacPos = $scope.facData.length -1
                     } else {
-                        $scope.cur_fac = $scope.fac_data[cur_fac_pos] 
+                        $scope.curFac = $scope.facData[curFacPos] 
                     }
                     
-                    if ($scope.fac_data.length > 0) {
-                        $scope.loadFac(index=cur_fac_pos)
-                        $scope.lastID = $scope.fac_data.slice(-1)[0].shakecast_id
+                    if ($scope.facData.length > 0) {
+                        $scope.loadFac(index=curFacPos)
+                        $scope.lastID = $scope.facData.slice(-1)[0].shakecast_id
                     } else {
                         
                     }
                 }, 
                 function(response){
-                    $scope.fac_data = []
+                    $scope.facData = []
                 }
             );
     }
     
     $scope.clearFilter = function() {
         $scope.filter = {}
-        $scope.fac_data = []
+        $scope.facData = []
         $scope.getFacs(0)
     }
     
     $scope.getFacsFilter = function(lastID=0, filter={}) {
-        $scope.fac_data = []
+        $scope.facData = []
         $scope.getFacs(lastID=lastID, filter=filter)
     }
     
@@ -77,7 +77,7 @@ app.controller('inventoryController', function($scope, $http) {
                         facMarker: {
                             lat: 0,
                             lng: 0,
-                            message: '',
+                            message: "",
                             focus: false,
                             draggable: false
                         }
@@ -88,32 +88,32 @@ app.controller('inventoryController', function($scope, $http) {
     $scope.loadFac = function(index=0, fac=[]) {
         // apply new eq data to the map
         if (fac == false) {
-            $scope.cur_fac = $scope.fac_data[index]
+            $scope.curFac = $scope.facData[index]
         }
         
         $scope.facCenter = {
-                        lat: $scope.cur_fac.lat_min,
-                        lng: $scope.cur_fac.lon_min,
+                        lat: $scope.curFac.lat_min,
+                        lng: $scope.curFac.lon_min,
                         zoom: 12
                     };
                     
         $scope.markers = {
                         facMarker: {
-                            lat: $scope.cur_fac.lat_min,
-                            lng: $scope.cur_fac.lon_min,
+                            lat: $scope.curFac.lat_min,
+                            lng: $scope.curFac.lon_min,
                             focus: true,
                             draggable: false,
                             message: `<table class="table">
                                         <thead>
-                                            <th colspan="2">` + $scope.cur_fac.name + `</th>    
+                                            <th colspan="2">` + $scope.curFac.name + `</th>    
                                         </thead>
                                         <tbody>
                                             <tr> 
-                                                <th>ID:</th><td>` + $scope.cur_fac.facility_id + `</td>
+                                                <th>ID:</th><td>` + $scope.curFac.facility_id + `</td>
                                             </tr>
                                             <tr>
                                                 <td colspan="2">
-                                                    <a class='link'>More Info ></a>
+                                                    <a class="link">More Info</a>
                                                 </td>
                                             </tr>
                                         <tbody>
@@ -124,14 +124,14 @@ app.controller('inventoryController', function($scope, $http) {
                         }
                     };
                                         
-        if ($scope.cur_fac.html) {
+        if ($scope.curFac.html) {
             $scope.markers.facMarker.message = `<table>
                                                     <tr>
-                                                        <td>` + $scope.cur_fac.html + `</td>
+                                                        <td>` + $scope.curFac.html + `</td>
                                                     </tr>
                                                     <tr>
                                                         <td colspan="2">
-                                                            <a class='link'>More Info ></a>
+                                                            <a class="link">More Info</a>
                                                         </td>
                                                     </tr>
                                                 </table>`

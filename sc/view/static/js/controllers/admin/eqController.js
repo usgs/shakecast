@@ -1,49 +1,49 @@
-app.controller('eqController', function($scope, $http, $timeout) {
+app.controller("eqController", function($scope, $http, $timeout) {
     
-    $scope.eq_data = []
+    $scope.eqData = []
     $scope.filter = {}
-    $scope.filter['all_events'] = true
-    $scope.filter['timeframe'] = ''
+    $scope.filter["all_events"] = false
+    $scope.filter["timeframe"] = ""
     // create a message to display in our view
     $scope.getEQs = function(time=$scope.time, filter=$scope.filter) {
-        $http.get('/get/eqdata', {params: {time: time, filter: filter}})
+        $http.get("/get/eqdata", {params: {time: time, filter: filter}})
             .then(
                 function(response){
                     
                     if (time == 0) {
-                        cur_pos = 0
+                        curPos = 0
                     } else {
-                        cur_pos = $scope.eq_data.length
+                        curPos = $scope.eqData.length
                     }
                     
-                    $scope.eq_data = $scope.eq_data.concat(response.data)
+                    $scope.eqData = $scope.eqData.concat(response.data)
                     
                     // make sure we don't try to select a fac that
                     // isn't there
-                    if ($scope.eq_data.length <= cur_pos) {
-                        $scope.cur_eq = $scope.eq_data.slice(-1)[0]
-                        cur_pos = $scope.eq_data.length -1
+                    if ($scope.eqData.length <= curPos) {
+                        $scope.curEQ = $scope.eqData.slice(-1)[0]
+                        curPos = $scope.eqData.length -1
                     } else {
-                        $scope.cur_eq = $scope.eq_data[cur_pos] 
+                        $scope.curEQ = $scope.eqData[curPos] 
                     }
                     
-                    $scope.loadEQ(index=cur_pos)
-                    $scope.time = $scope.eq_data.slice(-1)[0].time
+                    $scope.loadEQ(index=curPos)
+                    $scope.time = $scope.eqData.slice(-1)[0].time
                 }, 
                 function(response){
-                  $scope.eq_data = []
+                  $scope.eqData = []
                 }
-             );
-    };
+             )
+    }
     
     $scope.getEQsFilter = function(time=0, filter=$scope.filter) {
-        $scope.eq_data = []
+        $scope.eqData = []
         $scope.getEQs(time=time, filter=filter)
     }
     
     $scope.clearFilter = function() {
-        $scope.filter = {'all_events': true}
-        $scope.eq_data = []
+        $scope.filter = {"all_events": true}
+        $scope.eqData = []
         $scope.getEQs(0)
     }
 
@@ -55,9 +55,9 @@ app.controller('eqController', function($scope, $http, $timeout) {
         defaults: {
             scrollWheelZoom: false
         }
-    });
+    })
     
-    $scope.getEQs();
+    $scope.getEQs()
     
     // set default map values that will be overwritten when eq data
     // loads
@@ -74,7 +74,7 @@ app.controller('eqController', function($scope, $http, $timeout) {
                         eqMarker: {
                             lat: 0,
                             lng: 0,
-                            message: '',
+                            message: "",
                             focus: true,
                             draggable: false
                         }
@@ -82,45 +82,45 @@ app.controller('eqController', function($scope, $http, $timeout) {
                     layers: {
                         baselayers: {
                             xyz: {
-                                name: 'OpenStreetMap (XYZ)',
-                                url: 'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
-                                type: 'xyz'
+                                name: "OpenStreetMap (XYZ)",
+                                url: "http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+                                type: "xyz"
                             }
                         },
                         overlays: {}
                     }
-                });
+                })
     
     $scope.loadEQ = function(index) {
         // apply new eq data to the map
-        $scope.cur_eq = $scope.eq_data[index]
+        $scope.curEQ = $scope.eqData[index]
         
         $scope.eqCenter = {
-                        lat: $scope.cur_eq.lat,
-                        lng: $scope.cur_eq.lon,
+                        lat: $scope.curEQ.lat,
+                        lng: $scope.curEQ.lon,
                         zoom: 7
-                    };
+                    }
                     
         
         $scope.markers = {
                         eqMarker: {
-                            lat: $scope.cur_eq.lat,
-                            lng: $scope.cur_eq.lon,
+                            lat: $scope.curEQ.lat,
+                            lng: $scope.curEQ.lon,
                             message: `<table class="table">
                                         <tr> 
-                                            <th>Magnitude:</th><td>` + $scope.cur_eq.magnitude + `</td>
+                                            <th>Magnitude:</th><td>` + $scope.curEQ.magnitude + `</td>
                                         </tr>
                                         <tr>
-                                            <th>Depth:</th><td>` + $scope.cur_eq.depth + `</td>
+                                            <th>Depth:</th><td>` + $scope.curEQ.depth + `</td>
                                         </tr>
                                         <tr>
-                                            <th>Latitude:</th><td>` + $scope.cur_eq.lat + `</td>
+                                            <th>Latitude:</th><td>` + $scope.curEQ.lat + `</td>
                                         </tr>
                                         <tr>
-                                            <th>Longitude:</th><td>` + $scope.cur_eq.lon + `</td>
+                                            <th>Longitude:</th><td>` + $scope.curEQ.lon + `</td>
                                         </tr>
                                         <tr>
-                                            <th>Description:</th><td>` + $scope.cur_eq.place + `</td>
+                                            <th>Description:</th><td>` + $scope.curEQ.place + `</td>
                                         </tr>
                                       </table>`,
                             focus: true,
@@ -132,48 +132,48 @@ app.controller('eqController', function($scope, $http, $timeout) {
                             getMessageScope: function() {return $scope},
                             compileMessage: true
                         }
-        };
-        
-        // Remove shakemap if it exists
-        if ($scope.layers.overlays.hasOwnProperty('shakemap')) {
-            delete $scope.layers.overlays['shakemap']
         }
         
-        $http.get('/get/shakemaps/' + $scope.cur_eq.event_id)
+        // Remove shakemap if it exists
+        if ($scope.layers.overlays.hasOwnProperty("shakemap")) {
+            delete $scope.layers.overlays["shakemap"]
+        }
+        
+        $http.get("/get/shakemaps/" + $scope.curEQ.event_id)
             .then(
                 function(response) {
                     shakemaps = response.data
                     if (shakemaps.length > 0) {
-                        var image_url = '/get/shakemaps/' + $scope.cur_eq.event_id + '/overlay'
+                        var imageURL = "/get/shakemaps/" + $scope.curEQ.event_id + "/overlay"
                         
-                        $scope.layers.overlays['shakemap'] = {
-                            name: 'ShakeMap',
-                            type: 'imageOverlay',
+                        $scope.layers.overlays["shakemap"] = {
+                            name: "ShakeMap",
+                            type: "imageOverlay",
                             visible: true,
-                            url: image_url,
+                            url: imageURL,
                             bounds: [[shakemaps[0].lat_min, shakemaps[0].lon_min],
                                      [shakemaps[0].lat_max, shakemaps[0].lon_max]],
                             layerParams: {
                                 opacity: .7,
-                                format: 'image/png',
+                                format: "image/png",
                                 transparent: true
                             }
                         }
                         
-                        $scope.layers.overlays['facilities'] = {
-                            name: 'Facilities',
-                            type: 'group',
+                        $scope.layers.overlays["facilities"] = {
+                            name: "Facilities",
+                            type: "group",
                             visible: true
                         }
                         
-                        $http.get('/get/shakemaps/' + $scope.cur_eq.event_id + '/facilities')
+                        $http.get("/get/shakemaps/" + $scope.curEQ.event_id + "/facilities")
                             .then(
                                 function(response) {
                                     facs = response.data
                                     for (i=0; i < facs.length; i++) {
                                         fac = facs[i]
-                                        fac_marker = 'fac_' + fac.shakecast_id.toString()
-                                        $scope.markers[fac_marker] = {
+                                        facMarker = "fac_" + fac.shakecast_id.toString()
+                                        $scope.markers[facMarker] = {
                                             lat: fac.lat_min,
                                             lng: fac.lon_min,
                                             message: `<table class="table">
@@ -185,16 +185,16 @@ app.controller('eqController', function($scope, $http, $timeout) {
                                         
                                     }
                                 }
-                            );
+                            )
                         
                         
                     } else {
-                        delete $scope.layers.overlays['shakemap']
+                        delete $scope.layers.overlays["shakemap"]
                     }
                     
                 }
-            );
+            )
             
 
     }
-});
+})
