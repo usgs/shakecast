@@ -46,7 +46,7 @@ if args.dict is None:
     new_configs = {k:v for k,v in new_configs.iteritems()
                                         if v is not None}
     for key, conf in new_configs.iteritems():
-        if isinstance(conf, dict):     
+        if isinstance(conf, dict):
             new_configs[key] = {k:v for k,v in new_configs[key].iteritems()
                                     if v is not None}
             
