@@ -1,20 +1,20 @@
-app.controller('userController', function($scope, $http, leafletData) {
-    $scope.user_data = []
+app.controller("userController", function($scope, $http) {
+    $scope.userData = []
     $scope.getUsers = function(lastID=0, filter={}) {
-        $http.get('/admin/get/users', {params: {last_id: lastID, filter: filter}})
+        $http.get("/admin/get/users", {params: {last_id: lastID, filter: filter}})
             .then(
                 function(response){
-                    if (lastID == 0) {
-                        cur_user_pos = 0
+                    if (lastID === 0) {
+                        curUserPos = 0
                     } else {
-                        cur_user_pos = $scope.user_data.length
+                        curUserPos = $scope.userData.length
                     }
                     
-                    $scope.user_data = $scope.user_data.concat(response.data)
-                    $scope.lastID = $scope.user_data.slice(-1)[0].shakecast_id
+                    $scope.userData = $scope.userData.concat(response.data)
+                    $scope.lastID = $scope.userData.slice(-1)[0].shakecast_id
                 }, 
-                function(response){
-                    $scope.user_data = []
+                function(){
+                    $scope.userData = []
                 }
             );
     }
@@ -24,18 +24,18 @@ app.controller('userController', function($scope, $http, leafletData) {
     
     $scope.loadUser = function(index=0, user=[]) {
         // apply new eq data to the map
-        if (user == false) {
-            $scope.cur_user = $scope.user_data[index]
+        if (user === false) {
+            $scope.curUser = $scope.userData[index]
         }
                     
-        $http.get('/admin/get/users/' + $scope.cur_user.shakecast_id + '/groups')
+        $http.get("/admin/get/users/" + $scope.curUser.shakecast_id + "/groups")
                 .then(
                     function(response){
                         $scope.groups = response.data
                         
                         $scope.cur_group = $scope.groups[0]
                         
-                        $http.get('/admin/get/groups/' + $scope.cur_group.shakecast_id + '/specs')
+                        $http.get("/admin/get/groups/" + $scope.cur_group.shakecast_id + "/specs")
                                 .then(
                                     function(response){
                                         $scope.cur_group.specs = response.data
@@ -101,7 +101,7 @@ app.controller('userController', function($scope, $http, leafletData) {
                         lng: -122,
                         zoom: 10
                     },
-                    geojson: ''
+                    geojson: ""
                 });
     
 });

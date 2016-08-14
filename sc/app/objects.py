@@ -19,6 +19,7 @@ if modules_dir not in sys.path:
     sys.path += [modules_dir]
     
 from jinja2 import Template
+from shutil import copyfile
 import socks
 
 class ProductGrabber(object):
@@ -836,6 +837,7 @@ class SC(object):
         
         conf_dir = self.get_conf_dir()
         self.conf_file_location = os.path.join(conf_dir, 'sc.json')
+            
         conf_file = open(self.conf_file_location, 'r')
         conf_str = conf_file.read()
         self.json = conf_str
@@ -922,7 +924,19 @@ class SC(object):
         directory = os.path.normpath(delim.join(path))
         
         return directory
-
+    
+    def make_backup(self):
+        conf_dir = self.get_conf_dir()
+        # copy sc_config file
+        copyfile(os.path.join(conf_dir, 'sc.json'),
+                 os.path.join(conf_dir, 'sc_back.json'))
+        
+    def revert(self):
+        conf_dir = self.get_conf_dir()
+        # copy sc_config file
+        copyfile(os.path.join(conf_dir, 'sc_back.json'),
+                 os.path.join(conf_dir, 'sc.json'))
+        self.load()
 
 class NotificationBuilder(object):
     """

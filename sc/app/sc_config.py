@@ -7,12 +7,11 @@ Usage: python sc_config.py -[flag] -value
         -d      dict    Dictionary containing multiple keys and values
         -smtpu  str     Sets smtp username, from, and envelope_from
         -smtpp  str     Sets smtp password
-            
 '''
+
 import argparse
 from objects import SC
 import json
-import pdb
 
 def sc_config(new_configs={}):
     sc = SC()
@@ -21,10 +20,10 @@ def sc_config(new_configs={}):
     for key, value in new_configs.iteritems():
         if key in sc_config:
             if not isinstance(new_configs[key], dict):
-                sc_config[key] = new_configs[key]
+                sc_config[key] = value
             else:
                 for i_key, i_value in new_configs[key].iteritems():
-                    sc_config[key][i_key] = new_configs[key][i_key]
+                    sc_config[key][i_key] = i_value
                     
     sc.json = json.dumps(sc_config)
     if sc.validate() is True:
@@ -47,7 +46,7 @@ if args.dict is None:
     new_configs = {k:v for k,v in new_configs.iteritems()
                                         if v is not None}
     for key, conf in new_configs.iteritems():
-        if isinstance(conf, dict):        
+        if isinstance(conf, dict):
             new_configs[key] = {k:v for k,v in new_configs[key].iteritems()
                                     if v is not None}
             
