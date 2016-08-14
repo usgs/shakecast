@@ -1,30 +1,30 @@
-app.controller('groupController', function($scope, $http) {
-    $scope.group_data = []
+app.controller("groupController", function($scope, $http) {
+    $scope.groupData = []
     $scope.getGroups = function(lastID=0, filter={}) {
-        $http.get('/admin/get/groups', {params: {last_id: lastID, filter: filter}})
+        $http.get("/admin/get/groups", {params: {last_id: lastID, filter: filter}})
             .then(
                 function(response){
-                    if (lastID == 0) {
-                        cur_group_pos = 0
+                    if (lastID === 0) {
+                        curGroupPos = 0
                     } else {
-                        cur_group_pos = $scope.group_data.length
+                        curGroupPos = $scope.groupData.length
                     }
                     
-                    $scope.group_data = $scope.group_data.concat(response.data)
-                    $scope.lastID = $scope.group_data.slice(-1)[0].shakecast_id
+                    $scope.groupData = $scope.groupData.concat(response.data)
+                    $scope.lastID = $scope.groupData.slice(-1)[0].shakecast_id
                     
                     // make sure we don't try to select a group that
                     // isn't there
-                    if ($scope.group_data.length <= cur_group_pos) {
-                        $scope.cur_group = $scope.group_data.slice(-1)[0]
-                        cur_group_pos = $scope.group_data.length -1
+                    if ($scope.groupData.length <= curGroupPos) {
+                        $scope.curGroup = $scope.groupData.slice(-1)[0]
+                        curGroupPos = $scope.groupData.length -1
                     } else {
-                        $scope.cur_group = $scope.group_data[cur_group_pos] 
+                        $scope.curGroup = $scope.groupData[curGroupPos] 
                     }
-                    $scope.loadGroup(cur_group_pos)
+                    $scope.loadGroup(curGroupPos)
                 }, 
-                function(response){
-                    $scope.group_data = []
+                function(){
+                    $scope.groupData = []
                 }
             );
     }
@@ -57,8 +57,8 @@ app.controller('groupController', function($scope, $http) {
                         polygon: {
                             type: "polygon",
                             latlngs: [],
-                            fillColor: 'blue',
-                            color: 'blue'
+                            fillColor: "blue",
+                            color: "blue"
                         }
                     }
                 });
@@ -66,33 +66,33 @@ app.controller('groupController', function($scope, $http) {
     
     $scope.loadGroup = function(index=0, group=[]) {
         // apply new eq data to the map
-        if (group == false) {
-            $scope.cur_group = $scope.group_data[index]
+        if (group === false) {
+            $scope.curGroup = $scope.groupData[index]
         }
         
         $scope.center = {
-                        lat: ($scope.cur_group.lat_min + $scope.cur_group.lat_max) / 2,
-                        lng: ($scope.cur_group.lon_min + $scope.cur_group.lon_max) / 2,
+                        lat: ($scope.curGroup.lat_min + $scope.curGroup.lat_max) / 2,
+                        lng: ($scope.curGroup.lon_min + $scope.curGroup.lon_max) / 2,
                         zoom: 4
                     };
                     
         $scope.paths = {
                         polygon: {
-                            latlngs: [[$scope.cur_group.lat_min, $scope.cur_group.lon_min],
-                                      [$scope.cur_group.lat_max, $scope.cur_group.lon_min],
-                                      [$scope.cur_group.lat_max, $scope.cur_group.lon_max],
-                                      [$scope.cur_group.lat_min, $scope.cur_group.lon_max]],
+                            latlngs: [[$scope.curGroup.lat_min, $scope.curGroup.lon_min],
+                                      [$scope.curGroup.lat_max, $scope.curGroup.lon_min],
+                                      [$scope.curGroup.lat_max, $scope.curGroup.lon_max],
+                                      [$scope.curGroup.lat_min, $scope.curGroup.lon_max]],
                             type: "polygon",
-                            fillColor: 'red',
-                            color: 'red',
+                            fillColor: "red",
+                            color: "red",
                             focus: true
                         }
                     };
                     
-        $http.get('/admin/get/groups/' + $scope.cur_group.shakecast_id + '/specs')
+        $http.get("/admin/get/groups/" + $scope.curGroup.shakecast_id + "/specs")
                 .then(
                     function(response){
-                        $scope.cur_group.specs = response.data
+                        $scope.curGroup.specs = response.data
                     }
         );
     }

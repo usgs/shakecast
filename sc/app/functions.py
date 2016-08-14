@@ -1,7 +1,6 @@
 import re
 import sys
 import time
-import math
 import itertools
 import xml.etree.ElementTree as ET
 from email.mime.text import MIMEText
@@ -10,7 +9,6 @@ from email.MIMEMultipart import MIMEMultipart
 from orm import *
 from objects import *
 from util import *
-import sys
 
 modules_dir = os.path.join(sc_dir() + 'modules')
 if modules_dir not in sys.path:
@@ -20,9 +18,7 @@ from werkzeug.security import generate_password_hash
 
 def geo_json(query_period='day'):
     '''Get earthquake feed from USGS and check for new earthquakes
-    
     Gets new earthquakes from the JSON feed and logs them in the DB
-    
     Returns:
         dict: a dictionary that contains information about the function run
         ::
@@ -40,8 +36,6 @@ def geo_json(query_period='day'):
         pg = ProductGrabber()
         pg.query_period = query_period
         pg.get_json_feed()
-        new_event_log = ''
-        new_shakemaps_log = ''
         new_events, log_message = pg.get_new_events()
         new_shakemaps, log_message = pg.get_new_shakemaps()
         pg.make_heartbeat()
@@ -102,7 +96,6 @@ def check_new():
             log_message += '\nNo new shakemaps'
      
     except Exception as e:
-        raise
         error = str(e)
         log_message += 'failed to process new shakemaps: {}'.format(e)
         
@@ -160,7 +153,7 @@ def process_events(events=[], session=None, scenario=False):
                                     if group.has_spec(not_type='heartbeat')]
             all_groups_affected.update(groups_affected)
         
-        event.status = 'processing_started'    
+        event.status = 'processing_started'
         if not groups_affected:
             event.status = 'no groups'
             session.commit()
@@ -182,7 +175,7 @@ def process_events(events=[], session=None, scenario=False):
                                             status='created')
                 session.add(notification)
     
-    if all_groups_affected:    
+    if all_groups_affected:
         for group in all_groups_affected:
             # get new notifications
             nots = (session.query(Notification)
@@ -194,7 +187,7 @@ def process_events(events=[], session=None, scenario=False):
             processed_events = [n.event for n in nots]
             for e in processed_events:
                 e.status = 'processed'
-            session.commit() 
+            session.commit()
     
 def process_shakemaps(shakemaps=[], session=None, scenario=False):
     '''
@@ -360,7 +353,7 @@ def process_shakemaps(shakemaps=[], session=None, scenario=False):
                 engine.execute(rel_stmt, relationships)
             session.commit()
                 
-            shakemap.status = 'processed'    
+            shakemap.status = 'processed'
         else:
             shakemap.status = 'no facs'
         
@@ -951,7 +944,7 @@ def import_group_xml(xml_file=''):
                         
                     g.specs += [spec]
                 
-                if damage_level:    
+                if damage_level:
                     spec.inspection_priority = damage_level
                          
                 spec.minimum_magnitude = minimum_magnitude
@@ -999,11 +992,6 @@ def import_user_xml(xml_file=''):
         user_type = 'USER'
         full_name = None
         phone_number = ''
-        email = ''
-        email_text = ''
-        email_html = ''
-        email_pager = ''
-        group_lst = []
         group_string = ''
         
         for child in user:
@@ -1053,7 +1041,7 @@ def import_user_xml(xml_file=''):
         #                    .first())
         #                        for group_name in group_lst]
         
-        u.group_string = group_string   
+        u.group_string = group_string
         u.username = username
         u.password = generate_password_hash(password, method='pbkdf2:sha512')
         u.email = email
@@ -1132,117 +1120,6 @@ def add_users_to_groups(session=None):
                                         .all())
                     if group:
                         user.groups.append(group[0])
-
-
-#######################################################################
-########################## Manual Testing #############################
-
-def create_fac(grid=None, fac_id='AUTO_GENERATED'):
-    '''
-    **ONLY TO BE USED WHEN TESTING**
-    **THIS FUNCTION MAY NOT BE UPDATED**
-    
-    Create a facility that is inside of a grid with generic fragility
-    '''
-    
-    facility = Facility()
-    if grid:
-        facility.lat_min = grid.lat_min + 1
-        facility.lat_max = facility.lat_min + .1
-        facility.lon_min = grid.lon_min + 1
-        facility.lon_max = facility.lon_min + .1
-    
-    facility.facility_id = fac_id
-    facility.facility_type = 'Bridge'
-    facility.name = 'No Name'
-    facility.metric = 'MMI'
-    facility.grey = 0
-    facility.green = 3
-    facility.yellow = 5
-    facility.orange = 6
-    facility.red = 7
-    facility.grey_beta = .64
-    facility.green_beta = .64
-    facility.yellow_beta = .64
-    facility.orange_beta = .64
-    facility.red_beta = .64
-    
-    return facility
-
-def create_user():
-    """
-    **ONLY TO BE USED WHEN TESTING**
-    **THIS FUNCTION MAY NOT BE UPDATED**
-    """
-    get_user = session.query(User).filter(User.username=='USER_AUTO').all()
-    
-    if get_user:
-        user = get_user[0]
-    else:
-        user = User()
-        
-    user.username = 'USER_AUTO'
-    user.email = 'dslosky@usgs.gov'
-    
-    session.add(user)
-    session.commit()
-    
-    return user
-
-def create_group():
-    """
-    **ONLY TO BE USED WHEN TESTING**
-    **THIS FUNCTION MAY NOT BE UPDATED**
-    """
-    get_group = session.query(Group).filter(Group.name=='GLOBAL_AUTO').all()
-    
-    if get_group:
-        group = get_group[0]
-    else:
-        group = Group()
-    
-    group.name = 'GLOBAL_AUTO'
-    group.lon_min = -179
-    group.lon_max = 179
-    group.lat_min = -179
-    group.lat_max = 179
-    
-    facs = session.query(Facility).filter(Facility.in_grid(group)).all()
-    group.facilities = facs
-    
-    # group specifications
-    specs = ['New_Event', 'Update', 'Inspection']
-    levels = ['green', 'yellow', 'orange', 'red']
-    for spec in specs:
-        if spec != 'Inspection':
-            gs = Group_Specification()
-            gs.group = group
-            gs.notification_type = spec
-        
-        else:
-            for level in levels:
-                gs = Group_Specification()
-                gs.group = group
-                gs.notification_type = spec
-                gs.inspection_priority = level
-    
-    session.merge(group)
-    session.commit()
-    
-    return group
-
-def check_nots():
-    """
-    **ONLY TO BE USED WHEN TESTING**
-    **THIS FUNCTION MAY NOT BE UPDATED**
-    """
-    while True:
-        nots = session.query(Notification).filter(Notification.notification_type == 'Inspection').all()
-        for n in nots:
-            print 'ID: %s \nSHAKING: %s' % (n.shakecast_id, n.facility_shaking)
-            time.sleep(1)
-            os.system('cls' if os.name == 'nt' else 'clear')
-        session.commit()
 
 #######################################################################
 ########################## TEST FUNCTIONS #############################

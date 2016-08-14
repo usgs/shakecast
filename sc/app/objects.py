@@ -936,7 +936,7 @@ class SC(object):
         # copy sc_config file
         copyfile(os.path.join(conf_dir, 'sc_back.json'),
                  os.path.join(conf_dir, 'sc.json'))
-        load()
+        self.load()
 
 class NotificationBuilder(object):
     """
