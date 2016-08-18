@@ -10,7 +10,11 @@
                     <tr>
                         <td>
                             <div style="width: 80px">
-                                <img style="border-radius:50%" src="cid:sc_logo">
+                                {% if web is sameas false %}
+                                    <img style="border-radius:50%" src="cid:sc_logo">
+                                {% else %}
+                                    <img src="{{ url_for('static', filename='sc_logo.png') }}" class="rounded_sc">
+                                {% endif %}
                             </div>
                         </td>
                         <td>

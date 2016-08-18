@@ -17,7 +17,7 @@ import datetime
 from ast import literal_eval
 from app.orm import *
 from app.server import Server
-from app.objects import Clock, SC
+from app.objects import Clock, SC, NotificationBuilder
 from app.functions import determine_xml
 from ui import UI
 
@@ -326,6 +326,9 @@ def upload():
 @admin_only
 @login_required
 def notification():
+    not_builder = NotificationBuilder()
+    html = not_builder.build_new_event_html(events=events, web=True)
+    
     if request.method == 'GET' and len(request.args) == 0:
         return render_template('admin/notification.html')
     elif request.method == 'GET':

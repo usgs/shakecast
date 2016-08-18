@@ -110,8 +110,6 @@ class ProductGrabber(object):
             
             event.directory_name = os.path.join(self.data_dir,
                                                 eq_id)
-            if not os.path.exists(event.directory_name):
-                os.makedirs(event.directory_name)
             
             # use id and all ids to determine if the event is new and
             # query the old event if necessary
@@ -139,6 +137,7 @@ class ProductGrabber(object):
                 event.status = 'new'
                         
             # Fill the rest of the event info
+            self.get_event_map(event)
             event.event_id = eq_id
             event.title = self.earthquakes[eq_id]['properties']['title']
             event.place = self.earthquakes[eq_id]['properties']['place']
@@ -162,6 +161,25 @@ class ProductGrabber(object):
         Session.remove()
         print event_str
         return new_events, event_str
+    
+    def get_event_map(self, event):
+        if not os.path.exists(event.directory_name):
+                os.makedirs(event.directory_name)
+        sc=SC()
+        # download the google maps image
+        url_opener = URLOpener()
+        gmap = url_opener.open("https://maps.googleapis.com/maps/api/staticmap?center=%s,%s&zoom=5&size=200x200&sensor=false&maptype=terrain&markers=icon:http://earthquake.usgs.gov/research/software/shakecast/icons/epicenter.png|%s,%s&key=%s" % (event.lat,
+                                           event.lon,
+                                           event.lat,
+                                           event.lon,
+                                           sc.gmap_key))
+        
+        # and save it
+        image_loc = os.path.join(event.directory_name,
+                                 'image.png')
+        image = open(image_loc, 'w')
+        image.write(gmap)
+        image.close()
             
     def get_new_shakemaps(self):
         """
@@ -304,6 +322,8 @@ class ProductGrabber(object):
             e.title = 'ShakeCast Heartbeat'
             e.place = 'ShakeCast is running'
             e.status = 'new'
+            e.directory_name = os.path.join(self.data_dir,
+                                               e.event_id)
             session.add(e)
             session.commit()
             
@@ -945,7 +965,7 @@ class NotificationBuilder(object):
     def __init__(self):
         pass
     
-    def build_new_event_html(self, events=[], group=None):
+    def build_new_event_html(self, events=[], group=None, web=False):
         conf_file = os.path.join(sc_dir(),
                                  'templates',
                                  'new_event',
@@ -959,13 +979,18 @@ class NotificationBuilder(object):
                                  'templates',
                                  'new_event',
                                  'default.html')
+        
         temp_str = open(temp_file, 'r')
         template = Template(temp_str.read())
         temp_str.close()
         
-        return template.render(events=events, group=group, sc=SC(), config=config)
+        return template.render(events=events,
+                               group=group,
+                               sc=SC(),
+                               config=config,
+                               web=web)
     
-    def build_insp_html(self, shakemap):
+    def build_insp_html(self, shakemap, web=False):
         conf_file = os.path.join(sc_dir(),
                                  'templates',
                                  'inspection',
@@ -995,7 +1020,8 @@ class NotificationBuilder(object):
                                facility_shaking=facility_shaking,
                                fac_details=fac_details,
                                sc=SC(),
-                               config=config)
+                               config=config,
+                               web=web)
     
     
 class URLOpener(object):

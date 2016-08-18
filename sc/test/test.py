@@ -3,7 +3,6 @@ import os
 import sys
 from email.mime.text import MIMEText
 import time
-import pdb
 path = os.path.dirname(os.path.abspath(__file__)).split(os.sep)
 del path[-1]
 path = os.path.normpath(os.sep.join(path))
