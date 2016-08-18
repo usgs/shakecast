@@ -137,7 +137,6 @@ class ProductGrabber(object):
                 event.status = 'new'
                         
             # Fill the rest of the event info
-            self.get_event_map(event)
             event.event_id = eq_id
             event.title = self.earthquakes[eq_id]['properties']['title']
             event.place = self.earthquakes[eq_id]['properties']['place']
@@ -153,6 +152,8 @@ class ProductGrabber(object):
             session.add(event)
             session.commit()
             
+            self.get_event_map(event)
+            
             # add the event to the return list and add info to the
             # return string
             new_events += [event]
@@ -162,7 +163,8 @@ class ProductGrabber(object):
         print event_str
         return new_events, event_str
     
-    def get_event_map(self, event):
+    @classmethod
+    def get_event_map(cls, event):
         if not os.path.exists(event.directory_name):
                 os.makedirs(event.directory_name)
         sc=SC()
@@ -326,6 +328,8 @@ class ProductGrabber(object):
                                                e.event_id)
             session.add(e)
             session.commit()
+            
+            self.get_event_map(e)
             
         Session.remove()
         
@@ -965,7 +969,8 @@ class NotificationBuilder(object):
     def __init__(self):
         pass
     
-    def build_new_event_html(self, events=[], group=None, web=False):
+    @classmethod
+    def build_new_event_html(cls, events=[], group=None, web=False):
         conf_file = os.path.join(sc_dir(),
                                  'templates',
                                  'new_event',
