@@ -450,7 +450,7 @@ def new_event_notification(notifications = [],
     # get and attach map
     for count,event in enumerate(events):
         map_image = open(os.path.join(event.directory_name,
-                                      'image.png'), 'r')
+                                      'image.png'), 'rb')
         msg_gmap = MIMEImage(map_image.read())
         map_image.close()
         
