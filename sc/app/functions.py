@@ -96,7 +96,7 @@ def check_new():
             log_message += '\nNo new shakemaps'
      
     except Exception as e:
-        error = str(e)
+        error = '{}: {}'.format(type(e), str(e))
         log_message += 'failed to process new shakemaps: {}'.format(e)
         
     
@@ -182,8 +182,9 @@ def process_events(events=[], session=None, scenario=False):
                         .filter(Notification.notification_type == 'NEW_EVENT')
                         .filter(Notification.status == 'created')
                         .all())
-                
-            new_event_notification(notifications=nots)
+            
+            filter_nots = filter(lambda x: x.event is not None, nots)
+            new_event_notification(notifications=filter_nots)
             processed_events = [n.event for n in nots]
             for e in processed_events:
                 e.status = 'processed'
@@ -448,12 +449,11 @@ def new_event_notification(notifications = [],
 
     # get and attach map
     for count,event in enumerate(events):
-        gmap = url_opener.open("https://maps.googleapis.com/maps/api/staticmap?center=%s,%s&zoom=5&size=200x200&sensor=false&maptype=terrain&markers=icon:http://earthquake.usgs.gov/research/software/shakecast/icons/epicenter.png|%s,%s&key=%s" % (event.lat,
-                                               event.lon,
-                                               event.lat,
-                                               event.lon,
-                                               sc.gmap_key))
-        msg_gmap = MIMEImage(gmap)
+        map_image = open(os.path.join(event.directory_name,
+                                      'image.png'), 'rb')
+        msg_gmap = MIMEImage(map_image.read(), _subtype='png')
+        map_image.close()
+        
         msg_gmap.add_header('Content-ID', '<gmap{0}>'.format(count))
         msg_gmap.add_header('Content-Disposition', 'inline')
         msg.attach(msg_gmap)
@@ -463,7 +463,7 @@ def new_event_notification(notifications = [],
     
     # open logo and attach it to the message
     logo_file = open(logo_str, 'rb')
-    msg_image = MIMEImage(logo_file.read())
+    msg_image = MIMEImage(logo_file.read(), _subtype='png')
     logo_file.close()
     msg_image.add_header('Content-ID', '<sc_logo>')
     msg_image.add_header('Content-Disposition', 'inline')
@@ -530,7 +530,7 @@ def inspection_notification(notification=Notification(),
                                                         get_delim(),
                                                         'intensity.jpg')
             shakemap_image = open(shakemap_file, 'r')
-            msg_shakemap = MIMEImage(shakemap_image.read())
+            msg_shakemap = MIMEImage(shakemap_image.read(), _subtype='jpeg')
             shakemap_image.close()
             msg_shakemap.add_header('Content-ID', '<shakemap>')
             msg_shakemap.add_header('Content-Disposition', 'inline')
