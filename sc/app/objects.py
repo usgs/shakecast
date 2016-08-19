@@ -11,13 +11,12 @@ import time
 import xml.etree.ElementTree as ET
 import smtplib
 import datetime
-import time
 from util import *
 from orm import *
 modules_dir = os.path.join(sc_dir(), 'modules')
 if modules_dir not in sys.path:
     sys.path += [modules_dir]
-    
+
 from jinja2 import Template
 from shutil import copyfile
 import socks
@@ -163,8 +162,8 @@ class ProductGrabber(object):
         print event_str
         return new_events, event_str
     
-    @classmethod
-    def get_event_map(cls, event):
+    @staticmethod
+    def get_event_map(event):
         if not os.path.exists(event.directory_name):
                 os.makedirs(event.directory_name)
         sc=SC()
@@ -188,7 +187,6 @@ class ProductGrabber(object):
         Checks the json feed for new earthquakes
         """
         session = Session()
-        sc = SC()
         url_opener = URLOpener()
         
         shakemap_str = ''
@@ -203,7 +201,7 @@ class ProductGrabber(object):
                 self.log += 'Bad EQ URL: {0}'.format(eq_id)
             try:
                 eq_info = json.loads(eq_str)
-            except e:
+            except Exception as e:
                 eq_info = e.partial
             
             # check if the event has a shakemap
@@ -381,7 +379,9 @@ class ProductGrabber(object):
                     url_opener = URLOpener()
                     product.str_ = url_opener.open(product.url)
                 except httplib.IncompleteRead as e:
-                    self.log += 'Unable to get product for scenario: {0}'.format(product_name)
+                    self.log += 'Unable to get product for scenario: {0}, ({1}: {2})'.format(product_name,
+                                                                                             type(e),
+                                                                                             e)
                     
                 product.file_ = open('{0}{1}{2}'.format(shakemap.directory_name,
                                                         self.delim,
@@ -428,13 +428,9 @@ class ProductGrabber(object):
         event.status = 'scenario'
         
         session.commit()
-        
-        if len(shakemap.products) == len(self.req_products):
-            scenario_ready = True
-        else:
-            scenario_ready = False
-        
         Session.remove()
+        
+        scenario_ready = bool(len(shakemap.products) == len(self.req_products))
         return scenario_ready
 
     
@@ -641,8 +637,8 @@ class ShakeMapGrid(object):
             
         if not self.grid:
             return None
-        
-        # check if the facility lies in the grid    
+
+        # check if the facility lies in the grid
         if not facility.in_grid(self):
             return {facility.metric: 0}
         
@@ -767,7 +763,7 @@ class SC(object):
     Holds application custimization settings
     
     Attributes:
-        timezone (int): How many hours to offset from UTC 
+        timezone (int): How many hours to offset from UTC
         new_eq_mag_cutoff (float): Lowest magnitude earthquake app stores
         check_new_int (int): how often to check db for new eqs
         use_geo_json (bool): False if using PDL
@@ -932,7 +928,8 @@ class SC(object):
         conf_file.write(self.json)
         conf_file.close()
     
-    def get_conf_dir(self):
+    @staticmethod
+    def get_conf_dir():
         """
         Determine where the conf directory is
         
@@ -969,8 +966,8 @@ class NotificationBuilder(object):
     def __init__(self):
         pass
     
-    @classmethod
-    def build_new_event_html(cls, events=[], group=None, web=False):
+    @staticmethod
+    def build_new_event_html(events=[], group=None, web=False):
         conf_file = os.path.join(sc_dir(),
                                  'templates',
                                  'new_event',
@@ -995,7 +992,8 @@ class NotificationBuilder(object):
                                config=config,
                                web=web)
     
-    def build_insp_html(self, shakemap, web=False):
+    @staticmethod
+    def build_insp_html(shakemap, web=False):
         conf_file = os.path.join(sc_dir(),
                                  'templates',
                                  'inspection',
@@ -1035,7 +1033,8 @@ class URLOpener(object):
     opener that can run through a proxy
     """
     
-    def open(self, url):
+    @staticmethod
+    def open(url):
         """
         Args:
             url (str): a string url that will be opened and read by urllib2
@@ -1109,12 +1108,9 @@ class Clock(object):
         # get app time
         self.get_time()
         # compare to night time setting
-        hour = int(self.app_time.strftime('%H'))
-        if ((hour >= sc.nighttime)
-            or hour < sc.morning):
-            return True
-        else:
-            return False
+        hour = int(self.app_time.strftime('%H'))        
+        return bool(((hour >= sc.nighttime)
+                        or hour < sc.morning))
         
     def get_time(self):
         sc = SC()
