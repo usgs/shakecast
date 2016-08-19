@@ -451,7 +451,7 @@ def new_event_notification(notifications = [],
     for count,event in enumerate(events):
         map_image = open(os.path.join(event.directory_name,
                                       'image.png'), 'rb')
-        msg_gmap = MIMEImage(map_image.read())
+        msg_gmap = MIMEImage(map_image.read(), _subtype='png')
         map_image.close()
         
         msg_gmap.add_header('Content-ID', '<gmap{0}>'.format(count))
@@ -463,7 +463,7 @@ def new_event_notification(notifications = [],
     
     # open logo and attach it to the message
     logo_file = open(logo_str, 'rb')
-    msg_image = MIMEImage(logo_file.read())
+    msg_image = MIMEImage(logo_file.read(), _subtype='png')
     logo_file.close()
     msg_image.add_header('Content-ID', '<sc_logo>')
     msg_image.add_header('Content-Disposition', 'inline')
@@ -530,7 +530,7 @@ def inspection_notification(notification=Notification(),
                                                         get_delim(),
                                                         'intensity.jpg')
             shakemap_image = open(shakemap_file, 'r')
-            msg_shakemap = MIMEImage(shakemap_image.read())
+            msg_shakemap = MIMEImage(shakemap_image.read(), _subtype='jpeg')
             shakemap_image.close()
             msg_shakemap.add_header('Content-ID', '<shakemap>')
             msg_shakemap.add_header('Content-Disposition', 'inline')
