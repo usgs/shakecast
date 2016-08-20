@@ -1,8 +1,10 @@
+{% if web is sameas false %}
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
 </head>
-<body style="background-color:{{ config.body_color }};width:700px">
+{% endif %}
+<{{ 'body' if web is sameas false else 'div' }} style="background-color:{{ config.body_color }};width:700px;margin-top:5px">
     <table style="table-layout:fixed;width:100%">
         <tr>
             <td>
@@ -13,7 +15,7 @@
                                 {% if web is sameas false %}
                                     <img style="border-radius:50%" src="cid:sc_logo">
                                 {% else %}
-                                    <img src="{{ url_for('static', filename='sc_logo.png') }}" class="rounded_sc">
+                                    <img style="border-radius:50%" src="/static/sc_logo.png">
                                 {% endif %}
                             </div>
                         </td>
@@ -70,7 +72,11 @@
                         {% for event in events %}
                         <tr>
                             <td style="border: 2px solid #444444">
-                                <img src="cid:gmap{{ loop.index0 }}">
+                                {% if web is sameas false %}
+                                    <img src="cid:gmap{{ loop.index0 }}">
+                                {% else %}
+                                    <img src="/get/events/{{ event.event_id }}/image">
+                                {% endif %}
                             </td>
                             <td style="border: 2px solid #444444;padding: 5px;">{{ event.event_id }}</td>
                             <td style="border: 2px solid #444444;padding: 5px;">{{ event.timestamp() }}</td>
@@ -117,5 +123,7 @@
 
     </table>
 
-</body>
+</{{ 'body' if web is sameas false else 'div' }}>
+{% if web is sameas false %}
 </html>
+{% endif %}

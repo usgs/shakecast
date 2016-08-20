@@ -710,6 +710,7 @@ class Event(Base):
             return True
         
     def timestamp(self):
+        from objects import Clock
         clock = Clock()
         return (clock.from_time(self.time)
                     .strftime('%Y-%m-%d %H:%M:%S'))
