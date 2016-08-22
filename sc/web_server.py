@@ -227,15 +227,33 @@ def shakemap_overlay(shakemap_id):
     Session.remove()
     return send_file(img, mimetype='image/gif')
 
+@app.route('/get/events/<event_id>/image')
+@login_required
+def event_image(event_id):
+    session = Session()
+    event = (session.query(Event)
+                    .filter(Event.event_id == event_id)
+                    .limit(1)).first()
+    if event is not None:
+        img = os.path.join(app.config['EARTHQUAKES'],
+                           event_id,
+                           'image.png')
+        
+    else:
+        img = app.send_static_file('sc_logo.png')
+        
+    Session.remove()
+    return send_file(img, mimetype='image/gif')
+
 ############################ Admin Pages ##############################
 
 # wrapper for admin only URLs
 def admin_only(func):
     @wraps(func)
-    def func_wrapper():
+    def func_wrapper(*args, **kwargs):
         if current_user and current_user.is_authenticated:
             if current_user.user_type.lower() == 'admin':
-                return func()
+                return func(*args, **kwargs)
             else:
                 flash('Only administrators can access this page')
                 return redirect(url_for('index'))
@@ -319,33 +337,26 @@ def upload():
         import_data = {'error': 'root'}
         
     return 'file uploaded'
-        
-    
 
 @app.route('/admin/notification', methods=['GET','POST'])
 @admin_only
 @login_required
 def notification():
+    return render_template('admin/notification.html')
+
+@app.route('/admin/get/notification/<group_id>/<notification_type>', methods=['GET','POST'])
+@admin_only
+@login_required
+def notification_html(group_id, notification_type):
+    session = Session()
+    events = session.query(Event).all()
+    events = events[-2:]
+    
     not_builder = NotificationBuilder()
     html = not_builder.build_new_event_html(events=events, web=True)
-    
-    if request.method == 'GET' and len(request.args) == 0:
-        return render_template('admin/notification.html')
-    elif request.method == 'GET':
-        return "<h1>notification {0}</h1>".format(len(request.args))
-    
-@app.route('/new_event', methods=['GET','POST'])
-@admin_only
-@login_required
-def new_event():
-    return render_template('admin/new_event.html')
+    Session.remove()
 
-@app.route('/inspection', methods=['GET','POST'])
-@admin_only
-@login_required
-def inspection():
-    return '<h1>inspection</h1>'
-    
+    return html
 
 @app.route('/admin/earthquakes')
 @admin_only
@@ -353,9 +364,9 @@ def inspection():
 def admin_eqs():
     return render_template('admin/earthquakes.html')
 
+@app.route('/admin/get/groups')
 @admin_only
 @login_required
-@app.route('/admin/get/groups')
 def get_groups():
     session = Session()
     groups = (session.query(Group)
@@ -374,9 +385,9 @@ def get_groups():
     Session.remove()    
     return group_json
 
+@app.route('/admin/get/groups/<group_id>/specs')
 @admin_only
 @login_required
-@app.route('/admin/get/groups/<group_id>/specs')
 def get_group_specs(group_id):
     session = Session()
     group = (session.query(Group)
@@ -409,9 +420,9 @@ def get_group_specs(group_id):
     Session.remove()    
     return specs_json
 
+@app.route('/admin/get/users')
 @admin_only
 @login_required
-@app.route('/admin/get/users')
 def get_users():
     session = Session()
     filter_ = literal_eval(request.args.get('filter', 'None'))
@@ -442,9 +453,9 @@ def get_users():
     Session.remove()    
     return user_json
 
+@app.route('/admin/get/users/<user_id>/groups')
 @admin_only
 @login_required
-@app.route('/admin/get/users/<user_id>/groups')
 def get_user_groups(user_id):
     session = Session()
     user = session.query(User).filter(User.shakecast_id == user_id).first()
@@ -461,9 +472,9 @@ def get_user_groups(user_id):
     Session.remove()    
     return groups_json
 
+@app.route('/admin/get/inventory')
 @admin_only
 @login_required
-@app.route('/admin/get/inventory')
 def get_inventory():
     session = Session()
     filter_ = json.loads(request.args.get('filter', '{}'))
@@ -502,9 +513,9 @@ def get_inventory():
     Session.remove()    
     return facilities_json
 
+@app.route('/admin/get/settings')
 @admin_only
 @login_required
-@app.route('/admin/get/settings')
 def get_settings():
     sc = SC()
     return sc.json

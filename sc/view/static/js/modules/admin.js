@@ -44,4 +44,6 @@ app.config(function($routeProvider){
         animation: 'main'
     })
 });
+
+app.filter('unsafe', function($sce) { return $sce.trustAsHtml; });
       
