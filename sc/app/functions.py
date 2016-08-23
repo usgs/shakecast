@@ -526,12 +526,7 @@ def inspection_notification(notification=Notification(),
             msg.attach(msg_html)
             
             # get and attach shakemap
-            shakemap_file = '{0}{1}{2}'.format(shakemap.directory_name,
-                                                        get_delim(),
-                                                        'intensity.jpg')
-            shakemap_image = open(shakemap_file, 'r')
-            msg_shakemap = MIMEImage(shakemap_image.read(), _subtype='jpeg')
-            shakemap_image.close()
+            msg_shakemap = MIMEImage(shakemap.get_map(), _subtype='jpeg')
             msg_shakemap.add_header('Content-ID', '<shakemap>')
             msg_shakemap.add_header('Content-Disposition', 'inline')
             msg.attach(msg_shakemap)

@@ -821,6 +821,12 @@ class ShakeMap(Base):
                 return False
         return True
     
+    def get_map(self):
+        shakemap_file = os.path.join(self.directory_name, 'intensity.jpg')
+        shakemap_image = open(shakemap_file, 'rb')
+        map_image = shakemap_image.read()
+        shakemap_image.close()
+        return map_image
     
 class Product(Base):
     __tablename__ = 'product'
