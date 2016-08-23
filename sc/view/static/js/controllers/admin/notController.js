@@ -13,6 +13,8 @@ app.controller("notController", function($scope, $http, groupService, notificati
         .success(function(groups) {
             $scope.groups = groups
             $scope.group = groups[0]
+            
+            $scope.getNotification()
         })
 
     // get notification 
@@ -22,7 +24,5 @@ app.controller("notController", function($scope, $http, groupService, notificati
                 $scope.templateHTML = templateHTML
             })
     }
-
-    $scope.getNotification()
 
 })
