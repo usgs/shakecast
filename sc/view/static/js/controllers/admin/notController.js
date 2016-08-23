@@ -1,29 +1,30 @@
-app.controller("notController", function($scope, $http) {
+app.controller("notController", function($scope, $http, groupService) {
     $scope.templateHTML = ""
-    $scope.notification = "new_event"
+    $scope.notTypes = [{name: "New Event", 
+                        value: "new_event"}, 
+                       {name: "Inspection",
+                        value: "inspection"}]
+    $scope.notType = $scope.notTypes[0]
     $scope.groups = []
-    $scope.curGroup = {}
-    // get groups
-    $http.get("/admin/get/groups", {params: {last_id: 0, all: true}})
-        .then(
-            function(response){
-                $scope.groups = response.data
-                $scope.curGroup = response.data[0]
+    $scope.group = {}
 
-                $scope.getNotification()
-            }, 
-            function(){
-                $scope.groups = []
-            }
-        );
+    // get groups
+    groupService.getAllGroups()
+        .success(function(groups) {
+            $scope.groups = groups
+            $scope.group = groups[0]
+        })
 
     // get notification 
     $scope.getNotification = function() {
-        $http.get("/admin/get/notification/" + $scope.curGroup.shakecast_id + "/" + $scope.notification)
+        $http.get("/admin/get/notification/" + $scope.group.shakecast_id + "/" + $scope.notType.value)
             .then(
                 function(response){
                     $scope.templateHTML = response.data
                 }
             )
-    };
-});
+    }
+
+    $scope.getNotification()
+
+})
