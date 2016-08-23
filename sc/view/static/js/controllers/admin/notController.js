@@ -1,4 +1,4 @@
-app.controller('notController', function($scope, $http) {
+app.controller("notController", function($scope, $http) {
     $scope.templateHTML = ""
     $scope.notification = "new_event"
     $scope.groups = []
