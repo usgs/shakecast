@@ -1,4 +1,4 @@
-app.controller("notController", function($scope, $http, groupService) {
+app.controller("notController", function($scope, $http, groupService, notificationService) {
     $scope.templateHTML = ""
     $scope.notTypes = [{name: "New Event", 
                         value: "new_event"}, 
@@ -17,12 +17,10 @@ app.controller("notController", function($scope, $http, groupService) {
 
     // get notification 
     $scope.getNotification = function() {
-        $http.get("/admin/get/notification/" + $scope.group.shakecast_id + "/" + $scope.notType.value)
-            .then(
-                function(response){
-                    $scope.templateHTML = response.data
-                }
-            )
+        notificationService.getNotification($scope.group.shakecast_id, $scope.notType.value)
+            .success(function(templateHTML) {
+                $scope.templateHTML = templateHTML
+            })
     }
 
     $scope.getNotification()
