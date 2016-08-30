@@ -178,7 +178,7 @@ class ProductGrabber(object):
         # and save it
         image_loc = os.path.join(event.directory_name,
                                  'image.png')
-        image = open(image_loc, 'w')
+        image = open(image_loc, 'wb')
         image.write(gmap)
         image.close()
             
@@ -273,10 +273,14 @@ class ProductGrabber(object):
                     except httplib.IncompleteRead as e:
                         product.web = e.partial
                         eq['status'] = 'incomplete'
-                        
+                    
+                    if product_name.lower().endswith(('.png', '.jpg', '.jpeg')):
+                        mode = 'wb'
+                    else:
+                        mode = 'wt'
                     product.file_ = open('%s%s%s' % (shakemap.directory_name,
                                                       self.delim,
-                                                      product_name), 'wt')
+                                                      product_name), mode)
                     product.file_.write(product.str_)
                     product.file_.close()
                 except:

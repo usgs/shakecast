@@ -9,7 +9,6 @@ from email.MIMEMultipart import MIMEMultipart
 from orm import *
 from objects import *
 from util import *
-import io
 
 modules_dir = os.path.join(sc_dir() + 'modules')
 if modules_dir not in sys.path:
@@ -528,7 +527,7 @@ def inspection_notification(notification=Notification(),
             
             # get and attach shakemap
             with open(shakemap.map_file(), 'rb') as map:
-                msg_shakemap = MIMEImage(io.BytesIO(map.read()), _subtype='jpeg')
+                msg_shakemap = MIMEImage(map.read(), _subtype='jpeg')
             msg_shakemap.add_header('Content-ID', '<shakemap>')
             msg_shakemap.add_header('Content-Disposition', 'inline')
             msg.attach(msg_shakemap)
