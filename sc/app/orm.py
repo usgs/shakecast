@@ -821,6 +821,9 @@ class ShakeMap(Base):
                 return False
         return True
     
+    def map_file(self):
+        shakemap_file = os.path.join(self.directory_name, 'intensity.jpg')
+        return shakemap_file
     
 class Product(Base):
     __tablename__ = 'product'

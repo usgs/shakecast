@@ -9,15 +9,13 @@
         <div class="options" top-lock="fix-to-top" padding-top="25">
             <div class="option-container">
                 <label for="group-name">Group Name: </label>
-                <select name="group-name" ng-model="group" ng-options="t.name for t in templates">
-                    <option value="">None</option>
+                <select name="group-name" ng-model="group" ng-options="g.name for g in groups" ng-change="getNotification()">
                 </select>
             </div>
             
             <div class="option-container">
-                <label for="notification_type">Notification Type: </label>
-                <select name="group-name" ng-model="template" ng-options="t.name for t in templates">
-                    <option value="">None</option>
+                <label for="not-type">Notification Type: </label>
+                <select name="not-type" ng-model="notType" ng-options="nt.name for nt in notTypes" ng-change="getNotification()">
                 </select>
             </div>
             

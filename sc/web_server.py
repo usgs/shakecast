@@ -2,6 +2,7 @@ from app.objects import AlchemyEncoder
 from app.util import *
 import os
 import sys
+import io
 import json
 modules_dir = os.path.join(sc_dir(), 'modules')
 if modules_dir not in sys.path:
@@ -227,6 +228,20 @@ def shakemap_overlay(shakemap_id):
     Session.remove()
     return send_file(img, mimetype='image/gif')
 
+@app.route('/get/shakemaps/<shakemap_id>/shakemap')
+@login_required
+def shakemap_map(shakemap_id):
+    session = Session()
+    shakemap = (session.query(ShakeMap)
+                    .filter(ShakeMap.shakemap_id == shakemap_id)
+                    .order_by(desc(ShakeMap.shakemap_version))
+                    .limit(1)).first()
+    if shakemap is not None:
+        with open(shakemap.map_file(), 'rb') as map:
+            img = map.read()
+
+    return send_file(io.BytesIO(img), mimetype='image/png')
+
 @app.route('/get/events/<event_id>/image')
 @login_required
 def event_image(event_id):
@@ -349,13 +364,19 @@ def notification():
 @login_required
 def notification_html(group_id, notification_type):
     session = Session()
-    events = session.query(Event).all()
-    events = events[-2:]
-    
     not_builder = NotificationBuilder()
-    html = not_builder.build_new_event_html(events=events, web=True)
-    Session.remove()
 
+    if notification_type == 'new_event':
+        # get the two most recent events
+        events = session.query(Event).all()
+        events = events[-2:]
+        html = not_builder.build_new_event_html(events=events, web=True)
+    else:
+        # get the most recent shakemap
+        sms = session.query(ShakeMap).all()
+        sm = sms[-1]
+        html = not_builder.build_insp_html(sm, web=True)
+    Session.remove()
     return html
 
 @app.route('/admin/earthquakes')
