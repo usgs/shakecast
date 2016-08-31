@@ -237,8 +237,7 @@ def shakemap_map(shakemap_id):
                     .order_by(desc(ShakeMap.shakemap_version))
                     .limit(1)).first()
     if shakemap is not None:
-        with open(shakemap.map_file(), 'rb') as map:
-            img = map.read()
+        img = shakemap.get_map()
 
     return send_file(io.BytesIO(img), mimetype='image/png')
 
