@@ -8,7 +8,7 @@ modules_dir = os.path.join(sc_dir(), 'modules')
 if modules_dir not in sys.path:
     sys.path += [modules_dir]
 
-from flask import Flask, render_template, url_for, request, session, flash, redirect, send_file
+from flask import Flask, render_template, url_for, request, session, flash, redirect, send_file, send_from_directory
 from flask_login import LoginManager, login_user, logout_user, current_user, login_required
 from flask_uploads import UploadSet, configure_uploads
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -22,8 +22,9 @@ from app.objects import Clock, SC, NotificationBuilder
 from app.functions import determine_xml
 from ui import UI
 
+BASE_DIR = os.path.join(sc_dir(),'view')
 app = Flask(__name__,
-            template_folder=os.path.join(sc_dir(),'view','html'),
+            template_folder=BASE_DIR,
             static_folder=os.path.join(sc_dir(),'view','static'))
 
 ################################ Login ################################
@@ -33,6 +34,13 @@ app.config['SESSION_TYPE'] = 'filesystem'
 login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = 'login'
+
+import pdb
+
+@app.route('/app/<path:filename>')
+def client_app_app_folder(filename):
+    pdb.set_trace()
+    return send_from_directory(os.path.join(BASE_DIR, "app"), filename)
 
 @login_manager.user_loader
 def load_user(user_id):
