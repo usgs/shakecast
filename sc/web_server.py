@@ -8,7 +8,7 @@ modules_dir = os.path.join(sc_dir(), 'modules')
 if modules_dir not in sys.path:
     sys.path += [modules_dir]
 
-from flask import Flask, render_template, url_for, request, session, flash, redirect, send_file, send_from_directory
+from flask import Flask, render_template, url_for, request, session, flash, redirect, send_file, send_from_directory, Response, jsonify
 from flask_login import LoginManager, login_user, logout_user, current_user, login_required
 from flask_uploads import UploadSet, configure_uploads
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -31,15 +31,14 @@ app = Flask(__name__,
 
 app.secret_key = 'super secret key'
 app.config['SESSION_TYPE'] = 'filesystem'
+app.json_encoder = AlchemyEncoder
 login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = 'login'
 
-import pdb
-
+# send Angular 2 files
 @app.route('/app/<path:filename>')
 def client_app_app_folder(filename):
-    pdb.set_trace()
     return send_from_directory(os.path.join(BASE_DIR, "app"), filename)
 
 @login_manager.user_loader
@@ -54,9 +53,10 @@ def load_user(user_id):
 def login():
     if request.method == 'GET':
         return render_template('login.html')
+
     session = Session()
-    username = request.form['username']
-    password = request.form['password']
+    username = request.json.get('username', '')
+    password = request.json.get('password', '')
     
     registered_user = (session.query(User)
                             .filter(and_(User.username==username)).first())
@@ -69,7 +69,11 @@ def login():
     login_user(registered_user)
     flash('Logged in successfully')
     Session.remove()
-    return redirect(request.args.get('next') or url_for('index'))
+
+    user = current_user.__dict__.copy()
+    user.pop('_sa_instance_state', None)
+    return jsonify(success=True, **user)
+    
 
 @app.route('/logout')
 def logout():
@@ -80,7 +84,6 @@ def logout():
 ############################# User Domain #############################
 
 @app.route('/')
-@login_required
 def index():
     return render_template('index.html')
 
