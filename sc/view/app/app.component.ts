@@ -8,7 +8,6 @@ import {NavComponent} from './nav/nav.component'
 import {DashboardComponent} from './pages/dashboard/dashboard.component'
 import {EarthquakesComponent} from './pages/earthquakes/earthquakes.component'
 import {LoginComponent} from './login/login.component'
-import {DataComponent} from './data/data.component'
 
 import {UserService} from './login/user.service'
 
@@ -24,8 +23,7 @@ import {UserService} from './login/user.service'
 @RouteConfig([
   {path: '/dashboard', name: 'Dashboard', component: DashboardComponent, useAsDefault: true},
   {path: '/earthquakes', name: 'Earthquakes', component: EarthquakesComponent},
-  {path: '/login', name: 'Login', component: LoginComponent},
-  {path: '/data', name: 'Data', component: DataComponent}
+  {path: '/login', name: 'Login', component: LoginComponent}
 ])
 export class AppComponent {
 }

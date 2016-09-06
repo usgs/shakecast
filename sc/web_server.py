@@ -73,7 +73,10 @@ def login():
     user = current_user.__dict__.copy()
     user.pop('_sa_instance_state', None)
     return jsonify(success=True, **user)
-    
+
+@app.route('/logged_in')
+def logged_in():
+    return jsonify(success=bool(current_user.is_authenticated))
 
 @app.route('/logout')
 def logout():
