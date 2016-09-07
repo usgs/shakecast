@@ -39,7 +39,12 @@ login_manager.login_view = 'login'
 # send Angular 2 files
 @app.route('/app/<path:filename>')
 def client_app_app_folder(filename):
-    return send_from_directory(os.path.join(BASE_DIR, "app"), filename)
+    return send_from_directory(os.path.join(BASE_DIR, 'app'), filename)
+
+# send Angular 2 files
+@app.route('/<path:filename>')
+def client_app_angular2_folder(filename):
+    return send_from_directory(os.path.join(BASE_DIR), filename)
 
 @login_manager.user_loader
 def load_user(user_id):
