@@ -69,7 +69,7 @@ def login():
     if (registered_user is None or not
             check_password_hash(registered_user.password, password)):
         Session.remove()
-        return redirect('/#login-fail')
+        return jsonify(success=False)
 
     login_user(registered_user)
     flash('Logged in successfully')
@@ -86,8 +86,7 @@ def logged_in():
 @app.route('/logout')
 def logout():
     logout_user()
-    flash('Logged out successfully')
-    return redirect(url_for('login'))
+    return jsonify(success=True)
 
 ############################# User Domain #############################
 

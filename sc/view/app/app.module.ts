@@ -1,41 +1,35 @@
 import { NgModule }       from '@angular/core';
 import { BrowserModule }  from '@angular/platform-browser';
 import { FormsModule }    from '@angular/forms';
+import { HttpModule, JsonpModule } from '@angular/http';
 
 import { AppComponent }       from './app.component';
 import { routing,
         appRoutingProviders } from './app.routing';
 
-import { HeaderComponent } from './header/header.component'
-import { NavComponent } from './nav/nav.component'
+import { LoginModule } from './login/login.module'
+import { ShakeCastModule } from './shakecast/shakecast.module'
 
-import { DashboardModule } from './pages/dashboard/dashboard.module'
-import { EarthquakesModule } from './pages/earthquakes/earthquakes.module'
+import { UserService } from './login/user.service'
 
 @NgModule({
   imports: [
     BrowserModule,
     FormsModule,
     routing,
-    EarthquakesModule,
-    DashboardModule
+    HttpModule,
+    JsonpModule,
+    ShakeCastModule,
+    LoginModule
   ],
   declarations: [
-    AppComponent,
-    HeaderComponent,
-    NavComponent
+    AppComponent
   ],
   providers: [
-    appRoutingProviders
+    appRoutingProviders,
+    UserService
   ],
   bootstrap: [ AppComponent ]
 })
 export class AppModule {
 }
-
-
-/*
-Copyright 2016 Google Inc. All Rights Reserved.
-Use of this source code is governed by an MIT-style license that
-can be found in the LICENSE file at http://angular.io/license
-*/

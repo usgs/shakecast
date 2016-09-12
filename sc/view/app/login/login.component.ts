@@ -1,23 +1,25 @@
-import { Component } from 'angular2/core';
-import { Router } from 'angular2/router';
+import { Component, onInit } from '@angular/core';
+import { Router } from '@angular/router';
 
-import { UserService } from './user.service';
-import { User } from './user'
+import { UserService, User } from './user.service'
 
 @Component({
-  selector: 'login',
-  templateUrl: 'app/login/login.component.html'
+    selector: 'login',
+    templateUrl: 'app/login/login.component.html'
 })
-export class LoginComponent {
-  constructor(private userService: UserService, private router: Router) {}
+export class LoginComponent implements onInit {
+    constructor(private userService: UserService, private router: Router) {}
   
-  user = new User('', '')
+    ngOnInit() {
+    }
 
-  onSubmit(username, password) {
-    this.userService.login(username, password).subscribe((result) => {
-      if (result) {
-        this.router.navigate(['Dashboard']);
-      }
-    });
-  }
+    user = new User('', '')
+
+    onSubmit(username, password) {
+        this.userService.login(username, password).subscribe((result) => {
+            if (result) {
+                this.router.navigate(['/shakecast']);
+            }
+        });
+    }
 }
