@@ -18,7 +18,8 @@
     },
     paths: {
       // paths serve as alias
-      'npm:': 'https://unpkg.com/'
+      'npm:': 'https://unpkg.com/',
+      'ven:': './vendor/'
     },
     // map tells the System loader where to look for things
     map: {
@@ -40,21 +41,26 @@
       'angular2-in-memory-web-api': 'npm:angular2-in-memory-web-api',
       'ts':                         'npm:plugin-typescript@4.0.10/lib/plugin.js',
       'typescript':                 'npm:typescript@1.9.0-dev.20160409/lib/typescript.js',
+      'angular2-notifications':     'ven:angular2-notifications'
 
     },
     // packages tells the System loader how to load when no filename and/or no extension
     packages: {
-      app: {
-        main: './main.ts',
-        defaultExtension: 'ts'
-      },
-      rxjs: {
-        defaultExtension: 'js'
-      },
-      'angular2-in-memory-web-api': {
-        main: './index.js',
-        defaultExtension: 'js'
-      }
+        app: {
+            main: './main.ts',
+            defaultExtension: 'ts'
+        },
+        rxjs: {
+            defaultExtension: 'js'
+        },
+        'angular2-in-memory-web-api': {
+            main: './index.js',
+            defaultExtension: 'js'
+        },
+        'angular2-notifications': {
+            main: './components.js', 
+            defaultExtension: 'js' 
+        }
     }
   });
 })(this);

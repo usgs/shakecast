@@ -21,6 +21,7 @@ from app.server import Server
 from app.objects import Clock, SC, NotificationBuilder
 from app.functions import determine_xml
 from ui import UI
+import pdb
 
 BASE_DIR = os.path.join(sc_dir(),'view')
 app = Flask(__name__,
@@ -35,11 +36,6 @@ app.json_encoder = AlchemyEncoder
 login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = 'login'
-
-# send Angular 2 files
-@app.route('/app/<path:filename>')
-def client_app_app_folder(filename):
-    return send_from_directory(os.path.join(BASE_DIR, 'app'), filename)
 
 # send Angular 2 files
 @app.route('/<path:filename>')

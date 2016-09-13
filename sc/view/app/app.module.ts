@@ -2,6 +2,7 @@ import { NgModule }       from '@angular/core';
 import { BrowserModule }  from '@angular/platform-browser';
 import { FormsModule }    from '@angular/forms';
 import { HttpModule, JsonpModule } from '@angular/http';
+import { SimpleNotificationsModule } from 'angular2-notifications'
 
 import { AppComponent }       from './app.component';
 import { routing,
@@ -16,6 +17,7 @@ import { UserService } from './login/user.service'
   imports: [
     BrowserModule,
     FormsModule,
+    SimpleNotificationsModule,
     routing,
     HttpModule,
     JsonpModule,

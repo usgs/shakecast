@@ -9,9 +9,6 @@ import { UserService, User } from './user.service'
 })
 export class LoginComponent implements onInit {
     constructor(private userService: UserService, private router: Router) {}
-  
-    ngOnInit() {
-    }
 
     user = new User('', '')
 
