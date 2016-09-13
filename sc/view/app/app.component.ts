@@ -1,6 +1,7 @@
 import { Component, ViewEncapsulation, onInit } from '@angular/core';
 import { Router } from '@angular/router'
 import { UserService } from './login/user.service'
+import { NotificationsService } from 'angular2-notifications'
 
 @Component({
   selector: 'my-app',
@@ -9,9 +10,19 @@ import { UserService } from './login/user.service'
   encapsulation: ViewEncapsulation.None,
 })
 export class AppComponent implements onInit {
+    public options = {
+        timeOut: 5000,
+        lastOnBottom: true,
+        clickToClose: true,
+        maxLength: 0,
+        maxStack: 7,
+        showProgressBar: true,
+        pauseOnHover: true
+    };
 
     constructor(private userService: UserService,
-                private router: Router) {}
+                private router: Router,
+                private notService: NotificationsService) {}
 
     ngOnInit() {
         // Skip to dashboard if user already logged in
@@ -21,5 +32,4 @@ export class AppComponent implements onInit {
             }
         }));
     }
-
 }
