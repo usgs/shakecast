@@ -11,12 +11,12 @@ import { NotificationsService } from 'angular2-notifications'
 })
 export class AppComponent implements onInit {
     public options = {
-        timeOut: 5000,
+        timeOut: 2000,
         lastOnBottom: true,
         clickToClose: true,
         maxLength: 0,
         maxStack: 7,
-        showProgressBar: true,
+        showProgressBar: false,
         pauseOnHover: true
     };
 

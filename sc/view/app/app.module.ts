@@ -10,8 +10,10 @@ import { routing,
 
 import { LoginModule } from './login/login.module'
 import { ShakeCastModule } from './shakecast/shakecast.module'
+import { ShakeCastAdminModule } from './shakecast-admin/shakecast-admin.module'
 
 import { UserService } from './login/user.service'
+import { EarthquakeService } from './shakecast/pages/earthquakes/earthquake.service'
 
 @NgModule({
   imports: [
@@ -22,6 +24,7 @@ import { UserService } from './login/user.service'
     HttpModule,
     JsonpModule,
     ShakeCastModule,
+    ShakeCastAdminModule,
     LoginModule
   ],
   declarations: [
@@ -29,7 +32,8 @@ import { UserService } from './login/user.service'
   ],
   providers: [
     appRoutingProviders,
-    UserService
+    UserService,
+    EarthquakeService
   ],
   bootstrap: [ AppComponent ]
 })

@@ -1,11 +1,11 @@
 import { NgModule }       from '@angular/core';
-import { CommonModule }  from '@angular/common';
+import { BrowserModule }  from '@angular/platform-browser';
 import { FormsModule }    from '@angular/forms';
 import { HttpModule, JsonpModule } from '@angular/http';
 
-import { ShakeCastComponent }       from './shakecast.component';
+import { ShakeCastAdminComponent }       from './shakecast-admin.component';
 import { routing,
-        appRoutingProviders } from './shakecast.routing';
+        appRoutingProviders } from './shakecast-admin.routing';
 
 import { HeaderComponent } from './header/header.component'
 import { NavComponent } from './nav/nav.component'
@@ -17,13 +17,12 @@ import { EarthquakeListComponent } from './pages/earthquakes/earthquake-list.com
 @NgModule({
   imports: [
     FormsModule,
-    CommonModule,
     routing,
     HttpModule,
     JsonpModule
   ],
   declarations: [
-    ShakeCastComponent,
+    ShakeCastAdminComponent,
     HeaderComponent,
     NavComponent,
     DashboardComponent,
@@ -33,7 +32,7 @@ import { EarthquakeListComponent } from './pages/earthquakes/earthquake-list.com
   providers: [
   ]
 })
-export class ShakeCastModule {
+export class ShakeCastAdminModule {
 }
 
 

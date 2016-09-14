@@ -1,5 +1,5 @@
 // user.service.ts
-import { Injectable, OnInit } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { Http, Headers, Response } from '@angular/http';
 import { Router } from '@angular/router'
 import 'rxjs/add/operator/map';
@@ -17,8 +17,10 @@ export class User {
 }
 
 @Injectable()
-export class UserService implements OnInit {
-  private loggedIn = false;
+export class UserService {
+  public loggedIn = false;
+  public isAdmin = false;
+  public username = '';
 
   constructor(private _http: Http,
               private router: Router) {}
@@ -36,6 +38,8 @@ export class UserService implements OnInit {
               .do((res) => {
                   if (res.success) {
                       this.loggedIn = true;
+                      this.isAdmin = res.isAdmin
+                      this.username = username
                   }
               });
   }
@@ -45,7 +49,7 @@ export class UserService implements OnInit {
                           .subscribe(resp => {
                               this.loggedIn = false
                               this.router.navigate(['/login'])
-                              });
+                          });
   }
 
   checkLoggedIn() {

@@ -1,18 +1,19 @@
 import { ModuleWithProviders } from '@angular/core';
 import { Routes, RouterModule }   from '@angular/router';
 
-import { ShakeCastComponent } from './shakecast.component'
+import { ShakeCastAdminComponent } from './shakecast-admin.component'
 
 import { DashboardComponent } from './pages/dashboard/dashboard.component'
 import { EarthquakesComponent } from './pages/earthquakes/earthquakes.component'
 
 import { LoginGuard } from '../auth/login.guard'
+import { AdminGuard } from '../auth/admin.guard'
 
 const appRoutes: Routes = [
     {
         path: '',
-        component: ShakeCastComponent,
-        canActivate: [LoginGuard],
+        component: ShakeCastAdminComponent,
+        canActivate: [LoginGuard, AdminGuard],
         children: [
             {
                 path: 'dashboard',
@@ -31,15 +32,10 @@ const appRoutes: Routes = [
     }
 ];
 
-export const shakecastRoutes: Routes = [
+export const shakecastAdminRoutes: Routes = [
     {
-        path: '',
-        redirectTo: '/shakecast',
-        pathMatch: 'full'
-    },
-    {
-        path: 'shakecast',
-        loadChildren: 'app/shakecast/shakecast.module#ShakeCastModule'
+        path: 'shakecast-admin',
+        loadChildren: 'app/shakecast-admin/shakecast-admin.module#ShakeCastAdminModule'
     }
 ]
 

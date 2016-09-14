@@ -21,7 +21,6 @@ from app.server import Server
 from app.objects import Clock, SC, NotificationBuilder
 from app.functions import determine_xml
 from ui import UI
-import pdb
 
 BASE_DIR = os.path.join(sc_dir(),'view')
 app = Flask(__name__,
@@ -73,7 +72,7 @@ def login():
 
     user = current_user.__dict__.copy()
     user.pop('_sa_instance_state', None)
-    return jsonify(success=True, **user)
+    return jsonify(success=True, isAdmin=current_user.is_admin(), **user)
 
 @app.route('/logged_in')
 def logged_in():
@@ -90,17 +89,7 @@ def logout():
 def index():
     return render_template('index.html')
 
-@app.route('/earthquakes')
-@login_required
-def earthquakes():
-    return render_template('earthquakes.html')
-
-@app.route('/home')
-@login_required
-def home():
-    return render_template('home.html')
-
-@app.route('/get/eqdata')
+@app.route('/api/earthquake-data')
 @login_required
 def get_eq_data():
     session = Session()
@@ -151,12 +140,10 @@ def get_eq_data():
         eq_dict.pop('_sa_instance_state', None)
         eq_dicts += [eq_dict]
     
-    eq_json = json.dumps(eq_dicts, cls=AlchemyEncoder)
-    
-    Session.remove()    
-    return eq_json
+    Session.remove()
+    return jsonify(success=True, data=eq_dicts)
 
-@app.route('/get/shakemaps')
+@app.route('/api/shakemaps')
 @login_required
 def get_shakemaps():
     session = Session()
@@ -175,7 +162,7 @@ def get_shakemaps():
     Session.remove()    
     return sm_json
 
-@app.route('/get/shakemaps/<shakemap_id>')
+@app.route('/api/shakemaps/<shakemap_id>')
 @login_required
 def get_shakemap(shakemap_id):
     session = Session()
@@ -195,7 +182,7 @@ def get_shakemap(shakemap_id):
     Session.remove()    
     return sm_json
 
-@app.route('/get/shakemaps/<shakemap_id>/facilities')
+@app.route('/api/shakemaps/<shakemap_id>/facilities')
 @login_required
 def get_affected_facilities(shakemap_id):
     session = Session()
@@ -222,7 +209,7 @@ def get_affected_facilities(shakemap_id):
     Session.remove()    
     return fac_json
 
-@app.route('/get/shakemaps/<shakemap_id>/overlay')
+@app.route('/api/shakemaps/<shakemap_id>/overlay')
 @login_required
 def shakemap_overlay(shakemap_id):
     session = Session()
@@ -242,7 +229,7 @@ def shakemap_overlay(shakemap_id):
     Session.remove()
     return send_file(img, mimetype='image/gif')
 
-@app.route('/get/shakemaps/<shakemap_id>/shakemap')
+@app.route('/api/shakemaps/<shakemap_id>/shakemap')
 @login_required
 def shakemap_map(shakemap_id):
     session = Session()
@@ -255,7 +242,7 @@ def shakemap_map(shakemap_id):
 
     return send_file(io.BytesIO(img), mimetype='image/png')
 
-@app.route('/get/events/<event_id>/image')
+@app.route('/api/events/<event_id>/image')
 @login_required
 def event_image(event_id):
     session = Session()
@@ -290,12 +277,6 @@ def admin_only(func):
             return redirect(url_for('login'))
     return func_wrapper
 
-@app.route('/admin/')
-@admin_only
-@login_required
-def admin():
-    return render_template('admin/admin.html')
-
 @app.route('/admin/settings/', methods=['GET','POST'])
 @admin_only
 @login_required
@@ -309,24 +290,6 @@ def settings():
     if sc.validate() is True:
         sc.save()
         return redirect('/admin/#/settings/')
-
-@app.route('/admin/inventory/')
-@admin_only
-@login_required
-def inventory():
-    return render_template('admin/inventory.html')
-
-@app.route('/admin/users/')
-@admin_only
-@login_required
-def users():
-    return render_template('admin/users.html')
-
-@app.route('/admin/groups/')
-@admin_only
-@login_required
-def groups():
-    return render_template('admin/groups.html')
 
 @app.route('/admin/upload/', methods=['GET','POST'])
 @admin_only

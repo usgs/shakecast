@@ -4,12 +4,12 @@ import { UserService } from '../login/user.service';
 import { Observable } from "rxjs/Rx";
 
 @Injectable()
-export class AuthGuard implements CanActivate {
+export class LoginGuard implements CanActivate {
     constructor(private user: UserService,
                 private router: Router) {}
 
     canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot):Observable<boolean>|boolean {
-        console.log('AuthGuard#canActivate called');
+        console.log('LoginGuard#canActivate called');
         if (this.user.loggedIn) {
             return true
         }

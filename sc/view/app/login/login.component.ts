@@ -19,7 +19,8 @@ export class LoginComponent implements onInit {
         this.userService.login(username, password).subscribe((result) => {
             if (result.success) {
                 this.router.navigate(['/shakecast']);
-                this.notService.success('Login', 'Success')
+                this.notService.success('Login', 
+                            'Welcome, ' + this.userService.username);
             } else {
                 this.notService.error('Login Failed', 'Invalid Username or Password')
             }

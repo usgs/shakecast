@@ -1,20 +1,22 @@
 import { ModuleWithProviders } from '@angular/core';
 import { Routes, RouterModule }   from '@angular/router';
 
-import { ShakeCastComponent } from './shakecast/shakecast.component'
 import { shakecastRoutes } from './shakecast/shakecast.routing'
-
 import { loginRoutes } from './login/login.routing'
+import { shakecastAdminRoutes } from './shakecast-admin/shakecast-admin.routing'
 
-import { AuthGuard } from './auth/auth.guard'
+import { LoginGuard } from './auth/login.guard'
+import { AdminGuard } from './auth/admin.guard'
 
 const appRoutes: Routes = [
     ...shakecastRoutes,
-    ...loginRoutes
+    ...loginRoutes,
+    ...shakecastAdminRoutes
 ];
 
 export const appRoutingProviders: any[] = [
-    AuthGuard
+    LoginGuard,
+    AdminGuard
 ];
 
 export const routing: ModuleWithProviders = RouterModule.forRoot(appRoutes);

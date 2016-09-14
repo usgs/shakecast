@@ -1,0 +1,10 @@
+<table>
+    <tr>
+        <th>ID</th>
+        <th>Magnitude</th>
+    </tr>
+    <tr *ngFor="let eq of earthquakeData">
+        <td>{{eq.event_id}}</td>
+        <td>{{eq.magnitude}}</td>
+    </tr>
+</table>
