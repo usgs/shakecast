@@ -15,34 +15,34 @@ folder: doc
 
 | **FACILITY**  **TYPE** | **DESCRIPTION** | **METRIC** | **ALPHA** | **BETA** | **ALPHA** | **BETA** | **ALPHA** | **BETA** | **ALPHA** | **BETA** |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| W1H | Wood, Light Frame | PGA | 26 | 0.64 | 55 | 0.64 | 128 | 0.64 | 201 | 0.64 |
-| W2H | Wood Commercial | PGA | 26 | 0.64 | 56 | 0.64 | 115 | 0.64 | 208 | 0.64 |
-| S1LH | Steel Moment Frame, Low Rise | PGA | 19 | 0.64 | 31 | 0.64 | 64 | 0.64 | 149 | 0.64 |
-| S1MH | Steel Moment Frame, Mid Rise | PGA | 14 | 0.64 | 26 | 0.64 | 62 | 0.64 | 143 | 0.64 |
-| S1HH | Steel Moment Frame, High Rise | PGA | 10 | 0.64 | 21 | 0.64 | 52 | 0.64 | 131 | 0.64 |
-| S2LH | Steel Brace Frame, Low Rise | PGA | 24 | 0.64 | 41 | 0.64 | 76 | 0.64 | 146 | 0.64 |
-| S2MH | Steel Brace Frame, Mid Rise | PGA | 14 | 0.64 | 27 | 0.64 | 73 | 0.64 | 162 | 0.64 |
-| S2HH | Steel Brace Frame, High Rise | PGA | 11 | 0.64 | 22 | 0.64 | 65 | 0.64 | 160 | 0.64 |
-| S3H | Steel Light Frame | PGA | 15 | 0.64 | 26 | 0.64 | 54 | 0.64 | 100 | 0.64 |
-| S4LH | Steel Frame Shear Wall, Low Rise | PGA | 24 | 0.64 | 39 | 0.64 | 71 | 0.64 | 133 | 0.64 |
-| S4MH | Steel Frame Shear Wall, Mid Rise | PGA | 16 | 0.64 | 28 | 0.64 | 73 | 0.64 | 156 | 0.64 |
-| S4HH | Steel Frame Shear Wall, High Rise | PGA | 13 | 0.64 | 25 | 0.64 | 69 | 0.64 | 163 | 0.64 |
-| C1LH | Concrete Moment Frame, Low Rise | PGA | 21 | 0.64 | 35 | 0.64 | 70 | 0.64 | 137 | 0.64 |
-| C1MH | Concrete Moment Frame, Mid Rise | PGA | 15 | 0.64 | 27 | 0.64 | 73 | 0.64 | 161 | 0.64 |
-| C1HH | Concrete Moment Frame, High Rise | PGA | 11 | 0.64 | 22 | 0.64 | 62 | 0.64 | 135 | 0.64 |
-| C2LH | Concrete Shear Wall, Low Rise | PGA | 24 | 0.64 | 45 | 0.64 | 90 | 0.64 | 155 | 0.64 |
-| C2MH | Concrete Shear Wall, Mid Rise | PGA | 17 | 0.64 | 36 | 0.64 | 87 | 0.64 | 195 | 0.64 |
-| C2HH | Concrete Shear Wall, High Rise | PGA | 12 | 0.64 | 29 | 0.64 | 82 | 0.64 | 187 | 0.64 |
-| PC1H | Precast Concrete Tiltup Wall | PGA | 20 | 0.64 | 35 | 0.64 | 72 | 0.64 | 125 | 0.64 |
-| PC2LH | Precast Concrete Frames, Low Rise | PGA | 24 | 0.64 | 36 | 0.64 | 69 | 0.64 | 123 | 0.64 |
-| PC2MH | Precast Concrete Frames, Mid Rise | PGA | 17 | 0.64 | 29 | 0.64 | 67 | 0.64 | 151 | 0.64 |
-| PC2HH | Precast Concrete Frames, High Rise | PGA | 12 | 0.64 | 23 | 0.64 | 63 | 0.64 | 149 | 0.64 |
-| RM1LH | Reinforced Masonry with Wood, Low Rise | PGA | 30 | 0.64 | 46 | 0.64 | 93 | 0.64 | 157 | 0.64 |
-| RM1MH | Reinforced Masonry with Wood, Mid Rise | PGA | 20 | 0.64 | 37 | 0.64 | 81 | 0.64 | 190 | 0.64 |
-| RM2LH | Reinforced Masonry with Precast Concrete, Low Rise | PGA | 26 | 0.64 | 42 | 0.64 | 87 | 0.64 | 149 | 0.64 |
-| RM2MH | Reinforced Masonry with Precast Concrete, Mid Rise | PGA | 17 | 0.64 | 33 | 0.64 | 75 | 0.64 | 183 | 0.64 |
-| RM2HH | Reinforced Masonry with Precast Concrete, High Rise | PGA | 12 | 0.64 | 24 | 0.64 | 67 | 0.64 | 178 | 0.64 |
-| MHH | Mobile Homes | PGA | 11 | 0.64 | 18 | 0.64 | 31 | 0.64 | 60 | 0.64 |
+| W1H | Wood, Light Frame | PGA | `26`{: .label-success} | 0.64 | `55`{: .label-yellow} | 0.64 | `128`{: .label-warning} | 0.64 | `201`{: .label-danger} | 0.64 |
+| W2H | Wood Commercial | PGA | `26`{: .label-success} | 0.64 | 56 | 0.64 | 115 | 0.64 | 208 | 0.64 |
+| S1LH | Steel Moment Frame, Low Rise | PGA | `19`{: .label-success} | 0.64 | 31 | 0.64 | 64 | 0.64 | 149 | 0.64 |
+| S1MH | Steel Moment Frame, Mid Rise | PGA | `14`{: .label-success} | 0.64 | 26 | 0.64 | 62 | 0.64 | 143 | 0.64 |
+| S1HH | Steel Moment Frame, High Rise | PGA | `10`{: .label-success} | 0.64 | 21 | 0.64 | 52 | 0.64 | 131 | 0.64 |
+| S2LH | Steel Brace Frame, Low Rise | PGA | `24`{: .label-success} | 0.64 | 41 | 0.64 | 76 | 0.64 | 146 | 0.64 |
+| S2MH | Steel Brace Frame, Mid Rise | PGA | `14`{: .label-success} | 0.64 | 27 | 0.64 | 73 | 0.64 | 162 | 0.64 |
+| S2HH | Steel Brace Frame, High Rise | PGA | `11`{: .label-success} | 0.64 | 22 | 0.64 | 65 | 0.64 | 160 | 0.64 |
+| S3H | Steel Light Frame | PGA | `15`{: .label-success} | 0.64 | `26`{: .label-yellow} | 0.64 | `54`{: .label-warning} | 0.64 | `100`{: .label-danger} | 0.64 |
+| S4LH | Steel Frame Shear Wall, Low Rise | PGA | `24`{: .label-success} | 0.64 | 39 | 0.64 | 71 | 0.64 | 133 | 0.64 |
+| S4MH | Steel Frame Shear Wall, Mid Rise | PGA | `16`{: .label-success} | 0.64 | 28 | 0.64 | 73 | 0.64 | 156 | 0.64 |
+| S4HH | Steel Frame Shear Wall, High Rise | PGA | `13`{: .label-success} | 0.64 | 25 | 0.64 | 69 | 0.64 | 163 | 0.64 |
+| C1LH | Concrete Moment Frame, Low Rise | PGA | `21`{: .label-success} | 0.64 | 35 | 0.64 | 70 | 0.64 | 137 | 0.64 |
+| C1MH | Concrete Moment Frame, Mid Rise | PGA | `15`{: .label-success} | 0.64 | 27 | 0.64 | 73 | 0.64 | 161 | 0.64 |
+| C1HH | Concrete Moment Frame, High Rise | PGA | `11`{: .label-success} | 0.64 | 22 | 0.64 | 62 | 0.64 | 135 | 0.64 |
+| C2LH | Concrete Shear Wall, Low Rise | PGA | `24`{: .label-success} | 0.64 | 45 | 0.64 | 90 | 0.64 | 155 | 0.64 |
+| C2MH | Concrete Shear Wall, Mid Rise | PGA | `17`{: .label-success} | 0.64 | 36 | 0.64 | 87 | 0.64 | 195 | 0.64 |
+| C2HH | Concrete Shear Wall, High Rise | PGA | `12`{: .label-success} | 0.64 | 29 | 0.64 | 82 | 0.64 | 187 | 0.64 |
+| PC1H | Precast Concrete Tiltup Wall | PGA | `20`{: .label-success} | 0.64 | 35 | 0.64 | 72 | 0.64 | 125 | 0.64 |
+| PC2LH | Precast Concrete Frames, Low Rise | PGA | `24`{: .label-success} | 0.64 | 36 | 0.64 | 69 | 0.64 | 123 | 0.64 |
+| PC2MH | Precast Concrete Frames, Mid Rise | PGA | `17`{: .label-success} | 0.64 | 29 | 0.64 | 67 | 0.64 | 151 | 0.64 |
+| PC2HH | Precast Concrete Frames, High Rise | PGA | `12`{: .label-success} | 0.64 | 23 | 0.64 | 63 | 0.64 | 149 | 0.64 |
+| RM1LH | Reinforced Masonry with Wood, Low Rise | PGA | `30`{: .label-success} | 0.64 | 46 | 0.64 | 93 | 0.64 | 157 | 0.64 |
+| RM1MH | Reinforced Masonry with Wood, Mid Rise | PGA | `20`{: .label-success} | 0.64 | 37 | 0.64 | 81 | 0.64 | 190 | 0.64 |
+| RM2LH | Reinforced Masonry with Precast Concrete, Low Rise | PGA | `26`{: .label-success} | 0.64 | 42 | 0.64 | 87 | 0.64 | 149 | 0.64 |
+| RM2MH | Reinforced Masonry with Precast Concrete, Mid Rise | PGA | `17`{: .label-success} | 0.64 | 33 | 0.64 | 75 | 0.64 | 183 | 0.64 |
+| RM2HH | Reinforced Masonry with Precast Concrete, High Rise | PGA | `12`{: .label-success} | 0.64 | 24 | 0.64 | 67 | 0.64 | 178 | 0.64 |
+| MHH | Mobile Homes | PGA | `11`{: .label-success} | 0.64 | 18 | 0.64 | 31 | 0.64 | 60 | 0.64 |
 
 ## Moderate-code fragilities for HAZUS model building types
 
