@@ -55,6 +55,20 @@ toc: false
                  </div>
              </div>
          </div>
+         <div class="col-md-3 col-sm-6">
+             <div class="panel panel-default text-center">
+                 <div class="panel-heading">
+                     <span class="">
+                           <img src="https://avatars1.githubusercontent.com/u/20545262?v=3&s=128" class="img-circle">
+                     </span>
+                 </div>
+                 <div class="panel-body">
+                     <h4>Loren Turner</h4>
+                     <p>Senior Transportation Engineer<br>Caltrans - Division of Research,  Innovation & System Information</p>
+                     <a href="https://github.com/LTurner-CT" class="btn btn-primary">Learn More</a>
+                 </div>
+             </div>
+         </div>
  </div>
 
 

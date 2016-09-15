@@ -11,13 +11,13 @@ site_title: ShakeCast Documentation
 company_name: U.S. Geological Survey
 # this appears in the footer
 
-github_editme_path: klin-usgs/shakecast/blob/gh-pages/
+github_editme_path: usgs/shakecast/blob/gh-pages/
 # if you're using Github, provide the basepath to the branch you've created for reviews, following the sample here. if not, leave this value blank.
 
 #github_issue_path: klin-usgs/shakecast/issues/new
 # if you're using Github, provide the basepath to the branch you've created for reviews, following the sample here. if not, leave this value blank.
 
-disqus_shortname: klin-usgs
+disqus_shortname: usgs
 # if you're using disqus for comments, add the shortname here. if not, leave this value blank.
 
 host: 127.0.0.1
