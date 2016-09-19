@@ -1,6 +1,5 @@
 import { NgModule }       from '@angular/core';
 import { BrowserModule }  from '@angular/platform-browser';
-import { FormsModule }    from '@angular/forms';
 import { HttpModule, JsonpModule } from '@angular/http';
 import { SimpleNotificationsModule } from 'angular2-notifications'
 
@@ -8,24 +7,28 @@ import { AppComponent }       from './app.component';
 import { routing,
         appRoutingProviders } from './app.routing';
 
+// top level modules
 import { LoginModule } from './login/login.module'
 import { ShakeCastModule } from './shakecast/shakecast.module'
 import { ShakeCastAdminModule } from './shakecast-admin/shakecast-admin.module'
 
+// General services used by all modules
 import { UserService } from './login/user.service'
 import { EarthquakeService } from './shakecast/pages/earthquakes/earthquake.service'
+import { SharedModule } from './shared/shared.module'
+import { MapService } from './shared/gmaps/map.service'
 
 @NgModule({
   imports: [
     BrowserModule,
-    FormsModule,
     SimpleNotificationsModule,
     routing,
     HttpModule,
     JsonpModule,
     ShakeCastModule,
     ShakeCastAdminModule,
-    LoginModule
+    LoginModule,
+    SharedModule
   ],
   declarations: [
     AppComponent
@@ -33,7 +36,8 @@ import { EarthquakeService } from './shakecast/pages/earthquakes/earthquake.serv
   providers: [
     appRoutingProviders,
     UserService,
-    EarthquakeService
+    EarthquakeService,
+    MapService
   ],
   bootstrap: [ AppComponent ]
 })

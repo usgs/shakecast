@@ -2,9 +2,15 @@
     <tr>
         <th>ID</th>
         <th>Magnitude</th>
+        <th>Lat</th>
+        <th>Lon</th>
+        <th>Description</th>
     </tr>
     <tr *ngFor="let eq of earthquakeData">
         <td>{{eq.event_id}}</td>
         <td>{{eq.magnitude}}</td>
+        <td>{{eq.lat}}</td>
+        <td>{{eq.lon}}</td>
+        <td>{{eq.place}}</td>
     </tr>
 </table>

@@ -3,7 +3,7 @@ import { EarthquakeService, Earthquake } from './earthquake.service'
 
 @Component({
     selector: 'earthquake-list',
-    templateUrl: 'app/shakecast/pages/earthquakes/earthquakes-list.component.html'
+    templateUrl: 'app/shakecast/pages/earthquakes/earthquake-list.component.html'
 })
 export class EarthquakeListComponent implements onInit {
     public earthquakeData: Earthquake[] = [];

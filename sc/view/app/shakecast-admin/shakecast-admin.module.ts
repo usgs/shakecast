@@ -14,12 +14,16 @@ import { DashboardComponent } from './pages/dashboard/dashboard.component'
 import { EarthquakesComponent } from './pages/earthquakes/earthquakes.component'
 import { EarthquakeListComponent } from './pages/earthquakes/earthquake-list.component'
 
+
+import { SharedModule } from '../shared/shared.module'
+
 @NgModule({
   imports: [
     FormsModule,
     routing,
     HttpModule,
-    JsonpModule
+    JsonpModule,
+    SharedModule
   ],
   declarations: [
     ShakeCastAdminComponent,
