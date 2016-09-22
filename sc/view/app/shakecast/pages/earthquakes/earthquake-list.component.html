@@ -6,7 +6,7 @@
         <th>Lon</th>
         <th>Description</th>
     </tr>
-    <tr *ngFor="let eq of earthquakeData">
+    <tr *ngFor="let eq of earthquakeData" (click)="plotEq(eq)">
         <td>{{eq.event_id}}</td>
         <td>{{eq.magnitude}}</td>
         <td>{{eq.lat}}</td>

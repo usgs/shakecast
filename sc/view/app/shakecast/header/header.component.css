@@ -1,6 +1,5 @@
 .header {
     background-color: #dddddd;
-    opacity: .8;
     border-radius: 10px;
     height: 40px;
     position: fixed;
@@ -8,10 +7,9 @@
     align-items: center;
     transition: top 0.2s ease-in-out;
     z-index: 1000;
-}
-
-.scroll-up {
-    top: -40px;
+    width: 80%;
+    left: 10%;
+    margin-top: 5px;
 }
 
 .header-space {
@@ -43,4 +41,8 @@ p {
     margin-left: auto;
     display: flex;
     align-items: center;
+}
+
+.nav-bar {
+    margin-left: 5px;
 }

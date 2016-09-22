@@ -18,7 +18,7 @@ import { Observable } from 'rxjs/Observable';
   animations: [
       trigger('scrollChange', [
         state('false', style({top: 0})),
-        state('true', style({top: "-40px"})),
+        state('true', style({top: "-45px"})),
           transition('true => false', animate('100ms ease-in')),
           transition('false => true', animate('100ms ease-out'))
       ])
@@ -34,7 +34,8 @@ export class HeaderComponent implements onInit {
         Observable.interval(500)
             .subscribe(x => {
                 if (this.scrolled !== document.querySelector('body').scrollTop) {
-                    if (this.scrolled > (document.querySelector('body').scrollTop + 100)) {
+                    if (this.scrolled > (document.querySelector('body').scrollTop + 100) || 
+                        (document.querySelector('body').scrollTop===0)) {
                         // show the element
                         if (this.scrollUp === true) {
                             console.log('scroll up')

@@ -15,5 +15,9 @@ export class EarthquakeListComponent implements onInit {
             console.log(this.earthquakeData)
         });
     }
+
+    plotEq(eq: Earthquake) {
+        console.log(eq)
+    }
     
 }

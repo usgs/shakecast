@@ -2,3 +2,13 @@
     font-family: Arial;
     color: #444444;
 }
+
+.stick-to-top {
+    position: fixed;
+    top: 0;
+    width: 100%;
+}
+
+body {
+    margin: 0;
+}

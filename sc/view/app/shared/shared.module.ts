@@ -3,11 +3,11 @@ import { CommonModule }        from '@angular/common';
 import { FormsModule }         from '@angular/forms';
 
 // Map service and component
-import { AgmCoreModule } from 'angular2-google-maps/core'
-import { MapComponent } from './gmaps/map.component'
+import { AgmCoreModule } from 'angular2-google-maps/core';
+import { MapComponent } from './gmaps/map.component';
 
 // scroll behavior
-import { ScrollToggleDirective } from './directives/scroll-toggle.directive'
+import { StickToTopDirective } from './directives/stick-to-top.directive';
 
 @NgModule({
   imports: [
@@ -16,10 +16,10 @@ import { ScrollToggleDirective } from './directives/scroll-toggle.directive'
         apiKey: 'AIzaSyBQE3bvBOlyD1td50LJtYmy0WxynUdd4IM'})
         ],
   declarations: [MapComponent,
-                 ScrollToggleDirective],
+                 StickToTopDirective],
   exports: [MapComponent,
             CommonModule, 
             FormsModule,
-            ScrollToggleDirective]
+            StickToTopDirective]
 })
 export class SharedModule { }
