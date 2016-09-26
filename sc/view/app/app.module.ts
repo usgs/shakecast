@@ -17,6 +17,7 @@ import { UserService } from './login/user.service'
 import { EarthquakeService } from './shakecast/pages/earthquakes/earthquake.service'
 import { SharedModule } from './shared/shared.module'
 import { MapService } from './shared/gmaps/map.service'
+import { StickToTopService } from './shared/directives/stick-to-top.service';
 
 @NgModule({
   imports: [
@@ -37,7 +38,8 @@ import { MapService } from './shared/gmaps/map.service'
     appRoutingProviders,
     UserService,
     EarthquakeService,
-    MapService
+    MapService,
+    StickToTopService
   ],
   bootstrap: [ AppComponent ]
 })

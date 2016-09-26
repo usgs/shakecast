@@ -1,11 +1,17 @@
+<div class="header-container">
+    <div class="table-header" stickToTop>
+        <table>
+            <tr>
+                <th>ID</th>
+                <th>Magnitude</th>
+                <th>Lat</th>
+                <th>Lon</th>
+                <th>Description</th>
+            </tr>
+        </table>
+    </div>
+</div>
 <table>
-    <tr>
-        <th>ID</th>
-        <th>Magnitude</th>
-        <th>Lat</th>
-        <th>Lon</th>
-        <th>Description</th>
-    </tr>
     <tr *ngFor="let eq of earthquakeData" (click)="plotEq(eq)">
         <td>{{eq.event_id}}</td>
         <td>{{eq.magnitude}}</td>
