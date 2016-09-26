@@ -1,3 +1,12 @@
-<sebm-google-map [latitude]="lat" [longitude]="lng">
-  <sebm-google-map-marker [latitude]="lat" [longitude]="lng"></sebm-google-map-marker>
+<sebm-google-map>
+    <sebm-google-map-marker 
+        *ngFor="let m of markers"
+        [latitude]="m.lat"
+        [longitude]="m.lon">
+        
+        <sebm-google-map-info-window>
+          <strong>InfoWindow content</strong>
+        </sebm-google-map-info-window>
+    
+  </sebm-google-map-marker>
 </sebm-google-map>

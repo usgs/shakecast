@@ -8,7 +8,6 @@ import { MapComponent } from './gmaps/map.component';
 
 // scroll behavior
 import { StickToTopDirective } from './directives/stick-to-top.directive';
-import { StickToTopService } from './directives/stick-to-top.service';
 
 @NgModule({
   imports: [
