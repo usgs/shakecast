@@ -10,11 +10,12 @@ export class MapService {
 
     plotEq(eq: Earthquake) {
         var eqMarker: Marker = {
+            type: 'earthquake',
             lat: Number(eq.lat),
             lon: Number(eq.lon),
             zoom: 10,
             draggable: false,
-            label: eq.event_id}
+            label: '<earthquake-blurb></earthquake-blurb>'}
         this.eqMarkers.next([eqMarker])
         this.center.next(eqMarker)
     }
@@ -26,6 +27,7 @@ export class MapService {
 
 // just an interface for type safety.
 export interface Marker {
+    type: string;
     lat: number;
     lon: number;
     zoom?: number;
