@@ -1,4 +1,7 @@
-<sebm-google-map>
+<sebm-google-map
+  [latitude]="center.lat"
+  [longitude]="center.lon"
+  [zoom]="center.zoom">
     <sebm-google-map-marker 
         *ngFor="let m of markers"
         [latitude]="m.lat"

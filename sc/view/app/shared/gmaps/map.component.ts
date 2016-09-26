@@ -18,12 +18,16 @@ export class MapComponent implements onInit {
     lng: number;
 
     public markers: any = []
+    public center: any = {}
 
     constructor(private mapService: MapService) {}
 
     ngOnInit() {
         this.mapService.eqMarkers.subscribe(markers =>
             this.markers = markers
+        )
+        this.mapService.center.subscribe(center =>
+            this.center = center
         )
     }
 
