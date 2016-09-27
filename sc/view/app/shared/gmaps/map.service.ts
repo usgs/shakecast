@@ -9,19 +9,30 @@ export class MapService {
     public center = new ReplaySubject(1)
 
     plotEq(eq: Earthquake) {
-        var eqMarker: Marker = {
-            type: 'earthquake',
-            lat: Number(eq.lat),
-            lon: Number(eq.lon),
-            zoom: 10,
-            draggable: false,
-            label: '<earthquake-blurb></earthquake-blurb>'}
+        var eqMarker = this.makeMarker(eq)
+        eqMarker['type'] = 'earthquake'
+        eqMarker['zoom'] = 8
+        eqMarker['draggable'] = false
+
         this.eqMarkers.next([eqMarker])
         this.center.next(eqMarker)
     }
 
     clearMarkers() {
         this.eqMarkers.next([])
+    }
+
+    makeMarker(notMarker: any): Marker {
+        var marker: Marker = {
+            type: '',
+            lat: 0,
+            lon: 0,
+            draggable: false
+        }
+        for (var prop in notMarker) {
+            marker[prop] = notMarker[prop]
+        }
+        return marker
     }
 }
 
