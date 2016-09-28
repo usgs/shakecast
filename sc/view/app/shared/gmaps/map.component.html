@@ -8,7 +8,7 @@
         [latitude]="m.lat"
         [longitude]="m.lon">
         
-        <sebm-google-map-info-window *ngIf="m.type === 'earthquake'">
+        <sebm-google-map-info-window *ngIf="m.type === 'earthquake'" [isOpen]="true">
             <earthquake-blurb [eq]="m"></earthquake-blurb>
         </sebm-google-map-info-window>
     
