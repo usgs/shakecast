@@ -7,8 +7,69 @@
     position: fixed;
     top: 0;
     width: 100%;
+    z-index: 1000;
 }
 
 body {
     margin: 0;
+}
+
+.col-1 {
+    width: 8.33%;
+    display: inline-block;
+}
+
+.col-2 {
+    width: 16.66%;
+    display: inline-block;
+}
+
+.col-3 {
+    width: 25%;
+    display: inline-block;
+}
+
+.col-4 {
+    width: 33.33%;
+    display: inline-block;
+}
+
+.col-5 {
+    width: 41.66%;
+    display: inline-block;
+}
+
+.col-6 {
+    width: 50%;
+    display: inline-block;
+}
+
+.col-7 {
+    width: 58.33%;
+    display: inline-block;
+}
+
+.col-8 {
+    width: 66.66%;
+    display: inline-block;
+}
+
+.col-9 {
+    width: 75%;
+    display: inline-block;
+}
+
+.col-10 {
+    width: 83.33%;
+    display: inline-block;
+}
+
+.col-11 {
+    width: 91.66%;
+    display: inline-block;
+}
+
+.col-12 {
+    width: 100%;
+    display: inline-block;
 }

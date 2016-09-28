@@ -1,10 +1,48 @@
-.table-header {
-    width: 100%;
-    height: 30px;
+.outer-container {
+    height: 400px;
+    position: relative;
+    overflow: visible;
+}
+
+.eqs-container {
+    height: 400px;
+    overflow-x: scroll;
+    overflow-y: hidden;
+    white-space: nowrap;
+}
+
+.eq {
+    margin-top: 30px;
+    width: 20%;
+    display: inline-block;
+    min-height: 200px;
+    margin-left: 5px;
+    margin-right: 5px;
+    border-width: 1px; 
+    border-radius: 5px;
+    border-style: solid;
+    border-color:#aaaaaa;
+    vertical-align: top
+}
+
+.eq p {
+    white-space: normal;
+}
+
+.eq-header {
+    height: 40px;
+    background-color: #aaaaaa;
+}
+
+.eq-header p {
+    margin-top: 0;
+    margin-bottom: 0;
+    text-align: center;
+    padding-top: 5px;
 }
 
 .header-container {
     width: 100%;
-    height: 30px;
     position: relative;
 }
+

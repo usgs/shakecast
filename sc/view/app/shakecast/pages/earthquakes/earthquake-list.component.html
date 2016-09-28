@@ -1,22 +1,39 @@
-<div class="header-container">
-    <div class="table-header" stickToTop>
-        <table>
-            <tr>
-                <th>ID</th>
-                <th>Magnitude</th>
-                <th>Lat</th>
-                <th>Lon</th>
-                <th>Description</th>
-            </tr>
-        </table>
+<!--
+<table class="col-12">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Magnitude</th>
+            <th>Lat</th>
+            <th>Lon</th>
+            <th>Description</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr *ngFor="let eq of earthquakeData" (click)="plotEq(eq)">
+            <td>{{eq.event_id}}</td>
+            <td>{{eq.magnitude}}</td>
+            <td>{{eq.lat}}</td>
+            <td>{{eq.lon}}</td>
+            <td>{{eq.place}}</td>
+        </tr>
+    </tbody>
+</table>
+-->
+
+<div class="outer-container">
+    <div class="eqs-container" stickToTop>
+        <div class="eq" *ngFor="let eq of earthquakeData" (click)="plotEq(eq)">
+            <div class="eq-header">
+                <p>{{eq.event_id}}</p>
+            </div>
+            <div class="eq-body">
+                <p>{{eq.magnitude}}</p>
+                <p>{{eq.lat}}</p>
+                <p>{{eq.lon}}</p>
+                <p>{{eq.place}}</p>
+            </div>
+        </div>
     </div>
 </div>
-<table>
-    <tr *ngFor="let eq of earthquakeData" (click)="plotEq(eq)">
-        <td>{{eq.event_id}}</td>
-        <td>{{eq.magnitude}}</td>
-        <td>{{eq.lat}}</td>
-        <td>{{eq.lon}}</td>
-        <td>{{eq.place}}</td>
-    </tr>
-</table>
+
