@@ -25,24 +25,31 @@
     vertical-align: top
 }
 
-.eq p {
-    white-space: normal;
-}
-
+/* header */
 .eq-header {
     height: 40px;
     background-color: #aaaaaa;
 }
 
-.eq-header p {
+.eq-header h3 {
     margin-top: 0;
     margin-bottom: 0;
     text-align: center;
     padding-top: 5px;
 }
 
-.header-container {
-    width: 100%;
-    position: relative;
+/* body */
+.info-container {
+    margin: 5px;
 }
 
+.eq p {
+    white-space: normal;
+    text-align: center;
+}
+
+th, td {
+    text-align: left;
+    padding: 5px;
+    border-bottom: 1px solid #ddd;
+}
