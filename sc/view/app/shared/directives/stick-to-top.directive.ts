@@ -1,6 +1,6 @@
 import { Directive, 
          ElementRef, 
-         OnDestroy } from '@angular/core';
+         OnInit, OnDestroy } from '@angular/core';
 
 import { Observable } from 'rxjs/Observable';
 import { StickToTopService } from './stick-to-top.service'
@@ -12,7 +12,7 @@ import { StickToTopService } from './stick-to-top.service'
             '(window:scroll)': 'checkLock($event)'}
 })
 
-export class StickToTopDirective implements OnDestroy {
+export class StickToTopDirective implements OnInit, OnDestroy {
     private scrolled: number = document.querySelector('body').scrollTop;
     public stuck: boolean = false;
     public stuckTop: number = 0;
@@ -22,6 +22,10 @@ export class StickToTopDirective implements OnDestroy {
     constructor(private el:ElementRef,
                 private sttService: StickToTopService) {
         this.top = el.nativeElement.offsetTop;
+    }
+
+    ngOnInit() {
+        this.checkLock({})
     }
 
     checkLock(event: any) {
