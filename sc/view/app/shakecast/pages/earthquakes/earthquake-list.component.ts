@@ -1,4 +1,4 @@
-import { Component, onInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { EarthquakeService, Earthquake } from './earthquake.service'
 
 @Component({
@@ -6,7 +6,7 @@ import { EarthquakeService, Earthquake } from './earthquake.service'
     templateUrl: 'app/shakecast/pages/earthquakes/earthquake-list.component.html',
     styleUrls: ['app/shakecast/pages/earthquakes/earthquake-list.component.css']
 })
-export class EarthquakeListComponent implements onInit {
+export class EarthquakeListComponent implements OnInit {
     public earthquakeData: Earthquake[] = [];
     constructor(private eqService: EarthquakeService) {}
 

@@ -37,13 +37,11 @@
       '@angular/forms': 'npm:@angular/forms/bundles/forms.umd.js',
 
       // other libraries
-      'rxjs':                       'npm:rxjs',
-      'angular2-in-memory-web-api': 'npm:angular2-in-memory-web-api',
-      'ts':                         'npm:plugin-typescript@4.0.10/lib/plugin.js',
-      'typescript':                 'npm:typescript@1.9.0-dev.20160409/lib/typescript.js',
-      'angular2-notifications':     'ven:angular2-notifications',
-      'angular2-google-maps/core':  'npm:angular2-google-maps/core/core.umd.js'
-
+      'rxjs':                         'npm:rxjs',
+      'angular2-in-memory-web-api':   'npm:angular2-in-memory-web-api',
+      'ts':                           'npm:plugin-typescript@4.0.10/lib/plugin.js',
+      'typescript':                   'npm:typescript@1.9.0-dev.20160409/lib/typescript.js',
+      'angular2-notifications':       'ven:angular2-notifications'
     },
     // packages tells the System loader how to load when no filename and/or no extension
     packages: {

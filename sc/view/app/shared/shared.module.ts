@@ -4,7 +4,8 @@ import { FormsModule }         from '@angular/forms';
 
 // Map service and component
 import { AgmCoreModule } from 'angular2-google-maps/core';
-import { MapComponent } from './gmaps/map.component';
+import { MapComponent } from './maps/map.component';
+import { ShakemapService } from './maps/shakemap.service.ts' 
 
 // Earthquake Blurb
 import { EarthquakeBlurbComponent } from './earthquake-blurb/earthquake-blurb.component'
@@ -20,6 +21,8 @@ import { StickToTopDirective } from './directives/stick-to-top.directive';
   declarations: [MapComponent,
                  StickToTopDirective,
                  EarthquakeBlurbComponent],
+  providers: [
+  ],
   exports: [MapComponent,
             EarthquakeBlurbComponent,
             CommonModule, 

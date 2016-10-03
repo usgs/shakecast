@@ -4,7 +4,7 @@ import 'rxjs/add/operator/map';
 import 'rxjs/add/operator/catch';
 import { Observable } from 'rxjs/Observable';
 
-import { MapService } from '../../../shared/gmaps/map.service'
+import { MapService } from '../../../shared/maps/map.service'
 
 export interface Earthquake {
     shakecast_id: string;
