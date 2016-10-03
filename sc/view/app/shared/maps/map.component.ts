@@ -12,7 +12,10 @@ declare var L: any;
 
 export class MapComponent implements OnInit, OnDestroy {
     public markers: any = [];
+    public overlays: any = [];
     public center: any = {};
+    private markerLayer: any = L.layerGroup()
+    private overlayLayer: any = L.layerGroup()
     private subscriptions: any = [];
     private map: any;
 
@@ -31,8 +34,14 @@ export class MapComponent implements OnInit, OnDestroy {
         // subscribe to earthquake markers
         this.subscriptions.push(this.mapService.eqMarkers.subscribe(markers => {
             
-            
 // CLEAR THE MARKERS
+            if (this.map.hasLayer(this.markerLayer)) {
+                this.map.removeLayer(this.markerLayer)
+            }
+
+            if (this.map.hasLayer(this.overlayLayer)) {
+                this.map.removeLayer(this.overlayLayer)
+            }
 
             for (var mark in markers) {
 
@@ -65,9 +74,10 @@ export class MapComponent implements OnInit, OnDestroy {
     </tr>
 </table>`
 
-                marker.bindPopup(popupContent).openPopup();
+                this.markerLayer = L.layerGroup([marker]).addTo(this.map);
 
-                // add marker to array
+                marker.bindPopup(popupContent).openPopup();
+                // add marker to array -- do we need this still??
                 this.markers.push(marker)
 
                 // plot shakemap if available
@@ -78,9 +88,12 @@ export class MapComponent implements OnInit, OnDestroy {
                         var imageUrl = 'api/shakemaps/' + sm.shakemap_id + '/overlay';
                         var imageBounds = [[sm.lat_min, sm.lon_min], [sm.lat_max, sm.lon_max]];
 
-                        L.imageOverlay(imageUrl, 
+                        
+                        var overlay = L.imageOverlay(imageUrl, 
                                        imageBounds, 
-                                       {opacity: .6}).addTo(this.map);
+                                       {opacity: .6})
+
+                        this.overlayLayer = L.layerGroup([overlay]).addTo(this.map)
                     }
                 });
 
