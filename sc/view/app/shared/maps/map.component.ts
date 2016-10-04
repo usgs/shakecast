@@ -104,10 +104,14 @@ export class MapComponent implements OnInit, OnDestroy {
         // subscribe to center
         this.subscriptions.push(this.mapService.center.subscribe(center => {
             this.center = center
-            this.map.setView([center.lat,center.lon])
+            this.map.setView([center.lat,center.lon], 8)
         }));
     }
 
-    ngOnDestroy() {}
+    ngOnDestroy() {
+        for (var sub in this.subscriptions) {
+            this.subscriptions[sub].unsubscribe()
+        }
+    }
 
 }
