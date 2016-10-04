@@ -11,6 +11,10 @@ export class EarthquakeListComponent implements OnInit {
     constructor(private eqService: EarthquakeService) {}
 
     ngOnInit() {
+        this.getEqs()
+    }
+
+    getEqs() {
         this.eqService.getData().subscribe((result: any) => {
             this.earthquakeData = result.data
             this.plotEq(this.earthquakeData[0])
