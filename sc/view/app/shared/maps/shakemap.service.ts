@@ -14,4 +14,9 @@ export class ShakemapService {
         return this._http.get('/api/shakemaps/' + eq.event_id)
             .map((result: Response) => result.json())
     }
+
+    getFacilities(sm: any) {
+        return this._http.get('/api/shakemaps/' + sm.shakemap_id + '/facilities')
+            .map((result: Response) => result.json())
+    }
 }

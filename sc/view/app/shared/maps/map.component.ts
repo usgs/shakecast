@@ -16,6 +16,7 @@ export class MapComponent implements OnInit, OnDestroy {
     public center: any = {};
     private markerLayer: any = L.layerGroup()
     private overlayLayer: any = L.layerGroup()
+    private facilityLayer: any= L.layerGroup()
     private subscriptions: any = [];
     private map: any;
 
@@ -23,6 +24,13 @@ export class MapComponent implements OnInit, OnDestroy {
                 private smService: ShakemapService) {}
 
     ngOnInit() {
+        this.initMap();
+
+        // if eq page
+        this.initEqMap();
+    }
+
+    initMap() {
         this.map = L.map('map', {
             scrollWheelZoom: false
         }).setView([51.505, -0.09], 8);
@@ -31,68 +39,92 @@ export class MapComponent implements OnInit, OnDestroy {
             attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
             subdomains: ['a','b','c']
         }).addTo(this.map);
+    }
 
+    clearLayers() {
+        if (this.map.hasLayer(this.markerLayer)) {
+            this.map.removeLayer(this.markerLayer)
+        }
+
+        if (this.map.hasLayer(this.overlayLayer)) {
+            this.map.removeLayer(this.overlayLayer)
+        }
+    }
+
+    clearMarkers() {
+        if (this.map.hasLayer(this.markerLayer)) {
+            this.map.removeLayer(this.markerLayer)
+        }
+    }
+
+    clearOverlays() {
+        if (this.map.hasLayer(this.overlayLayer)) {
+            this.map.removeLayer(this.overlayLayer)
+        }
+    }
+
+    //////////////////////////////////////////////////////////////
+    //////////////////// Earthquake Functions ////////////////////
+    initEqMap() {
         // subscribe to earthquake markers
         this.subscriptions.push(this.mapService.eqMarkers.subscribe(markers => {
-            
-// CLEAR THE MARKERS
-            if (this.map.hasLayer(this.markerLayer)) {
-                this.map.removeLayer(this.markerLayer)
-            }
+            // clear existing layers
+            this.clearLayers();
 
-            if (this.map.hasLayer(this.overlayLayer)) {
-                this.map.removeLayer(this.overlayLayer)
-            }
-
-            for (var mark in markers) {
-
-                var marker = L.marker([markers[mark].lat, markers[mark].lon]).addTo(this.map);
-
-                var popupContent = `<table class="my-table">    
-    <tr>
-        <th>ID:</th>
-        <td>` + markers[mark].event_id + `</td>
-    </tr>
-    <tr> 
-        <th>Magnitude:</th>
-        <td>` + markers[mark].magnitude + `</td>
-    </tr>
-    <tr>
-        <th>Depth:</th>
-        <td>` + markers[mark].depth + `</td>
-    </tr>
-    <tr>
-        <th>Latitude:</th>
-        <td>` + markers[mark].lat + `</td>
-    </tr>
-    <tr>
-        <th>Longitude:</th>
-        <td>` + markers[mark].lon + `</td>
-    </tr>
-    <tr>
-        <th>Description:</th>
-        <td>` + markers[mark].place + `</td>
-    </tr>
-</table>`
-
-                this.markerLayer = L.layerGroup([marker]).addTo(this.map);
-
-                marker.bindPopup(popupContent).openPopup();
-                // add marker to array -- do we need this still??
-                this.markers.push(marker)
-
-                // plot shakemap if available
-                this.plotShakemap(markers[mark])
-
-
-            }
+                for (var mark in markers) {
+                    this.plotEventMarker(markers[mark]);
+                }
         }));
 
         // subscribe to center
         this.subscriptions.push(this.mapService.center.subscribe(center => {
-            this.center = center
-            this.map.setView([center.lat + .5,center.lon], 8)
+            this.center = center;
+            this.map.setView([center.lat + .5,center.lon], 8);
         }));
+    }
+
+    plotEventMarker(marker: any) {
+        // create event marker and plot it
+        this.createEventMarker(marker)
+        // plot shakemap if available
+        this.plotShakemap(marker)
+    }
+
+    createEventMarker(event: any) {
+        var marker: any = L.marker([event.lat, event.lon]);
+
+        var popupContent = `<table class="my-table">    
+                                <tr>
+                                    <th>ID:</th>
+                                    <td>` + event.event_id + `</td>
+                                </tr>
+                                <tr> 
+                                    <th>Magnitude:</th>
+                                    <td>` + event.magnitude + `</td>
+                                </tr>
+                                <tr>
+                                    <th>Depth:</th>
+                                    <td>` + event.depth + `</td>
+                                </tr>
+                                <tr>
+                                    <th>Latitude:</th>
+                                    <td>` + event.lat + `</td>
+                                </tr>
+                                <tr>
+                                    <th>Longitude:</th>
+                                    <td>` + event.lon + `</td>
+                                </tr>
+                                <tr>
+                                    <th>Description:</th>
+                                    <td>` + event.place + `</td>
+                                </tr>
+                            </table>`
+
+        this.markerLayer = L.layerGroup([marker]).addTo(this.map);
+
+        marker.bindPopup(popupContent).openPopup();
+        // add marker to array -- do we need this still??
+        this.markers.push(marker)
     }
 
     plotShakemap(event: any) {
@@ -111,40 +143,33 @@ export class MapComponent implements OnInit, OnDestroy {
                 this.overlayLayer = L.layerGroup([overlay]).addTo(this.map)
 
                 // plot facilities if available
+                this.plotFacilities(sm)
             }
         });
     }
 
-    plotFacilities(shakemap: any) {
-        this.smService.shakemapCheck(shakemap).subscribe((result: any) => {
+    plotFacilities(sm: any) {
+        this.smService.getFacilities(sm).subscribe((result: any) => {
             if (result.length > 0) {
-                // plot shakemaps
-                var sm = result[0]
-                var imageUrl = 'api/shakemaps/' + sm.shakemap_id + '/overlay';
-                var imageBounds = [[sm.lat_min, sm.lon_min], [sm.lat_max, sm.lon_max]];
+                var facs: any[] = []
+                var popupContent = ''
+                for (var fac in result) {
+                    var myFac = result[fac]
+                    var marker = L.marker([(myFac.lat_min + myFac.lat_max)/2, 
+                                            (myFac.lon_min + myFac.lon_max)/2]);
 
-                
-                var overlay = L.imageOverlay(imageUrl, 
-                                imageBounds, 
-                                {opacity: .6})
 
-                this.overlayLayer = L.layerGroup([overlay]).addTo(this.map)
-
-                // plot facilities if available
+                    popupContent = `<table class="my-table">
+                                            <tr>
+                                                <th>` + myFac.name + `</th>
+                                            </tr>    
+                                        </table>`
+                    marker.bindPopup(popupContent).openPopup();
+                    facs.push(marker)
+                } 
+                this.facilityLayer = L.layerGroup(facs).addTo(this.map)
             }
-        });
-    }
-
-    clearMarkers() {
-        if (this.map.hasLayer(this.markerLayer)) {
-            this.map.removeLayer(this.markerLayer)
-        }
-    }
-
-    clearOverlays() {
-        if (this.map.hasLayer(this.overlayLayer)) {
-            this.map.removeLayer(this.overlayLayer)
-        }
+        }); 
     }
 
     ngOnDestroy() {
