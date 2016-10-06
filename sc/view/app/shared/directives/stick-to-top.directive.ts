@@ -54,6 +54,8 @@ export class StickToTopDirective implements OnInit, OnDestroy {
     }
 
     ngOnDestroy() {
-        this.sttService.stackHeight -= this.height
+        if (this.stuck) {
+            this.sttService.stackHeight -= this.height
+        }
     }
 }

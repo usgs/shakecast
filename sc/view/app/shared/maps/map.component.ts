@@ -23,12 +23,13 @@ export class MapComponent implements OnInit, OnDestroy {
                 private smService: ShakemapService) {}
 
     ngOnInit() {
-        this.map = L.map('map').setView([51.505, -0.09], 8);
+        this.map = L.map('map', {
+            scrollWheelZoom: false
+        }).setView([51.505, -0.09], 8);
 
         L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
-            subdomains: ['a','b','c'],
-            scrollWheelZoom: false
+            subdomains: ['a','b','c']
         }).addTo(this.map);
 
         // subscribe to earthquake markers
@@ -81,21 +82,7 @@ export class MapComponent implements OnInit, OnDestroy {
                 this.markers.push(marker)
 
                 // plot shakemap if available
-                this.smService.shakemapCheck(markers[mark]).subscribe((result: any) => {
-                    if (result.length > 0) {
-                        // plot shakemaps
-                        var sm = result[0]
-                        var imageUrl = 'api/shakemaps/' + sm.shakemap_id + '/overlay';
-                        var imageBounds = [[sm.lat_min, sm.lon_min], [sm.lat_max, sm.lon_max]];
-
-                        
-                        var overlay = L.imageOverlay(imageUrl, 
-                                       imageBounds, 
-                                       {opacity: .6})
-
-                        this.overlayLayer = L.layerGroup([overlay]).addTo(this.map)
-                    }
-                });
+                this.plotShakemap(markers[mark])
 
 
             }
@@ -106,6 +93,58 @@ export class MapComponent implements OnInit, OnDestroy {
             this.center = center
             this.map.setView([center.lat + .5,center.lon], 8)
         }));
+    }
+
+    plotShakemap(event: any) {
+        this.smService.shakemapCheck(event).subscribe((result: any) => {
+            if (result.length > 0) {
+                // plot shakemaps
+                var sm = result[0]
+                var imageUrl = 'api/shakemaps/' + sm.shakemap_id + '/overlay';
+                var imageBounds = [[sm.lat_min, sm.lon_min], [sm.lat_max, sm.lon_max]];
+
+                
+                var overlay = L.imageOverlay(imageUrl, 
+                                imageBounds, 
+                                {opacity: .6})
+
+                this.overlayLayer = L.layerGroup([overlay]).addTo(this.map)
+
+                // plot facilities if available
+            }
+        });
+    }
+
+    plotFacilities(shakemap: any) {
+        this.smService.shakemapCheck(shakemap).subscribe((result: any) => {
+            if (result.length > 0) {
+                // plot shakemaps
+                var sm = result[0]
+                var imageUrl = 'api/shakemaps/' + sm.shakemap_id + '/overlay';
+                var imageBounds = [[sm.lat_min, sm.lon_min], [sm.lat_max, sm.lon_max]];
+
+                
+                var overlay = L.imageOverlay(imageUrl, 
+                                imageBounds, 
+                                {opacity: .6})
+
+                this.overlayLayer = L.layerGroup([overlay]).addTo(this.map)
+
+                // plot facilities if available
+            }
+        });
+    }
+
+    clearMarkers() {
+        if (this.map.hasLayer(this.markerLayer)) {
+            this.map.removeLayer(this.markerLayer)
+        }
+    }
+
+    clearOverlays() {
+        if (this.map.hasLayer(this.overlayLayer)) {
+            this.map.removeLayer(this.overlayLayer)
+        }
     }
 
     ngOnDestroy() {

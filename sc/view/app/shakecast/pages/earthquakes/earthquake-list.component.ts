@@ -8,6 +8,7 @@ import { EarthquakeService, Earthquake } from './earthquake.service'
 })
 export class EarthquakeListComponent implements OnInit {
     public earthquakeData: Earthquake[] = [];
+    public filter: any = {};
     constructor(private eqService: EarthquakeService) {}
 
     ngOnInit() {
@@ -15,7 +16,7 @@ export class EarthquakeListComponent implements OnInit {
     }
 
     getEqs() {
-        this.eqService.getData().subscribe((result: any) => {
+        this.eqService.getData(this.filter).subscribe((result: any) => {
             this.earthquakeData = result.data
             this.plotEq(this.earthquakeData[0])
         });

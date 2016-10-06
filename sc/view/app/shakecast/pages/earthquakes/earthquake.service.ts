@@ -24,7 +24,7 @@ export class EarthquakeService {
     constructor(private _http: Http,
                 private mapService: MapService) {}
 
-    getData(): Observable<any> {
+    getData(filter: any = {}): Observable<any> {
         return this._http.get('/api/earthquake-data', {filter: this.filter})
             .map((result: Response) => result.json())
     }
