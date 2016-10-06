@@ -48,6 +48,10 @@ export class MapComponent implements OnInit, OnDestroy {
 
         if (this.map.hasLayer(this.overlayLayer)) {
             this.map.removeLayer(this.overlayLayer)
+        }        
+        
+        if (this.map.hasLayer(this.facilityLayer)) {
+            this.map.removeLayer(this.facilityLayer)
         }
     }
 
