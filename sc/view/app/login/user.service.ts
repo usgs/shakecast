@@ -26,7 +26,7 @@ export class UserService {
               private router: Router) {}
 
   
-  login(username, password) {
+  login(username: string, password: string) {
     let headers = new Headers();
     headers.append('Content-Type', 'application/json');
     return this._http.post('/login', 

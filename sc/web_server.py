@@ -95,19 +95,19 @@ def get_eq_data():
     session = Session()
     filter_ = json.loads(request.args.get('filter', '{}'))
     DAY = 24*60*60
-    
     query = session.query(Event)
+    
     if filter_:
         if filter_.get('group', None):
             query = query.filter(Event.groups.any(Group.name.like(filter_['group'])))
-        if filter_.get('lat_max', None):
-            query = query.filter(Event.lat < filter_['lat_max'])
-        if filter_.get('lat_min', None):
-            query = query.filter(Event.lat > filter_['lat_min'])
-        if filter_.get('lon_max', None):
-            query = query.filter(Event.lon < filter_['lon_max'])
-        if filter_.get('lon_min', None):
-            query = query.filter(Event.lat > filter_['lon_min'])
+        if filter_.get('latMax', None):
+            query = query.filter(Event.lat < float(filter_['latMax']))
+        if filter_.get('latMin', None):
+            query = query.filter(Event.lat > float(filter_['latMin']))
+        if filter_.get('lonMax', None):
+            query = query.filter(Event.lon < float(filter_['lonMax']))
+        if filter_.get('lonMin', None):
+            query = query.filter(Event.lon > float(filter_['lonMin']))
 
         if filter_.get('timeframe', None):
             timeframe = filter_.get('timeframe')
@@ -119,9 +119,9 @@ def get_eq_data():
                 query = query.filter(Event.time > time.time() - 31*DAY)    
             elif timeframe == 'year':
                 query = query.filter(Event.time > time.time() - 365*DAY)    
-        if filter_.get('all_events', False) is False:
+        if filter_.get('shakemap', True) is True:
             query = query.filter(Event.shakemaps)
-    
+
     # get the time of the last earthquake in UI,
     # should be 0 for a new request
     eq_time = float(request.args.get('time', 0))

@@ -10,9 +10,10 @@ import { routing,
 import { HeaderComponent } from './header/header.component'
 import { NavComponent } from './nav/nav.component'
 
-import { EarthquakesComponent} from './pages/earthquakes/earthquakes.component'
 import { DashboardComponent } from './pages/dashboard/dashboard.component'
+import { EarthquakesComponent} from './pages/earthquakes/earthquakes.component'
 import { EarthquakeListComponent } from './pages/earthquakes/earthquake-list.component'
+import { EarthquakeFilter } from './pages/earthquakes/earthquake-filter/earthquake-filter.component'
 
 import { SharedModule } from '../shared/shared.module'
 
@@ -31,7 +32,8 @@ import { SharedModule } from '../shared/shared.module'
     NavComponent,
     DashboardComponent,
     EarthquakesComponent,
-    EarthquakeListComponent
+    EarthquakeListComponent,
+    EarthquakeFilter
   ],
   providers: [
   ]
