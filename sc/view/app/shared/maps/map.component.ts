@@ -177,6 +177,10 @@ export class MapComponent implements OnInit, OnDestroy {
     }
 
     ngOnDestroy() {
+        this.endSubscriptions()
+    }
+
+    endSubscriptions() {
         for (var sub in this.subscriptions) {
             this.subscriptions[sub].unsubscribe()
         }

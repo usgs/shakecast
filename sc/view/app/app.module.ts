@@ -18,6 +18,7 @@ import { EarthquakeService } from './shakecast/pages/earthquakes/earthquake.serv
 import { SharedModule } from './shared/shared.module'
 import { MapService } from './shared/maps/map.service'
 import { ShakemapService } from './shared/maps/shakemap.service'
+import { ScreenDimmerService } from './shared/screen-dimmer/screen-dimmer.service'
 
 import { StickToTopService } from './shared/directives/stick-to-top.service';
 
@@ -43,6 +44,7 @@ import { StickToTopService } from './shared/directives/stick-to-top.service';
     MapService,
     ShakemapService,
     StickToTopService,
+    ScreenDimmerService
   ],
   bootstrap: [ AppComponent ]
 })
