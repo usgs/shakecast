@@ -1,6 +1,7 @@
 <div class="filter-button"><h3 (click)="showFilter()">FILTER</h3></div>
 
 <div class="filter-form" [@filterShown]="filterShown">
+    <p class="exit" (click)="cancel()">X</p>
     <h2>Earthquake Filter</h2>
     <input type="checkbox" ([ngModel])="filter.shakemap">Require Shakemap
 
@@ -15,5 +16,4 @@
     <input [(ngModel)]="filter.lonMax" placeholder="Max Longitude">
 
     <button (click)="search()">Search</button>
-    <button (click)="cancel()">Cancel</button>
 </div>

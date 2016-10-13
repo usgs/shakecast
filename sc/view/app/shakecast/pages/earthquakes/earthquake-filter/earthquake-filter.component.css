@@ -42,3 +42,13 @@
 .filter-button h3:hover {
     color: #7af;
 }
+
+.exit {
+    margin: 0;
+    padding-right: 2px;
+    padding-top: 4px;
+    display: block;
+    float: right;
+    font-weight: bolder;
+    cursor: pointer;
+}

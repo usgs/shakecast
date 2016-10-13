@@ -23,13 +23,19 @@
     border-radius: 5px;
     border-style: solid;
     border-color:#aaaaaa;
-    vertical-align: top
+    vertical-align: top;
+    cursor: pointer;
 }
 
 /* header */
 .eq-header {
     height: 40px;
+    border-radius: 4px;
     background-color: #aaaaaa;
+}
+
+.eq:hover .eq-header {
+    background-color: #cccccc
 }
 
 .eq-header h3 {
