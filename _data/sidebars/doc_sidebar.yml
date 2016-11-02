@@ -19,23 +19,6 @@ entries:
       output: pdf
       type: frontmatter
 
-  - title: Overview
-    output: web, pdf
-    folderitems:
-
-    - title: Introduction
-      url: /index.html
-      output: web, pdf
-      type: homepage
-
-    - title: About the authors
-      url: /doc_about.html
-      output: web, pdf
-
-    - title: Support
-      url: /doc_support.html
-      output: web, pdf
-
   - title: Installation
     output: web, pdf
     folderitems:

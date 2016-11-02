@@ -1,10 +1,10 @@
 ---
-title: News
-sidebar: home_sidebar
+title: Blog
+sidebar: tag_sidebar
 keywords: news, blog, updates, release notes, announcements
-permalink: news.html
+permalink: blog.html
 toc: false
-folder: news
+folder: blog
 ---
 
 <div class="home">

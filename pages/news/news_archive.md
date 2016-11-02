@@ -1,10 +1,10 @@
 ---
-title: News
-sidebar: mydoc_sidebar
+title: Blogs
+sidebar: tag_sidebar
 keywords: news, blog, updates, release notes, announcements
 permalink: news_archive.html
 toc: false
-folder: news
+folder: blog
 ---
 
 <div class="home">

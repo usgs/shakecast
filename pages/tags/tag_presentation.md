@@ -3,7 +3,7 @@ title: "ShakeCast paper/presentation pages"
 tagName: presentation
 search: exclude
 permalink: tag_presentation.html
-sidebar: doc_sidebar
+sidebar: tag_sidebar
 folder: tags
 ---
 

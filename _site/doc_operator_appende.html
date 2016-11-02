@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="description" content="HAZUS Model Building Fragility Table">
 <meta name="keywords" content="troubleshootingshakecast_v3,  appendix, hazus, mbt, fragility">
-<title>MBT Fragility | ShakeCast Documentation</title>
+<title>MBT Fragility | USGS ShakeCast</title>
 <link rel="stylesheet" href="css/syntax.css">
 
 
@@ -90,47 +90,16 @@
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
             </button>
-            <a class="navbar-brand" href="index.html"><img src="images/usgs_sc_logo.png">&nbsp;<span class="projectTitle"> ShakeCast Documentation</span></a>
+            <a class="navbar-brand" href="index.html"><img src="images/usgs_sc_logo.png">&nbsp;<span class="projectTitle"> USGS ShakeCast</span></a>
         </div>
         <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
             <ul class="nav navbar-nav navbar-right">
-                <!-- entries without drop-downs appear here -->
-                
-                
-                
-                <li><a href="news">News</a></li>
-                
-                
-                
                 <!-- entries with drop-downs appear here -->
                 <!-- conditional logic to control which topnav appears for the audience defined in the configuration file.-->
                 
                 
                 <li class="dropdown">
-                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">ShakeCast Resources<b class="caret"></b></a>
-                    <ul class="dropdown-menu">
-                        
-                        
-                        <li><a href="https://github.com/klin-usgs/ShakeCast" target="_blank">Github Repo</a></li>
-                        
-                        
-                        
-                        <li><a href="http://earthquake.usgs.gov/research/software/shakecast/" target="_blank">ShakeCast Web</a></li>
-                        
-                        
-                        
-                        <li><a href="ftp://ftpext.usgs.gov/pub/cr/co/Golden/ShakeCast" target="_blank">ShakeCast FTP</a></li>
-                        
-                        
-                        
-                        <li><a href="https://my.usgs.gov/confluence/display/ShakeCast/Home" target="_blank">ShakeCast Science Base</a></li>
-                        
-                        
-                    </ul>
-                </li>
-                
-                <li class="dropdown">
-                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">Products<b class="caret"></b></a>
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">Documentation<b class="caret"></b></a>
                     <ul class="dropdown-menu">
                         
                         
@@ -142,22 +111,45 @@
                         
                         
                         
-                        <li><a href="index.html">ShakeCast Workbook</a></li>
                         
                         
                         
-                        <li><a href="index.html">ShakeCast Lite</a></li>
+                    </ul>
+                </li>
+                
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">Packages<b class="caret"></b></a>
+                    <ul class="dropdown-menu">
+                        
+                        
+                        <li><a href="https://github.com/usgs/ShakeCast" target="_blank">Github Repo</a></li>
+                        
+                        
+                        
+                        <li><a href="https://my.usgs.gov/confluence/display/ShakeCast/Home" target="_blank">ShakeCast Science Base</a></li>
                         
                         
                     </ul>
                 </li>
                 
                 
+                <!-- entries without drop-downs appear here -->
+                
+                
+                
+                <li><a href="news">The Project</a></li>
+                
+                
+                
+                <li><a href="blog">Blog</a></li>
+                
+                
+                
                 
 			<!-- Send feedback function -->
 <script>
 function SendLinkByMail(href) {
-var subject= "ShakeCast Documentation feedback";
+var subject= "USGS ShakeCast feedback";
 var body = "I have some feedback about the MBT Fragility page: ";
 body += window.location.href;
 body += "";
@@ -204,6 +196,7 @@ window.location.href = uri;
     <div class="col-lg-12">&nbsp;</div>
     <!-- Content Row -->
     <div class="row">
+    
         <!-- Sidebar Column -->
         <div class="col-md-3">
 
@@ -225,35 +218,6 @@ window.location.href = uri;
     
     
     
-        
-    
-    <li>
-        <a href="#">Overview</a>
-        <ul>
-            
-            
-            
-            <li><a href="index.html">Introduction</a></li>
-            
-            
-            
-            
-            
-            
-            <li><a href="doc_about.html">About the authors</a></li>
-            
-            
-            
-            
-            
-            
-            <li><a href="doc_support.html">Support</a></li>
-            
-            
-            
-            
-        </ul>
-        
         
     
     <li>
@@ -427,6 +391,7 @@ window.location.href = uri;
 <!-- this highlights the active parent class in the navgoco sidebar. this is critical so that the parent expands when you're viewing a page. This must appear below the sidebar code above. Otherwise, if placed inside customscripts.js, the script runs before the sidebar code runs and the class never gets inserted.-->
 <script>$("li.active").parents('li').toggleClass("active");</script>
 
+    
     <!-- Content Column -->
     <div class="col-md-9">
         
@@ -468,7 +433,7 @@ $('#toc').on('click', 'a', function() {
     
 
     
-    <a target="_blank" href="https://github.com/klin-usgs/shakecast/blob/gh-pages//pages/doc//doc_operator_appende.md" class="btn btn-default githubEditButton" role="button"><i class="fa fa-github fa-lg"></i> Edit me</a>
+    <a target="_blank" href="https://github.com/usgs/shakecast/blob/gh-pages//pages/doc//doc_operator_appende.md" class="btn btn-default githubEditButton" role="button"><i class="fa fa-github fa-lg"></i> Edit me</a>
     
     
 
@@ -497,20 +462,20 @@ $('#toc').on('click', 'a', function() {
       <td>W1H</td>
       <td>Wood, Light Frame</td>
       <td>PGA</td>
-      <td>26</td>
+      <td><code class="label-success highlighter-rouge">26</code></td>
       <td>0.64</td>
-      <td>55</td>
+      <td><code class="label-yellow highlighter-rouge">55</code></td>
       <td>0.64</td>
-      <td>128</td>
+      <td><code class="label-warning highlighter-rouge">128</code></td>
       <td>0.64</td>
-      <td>201</td>
+      <td><code class="label-danger highlighter-rouge">201</code></td>
       <td>0.64</td>
     </tr>
     <tr>
       <td>W2H</td>
       <td>Wood Commercial</td>
       <td>PGA</td>
-      <td>26</td>
+      <td><code class="label-success highlighter-rouge">26</code></td>
       <td>0.64</td>
       <td>56</td>
       <td>0.64</td>
@@ -523,7 +488,7 @@ $('#toc').on('click', 'a', function() {
       <td>S1LH</td>
       <td>Steel Moment Frame, Low Rise</td>
       <td>PGA</td>
-      <td>19</td>
+      <td><code class="label-success highlighter-rouge">19</code></td>
       <td>0.64</td>
       <td>31</td>
       <td>0.64</td>
@@ -536,7 +501,7 @@ $('#toc').on('click', 'a', function() {
       <td>S1MH</td>
       <td>Steel Moment Frame, Mid Rise</td>
       <td>PGA</td>
-      <td>14</td>
+      <td><code class="label-success highlighter-rouge">14</code></td>
       <td>0.64</td>
       <td>26</td>
       <td>0.64</td>
@@ -549,7 +514,7 @@ $('#toc').on('click', 'a', function() {
       <td>S1HH</td>
       <td>Steel Moment Frame, High Rise</td>
       <td>PGA</td>
-      <td>10</td>
+      <td><code class="label-success highlighter-rouge">10</code></td>
       <td>0.64</td>
       <td>21</td>
       <td>0.64</td>
@@ -562,7 +527,7 @@ $('#toc').on('click', 'a', function() {
       <td>S2LH</td>
       <td>Steel Brace Frame, Low Rise</td>
       <td>PGA</td>
-      <td>24</td>
+      <td><code class="label-success highlighter-rouge">24</code></td>
       <td>0.64</td>
       <td>41</td>
       <td>0.64</td>
@@ -575,7 +540,7 @@ $('#toc').on('click', 'a', function() {
       <td>S2MH</td>
       <td>Steel Brace Frame, Mid Rise</td>
       <td>PGA</td>
-      <td>14</td>
+      <td><code class="label-success highlighter-rouge">14</code></td>
       <td>0.64</td>
       <td>27</td>
       <td>0.64</td>
@@ -588,7 +553,7 @@ $('#toc').on('click', 'a', function() {
       <td>S2HH</td>
       <td>Steel Brace Frame, High Rise</td>
       <td>PGA</td>
-      <td>11</td>
+      <td><code class="label-success highlighter-rouge">11</code></td>
       <td>0.64</td>
       <td>22</td>
       <td>0.64</td>
@@ -601,20 +566,20 @@ $('#toc').on('click', 'a', function() {
       <td>S3H</td>
       <td>Steel Light Frame</td>
       <td>PGA</td>
-      <td>15</td>
+      <td><code class="label-success highlighter-rouge">15</code></td>
       <td>0.64</td>
-      <td>26</td>
+      <td><code class="label-yellow highlighter-rouge">26</code></td>
       <td>0.64</td>
-      <td>54</td>
+      <td><code class="label-warning highlighter-rouge">54</code></td>
       <td>0.64</td>
-      <td>100</td>
+      <td><code class="label-danger highlighter-rouge">100</code></td>
       <td>0.64</td>
     </tr>
     <tr>
       <td>S4LH</td>
       <td>Steel Frame Shear Wall, Low Rise</td>
       <td>PGA</td>
-      <td>24</td>
+      <td><code class="label-success highlighter-rouge">24</code></td>
       <td>0.64</td>
       <td>39</td>
       <td>0.64</td>
@@ -627,7 +592,7 @@ $('#toc').on('click', 'a', function() {
       <td>S4MH</td>
       <td>Steel Frame Shear Wall, Mid Rise</td>
       <td>PGA</td>
-      <td>16</td>
+      <td><code class="label-success highlighter-rouge">16</code></td>
       <td>0.64</td>
       <td>28</td>
       <td>0.64</td>
@@ -640,7 +605,7 @@ $('#toc').on('click', 'a', function() {
       <td>S4HH</td>
       <td>Steel Frame Shear Wall, High Rise</td>
       <td>PGA</td>
-      <td>13</td>
+      <td><code class="label-success highlighter-rouge">13</code></td>
       <td>0.64</td>
       <td>25</td>
       <td>0.64</td>
@@ -653,7 +618,7 @@ $('#toc').on('click', 'a', function() {
       <td>C1LH</td>
       <td>Concrete Moment Frame, Low Rise</td>
       <td>PGA</td>
-      <td>21</td>
+      <td><code class="label-success highlighter-rouge">21</code></td>
       <td>0.64</td>
       <td>35</td>
       <td>0.64</td>
@@ -666,7 +631,7 @@ $('#toc').on('click', 'a', function() {
       <td>C1MH</td>
       <td>Concrete Moment Frame, Mid Rise</td>
       <td>PGA</td>
-      <td>15</td>
+      <td><code class="label-success highlighter-rouge">15</code></td>
       <td>0.64</td>
       <td>27</td>
       <td>0.64</td>
@@ -679,7 +644,7 @@ $('#toc').on('click', 'a', function() {
       <td>C1HH</td>
       <td>Concrete Moment Frame, High Rise</td>
       <td>PGA</td>
-      <td>11</td>
+      <td><code class="label-success highlighter-rouge">11</code></td>
       <td>0.64</td>
       <td>22</td>
       <td>0.64</td>
@@ -692,7 +657,7 @@ $('#toc').on('click', 'a', function() {
       <td>C2LH</td>
       <td>Concrete Shear Wall, Low Rise</td>
       <td>PGA</td>
-      <td>24</td>
+      <td><code class="label-success highlighter-rouge">24</code></td>
       <td>0.64</td>
       <td>45</td>
       <td>0.64</td>
@@ -705,7 +670,7 @@ $('#toc').on('click', 'a', function() {
       <td>C2MH</td>
       <td>Concrete Shear Wall, Mid Rise</td>
       <td>PGA</td>
-      <td>17</td>
+      <td><code class="label-success highlighter-rouge">17</code></td>
       <td>0.64</td>
       <td>36</td>
       <td>0.64</td>
@@ -718,7 +683,7 @@ $('#toc').on('click', 'a', function() {
       <td>C2HH</td>
       <td>Concrete Shear Wall, High Rise</td>
       <td>PGA</td>
-      <td>12</td>
+      <td><code class="label-success highlighter-rouge">12</code></td>
       <td>0.64</td>
       <td>29</td>
       <td>0.64</td>
@@ -731,7 +696,7 @@ $('#toc').on('click', 'a', function() {
       <td>PC1H</td>
       <td>Precast Concrete Tiltup Wall</td>
       <td>PGA</td>
-      <td>20</td>
+      <td><code class="label-success highlighter-rouge">20</code></td>
       <td>0.64</td>
       <td>35</td>
       <td>0.64</td>
@@ -744,7 +709,7 @@ $('#toc').on('click', 'a', function() {
       <td>PC2LH</td>
       <td>Precast Concrete Frames, Low Rise</td>
       <td>PGA</td>
-      <td>24</td>
+      <td><code class="label-success highlighter-rouge">24</code></td>
       <td>0.64</td>
       <td>36</td>
       <td>0.64</td>
@@ -757,7 +722,7 @@ $('#toc').on('click', 'a', function() {
       <td>PC2MH</td>
       <td>Precast Concrete Frames, Mid Rise</td>
       <td>PGA</td>
-      <td>17</td>
+      <td><code class="label-success highlighter-rouge">17</code></td>
       <td>0.64</td>
       <td>29</td>
       <td>0.64</td>
@@ -770,7 +735,7 @@ $('#toc').on('click', 'a', function() {
       <td>PC2HH</td>
       <td>Precast Concrete Frames, High Rise</td>
       <td>PGA</td>
-      <td>12</td>
+      <td><code class="label-success highlighter-rouge">12</code></td>
       <td>0.64</td>
       <td>23</td>
       <td>0.64</td>
@@ -783,7 +748,7 @@ $('#toc').on('click', 'a', function() {
       <td>RM1LH</td>
       <td>Reinforced Masonry with Wood, Low Rise</td>
       <td>PGA</td>
-      <td>30</td>
+      <td><code class="label-success highlighter-rouge">30</code></td>
       <td>0.64</td>
       <td>46</td>
       <td>0.64</td>
@@ -796,7 +761,7 @@ $('#toc').on('click', 'a', function() {
       <td>RM1MH</td>
       <td>Reinforced Masonry with Wood, Mid Rise</td>
       <td>PGA</td>
-      <td>20</td>
+      <td><code class="label-success highlighter-rouge">20</code></td>
       <td>0.64</td>
       <td>37</td>
       <td>0.64</td>
@@ -809,7 +774,7 @@ $('#toc').on('click', 'a', function() {
       <td>RM2LH</td>
       <td>Reinforced Masonry with Precast Concrete, Low Rise</td>
       <td>PGA</td>
-      <td>26</td>
+      <td><code class="label-success highlighter-rouge">26</code></td>
       <td>0.64</td>
       <td>42</td>
       <td>0.64</td>
@@ -822,7 +787,7 @@ $('#toc').on('click', 'a', function() {
       <td>RM2MH</td>
       <td>Reinforced Masonry with Precast Concrete, Mid Rise</td>
       <td>PGA</td>
-      <td>17</td>
+      <td><code class="label-success highlighter-rouge">17</code></td>
       <td>0.64</td>
       <td>33</td>
       <td>0.64</td>
@@ -835,7 +800,7 @@ $('#toc').on('click', 'a', function() {
       <td>RM2HH</td>
       <td>Reinforced Masonry with Precast Concrete, High Rise</td>
       <td>PGA</td>
-      <td>12</td>
+      <td><code class="label-success highlighter-rouge">12</code></td>
       <td>0.64</td>
       <td>24</td>
       <td>0.64</td>
@@ -848,7 +813,7 @@ $('#toc').on('click', 'a', function() {
       <td>MHH</td>
       <td>Mobile Homes</td>
       <td>PGA</td>
-      <td>11</td>
+      <td><code class="label-success highlighter-rouge">11</code></td>
       <td>0.64</td>
       <td>18</td>
       <td>0.64</td>
@@ -2232,6 +2197,10 @@ $('#toc').on('click', 'a', function() {
   </tbody>
 </table>
 
+<p>[]:</p>
+
+<p>[]:</p>
+
 
 
 <div class="tags">
@@ -2260,7 +2229,7 @@ $('#toc').on('click', 'a', function() {
             <div class="row">
                 <div class="col-lg-12 footer">
                &copy;2016 U.S. Geological Survey. All rights reserved. <br />
-<p>Page last updated:</span> July 3, 2016<br/> Site last generated: Jul 14, 2016 <br />
+<p>Page last updated:</span> July 3, 2016<br/> Site last generated: Nov 1, 2016 <br />
 <p><img src="images/usgs.png" alt="USGS logo"/></p>
                 </div>
             </div>

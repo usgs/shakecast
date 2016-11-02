@@ -206,7 +206,7 @@
 
 
 {
-"title": "ShakeCast Documentation",
+"title": "ShakeCast",
 "tags": "getting_startedintroduction",
 "keywords": "ShakeCast document",
 "url": "/shakecast/index.html",
@@ -216,17 +216,17 @@
 
 
 {
-"title": "News",
+"title": "Blog",
 "tags": "",
 "keywords": "news, blog, updates, release notes, announcements",
-"url": "/shakecast/news.html",
+"url": "/shakecast/blog.html",
 "summary": ""
 },
 
 
 
 {
-"title": "News",
+"title": "Blogs",
 "tags": "",
 "keywords": "news, blog, updates, release notes, announcements",
 "url": "/shakecast/news_archive.html",
@@ -489,6 +489,48 @@
 
 
 
+
+
+
+
+{
+"title": "U.S. Nuclear Regulatory Commission (USNRC) to Support Nuclear ShakeCast Implementation",
+"tags": "collaboration",
+"keywords": "",
+"url": "/shakecast/2016_nrc_mou.html",
+"summary": "The USNRC entered into a new agreement with the USGS for implementation and operation of a ShakeCast instance"
+}
+,
+
+
+{
+"title": "Reference to %dns address% keyword for ShakeCast notification",
+"tags": "troubleshooting",
+"keywords": "",
+"url": "/shakecast/2016_reference_to_dns_address_notification.html",
+"summary": "Reference to %dns address% keyword for ShakeCast notification"
+}
+,
+
+
+{
+"title": "Default Browser Key for Google Maps API",
+"tags": "software_updatetroubleshooting",
+"keywords": "",
+"url": "/shakecast/2016_google_maps_api_key.html",
+"summary": "ShakeCast includes a default browser key for Google Maps API in latest github revision to satisfy key requirement."
+}
+,
+
+
+{
+"title": "Development and Utilization of USGS ShakeCast for Rapid Post-Earthquake Assessment of Critical Facilities and Infrastructure",
+"tags": "collaborationpresentation",
+"keywords": "",
+"url": "/shakecast/2017_16WCEE.html",
+"summary": "The National Earthquake Conference (NEC) is a quadrennial event providing a unique opportunity for academia, building code experts, design/build professionals, FEMA Directorates, first responders, geologists, local emergency managers, insurance and reinsurance professionals, local and tribal governments, private sector interests, public information officers, state government leaders, social science practitioners, U.S. State and Territorial Earthquake Managers, USGS leadership, and volunteers to share the latest advances in earthquake science, best practices for outreach and education, building science and code advancement, and policy initiatives that improve resiliency."
+}
+,
 
 
 {

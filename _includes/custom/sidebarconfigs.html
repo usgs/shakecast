@@ -10,6 +10,9 @@
 {% elsif page.sidebar == "doc_sidebar" %}
 {% assign sidebar = site.data.sidebars.doc_sidebar.entries %}
 
+{% elsif page.sidebar == "tag_sidebar" %}
+{% assign sidebar = site.data.sidebars.tag_sidebar.entries %}
+
 {% else %}
 {% assign sidebar = site.data.sidebars.home_sidebar.entries %}
 {% endif %}

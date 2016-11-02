@@ -1,8 +1,8 @@
 ---
-title: ShakeCast Documentation
+title: ShakeCast
 keywords: ShakeCast document
 tags: [getting_started, introduction]
-sidebar: doc_sidebar
+sidebar: no_sidebar
 permalink: index.html
 summary: ShakeCast oview will help you get started quickly with the documentation. The other topics in this help provide additional information and detail about working with other aspects of ShakeCast.
 slideshow: yes
