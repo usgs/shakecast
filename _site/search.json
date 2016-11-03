@@ -14,6 +14,16 @@
 
 
 {
+"title": "Developer Documentation",
+"tags": "developer",
+"keywords": "travisappveyorgithubdeveloper",
+"url": "/shakecast/ci_flow.html",
+"summary": "Describes the implementation and flow of continuous integration as implemented by USGS developers"
+},
+
+
+
+{
 "title": "ShakeCast FAQ",
 "tags": "troubleshooting",
 "keywords": "frequently asked questions, FAQ, question and answer, collapsible sections, expand, collapse",
@@ -211,6 +221,16 @@
 "keywords": "ShakeCast document",
 "url": "/shakecast/index.html",
 "summary": "ShakeCast oview will help you get started quickly with the documentation. The other topics in this help provide additional information and detail about working with other aspects of ShakeCast."
+},
+
+
+
+{
+"title": "ShakeCast Inventory Workbook",
+"tags": "getting_started",
+"keywords": "installation, inventory, shakecast_v3, facility, user, group",
+"url": "/shakecast/inventory_workbook.html",
+"summary": ""
 },
 
 

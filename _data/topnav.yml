@@ -9,6 +9,7 @@ topnav_dropdowns:
         - title: ShakeCast V4 (pyCast)
           url: /apidocs
         - title: ShakeCast Workbook
+          url: /inventory_workbook.html
         - title: ShakeCast Lite
     - title: Packages
       folderitems:
