@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<head>
+    <meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="The National Earthquake Conference (NEC) is a quadrennial event providing a unique opportunity for academia, building code experts, design/build professional...">
+<meta name="keywords" content="collaborationpresentation,  ">
+<title>2016 National Earthquake Conference | USGS ShakeCast</title>
+<link rel="stylesheet" href="css/syntax.css">
+
+
+<link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
+<!--<link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">-->
+<link rel="stylesheet" href="css/modern-business.css">
+<link rel="stylesheet" href="css/lavish-bootstrap.css">
+<link rel="stylesheet" href="css/customstyles.css">
+<link rel="stylesheet" href="css/theme-blue.css">
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.min.js"></script>
+<script src="js/jquery.navgoco.min.js"></script>
+
+
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/anchor-js/2.0.0/anchor.min.js"></script>
+<script src="js/toc.js"></script>
+<script src="js/customscripts.js"></script>
+
+<link rel="shortcut icon" href="images/favicon.ico">
+
+<!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+<!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+<!--[if lt IE 9]>
+<script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+<script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+<![endif]-->
+
+<link rel="stylesheet" href="css/project.css">
+
+<link rel="alternate" type="application/rss+xml" title="" href="feed.xml">
+
+    <script>
+        $(document).ready(function() {
+            // Initialize navgoco with default options
+            $("#mysidebar").navgoco({
+                caretHtml: '',
+                accordion: true,
+                openClass: 'active', // open
+                save: false, // leave false or nav highlighting doesn't work right
+                cookie: {
+                    name: 'navgoco',
+                    expires: false,
+                    path: '/'
+                },
+                slide: {
+                    duration: 400,
+                    easing: 'swing'
+                }
+            });
+
+            $("#collapseAll").click(function(e) {
+                e.preventDefault();
+                $("#mysidebar").navgoco('toggle', false);
+            });
+
+            $("#expandAll").click(function(e) {
+                e.preventDefault();
+                $("#mysidebar").navgoco('toggle', true);
+            });
+
+        });
+
+    </script>
+    <script>
+        $(function () {
+            $('[data-toggle="tooltip"]').tooltip()
+        })
+    </script>
+    
+
+</head>
+<body>
+<!-- Navigation -->
+<nav class="navbar navbar-inverse navbar-fixed-top">
+    <div class="container topnavlinks">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="index.html"><img src="images/usgs_sc_logo.png">&nbsp;<span class="projectTitle"> USGS ShakeCast</span></a>
+        </div>
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+            <ul class="nav navbar-nav navbar-right">
+                <!-- entries with drop-downs appear here -->
+                <!-- conditional logic to control which topnav appears for the audience defined in the configuration file.-->
+                
+                
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">Documentation<b class="caret"></b></a>
+                    <ul class="dropdown-menu">
+                        
+                        
+                        <li><a href="doc_introduction.html">ShakeCast V3</a></li>
+                        
+                        
+                        
+                        <li><a href="apidocs">ShakeCast V4 (pyCast)</a></li>
+                        
+                        
+                        
+                        
+                        
+                        
+                    </ul>
+                </li>
+                
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">Packages<b class="caret"></b></a>
+                    <ul class="dropdown-menu">
+                        
+                        
+                        <li><a href="https://github.com/usgs/ShakeCast" target="_blank">Github Repo</a></li>
+                        
+                        
+                        
+                        <li><a href="https://my.usgs.gov/confluence/display/ShakeCast/Home" target="_blank">ShakeCast Science Base</a></li>
+                        
+                        
+                    </ul>
+                </li>
+                
+                
+                <!-- entries without drop-downs appear here -->
+                
+                
+                
+                <li><a href="news">The Project</a></li>
+                
+                
+                
+                <li><a href="blog">Blog</a></li>
+                
+                
+                
+                
+			<!-- Send feedback function -->
+<script>
+function SendLinkByMail(href) {
+var subject= "USGS ShakeCast feedback";
+var body = "I have some feedback about the 2016 National Earthquake Conference page: ";
+body += window.location.href;
+body += "";
+var uri = "mailto:shakecast-help@usgs.gov?subject=";
+uri += encodeURIComponent(subject);
+uri += "&body=";
+uri += encodeURIComponent(body);
+window.location.href = uri;
+}
+</script>
+
+<li><a href="javascript:void(0)" onclick="SendLinkByMail()"><i class="fa fa-envelope-o"></i> Feedback</a></li>
+
+		
+                <!--comment out this block if you want to hide search-->
+                <li>
+                    <!--start search-->
+                    <div id="search-demo-container">
+                        <input type="text" id="search-input" placeholder="search...">
+                        <ul id="results-container"></ul>
+                    </div>
+                    <script src="js/jekyll-search.js" type="text/javascript"></script>
+                    <script type="text/javascript">
+                            SimpleJekyllSearch.init({
+                                searchInput: document.getElementById('search-input'),
+                                resultsContainer: document.getElementById('results-container'),
+                                dataSource: './search.json',
+                                searchResultTemplate: '<li><a href="{url}" title="2016 National Earthquake Conference">{title}</a></li>',
+                    noResultsText: 'No results found.',
+                            limit: 10,
+                            fuzzy: true,
+                    })
+                    </script>
+                    <!--end search-->
+                </li>
+            </ul>
+        </div>
+        </div>
+        <!-- /.container -->
+</nav>
+
+<!-- Page Content -->
+<div class="container">
+    <div class="col-lg-12">&nbsp;</div>
+    <!-- Content Row -->
+    <div class="row">
+    
+        <!-- Sidebar Column -->
+        <div class="col-md-3">
+
+          
+
+
+
+
+
+
+
+
+
+
+
+
+<ul id="mysidebar" class="nav">
+    <li class="sidebarTitle"> </li>
+    
+    
+    
+    <li>
+        <a href="#">Tag archive pages</a>
+        <ul>
+            
+            
+            
+            <li><a href="tag_getting_started.html">Getting Started</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="tag_shakecast_v3.html">ShakeCast V3 pages</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="tag_pycast.html">ShakeCast V4 (pyCast) pages</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="tag_troubleshooting.html">Troubleshooting pages</a></li>
+            
+            
+            
+            
+        </ul>
+        
+        
+        
+        <!-- if you aren't using the accordion, uncomment this block:
+           <p class="external">
+               <a href="#" id="collapseAll">Collapse All</a> | <a href="#" id="expandAll">Expand All</a>
+           </p>
+           -->
+    </li>
+</ul>
+</div>
+
+<!-- this highlights the active parent class in the navgoco sidebar. this is critical so that the parent expands when you're viewing a page. This must appear below the sidebar code above. Otherwise, if placed inside customscripts.js, the script runs before the sidebar code runs and the class never gets inserted.-->
+<script>$("li.active").parents('li').toggleClass("active");</script>
+
+    
+    <!-- Content Column -->
+    <div class="col-md-9">
+        
+        <article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+
+    <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">2016 National Earthquake Conference</h1>
+        <p class="post-meta"><time datetime="2016-05-04T00:00:00-06:00" itemprop="datePublished">May 4, 2016</time> /
+            
+            
+            
+            <a href="./tag_collaboration">collaboration</a>, 
+            
+            
+            
+            <a href="./tag_presentation">presentation</a>
+            
+            
+            
+
+        </p>
+
+
+    </header>
+
+    <div class="post-content" itemprop="articleBody">
+
+        
+        <div class="summary">The National Earthquake Conference (NEC) is a quadrennial event providing a unique opportunity for academia, building code experts, design/build professionals, FEMA Directorates, first responders, geologists, local emergency managers, insurance and reinsurance professionals, local and tribal governments, private sector interests, public information officers, state government leaders, social science practitioners, U.S. State and Territorial Earthquake Managers, USGS leadership, and volunteers to share the latest advances in earthquake science, best practices for outreach and education, building science and code advancement, and policy initiatives that improve resiliency.</div>
+        
+
+        <h2 id="a-new-shakemap-scenario-collection-for-mitigation--response-planning">A New ShakeMap Scenario Collection for Mitigation &amp; Response Planning</h2>
+
+<p>05/04/2016 2:30PM - 3:30PM</p>
+
+<p>(Atlantic I &amp; II)</p>
+
+<p>The USGS ShakeMap and Nation Hazard Mapping team is developing a collection of earthquake scenarios to be use for mitigation and response planning, engineering, and loss analyses. The science behind and practical use aspects of these products will be discussed.</p>
+
+<p>Eric Thompson, Civil Engineer, USGS and David Wald, Seismologist, USGS</p>
+
+<h2 id="shakecast-automated-post-earthquake-evaluation-for-critical-facilities">ShakeCast: Automated Post-Earthquake Evaluation for Critical Facilities</h2>
+
+<p>05/05/2016 3:30PM - 4:30PM</p>
+
+<p>(International I)</p>
+
+<p>The USGS ShakeCast System is employed by numerous critical facility, utility, business, and government agencies. An introduction of ShakeCast will be provided, and users will be updated on evolving ShakeCast technologies. Users will be briefed on developing landslide and liquefaction modules, and improved engineering fragility components of the system.</p>
+
+<p>Kuo-Wan Lin, Seismologist, USGS and David Wald, Seismologist, USGS</p>
+
+<p>[]:</p>
+
+<p>[]:</p>
+
+
+    </div>
+
+
+
+</article>
+
+
+
+<hr class="shaded"/>
+
+<footer>
+            <div class="row">
+                <div class="col-lg-12 footer">
+               &copy;2016 U.S. Geological Survey. All rights reserved. <br />
+ Site last generated: Nov 3, 2016 <br />
+<p><img src="images/usgs.png" alt="USGS logo"/></p>
+                </div>
+            </div>
+</footer>
+
+
+    </div>
+    <!-- /.row -->
+</div>
+<!-- /.container -->
+    </div>
+    <script>
+    jQuery(function ($) {
+        $('.post-content').annotator()
+                .annotator('setupPlugins', {tokenUrl: 'http://example.com/api/token'})
+    });
+    </script>
+</body>
+</html>
