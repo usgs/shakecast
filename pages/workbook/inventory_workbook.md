@@ -3,6 +3,7 @@ title: ShakeCast Inventory Workbook
 tags: [getting_started, workbook]
 keywords: installation, inventory, shakecast_v3, facility, user, group
 permalink: inventory_workbook.html
+sidebar: workbook_sidebar
 folder: workbook
 ---
 

@@ -1,31 +1,15 @@
 
 entries:
 - title: Sidebar
-  product: pyCast
-  folders:
-  - title: Introduction
-    output: web
-    url: /pycast_docs.html
-
-  - title: Developer Documentation
-    output: web
-    url: /apidocs
-
-  # This is your sidebar TOC. The sidebar code loops through sections here and provides the appropriate formatting.
-
-entries:
-- title: Sidebar
   levels: one
   folders:
-  - title: ShakeCast V4 (pyCast)
+  - title: pyCast
     output: web
     folderitems:
+      - title: Introduction
+        output: web
+        url: /pycast_docs.html
 
-    - title: Introduction
-      output: web
-      url: /pycast_docs.html
-
-    - title: Developer Documentation
-      output: web
-      url: /apidocs
-
+      - title: Developer Documentation
+        output: web
+        url: /apidocs

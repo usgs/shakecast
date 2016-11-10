@@ -102,6 +102,7 @@ sidebars:
 - product1_sidebar
 - product2_sidebar
 - pycast_sidebar
+- workbook_sidebar
 - other
 
 description: "Documenting ShakeCast software and related products."
