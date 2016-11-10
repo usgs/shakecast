@@ -13,6 +13,9 @@
 {% elsif page.sidebar == "tag_sidebar" %}
 {% assign sidebar = site.data.sidebars.tag_sidebar.entries %}
 
+{% elsif page.sidebar == "pycast_sidebar" %}
+{% assign sidebar = site.data.sidebars.pycast_sidebar.entries %}
+
 {% else %}
 {% assign sidebar = site.data.sidebars.home_sidebar.entries %}
 {% endif %}
