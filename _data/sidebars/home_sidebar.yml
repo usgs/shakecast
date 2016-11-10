@@ -13,7 +13,7 @@ entries:
         output: web
 
       - title: ShakeCast V4 (pyCast) 
-        url: /apidocs
+        url: /pycast_docs.html
         output: web
 
       - title: Workbook 

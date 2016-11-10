@@ -1,0 +1,13 @@
+
+entries:
+- title: sidebar
+  product: pyCast
+  folders:
+
+  - title: Introduction
+    output: web
+    url: /pycast_docs.html
+
+  - title: Developer Documentation
+    output: web
+    url: /apidocs
