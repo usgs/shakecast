@@ -5,7 +5,7 @@ topnav_dropdowns:
     - title: Documentation
       folderitems:
         - title: ShakeCast V3
-          url: /doc_introduction.html
+          url: /v3_introduction.html
         - title: ShakeCast V4 (pyCast)
           url: /apidocs
         - title: ShakeCast Workbook

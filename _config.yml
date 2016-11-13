@@ -99,8 +99,7 @@ defaults:
 sidebars:
 - home_sidebar
 - doc_sidebar
-- product1_sidebar
-- product2_sidebar
+- v3_sidebar
 - other
 - pycast_sidebar
 
