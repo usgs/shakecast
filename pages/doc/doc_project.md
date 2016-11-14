@@ -38,11 +38,16 @@ Email and txt messaging, PDF facility report, Web-based GUI using Google Maps.
 
 ## References and Acknowledgements
 
-_Fraser_, W. A., D. J. Wald, and K-W. Lin (2007). Using ShakeMaps and ShakeCast to Prioritize Post-Earthquake Dam Inspections, Proceedings of the Geotechnical Earthquake Engineering and Soil Dynamics Conference IV, Sacramento, CA.
+Fraser, W. A., D. J. Wald, and K-W. Lin (2007). Using ShakeMaps and ShakeCast to Prioritize Post-Earthquake Dam Inspections, Proceedings of the Geotechnical Earthquake Engineering and Soil Dynamics Conference IV, Sacramento, CA.
+
 Lin, K.W., and Wald, D.J., 2008, ShakeCast manual: U.S. Geological Survey Open-File Report 2008-1158, 90 p.
+
 Wald, David J, and K. Lin (2007). USGS ShakeCast- Automating, Simplifying, and Improving the Use of ShakeMap for Post-Earthquake Decision Making , U.S. Geological Survey Fact Sheet 2007-3086, 6 pages.
+
 Wald, David J., K. Lin, K. Porter, and L. Turner (2008). ShakeCast: Automating and Improving the Use of ShakeMap for Post-Earthquake Decision-Making and Response, Earthquake Spectra, in review.
+
 Wald, D. J., B. C. Worden, V. Quitoriano, and K. L. Pankow (2005). ShakeMap Manual: Users Guide, Technical Manual, and Software Guide, USGS Open File Report, 131 pp.
+
 Wald, D. J., K. Lin, B. Worden, and L. Turner (2006). ShakeCast: Facilitating the Use of ShakeMap for Post-Earthquake Decision-Making and Response within Caltrans and other Critical Lifeline Communities, September 2006, Proceedings of the Fifth National Seismic Conference on Bridges & Highways, San Francisco.
 
 ## Acknowledgements
