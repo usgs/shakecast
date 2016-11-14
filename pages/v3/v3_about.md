@@ -3,9 +3,9 @@ title: About the authors
 keywords: documentation, ShakeCast
 last_updated: July 3, 2016
 tags: [getting_started]
-sidebar: doc_sidebar
-permalink: doc_about.html
-folder: doc
+sidebar: v3_sidebar
+permalink: v3_about.html
+folder: v3
 toc: false
 ---
 
