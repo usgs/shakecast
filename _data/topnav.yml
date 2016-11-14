@@ -24,7 +24,7 @@ topnav:
 - title: Topnav
   items:
     - title: The Project
-      url: /news
+      url: /doc_project.html
     - title: Blog
       url: /blog
 
