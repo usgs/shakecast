@@ -1,0 +1,15 @@
+
+entries:
+- title: Sidebar
+  levels: one
+  folders:
+  - title: Workbooks
+    output: web
+    folderitems:
+        - title: Inventory Workbook
+          output: web
+          url: /inventory_workbook.html
+
+        - title: AEBM Workbook
+          output: web
+          url: /aebm_workbook.html

@@ -99,9 +99,10 @@ defaults:
 sidebars:
 - home_sidebar
 - doc_sidebar
+- pycast_sidebar
+- workbook_sidebar
 - v3_sidebar
 - other
-- pycast_sidebar
 
 description: "Documenting ShakeCast software and related products."
 # the description is used in the feed.xml file
