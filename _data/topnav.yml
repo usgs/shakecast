@@ -13,9 +13,9 @@ topnav_dropdowns:
         - title: ShakeCast Lite
     - title: Packages
       folderitems:
-        - title: Github Repo
-          external_url: https://github.com/usgs/ShakeCast
-        - title: ShakeCast Science Base
+        - title: ShakeCast V3
+          url: /v3_package.html
+        - title: ShakeCast Science Base (legacy V2)
           external_url: https://my.usgs.gov/confluence/display/ShakeCast/Home
 
 ## Topnav single links

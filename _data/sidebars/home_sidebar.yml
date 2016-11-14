@@ -9,11 +9,11 @@ entries:
     folderitems:
 
       - title: ShakeCast V3 
-        url: /doc_introduction.html
+        url: /v3_introduction.html
         output: web
 
       - title: ShakeCast V4 (pyCast) 
-        url: /apidocs
+        url: /pycast_docs.html
         output: web
 
       - title: Workbook 
