@@ -24,6 +24,7 @@ import { NotificationsService } from 'angular2-notifications'
 })
 export class EarthquakeFilter {
     public filterShown = false;
+
     public filter: filter = {
         shakemap: true,
         facilities: false
@@ -42,6 +43,7 @@ export class EarthquakeFilter {
                 private notService: NotificationsService) {}
 
     search() {
+        this.eqService.getData(this.filter);
         this.hideFilter();
     }
 
@@ -57,10 +59,6 @@ export class EarthquakeFilter {
     hideFilter() {
         this.sdService.undimScreen();
         this.filterShown = false;
-    }
-
-    dim() {
-        this.sdService.dimScreen()
     }
 }
 

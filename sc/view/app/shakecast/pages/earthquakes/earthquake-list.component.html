@@ -1,5 +1,5 @@
 <div class="outer-container">
-    <div class="eqs-container" stickToTop>
+    <div class="eqs-container" stickToTop [@pulledRight]="pulledRight">
         <div class="eq" *ngFor="let eq of earthquakeData" (click)="plotEq(eq)">
             <div class="eq-header">
                 <h3>{{eq.event_id}}</h3>

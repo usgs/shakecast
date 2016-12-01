@@ -3,7 +3,7 @@
 <div class="filter-form" [@filterShown]="filterShown">
     <p class="exit" (click)="cancel()">X</p>
     <h2>Earthquake Filter</h2>
-    <input type="checkbox" ([ngModel])="filter.shakemap">Require Shakemap
+    <input type="checkbox" (change)="filter.shakemap=!filter.shakemap" [(ngModel)]="filter.shakemap">Require Shakemap
 
     <select *ngIf="filter.shakemap === true" [(ngModel)]="filter.facilities">
         <option value="true">Affected Facilities</option>

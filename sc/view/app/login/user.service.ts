@@ -43,8 +43,8 @@ export class UserService {
                   }
               });
   }
- 
-  logout() {
+
+   logout() {
     this._http.get('/logout').map((resp: Response) => resp.json)
                           .subscribe(resp => {
                               this.loggedIn = false

@@ -27,7 +27,8 @@ export class AppComponent implements onInit {
     ngOnInit() {
         // Skip to dashboard if user already logged in
         this.userService.checkLoggedIn().subscribe( ((data) => {
-            if (data.success === true) {
+            if (data.loggedIn === true) {
+                this.userService.isAdmin = data.isAdmin
                 this.router.navigate(['/shakecast'])
             }
         }));

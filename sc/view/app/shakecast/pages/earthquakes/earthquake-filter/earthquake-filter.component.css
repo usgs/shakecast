@@ -19,6 +19,7 @@
 .filter-button {
     width: 100%;
     bottom: 0;
+    margin-top: 20px;
     text-align: center;
     position: relative;
     margin-bottom: 0;

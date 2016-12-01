@@ -76,7 +76,9 @@ def login():
 
 @app.route('/logged_in')
 def logged_in():
-    return jsonify(success=bool(current_user.is_authenticated))
+    return jsonify(success=True, 
+                   loggedIn=bool(current_user.is_authenticated),
+                   isAdmin=bool(current_user.is_admin()))
 
 @app.route('/logout')
 def logout():
