@@ -436,7 +436,7 @@ def new_event_notification(notifications = [],
 
     # create HTML for the event email
     not_builder = NotificationBuilder()
-    html = not_builder.build_new_event_html(events=events)
+    html = not_builder.build_new_event_html(events=events, notification=notification)
     
     notification.status = 'HTML success'
 
@@ -454,7 +454,7 @@ def new_event_notification(notifications = [],
         msg_gmap = MIMEImage(map_image.read(), _subtype='png')
         map_image.close()
         
-        msg_gmap.add_header('Content-ID', '<gmap{0}>'.format(count))
+        msg_gmap.add_header('Content-ID', '<gmap{0}_{1}>'.format(count, notification.shakecast_id))
         msg_gmap.add_header('Content-Disposition', 'inline')
         msg.attach(msg_gmap)
     
@@ -465,7 +465,7 @@ def new_event_notification(notifications = [],
     logo_file = open(logo_str, 'rb')
     msg_image = MIMEImage(logo_file.read(), _subtype='png')
     logo_file.close()
-    msg_image.add_header('Content-ID', '<sc_logo>')
+    msg_image.add_header('Content-ID', '<sc_logo_{0}>'.format(notification.shakecast_id))
     msg_image.add_header('Content-Disposition', 'inline')
     msg.attach(msg_image)
     
@@ -527,7 +527,7 @@ def inspection_notification(notification=Notification(),
             
             # get and attach shakemap
             msg_shakemap = MIMEImage(shakemap.get_map(), _subtype='jpeg')
-            msg_shakemap.add_header('Content-ID', '<shakemap>')
+            msg_shakemap.add_header('Content-ID', '<shakemap{0}>'.format(shakemap.shakecast_id))
             msg_shakemap.add_header('Content-Disposition', 'inline')
             msg.attach(msg_shakemap)
             
@@ -538,7 +538,7 @@ def inspection_notification(notification=Notification(),
             logo_file = open(logo_str, 'rb')
             msg_image = MIMEImage(logo_file.read())
             logo_file.close()
-            msg_image.add_header('Content-ID', '<sc_logo>')
+            msg_image.add_header('Content-ID', '<sc_logo{0}>'.format(shakemap.shakecast_id))
             msg_image.add_header('Content-Disposition', 'inline')
             msg.attach(msg_image)
             
