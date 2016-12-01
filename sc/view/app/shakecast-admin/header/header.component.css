@@ -1,0 +1,48 @@
+.header {
+    background-color: #dddddd;
+    border-radius: 10px;
+    height: 40px;
+    position: fixed;
+    display: flex;
+    align-items: center;
+    transition: top 0.2s ease-in-out;
+    z-index: 1000;
+    width: 80%;
+    left: 10%;
+    margin-top: 5px;
+}
+
+.header-space {
+    width: 100%;
+    height: 40px;
+}
+
+p {
+    display: inline-block;
+    margin-bottom: 0px;
+    margin-left: 35px;
+    margin-top: 0px;
+    position: absolute;
+    font-weight: bold;
+}
+
+.sc-logo {
+    display: inline-block;
+    border-radius: 50%;
+    margin-top: 0px;
+    margin-left: 10px;
+    height: 20px;
+    width: auto;
+}
+
+.cont {
+    position: relative;
+    width: 165px;
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+}
+
+.nav-bar {
+    margin-left: 5px;
+}
