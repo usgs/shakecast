@@ -971,7 +971,7 @@ class NotificationBuilder(object):
         pass
     
     @staticmethod
-    def build_new_event_html(events=[], group=None, web=False):
+    def build_new_event_html(events=[], notification=None, group=None, web=False):
         conf_file = os.path.join(sc_dir(),
                                  'templates',
                                  'new_event',
@@ -992,6 +992,7 @@ class NotificationBuilder(object):
         
         return template.render(events=events,
                                group=group,
+                               notification=notification,
                                sc=SC(),
                                config=config,
                                web=web)
