@@ -15,6 +15,7 @@ import { DashboardComponent } from './pages/dashboard/dashboard.component'
 
 import { FacilitiesComponent } from './pages/facilities/facilities.component'
 import { FacilityListComponent } from './pages/facilities/facility-list.component'
+import { FacilityFilter } from './pages/facilities/facility-filter/facility-filter.component'
 
 import { EarthquakesComponent } from './pages/earthquakes/earthquakes.component'
 import { EarthquakeListComponent } from './pages/earthquakes/earthquake-list.component'
@@ -38,6 +39,7 @@ import { SharedModule } from '../shared/shared.module'
     DashboardComponent,
     FacilitiesComponent,
     FacilityListComponent,
+    FacilityFilter,
     EarthquakesComponent,
     EarthquakeListComponent,
     UploadComponent

@@ -150,9 +150,20 @@ def get_eq_data():
 def get_fac_data():
     session = Session()
     filter_ = json.loads(request.args.get('filter', '{}'))
-    DAY = 24*60*60
     query = session.query(Facility)
-        
+
+    if filter_:
+        if filter_.get('group', None):
+            query = query.filter(Facility.groups.any(Group.name.like(filter_['group'])))
+        if filter_.get('latMax', None):
+            query = query.filter(Facility.lat_min < float(filter_['latMax']))
+        if filter_.get('latMin', None):
+            query = query.filter(Facility.lat_max > float(filter_['latMin']))
+        if filter_.get('lonMax', None):
+            query = query.filter(Facility.lon_min < float(filter_['lonMax']))
+        if filter_.get('lonMin', None):
+            query = query.filter(Facility.lon_max > float(filter_['lonMin']))
+
     facs = (query.limit(50)
                  .all())
     

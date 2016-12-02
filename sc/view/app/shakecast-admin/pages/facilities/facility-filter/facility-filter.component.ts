@@ -12,7 +12,7 @@ import { NotificationsService } from 'angular2-notifications'
 @Component({
     selector: 'facility-filter',
     templateUrl: 'app/shakecast-admin/pages/facilities/facility-filter/facility-filter.component.html',
-    styleUrls: ['app/shakecast-admin/pages/earthquakes/facility-filter/facility-filter.component.css'],  
+    styleUrls: ['app/shakecast-admin/pages/facilities/facility-filter/facility-filter.component.css'],  
     animations: [
       trigger('filterShown', [
         state('false', style({bottom: '-150px'})),
@@ -22,12 +22,10 @@ import { NotificationsService } from 'angular2-notifications'
       ])
     ]
 })
-export class EarthquakeFilter {
+export class FacilityFilter {
     public filterShown = false;
 
     public filter: filter = {
-        shakemap: true,
-        facilities: false
     }
     public options = {
         timeOut: 0,
@@ -38,12 +36,11 @@ export class EarthquakeFilter {
         showProgressBar: false,
         pauseOnHover: true
     };
-    constructor(private eqService: FacilityService,
-                private sdService: ScreenDimmerService,
-                private notService: NotificationsService) {}
+    constructor(private facService: FacilityService,
+                private sdService: ScreenDimmerService) {}
 
     search() {
-        this.eqService.getData(this.filter);
+        this.facService.getData(this.filter);
         this.hideFilter();
     }
 
@@ -63,8 +60,6 @@ export class EarthquakeFilter {
 }
 
 export interface filter  {
-    shakemap?: boolean;
-    facilities?: boolean;
     latMax?:  number;
     latMin?: number;
     lonMax?: number;
