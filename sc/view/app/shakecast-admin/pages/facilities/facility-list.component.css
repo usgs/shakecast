@@ -66,6 +66,10 @@ td p {
     margin: 0px;
 }
 
+table {
+    width: 95%
+}
+
 /* eq filter */
 .eq-filter {
     z-index: 1000;

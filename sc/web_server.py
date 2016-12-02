@@ -145,6 +145,37 @@ def get_eq_data():
     Session.remove()
     return jsonify(success=True, data=eq_dicts)
 
+@app.route('/api/facility-data')
+@login_required
+def get_fac_data():
+    session = Session()
+    filter_ = json.loads(request.args.get('filter', '{}'))
+    query = session.query(Facility)
+
+    if filter_:
+        if filter_.get('group', None):
+            query = query.filter(Facility.groups.any(Group.name.like(filter_['group'])))
+        if filter_.get('latMax', None):
+            query = query.filter(Facility.lat_min < float(filter_['latMax']))
+        if filter_.get('latMin', None):
+            query = query.filter(Facility.lat_max > float(filter_['latMin']))
+        if filter_.get('lonMax', None):
+            query = query.filter(Facility.lon_min < float(filter_['lonMax']))
+        if filter_.get('lonMin', None):
+            query = query.filter(Facility.lon_max > float(filter_['lonMin']))
+
+    facs = (query.limit(50)
+                 .all())
+    
+    dicts = []
+    for fac in facs:
+        dict_ = fac.__dict__.copy()
+        dict_.pop('_sa_instance_state', None)
+        dicts += [dict_]
+    
+    Session.remove()
+    return jsonify(success=True, data=dicts)
+
 @app.route('/api/shakemaps')
 @login_required
 def get_shakemaps():
