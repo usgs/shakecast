@@ -10,9 +10,15 @@ import { routing,
 import { HeaderComponent } from './header/header.component'
 import { NavComponent } from './nav/nav.component'
 
+
 import { DashboardComponent } from './pages/dashboard/dashboard.component'
+
+import { FacilitiesComponent } from './pages/facilities/facilities.component'
+import { FacilityListComponent } from './pages/facilities/facility-list.component'
+
 import { EarthquakesComponent } from './pages/earthquakes/earthquakes.component'
 import { EarthquakeListComponent } from './pages/earthquakes/earthquake-list.component'
+
 import { UploadComponent } from './pages/upload/upload.component'
 
 import { SharedModule } from '../shared/shared.module'
@@ -30,6 +36,8 @@ import { SharedModule } from '../shared/shared.module'
     HeaderComponent,
     NavComponent,
     DashboardComponent,
+    FacilitiesComponent,
+    FacilityListComponent,
     EarthquakesComponent,
     EarthquakeListComponent,
     UploadComponent

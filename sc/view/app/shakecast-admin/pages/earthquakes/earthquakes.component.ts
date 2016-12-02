@@ -4,8 +4,7 @@ import { EarthquakeListComponent } from './earthquake-list.component'
 
 @Component({
   selector: 'earthquakes',
-  template: `<h3>Earthquakes Admin</h3>
-<earthquake-list></earthquake-list>`
+  templateUrl: 'app/shakecast-admin/pages/earthquakes/earthquakes.component.html'
 })
 export class EarthquakesComponent {
 }

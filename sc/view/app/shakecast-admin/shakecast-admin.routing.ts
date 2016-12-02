@@ -4,6 +4,7 @@ import { Routes, RouterModule }   from '@angular/router';
 import { ShakeCastAdminComponent } from './shakecast-admin.component'
 
 import { DashboardComponent } from './pages/dashboard/dashboard.component'
+import { FacilitiesComponent } from './pages/facilities/facilities.component'
 import { EarthquakesComponent } from './pages/earthquakes/earthquakes.component'
 import { UploadComponent } from './pages/upload/upload.component'
 
@@ -19,6 +20,10 @@ const appRoutes: Routes = [
             {
                 path: 'dashboard',
                 component: DashboardComponent
+            },
+            {
+                path: 'facilities',
+                component: FacilitiesComponent
             },
             {
                 path: 'earthquakes',
