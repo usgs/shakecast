@@ -1,20 +1,19 @@
 <div class="outer-container">
     <div class="eqs-container" stickToTop [@pulledRight]="pulledRight">
-        <div class="eq" *ngFor="let eq of earthquakeData" (click)="plotEq(eq)">
+        <div class="eq" *ngFor="let eq of facilityData" (click)="plotEq(eq)">
             <div class="eq-header">
-                <h3>{{eq.event_id}}</h3>
+                <h3>{{eq.name}}</h3>
             </div>
             <div class="eq-body">
                 <div class="info-container">
                     <table>
                         <tr>
-                            <th>Magnitude: </th><td><p>{{eq.magnitude}}</p></td>
+                            <th>Desc: </th><td><p>{{eq.description}}</p></td>
                         </tr>
                         <tr>
-                            <th>Location: </th><td><p>{{eq.lat}}, {{eq.lon}}</p></td>
+                            <th>Location: </th><td><p>{{ (eq.lat_max + eq.lat_min) / 2 }}, {{ (eq.lon_max + eq.lon_min) / 2 }}</p></td>
                         </tr>
                     </table>
-                    <p class="place">{{eq.place}}</p>
                 </div>
             </div>
         </div>

@@ -145,6 +145,26 @@ def get_eq_data():
     Session.remove()
     return jsonify(success=True, data=eq_dicts)
 
+@app.route('/api/facility-data')
+@login_required
+def get_fac_data():
+    session = Session()
+    filter_ = json.loads(request.args.get('filter', '{}'))
+    DAY = 24*60*60
+    query = session.query(Facility)
+        
+    facs = (query.limit(50)
+                 .all())
+    
+    dicts = []
+    for fac in facs:
+        dict_ = fac.__dict__.copy()
+        dict_.pop('_sa_instance_state', None)
+        dicts += [dict_]
+    
+    Session.remove()
+    return jsonify(success=True, data=dicts)
+
 @app.route('/api/shakemaps')
 @login_required
 def get_shakemaps():

@@ -1,0 +1,19 @@
+<div class="filter-button"><h3 (click)="showFilter()">FILTER</h3></div>
+
+<div class="filter-form" [@filterShown]="filterShown">
+    <p class="exit" (click)="cancel()">X</p>
+    <h2>Earthquake Filter</h2>
+    <input type="checkbox" (change)="filter.shakemap=!filter.shakemap" [(ngModel)]="filter.shakemap">Require Shakemap
+
+    <select *ngIf="filter.shakemap === true" [(ngModel)]="filter.facilities">
+        <option value="true">Affected Facilities</option>
+        <option value="false">All ShakeMaps</option>
+    </select>
+    
+    <input [(ngModel)]="filter.latMin" placeholder="Min Latitude">
+    <input [(ngModel)]="filter.latMax" placeholder="Max Latitude">
+    <input [(ngModel)]="filter.lonMin" placeholder="Min Longitude">
+    <input [(ngModel)]="filter.lonMax" placeholder="Max Longitude">
+
+    <button (click)="search()">Search</button>
+</div>

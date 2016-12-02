@@ -15,6 +15,7 @@ import { ShakeCastAdminModule } from './shakecast-admin/shakecast-admin.module'
 // General services used by all modules
 import { UserService } from './login/user.service'
 import { EarthquakeService } from './shakecast/pages/earthquakes/earthquake.service'
+import { FacilityService } from './shakecast-admin/pages/facilities/facility.service'
 import { SharedModule } from './shared/shared.module'
 import { MapService } from './shared/maps/map.service'
 import { ShakemapService } from './shared/maps/shakemap.service'
@@ -41,6 +42,7 @@ import { StickToTopService } from './shared/directives/stick-to-top.service';
     appRoutingProviders,
     UserService,
     EarthquakeService,
+    FacilityService,
     MapService,
     ShakemapService,
     StickToTopService,
