@@ -1,4 +1,5 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Router } from '@angular/router'
 import { Marker } from './map.service';
 import { ShakemapService } from './shakemap.service'
 import { MapService } from './map.service'
@@ -21,13 +22,21 @@ export class MapComponent implements OnInit, OnDestroy {
     private map: any;
 
     constructor(private mapService: MapService,
-                private smService: ShakemapService) {}
+                private smService: ShakemapService,
+                private _router: Router) {}
 
     ngOnInit() {
         this.initMap();
 
         // if eq page
-        this.initEqMap();
+        if (this._router.url === '/shakecast/earthquakes') {
+            this.initEqMap();
+        } else if (this._router.url === '/shakecast-admin/facilities') {
+            // if fac page
+            this.initFacMap();
+        }
+
+        
     }
 
     initMap() {
@@ -176,6 +185,45 @@ export class MapComponent implements OnInit, OnDestroy {
         }); 
     }
 
+    //////////////////////////////////////////////////////////////
+    ///////////////////// Facility Functions /////////////////////
+    initFacMap() {
+        // subscribe to earthquake markers
+        this.subscriptions.push(this.mapService.facMarkers.subscribe(markers => {
+            // clear existing layers
+            this.clearLayers();
+
+                for (var mark in markers) {
+                    this.plotFacMarker(markers[mark]);
+                }
+        }));
+
+        // subscribe to center
+        this.subscriptions.push(this.mapService.center.subscribe(center => {
+            this.center = center;
+            this.map.setView([center.lat + .5,center.lon], 8);
+        }));
+    }
+
+    plotFacMarker(marker: any) {
+        // create event marker and plot it
+        this.createFacMarker(marker)
+    }
+
+    createFacMarker(fac: any) {
+        var marker: any = L.marker([fac.lat, fac.lon]);
+
+        var popupContent = fac.name
+
+        this.markerLayer = L.layerGroup([marker]).addTo(this.map);
+
+        marker.bindPopup(popupContent).openPopup();
+        // add marker to array -- do we need this still??
+        this.markers.push(marker)
+    }
+
+
+    ////////// Clean Up Before Closing //////////
     ngOnDestroy() {
         this.endSubscriptions()
     }

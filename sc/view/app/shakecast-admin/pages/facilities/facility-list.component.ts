@@ -37,10 +37,7 @@ export class FacilityListComponent implements OnInit, OnDestroy {
     public facilityData: any = [];
     public pulledRight: boolean = false
 
-    public filter: filter = {
-        shakemap: true,
-        facilities: false
-    }
+    public filter: filter = {}
     private subscriptions: any[] = []
     constructor(private facService: FacilityService) {}
 
@@ -48,16 +45,14 @@ export class FacilityListComponent implements OnInit, OnDestroy {
         //this.getEqs()
         this.subscriptions.push(this.facService.facilityData.subscribe(eqs => {
             this.facilityData = eqs
-            this.plotEq(eqs[0])
+            this.plotFac(eqs[0])
         }));
 
         this.facService.getData(this.filter);
     }
     
-    plotEq(fac: Facility) {
-        /*
-        this.eqService.plotEq(eq)
-        */
+    plotFac(fac: Facility) {
+        this.facService.plotFac(fac)
     }
 
     ngOnDestroy() {

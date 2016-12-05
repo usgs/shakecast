@@ -2,10 +2,12 @@ import { Injectable } from '@angular/core';
 import { ReplaySubject } from 'rxjs/ReplaySubject';
 
 import { Earthquake } from '../../shakecast/pages/earthquakes/earthquake.service'
+import { Facility } from '../../shakecast-admin/pages/facilities/facility.service'
 
 @Injectable()
 export class MapService {
     public eqMarkers = new ReplaySubject(1)
+    public facMarkers = new ReplaySubject(1)
     public center = new ReplaySubject(1)
 
     plotEq(eq: Earthquake) {
@@ -16,6 +18,20 @@ export class MapService {
 
         this.eqMarkers.next([eqMarker])
         this.center.next(eqMarker)
+    }
+
+    plotFac(fac: Facility) {
+        var marker = this.makeMarker(fac)
+        marker['type'] = 'facility'
+        marker['zoom'] = 8
+        marker['draggable'] = false
+
+        // adjust for facilities having only max/min lat/lon
+        marker.lat = (marker.lat_min + marker.lat_max) / 2
+        marker.lon = (marker.lon_min + marker.lon_max) / 2
+
+        this.facMarkers.next([marker])
+        this.center.next(marker)
     }
 
     clearMarkers() {

@@ -34,9 +34,9 @@ export class FacilityService {
             })
     }
     
-    /*
-    plotEq(eq: Earthquake) {
-        this.mapService.plotEq(eq)
+    
+    plotFac(fac: Facility) {
+        this.mapService.plotFac(fac)
     }
-    */
+    
 }
