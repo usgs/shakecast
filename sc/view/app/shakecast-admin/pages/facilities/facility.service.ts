@@ -20,6 +20,7 @@ export interface Facility {
 @Injectable()
 export class FacilityService {
     public facilityData = new ReplaySubject(1);
+    public selection = new ReplaySubject(1);
     public filter = {};
 
     constructor(private _http: Http,
@@ -35,7 +36,18 @@ export class FacilityService {
             })
     }
     
-    
+    selectAll() {
+        this.selection.next('all');
+    }
+
+    unselectAll() {
+        this.selection.next('none');
+    }
+
+    deleteFacs() {
+        //this.selection.next('delete');
+    }
+
     plotFac(fac: Facility) {
         this.mapService.plotFac(fac);
     }

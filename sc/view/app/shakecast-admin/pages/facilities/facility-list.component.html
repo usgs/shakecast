@@ -1,7 +1,7 @@
 <div class="outer-container">
     <div class="eqs-container" stickToTop>
         <div class="eq" [@selected]="fac.selected" *ngFor="let fac of facilityData" (click)="clickFac(fac)">
-            <div class="eq-header">
+            <div [@headerSelected]="fac.selected" class="eq-header">
                 <h3>{{fac.name}}</h3>
             </div>
             <div class="eq-body">

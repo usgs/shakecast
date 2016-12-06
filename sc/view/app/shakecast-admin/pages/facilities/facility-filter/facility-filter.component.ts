@@ -38,6 +38,18 @@ export class FacilityFilter {
     constructor(private facService: FacilityService,
                 private sdService: ScreenDimmerService) {}
 
+    selectAll() {
+        this.facService.selectAll();
+    }
+
+    unselectAll() {
+        this.facService.unselectAll();
+    }
+
+    deleteFacs() {
+        //this.facService.deleteFacs();
+    }
+
     search() {
         this.facService.getData(this.filter);
         this.hideFilter();
