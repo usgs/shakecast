@@ -203,7 +203,7 @@ export class MapComponent implements OnInit, OnDestroy {
         // subscribe to center
         this.subscriptions.push(this.mapService.center.subscribe(center => {
             this.center = center;
-            this.map.setView([center.lat + .5,center.lon], 8);
+            this.map.setView([center.lat + .5,center.lon]);
         }));
     }
 
