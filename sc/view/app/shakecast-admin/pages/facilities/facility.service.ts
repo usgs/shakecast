@@ -37,7 +37,11 @@ export class FacilityService {
     
     
     plotFac(fac: Facility) {
-        this.mapService.plotFac(fac)
+        this.mapService.plotFac(fac);
+    }
+
+    removeFac(fac: Facility) {
+        this.mapService.removeFac(fac);
     }
     
 }

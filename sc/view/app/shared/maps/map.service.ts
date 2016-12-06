@@ -8,34 +8,39 @@ import { Facility } from '../../shakecast-admin/pages/facilities/facility.servic
 export class MapService {
     public eqMarkers = new ReplaySubject(1)
     public facMarkers = new ReplaySubject(1)
+    public removeFacMarkers = new ReplaySubject(1)
     public center = new ReplaySubject(1)
 
     plotEq(eq: Earthquake) {
         var eqMarker = this.makeMarker(eq)
-        eqMarker['type'] = 'earthquake'
-        eqMarker['zoom'] = 8
-        eqMarker['draggable'] = false
+        eqMarker['type'] = 'earthquake';
+        eqMarker['zoom'] = 8;
+        eqMarker['draggable'] = false;
 
-        this.eqMarkers.next([eqMarker])
-        this.center.next(eqMarker)
+        this.eqMarkers.next([eqMarker]);
+        this.center.next(eqMarker);
     }
 
     plotFac(fac: Facility) {
-        var marker = this.makeMarker(fac)
-        marker['type'] = 'facility'
-        marker['zoom'] = 8
-        marker['draggable'] = false
+        var marker = this.makeMarker(fac);
+        marker['type'] = 'facility';
+        marker['zoom'] = 8;
+        marker['draggable'] = false;
 
         // adjust for facilities having only max/min lat/lon
-        marker.lat = (marker.lat_min + marker.lat_max) / 2
-        marker.lon = (marker.lon_min + marker.lon_max) / 2
+        marker.lat = (marker.lat_min + marker.lat_max) / 2;
+        marker.lon = (marker.lon_min + marker.lon_max) / 2;
 
-        this.facMarkers.next([marker])
-        this.center.next(marker)
+        this.facMarkers.next([marker]);
+        this.center.next(marker);
+    }
+
+    removeFac(fac: Facility) {
+        this.removeFacMarkers.next(fac);
     }
 
     clearMarkers() {
-        this.eqMarkers.next([])
+        this.eqMarkers.next([]);
     }
 
     makeMarker(notMarker: any): Marker {
@@ -46,9 +51,9 @@ export class MapService {
             draggable: false
         }
         for (var prop in notMarker) {
-            marker[prop] = notMarker[prop]
+            marker[prop] = notMarker[prop];
         }
-        return marker
+        return marker;
     }
 }
 

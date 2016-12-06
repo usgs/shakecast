@@ -12,7 +12,7 @@ declare var L: any;
 }) 
 
 export class MapComponent implements OnInit, OnDestroy {
-    public markers: any = [];
+    public markers: any = {};
     public overlays: any = [];
     public center: any = {};
     private markerLayer: any = L.layerGroup()
@@ -137,7 +137,7 @@ export class MapComponent implements OnInit, OnDestroy {
 
         marker.bindPopup(popupContent).openPopup();
         // add marker to array -- do we need this still??
-        this.markers.push(marker)
+        // this.markers.push(marker)
     }
 
     plotShakemap(event: any) {
@@ -188,14 +188,16 @@ export class MapComponent implements OnInit, OnDestroy {
     //////////////////////////////////////////////////////////////
     ///////////////////// Facility Functions /////////////////////
     initFacMap() {
-        // subscribe to earthquake markers
+        // subscribe to facility markers
         this.subscriptions.push(this.mapService.facMarkers.subscribe(markers => {
-            // clear existing layers
-            this.clearLayers();
-
                 for (var mark in markers) {
                     this.plotFacMarker(markers[mark]);
                 }
+        }));
+
+        // subscribe to REMOVING facility markers
+        this.subscriptions.push(this.mapService.removeFacMarkers.subscribe(fac => {
+            this.removeFacMarker(fac);
         }));
 
         // subscribe to center
@@ -219,7 +221,14 @@ export class MapComponent implements OnInit, OnDestroy {
 
         marker.bindPopup(popupContent).openPopup();
         // add marker to array -- do we need this still??
-        this.markers.push(marker)
+        this.markers[fac.shakecast_id.toString()] = marker
+    }
+
+    removeFacMarker(fac: any) {
+        var marker: any = this.markers[fac.shakecast_id.toString()];
+        if (marker) {
+            this.map.removeLayer(marker);
+        }
     }
 
 

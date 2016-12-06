@@ -26,7 +26,7 @@ import { filter } from './facility-filter/facility-filter.component'
 })
 export class FacilityListComponent implements OnInit, OnDestroy {
     public facilityData: any = [];
-
+    public selectedFacs: any = []
     public filter: filter = {}
     private subscriptions: any[] = []
     constructor(private facService: FacilityService) {}
@@ -37,14 +37,39 @@ export class FacilityListComponent implements OnInit, OnDestroy {
             for (var fac in this.facilityData) {
                 this.facilityData[fac].selected = false;
             }
+
+            if (this.selectedFacs.length === 0) {
+                // add a facility if the array is empty
+                this.selectedFacs.push(this.facilityData[0]);
+                this.facilityData[0].selected = true;
+            }
+
             this.plotFac(this.facilityData[0])
         }));
 
         this.facService.getData(this.filter);
     }
     
-    plotFac(fac: Facility) {
+    clickFac(fac: Facility) {
         fac.selected = !fac.selected;
+
+        if (fac.selected) {
+            // add it to the list
+            this.selectedFacs.push(fac)
+            this.plotFac(fac)
+        } else {
+            // remove it from the list
+            var index: number = this.selectedFacs.indexOf('shakecast_id', fac.shakecast_id)
+            this.selectedFacs.splice(index, 1)
+            this.removeFac(fac)
+        }
+    }
+
+    removeFac(fac: Facility) {
+        this.facService.removeFac(fac);
+    }
+
+    plotFac(fac: Facility) {
         this.facService.plotFac(fac);
     }
 
