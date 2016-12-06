@@ -20,6 +20,7 @@ export interface Facility {
 @Injectable()
 export class FacilityService {
     public facilityData = new ReplaySubject(1);
+    public selectedFacs: Facility[] = [];
     public selection = new ReplaySubject(1);
     public filter = {};
 
@@ -45,7 +46,13 @@ export class FacilityService {
     }
 
     deleteFacs() {
-        //this.selection.next('delete');
+        let params = new URLSearchParams();
+        params.set('facilities', JSON.stringify(this.selectedFacs))
+        this._http.delete('/api/delete/facilities', {search: params})
+            .map((result: Response) => result.json())
+            .subscribe((result: any) => {
+                this.getData();
+            })
     }
 
     plotFac(fac: Facility) {

@@ -176,6 +176,22 @@ def get_fac_data():
     Session.remove()
     return jsonify(success=True, data=dicts)
 
+@app.route('/api/delete/facilities', methods=['DELETE'])
+@login_required
+def delete_facilities():
+    session = Session()
+    facilities_json = json.loads(request.args.get('facilities', '[]'))
+    fac_ids = [fac['shakecast_id'] for fac in facilities_json]
+    facilities = (session.query(Facility)
+                            .filter(Facility.shakecast_id.in_(fac_ids))
+                            .all())
+
+    deleted = [session.delete(fac) for fac in facilities]
+
+    session.commit()
+    Session.remove()
+    return jsonify(success=True)
+
 @app.route('/api/shakemaps')
 @login_required
 def get_shakemaps():

@@ -47,7 +47,7 @@ export class FacilityFilter {
     }
 
     deleteFacs() {
-        //this.facService.deleteFacs();
+        this.facService.deleteFacs();
     }
 
     search() {

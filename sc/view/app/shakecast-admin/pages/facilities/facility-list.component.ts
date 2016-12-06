@@ -39,6 +39,12 @@ export class FacilityListComponent implements OnInit, OnDestroy {
 
     ngOnInit() {
         this.subscriptions.push(this.facService.facilityData.subscribe(facs => {
+            
+            // clear fac markers from the map
+            for (var fac in this.selectedFacs) {
+                this.removeFac(this.selectedFacs[fac])
+            }
+
             this.facilityData = facs;
             for (var fac in this.facilityData) {
                 this.facilityData[fac].selected = false;
@@ -46,10 +52,11 @@ export class FacilityListComponent implements OnInit, OnDestroy {
 
             if (this.selectedFacs.length === 0) {
                 // add a facility if the array is empty
-                this.selectedFacs.push(this.facilityData[0]);
-                this.facilityData[0].selected = true;
+                this.facService.selectedFacs = this.selectedFacs
             }
 
+            this.selectedFacs.push(this.facilityData[0]);
+            this.facilityData[0].selected = true;
             this.plotFac(this.facilityData[0]);
         }));
 
@@ -59,8 +66,9 @@ export class FacilityListComponent implements OnInit, OnDestroy {
             } else if (select === 'none') {
                 this.unselectAll();
             } else if (select === 'delete') {
-
             }
+
+            this.facService.selectedFacs = this.selectedFacs;
         }));
 
         this.facService.getData(this.filter);
@@ -79,6 +87,8 @@ export class FacilityListComponent implements OnInit, OnDestroy {
             this.selectedFacs.splice(index, 1);
             this.removeFac(fac);
         }
+
+        this.facService.selectedFacs = this.selectedFacs;
     }
 
     selectAll() {
