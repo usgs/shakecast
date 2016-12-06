@@ -17,13 +17,13 @@
 }
 
 .filter-button, .select-button {
-    width: 62.5%;
-    margin-left: 2.5%;
+    width: 40.5%;
+    margin-left: .5%;
+    margin-bottom: 3px;
     bottom: 0;
     margin-top: 20px;
     text-align: center;
     position: relative;
-    margin-bottom: 0;
     background: #888888;
     padding-top: 10px;
     padding-bottom: 10px;
@@ -32,7 +32,7 @@
 }
 
 .select-button {
-    width: 30%;
+    width: 19%;
 }
 
 .filter-button:hover, .select-button:hover {
@@ -40,7 +40,7 @@
 }
 
 .filter-button h3, .select-button h3 {
-    width:49%;
+    width: 100%;
     margin-bottom: 5px;
     color: #fff;
     margin-left: 0;

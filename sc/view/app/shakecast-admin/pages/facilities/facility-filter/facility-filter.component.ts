@@ -25,8 +25,7 @@ import { NotificationsService } from 'angular2-notifications'
 export class FacilityFilter {
     public filterShown = false;
 
-    public filter: filter = {
-    }
+    public filter: filter = {}
     public options = {
         timeOut: 0,
         lastOnBottom: true,
@@ -44,7 +43,7 @@ export class FacilityFilter {
         this.hideFilter();
     }
 
-    cancel() {
+    cancelFilter() {
         this.hideFilter()
     }
 

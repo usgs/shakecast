@@ -12,7 +12,7 @@
 }
 
 .eq {
-    margin-top: 30px;
+    margin-top: 20px;
     width: 20%;
     min-width: 280px;
     display: inline-block;
@@ -25,6 +25,11 @@
     border-color:#aaaaaa;
     vertical-align: top;
     cursor: pointer;
+}
+
+
+.eq.selected {
+    margin-top: 10px;
 }
 
 /* header */

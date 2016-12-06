@@ -14,6 +14,7 @@ export interface Facility {
     lon: number;
     name: string;
     description: string;
+    selected?:boolean
 }
 
 @Injectable()

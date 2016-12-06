@@ -1,9 +1,6 @@
 <div class="outer-container">
-    <div class="select-options">
-        <p>Select Mode</p>
-    </div>
-    <div class="eqs-container" stickToTop [@pulledRight]="pulledRight">
-        <div class="eq" *ngFor="let fac of facilityData" (click)="plotFac(fac)">
+    <div class="eqs-container" stickToTop>
+        <div class="eq" [@selected]="fac.selected" *ngFor="let fac of facilityData" (click)="plotFac(fac)">
             <div class="eq-header">
                 <h3>{{fac.name}}</h3>
             </div>
