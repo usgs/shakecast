@@ -30,9 +30,6 @@
   
 
   
-        <link rel="index" title="Index"
-              href="genindex.html"/>
-        <link rel="search" title="Search" href="search.html"/>
     <link rel="top" title="pyCast 1 documentation" href="index.html"/>
         <link rel="next" title="CLI Documentation" href="cli.html"/>
         <link rel="prev" title="Database API" href="db.html"/> 
@@ -89,8 +86,8 @@
 <li class="toctree-l1"><a class="reference internal" href="objects.html">Objects</a></li>
 <li class="toctree-l1"><a class="reference internal" href="functions.html">Functions</a></li>
 <li class="toctree-l1"><a class="reference internal" href="db.html">Database API</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Server Documentation</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#module-app.server">Server</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="">Server Documentation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#server">Server</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#module-app.task">Task</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#module-app.newthread">New_Thread</a></li>
 </ul>
@@ -118,7 +115,7 @@
         <div class="rst-content">
           
 
- 
+
 
 
 
@@ -130,7 +127,7 @@
       <li class="wy-breadcrumbs-aside">
         
           
-            <a href="_sources/server.rst.txt" rel="nofollow"> View page source</a>
+            <a href="_sources/server.txt" rel="nofollow"> View page source</a>
           
         
       </li>
@@ -142,140 +139,8 @@
             
   <div class="section" id="server-documentation">
 <h1>Server Documentation<a class="headerlink" href="#server-documentation" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="module-app.server">
-<span id="server"></span><h2>Server<a class="headerlink" href="#module-app.server" title="Permalink to this headline">¶</a></h2>
-<dl class="class">
-<dt id="app.server.Server">
-<em class="property">class </em><code class="descclassname">app.server.</code><code class="descname">Server</code><a class="headerlink" href="#app.server.Server" title="Permalink to this definition">¶</a></dt>
-<dd><p>The ShakeCast server is essentially the &#8220;conductor&#8221; of the system.
-It keeps track of which functions (Tasks) are supposed to run and
-when. It provides an API that can be utilized through the CLI
-and eventually the GUI.</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">API</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;name_of_task&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;func&#39;</span><span class="p">:</span> <span class="n">name_of_function</span><span class="p">,</span>
-                       <span class="s1">&#39;loop&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="o">/</span><span class="kc">False</span><span class="p">,</span>
-                       <span class="s1">&#39;interval&#39;</span><span class="p">:</span> <span class="nb">int</span> <span class="p">(</span><span class="n">duration</span> <span class="n">between</span> <span class="n">looping</span> <span class="n">runs</span><span class="p">),</span>
-                       <span class="s1">&#39;args_in&#39;</span><span class="p">:</span> <span class="n">kwargs</span><span class="p">,</span>
-                       <span class="s1">&#39;db_use&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="o">/</span><span class="kc">False</span><span class="p">}}</span>
-</pre></div>
-</div>
-<p>name_of_function must be a function in the functions module or a
-method of the Server</p>
-<dl class="method">
-<dt id="app.server.Server.check_task">
-<code class="descname">check_task</code><span class="sig-paren">(</span><em>task=  new_task(id: None</em>, <em>arguments: None</em>, <em>loop: False</em>, <em>interval: 100</em>, <em>db_use: False) status: stopped</em><span class="sig-paren">)</span><a class="headerlink" href="#app.server.Server.check_task" title="Permalink to this definition">¶</a></dt>
-<dd><p>Check the output from a finished task and determines whether
-the task should be removed from the queue</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="app.server.Server.cleanup">
-<code class="descname">cleanup</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#app.server.Server.cleanup" title="Permalink to this definition">¶</a></dt>
-<dd><p>Remove tasks that have completed their work and the connections
-associated with them</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="app.server.Server.handle_client">
-<code class="descname">handle_client</code><span class="sig-paren">(</span><em>conn=None</em>, <em>addr=None</em><span class="sig-paren">)</span><a class="headerlink" href="#app.server.Server.handle_client" title="Permalink to this definition">¶</a></dt>
-<dd><p>Run when a connection has been extablished. Looking for a
-message through the connected socket</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="app.server.Server.info">
-<code class="descname">info</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#app.server.Server.info" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns what the server is &#8216;doing&#8217;. Can be used to send the UI
-info about the server</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="app.server.Server.log">
-<code class="descname">log</code><span class="sig-paren">(</span><em>message=''</em>, <em>which=''</em><span class="sig-paren">)</span><a class="headerlink" href="#app.server.Server.log" title="Permalink to this definition">¶</a></dt>
-<dd><p>Logs a message to either the shakecast or server log</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="app.server.Server.loop">
-<code class="descname">loop</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#app.server.Server.loop" title="Permalink to this definition">¶</a></dt>
-<dd><p>Starts the server loop, and contains the code that is looped by
-the server</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="app.server.Server.make_print">
-<code class="descname">make_print</code><span class="sig-paren">(</span><em>add_str</em><span class="sig-paren">)</span><a class="headerlink" href="#app.server.Server.make_print" title="Permalink to this definition">¶</a></dt>
-<dd><p>Add a new string onto the output string from the server. It
-loops at 15 lines for the print statement</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="app.server.Server.queue_check">
-<code class="descname">queue_check</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#app.server.Server.queue_check" title="Permalink to this definition">¶</a></dt>
-<dd><p>Check for tasks that are ready to be run and finished tasks
-that can be removed</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="app.server.Server.shutdown">
-<code class="descname">shutdown</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#app.server.Server.shutdown" title="Permalink to this definition">¶</a></dt>
-<dd><p>Shuts down the server allowing currently running tasks to
-finish</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="app.server.Server.socket_check">
-<code class="descname">socket_check</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#app.server.Server.socket_check" title="Permalink to this definition">¶</a></dt>
-<dd><p>Check if any connections have been established</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="app.server.Server.socket_setup">
-<code class="descname">socket_setup</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#app.server.Server.socket_setup" title="Permalink to this definition">¶</a></dt>
-<dd><p>Connects the server to a specific socket</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="app.server.Server.stop">
-<code class="descname">stop</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#app.server.Server.stop" title="Permalink to this definition">¶</a></dt>
-<dd><p>Stop server loop; It will be restarted immediately. This
-functionality could be used to reload functions in the event
-of an update</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="app.server.Server.stop_shakecast">
-<code class="descname">stop_shakecast</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#app.server.Server.stop_shakecast" title="Permalink to this definition">¶</a></dt>
-<dd><p>Removes the Tasks associated with ShakeCast services from the
-queue if they are stopped and stops them from running again if
-they are currently running</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="app.server.Server.stop_task">
-<code class="descname">stop_task</code><span class="sig-paren">(</span><em>task_name=None</em><span class="sig-paren">)</span><a class="headerlink" href="#app.server.Server.stop_task" title="Permalink to this definition">¶</a></dt>
-<dd><p>Sets a looping task&#8217;s status to &#8216;Finished&#8217;</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="app.server.Server.talk">
-<code class="descname">talk</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#app.server.Server.talk" title="Permalink to this definition">¶</a></dt>
-<dd><p>Prints a monitoring message from the server</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="app.server.Server.ui_exit">
-<code class="descname">ui_exit</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#app.server.Server.ui_exit" title="Permalink to this definition">¶</a></dt>
-<dd><p>Determine if the server should shutdown when the UI exits</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="app.server.Server.user_in">
-<code class="descname">user_in</code><span class="sig-paren">(</span><em>data=None</em>, <em>conn=None</em><span class="sig-paren">)</span><a class="headerlink" href="#app.server.Server.user_in" title="Permalink to this definition">¶</a></dt>
-<dd><p>Interpret the message that is received by the server</p>
-</dd></dl>
-
-</dd></dl>
-
+<div class="section" id="server">
+<h2>Server<a class="headerlink" href="#server" title="Permalink to this headline">¶</a></h2>
 </div>
 <div class="section" id="module-app.task">
 <span id="task"></span><h2>Task<a class="headerlink" href="#module-app.task" title="Permalink to this headline">¶</a></h2>
@@ -297,7 +162,7 @@ way to put functions in a queue and let them run later.</p>
 <dd><p>A New_Thread is built from a threading.thread with the added
 functionality of looping and intuitive argument passing</p>
 <p>Usage:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="go">&gt;&gt;&gt;new_thread = New_Thread(func=func, args_in=kwargs)</span>
+<div class="highlight-python"><div class="highlight"><pre><span class="go">&gt;&gt;&gt;new_thread = New_Thread(func=func, args_in=kwargs)</span>
 <span class="go">&gt;&gt;&gt;new_thread.start()</span>
 </pre></div>
 </div>
