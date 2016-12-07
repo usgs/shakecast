@@ -37,6 +37,7 @@
     height: 40px;
     border-radius: 4px;
     background-color: #aaaaaa;
+    overflow-x: scroll;
 }
 
 .eq:hover .eq-header {
