@@ -3,7 +3,7 @@ title: ShakeCast V3 Packages
 keywords: documentation, ShakeCast
 last_updated: July 3, 2016
 tags: [getting_started]
-#sidebar: v3_sidebar
+sidebar: package_sidebar
 permalink: v3_package.html
 folder: v3
 toc: false
