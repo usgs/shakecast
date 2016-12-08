@@ -14,6 +14,16 @@ body {
     margin: 0;
 }
 
+.title {
+    font-size: 72px;
+    opacity: .8;
+    position: fixed;
+    top: 0;
+    left: 5%;
+    margin-top: 35px;
+    color: #46a;
+}
+
 /* For Tables */
 th, td {
     text-align: left;
