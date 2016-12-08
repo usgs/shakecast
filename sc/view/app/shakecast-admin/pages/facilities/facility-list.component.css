@@ -5,14 +5,14 @@
 }
 
 .eqs-container {
-    height: 250px;
+    height: 230px;
     overflow-x: scroll;
     overflow-y: hidden;
     white-space: nowrap;
 }
 
 .eq {
-    margin-top: 30px;
+    margin-top: 20px;
     width: 20%;
     min-width: 280px;
     display: inline-block;
@@ -27,11 +27,17 @@
     cursor: pointer;
 }
 
+
+.eq.selected {
+    margin-top: 10px;
+}
+
 /* header */
 .eq-header {
     height: 40px;
     border-radius: 4px;
     background-color: #aaaaaa;
+    overflow-x: scroll;
 }
 
 .eq:hover .eq-header {

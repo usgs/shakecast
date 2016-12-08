@@ -4,6 +4,7 @@ ShakeCast to run. These objects are used in the functions.py program
 """
 
 import urllib2
+import ssl
 import json
 import os
 import sys
@@ -1047,6 +1048,12 @@ class URLOpener(object):
         Returns:
             str: the string read from the webpage
         """
+
+        # create context to avoid certificate errors
+        ctx = ssl.create_default_context()
+        ctx.check_hostname = False
+        ctx.verify_mode = ssl.CERT_NONE
+
         try:
             sc = SC()
             if sc.use_proxy is True:
@@ -1063,7 +1070,7 @@ class URLOpener(object):
                     auth = urllib2.HTTPBasicAuthHandler()
                     opener = urllib2.build_opener(proxy, auth, urllib2.HTTPHandler)
                     
-                    url_obj = opener.open(url, timeout=60)
+                    url_obj = opener.open(url, timeout=60, context=ctx)
                     url_read = url_obj.read()
                     url_obj.close()
                     return url_read
@@ -1073,13 +1080,13 @@ class URLOpener(object):
                                                   'https': 'https://{0}:{1}'.format(sc.proxy_server,sc.proxy_port)})
                     opener = urllib2.build_opener(proxy)
                     
-                    url_obj = opener.open(url, timeout=60)
+                    url_obj = opener.open(url, timeout=60, context=ctx)
                     url_read = url_obj.read()
                     url_obj.close()
                     return url_read
     
             else:
-                url_obj = urllib2.urlopen(url, timeout=60)
+                url_obj = urllib2.urlopen(url, timeout=60, context=ctx)
                 url_read = url_obj.read()
                 url_obj.close()
                 return url_read

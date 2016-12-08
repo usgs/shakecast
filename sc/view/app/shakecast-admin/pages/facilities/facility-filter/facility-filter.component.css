@@ -16,31 +16,41 @@
     border-bottom: 2px solid #444
 }
 
-.filter-button {
-    width: 100%;
+.filter-button, .select-button {
+    width: 40.5%;
+    margin-left: .5%;
+    margin-bottom: 3px;
     bottom: 0;
     margin-top: 20px;
     text-align: center;
     position: relative;
-    margin-bottom: 0;
     background: #888888;
     padding-top: 10px;
     padding-bottom: 10px;
     cursor: pointer;
+    float: left
 }
 
-.filter-button:hover {
+.select-button {
+    width: 19%;
+}
+
+.filter-button:hover, .select-button:hover {
     background: #aaaaaa;
 }
 
-.filter-button h3 {
+.filter-button h3, .select-button h3 {
+    width: 100%;
     margin-bottom: 5px;
     color: #fff;
+    margin-left: 0;
+    margin-right: 0;
     margin-bottom: 0;
     margin-top: 0px;
+    display: inline-block;
 }
 
-.filter-button h3:hover {
+.filter-button h3:hover, .select-button h3:hover {
     color: #7af;
 }
 

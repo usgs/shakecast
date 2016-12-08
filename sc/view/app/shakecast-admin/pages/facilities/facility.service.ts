@@ -14,11 +14,14 @@ export interface Facility {
     lon: number;
     name: string;
     description: string;
+    selected?:boolean
 }
 
 @Injectable()
 export class FacilityService {
     public facilityData = new ReplaySubject(1);
+    public selectedFacs: Facility[] = [];
+    public selection = new ReplaySubject(1);
     public filter = {};
 
     constructor(private _http: Http,
@@ -34,9 +37,30 @@ export class FacilityService {
             })
     }
     
-    /*
-    plotEq(eq: Earthquake) {
-        this.mapService.plotEq(eq)
+    selectAll() {
+        this.selection.next('all');
     }
-    */
+
+    unselectAll() {
+        this.selection.next('none');
+    }
+
+    deleteFacs() {
+        let params = new URLSearchParams();
+        params.set('facilities', JSON.stringify(this.selectedFacs))
+        this._http.delete('/api/delete/facilities', {search: params})
+            .map((result: Response) => result.json())
+            .subscribe((result: any) => {
+                this.getData();
+            })
+    }
+
+    plotFac(fac: Facility) {
+        this.mapService.plotFac(fac);
+    }
+
+    removeFac(fac: Facility) {
+        this.mapService.removeFac(fac);
+    }
+    
 }

@@ -25,8 +25,7 @@ import { NotificationsService } from 'angular2-notifications'
 export class FacilityFilter {
     public filterShown = false;
 
-    public filter: filter = {
-    }
+    public filter: filter = {}
     public options = {
         timeOut: 0,
         lastOnBottom: true,
@@ -39,12 +38,24 @@ export class FacilityFilter {
     constructor(private facService: FacilityService,
                 private sdService: ScreenDimmerService) {}
 
+    selectAll() {
+        this.facService.selectAll();
+    }
+
+    unselectAll() {
+        this.facService.unselectAll();
+    }
+
+    deleteFacs() {
+        this.facService.deleteFacs();
+    }
+
     search() {
         this.facService.getData(this.filter);
         this.hideFilter();
     }
 
-    cancel() {
+    cancelFilter() {
         this.hideFilter()
     }
 

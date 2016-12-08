@@ -1,4 +1,5 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Router } from '@angular/router'
 import { Marker } from './map.service';
 import { ShakemapService } from './shakemap.service'
 import { MapService } from './map.service'
@@ -11,7 +12,7 @@ declare var L: any;
 }) 
 
 export class MapComponent implements OnInit, OnDestroy {
-    public markers: any = [];
+    public markers: any = {};
     public overlays: any = [];
     public center: any = {};
     private markerLayer: any = L.layerGroup()
@@ -21,13 +22,21 @@ export class MapComponent implements OnInit, OnDestroy {
     private map: any;
 
     constructor(private mapService: MapService,
-                private smService: ShakemapService) {}
+                private smService: ShakemapService,
+                private _router: Router) {}
 
     ngOnInit() {
         this.initMap();
 
         // if eq page
-        this.initEqMap();
+        if (this._router.url === '/shakecast/earthquakes') {
+            this.initEqMap();
+        } else if (this._router.url === '/shakecast-admin/facilities') {
+            // if fac page
+            this.initFacMap();
+        }
+
+        
     }
 
     initMap() {
@@ -128,7 +137,7 @@ export class MapComponent implements OnInit, OnDestroy {
 
         marker.bindPopup(popupContent).openPopup();
         // add marker to array -- do we need this still??
-        this.markers.push(marker)
+        // this.markers.push(marker)
     }
 
     plotShakemap(event: any) {
@@ -176,6 +185,54 @@ export class MapComponent implements OnInit, OnDestroy {
         }); 
     }
 
+    //////////////////////////////////////////////////////////////
+    ///////////////////// Facility Functions /////////////////////
+    initFacMap() {
+        // subscribe to facility markers
+        this.subscriptions.push(this.mapService.facMarkers.subscribe(markers => {
+                for (var mark in markers) {
+                    this.plotFacMarker(markers[mark]);
+                }
+        }));
+
+        // subscribe to REMOVING facility markers
+        this.subscriptions.push(this.mapService.removeFacMarkers.subscribe(fac => {
+            this.removeFacMarker(fac);
+        }));
+
+        // subscribe to center
+        this.subscriptions.push(this.mapService.center.subscribe(center => {
+            this.center = center;
+            this.map.setView([center.lat, center.lon]);
+        }));
+    }
+
+    plotFacMarker(marker: any) {
+        // create event marker and plot it
+        this.createFacMarker(marker)
+    }
+
+    createFacMarker(fac: any) {
+        var marker: any = L.marker([fac.lat, fac.lon]);
+
+        var popupContent = fac.name
+
+        this.markerLayer = L.layerGroup([marker]).addTo(this.map);
+
+        marker.bindPopup(popupContent).openPopup();
+        // add marker to array -- do we need this still??
+        this.markers[fac.shakecast_id.toString()] = marker
+    }
+
+    removeFacMarker(fac: any) {
+        var marker: any = this.markers[fac.shakecast_id.toString()];
+        if (marker) {
+            this.map.removeLayer(marker);
+        }
+    }
+
+
+    ////////// Clean Up Before Closing //////////
     ngOnDestroy() {
         this.endSubscriptions()
     }
