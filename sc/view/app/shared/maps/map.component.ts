@@ -29,7 +29,8 @@ export class MapComponent implements OnInit, OnDestroy {
         this.initMap();
 
         // if eq page
-        if (this._router.url === '/shakecast/earthquakes') {
+        if ((this._router.url === '/shakecast/earthquakes') || 
+                (this._router.url === '/shakecast/dashboard')) {
             this.initEqMap();
         } else if (this._router.url === '/shakecast-admin/facilities') {
             // if fac page
