@@ -1,10 +1,7 @@
-.map {
-    height: 250px;
-}
-
 .map-container {
-    width: 50%;
+    width: 48%;
     height: 100%;
+    margin-left: 1%;
     position: relative;
     display: inline-block
 }
@@ -12,7 +9,9 @@
 .eq-container, .fac-container, .not-container {
     display: inline-block;
     width: 48%;
-    margin-left: 1%
+    margin-left: 1%;
+    border: 2px solid #aaaaaa;
+    border-radius: 5px;
 }
 
 .outer-map-eq-container {
@@ -21,9 +20,20 @@
     height: 400px;
 }
 
+.outer-fac-not-container {
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+
 .outer-fac-not-container, .fac-not-container {
     width: 100%;
     height: 250%;
+}
+
+.map-eq-container, .fac-not-container { 
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
 }
 
 .map-eq-container {
