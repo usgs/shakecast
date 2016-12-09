@@ -37,7 +37,7 @@ export class StickToTopDirective implements OnInit, OnDestroy {
         if (this.stuck === true) {
             if (this.el.nativeElement.parentElement.offsetTop + this.height >= 
                     this.scrolled + this.sttService.stackHeight) {
-                console.log('Unstick it')
+                //console.log('Unstick it')
                 this.stuckTop = this.top
                 this.sttService.stackHeight -= this.height
                 this.stuck = false
@@ -45,7 +45,7 @@ export class StickToTopDirective implements OnInit, OnDestroy {
         } else if (this.scrolled >= 
                     (this.el.nativeElement.parentElement.offsetTop - this.sttService.stackHeight)) {
             if (this.stuck !== true) {
-                console.log('Stick it')
+                //console.log('Stick it')
                 this.stuckTop = this.sttService.stackHeight
                 this.sttService.stackHeight += this.height
                 this.stuck = true
