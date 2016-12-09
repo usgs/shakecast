@@ -6,7 +6,7 @@ import { ShakeCastAdminComponent } from './shakecast-admin.component'
 import { DashboardComponent } from './pages/dashboard/dashboard.component'
 import { FacilitiesComponent } from './pages/facilities/facilities.component'
 import { EarthquakesComponent } from './pages/earthquakes/earthquakes.component'
-import { UploadComponent } from './pages/upload/upload.component'
+//import { UploadComponent } from './pages/upload/upload.component'
 
 import { LoginGuard } from '../auth/login.guard'
 import { AdminGuard } from '../auth/admin.guard'
@@ -29,10 +29,10 @@ const appRoutes: Routes = [
                 path: 'earthquakes',
                 component: EarthquakesComponent
             },
-            {
-                path: 'upload',
-                component: UploadComponent
-            },
+            //{
+                //path: 'upload',
+                //component: UploadComponent
+            //},
             {
                 path: '',
                 redirectTo: 'dashboard',
