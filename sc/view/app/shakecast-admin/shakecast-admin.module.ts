@@ -19,7 +19,7 @@ import { FacilityFilter } from './pages/facilities/facility-filter/facility-filt
 import { EarthquakesComponent } from './pages/earthquakes/earthquakes.component'
 import { EarthquakeListComponent } from './pages/earthquakes/earthquake-list.component'
 
-import { UploadComponent } from './pages/upload/upload.component'
+//import { UploadComponent } from './pages/upload/upload.component'
 
 import { SharedModule } from '../shared/shared.module'
 
@@ -40,7 +40,7 @@ import { SharedModule } from '../shared/shared.module'
     FacilityFilter,
     EarthquakesComponent,
     EarthquakeListComponent,
-    UploadComponent
+    //UploadComponent
   ],
   providers: [
   ]
