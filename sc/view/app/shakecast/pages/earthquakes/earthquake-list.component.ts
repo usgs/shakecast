@@ -38,7 +38,7 @@ export class EarthquakeListComponent implements OnInit, OnDestroy {
     public pulledRight: boolean = false
 
     public filter: filter = {
-        shakemap: true,
+        shakemap: false,
         facilities: false
     }
     private subscriptions: any[] = []
