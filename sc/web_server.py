@@ -309,6 +309,27 @@ def event_image(event_id):
     Session.remove()
     return send_file(img, mimetype='image/gif')
 
+@app.route('/api/notifications/<event_id>/')
+@login_required
+def get_notification(event_id):
+    session = Session()
+    nots = (session.query(Notification)
+                    .filter(Notification.event_id == event_id)
+                    .all())
+
+    
+    dicts = []
+    for obj in nots:
+        dict_ = obj.__dict__.copy()
+        dict_.pop('_sa_instance_state', None)
+        dicts += [dict_]
+    
+    json_ = json.dumps(dicts, cls=AlchemyEncoder)
+    Session.remove()    
+    return json_
+
+
+
 ############################ Admin Pages ##############################
 
 # wrapper for admin only URLs
