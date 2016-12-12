@@ -10,6 +10,8 @@ from orm import *
 from objects import *
 from util import *
 
+import pdb
+
 modules_dir = os.path.join(sc_dir() + 'modules')
 if modules_dir not in sys.path:
     sys.path += [modules_dir]
@@ -72,7 +74,6 @@ def check_new():
     error = ''
     try:
         session = Session()
-        
         new_events = (session.query(Event)
                              .filter(Event.status=='new')
                              .all())
@@ -185,7 +186,7 @@ def process_events(events=[], session=None, scenario=False):
             
             filter_nots = filter(lambda x: x.event is not None, nots)
             new_event_notification(notifications=filter_nots)
-            processed_events = [n.event for n in nots]
+            processed_events = [n.event for n in filter_nots]
             for e in processed_events:
                 e.status = 'processed'
             session.commit()
