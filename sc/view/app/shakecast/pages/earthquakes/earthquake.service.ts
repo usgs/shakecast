@@ -6,6 +6,7 @@ import { Observable } from 'rxjs/Observable';
 import { ReplaySubject } from 'rxjs/ReplaySubject';
 
 import { MapService } from '../../../shared/maps/map.service'
+import { NotificationService } from '../dashboard/notification-dash/notification.service.ts'
 
 export interface Earthquake {
     shakecast_id: string;
@@ -23,6 +24,7 @@ export class EarthquakeService {
     public filter = {};
 
     constructor(private _http: Http,
+                private notService: NotificationService,
                 private mapService: MapService) {}
 
     getData(filter: any = {}) {
@@ -36,6 +38,7 @@ export class EarthquakeService {
     }
     
     plotEq(eq: Earthquake) {
+        this.notService.getNotifications(eq)
         this.mapService.plotEq(eq)
     }
 }
