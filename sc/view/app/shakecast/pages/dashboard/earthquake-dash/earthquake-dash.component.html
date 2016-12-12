@@ -1,0 +1,6 @@
+<div class="dash-container">
+    <h2>Recent Earthquakes:</h2>
+    <tr *ngFor="let eq of earthquakeData" (click)="plotEq(eq)">
+        <td>{{ eq.event_id }}</td><td>{{ eq.magnitude }}</td><td>{{ eq.description }}</td>
+    </tr>
+</div>
