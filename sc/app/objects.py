@@ -106,14 +106,13 @@ class ProductGrabber(object):
             # get event id and all ids
             event = Event()
             event.all_event_ids = eq['properties']['ids']
+            event.event_id = eq_id
             event.magnitude = eq['properties']['mag']
-            
-            event.directory_name = os.path.join(self.data_dir,
-                                                eq_id)
             
             # use id and all ids to determine if the event is new and
             # query the old event if necessary
             old_shakemaps = []
+            old_notifications = []
             if event.is_new() is False:
                 event.status = 'ignore'
                 ids = event.all_event_ids.strip(',').split(',')
@@ -125,6 +124,7 @@ class ProductGrabber(object):
                 # remove older events
                 for old_event in old_events:
                     if old_event is not None:
+                        old_notifications += old_event.notifications
                         old_shakemaps += old_event.shakemaps
                         
                         # if one of these old events hasn't had
@@ -137,7 +137,8 @@ class ProductGrabber(object):
                 event.status = 'new'
                         
             # Fill the rest of the event info
-            event.event_id = eq_id
+            event.directory_name = os.path.join(self.data_dir,
+                                                eq_id)
             event.title = self.earthquakes[eq_id]['properties']['title']
             event.place = self.earthquakes[eq_id]['properties']['place']
             event.time = self.earthquakes[eq_id]['properties']['time']/1000.0
@@ -149,6 +150,9 @@ class ProductGrabber(object):
             
             if old_shakemaps:
                 event.shakemaps = old_shakemaps
+            if old_notifications:
+                event.notifications = old_notifications
+
             session.add(event)
             session.commit()
             
@@ -255,9 +259,7 @@ class ProductGrabber(object):
                                                    shakemap.shakemap_id + '-' + shakemap.shakemap_version)
             if not os.path.exists(shakemap.directory_name):
                 os.makedirs(shakemap.directory_name)
-            
-            
-            
+        
             # download products
             for product_name in self.req_products:
                 product = Product(shakemap = shakemap,

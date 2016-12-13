@@ -152,11 +152,11 @@ def process_events(events=[], session=None, scenario=False):
                                     if group.has_spec(not_type='heartbeat')]
             all_groups_affected.update(groups_affected)
         
-        event.status = 'processing_started'
         if not groups_affected:
             event.status = 'no groups'
             session.commit()
-            continue
+        else:
+            event.status = 'processing_started'
         
         for group in groups_affected:
             # Check if the group gets NEW_EVENT messages
@@ -173,6 +173,7 @@ def process_events(events=[], session=None, scenario=False):
                                             notification_type='NEW_EVENT',
                                             status='created')
                 session.add(notification)
+        session.commit()
     
     if all_groups_affected:
         for group in all_groups_affected:
@@ -246,6 +247,7 @@ def process_shakemaps(shakemaps=[], session=None, scenario=False):
                     
                 notification = Notification(group=group,
                                             shakemap=shakemap,
+                                            event=shakemap.event,
                                             notification_type='DAMAGE',
                                             status='created')
                 
@@ -355,7 +357,7 @@ def process_shakemaps(shakemaps=[], session=None, scenario=False):
                 
             shakemap.status = 'processed'
         else:
-            shakemap.status = 'no facs'
+            shakemap.status = 'processed - no facs'
         
         if notifications:
             # send inspection notifications for the shaking levels we

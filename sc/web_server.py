@@ -139,6 +139,7 @@ def get_eq_data():
     eq_dicts = []
     for eq in eqs:
         eq_dict = eq.__dict__.copy()
+        eq_dict['shakemaps'] = len(eq.shakemaps)
         eq_dict.pop('_sa_instance_state', None)
         eq_dicts += [eq_dict]
     
@@ -314,10 +315,10 @@ def event_image(event_id):
 def get_notification(event_id):
     session = Session()
     nots = (session.query(Notification)
-                    .filter(Notification.event_id == event_id)
+                    .filter(or_(Notification.event_id == event_id,
+                                Notification.shakemap_id == event_id))
                     .all())
 
-    
     dicts = []
     for obj in nots:
         dict_ = obj.__dict__.copy()

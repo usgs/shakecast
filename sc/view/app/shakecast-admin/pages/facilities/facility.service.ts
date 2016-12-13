@@ -36,6 +36,14 @@ export class FacilityService {
                 this.facilityData.next(result.data);
             })
     }
+
+    getShakeMapData(event: any) {
+        this._http.get('/api/shakemaps/' + event.event_id + '/facilities')
+            .map((result: Response) => result.json())
+            .subscribe((result: any) => {
+                this.facilityData.next(result);
+            })
+    }
     
     selectAll() {
         this.selection.next('all');

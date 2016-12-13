@@ -5,7 +5,7 @@
             <my-map class="map"></my-map>
         </div>
         <div class="eq-container">
-            <h2>## Recent Earthquakes</h2>
+            <h2>{{ earthquakeData.length }} Recent Earthquakes</h2>
             <earthquake-list></earthquake-list>
         </div>
     </div>
@@ -13,11 +13,14 @@
 <div class="outer-fac-not-container">
     <div class="fac-not-container">
         <div class="fac-container">
-            <h2>## Facilities Affected</h2>
+            <h2>{{ facilityData.length }} Facilities Affected</h2>
             <facility-list></facility-list>
         </div>
         <div class="not-container">
-            <notification-dash></notification-dash>
+            <h2>Notifications</h2>
+            <div class="not-dash">
+                <notification-dash></notification-dash>
+            </div>
         </div>
     </div>
 </div>
