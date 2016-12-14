@@ -259,15 +259,15 @@ def get_affected_facilities(shakemap_id):
              'orange': 0,
              'red': 0}
     
-    alert['grey'] = [f for f in fac_dicts if 
+    alert['grey'] = [f for f in fac_dicts if
                             f['shaking']['alert_level'] == 'grey']
-    alert['green'] = [f for f in fac_dicts if 
+    alert['green'] = [f for f in fac_dicts if
                             f['shaking']['alert_level'] == 'green']
-    alert['yellow'] = [f for f in fac_dicts if 
+    alert['yellow'] = [f for f in fac_dicts if
                             f['shaking']['alert_level'] == 'yellow']
-    alert['orange'] = [f for f in fac_dicts if 
+    alert['orange'] = [f for f in fac_dicts if
                             f['shaking']['alert_level'] == 'orange']
-    alert['red'] = [f for f in fac_dicts if 
+    alert['red'] = [f for f in fac_dicts if
                             f['shaking']['alert_level'] == 'red']
     
     shaking_data = {'alert': alert, 'facilities': fac_dicts}

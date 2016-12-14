@@ -45,7 +45,7 @@ export class FacilityService {
                 this.facilityData.next(result.facilities);
                 this.shakingData.next(result.shaking);
 
-                this.selection.next('all');
+                this.selectAll()
             })
     }
     
