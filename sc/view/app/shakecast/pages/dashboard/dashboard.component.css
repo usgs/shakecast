@@ -43,3 +43,11 @@
 .eq-list {
     width: 50%;
 }
+
+h2 {
+    margin-left: 5px;
+}
+
+.not-dash {
+    margin-left: 10px;
+}

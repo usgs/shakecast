@@ -14,6 +14,8 @@ declare var L: any;
 export class MapComponent implements OnInit, OnDestroy {
     public markers: any = {};
     public overlays: any = [];
+    public eventMarkers: any = [];
+    public facilityMarkers: any = [];
     public center: any = {};
     private markerLayer: any = L.layerGroup()
     private overlayLayer: any = L.layerGroup()
@@ -95,6 +97,18 @@ export class MapComponent implements OnInit, OnDestroy {
             this.center = center;
             this.map.setView([center.lat + .5,center.lon], 8);
         }));
+
+        // subscribe to facility markers
+        this.subscriptions.push(this.mapService.facMarkers.subscribe(markers => {
+                for (var mark in markers) {
+                    this.plotFacMarker(markers[mark]);
+                }
+        }));
+
+        // subscribe to REMOVING facility markers
+        this.subscriptions.push(this.mapService.removeFacMarkers.subscribe(fac => {
+            this.removeFacMarker(fac);
+        }));
     }
 
     plotEventMarker(marker: any) {
@@ -138,7 +152,7 @@ export class MapComponent implements OnInit, OnDestroy {
 
         marker.bindPopup(popupContent).openPopup();
         // add marker to array -- do we need this still??
-        // this.markers.push(marker)
+        this.eventMarkers.push(marker)
     }
 
     plotShakemap(event: any) {
@@ -157,11 +171,12 @@ export class MapComponent implements OnInit, OnDestroy {
                 this.overlayLayer = L.layerGroup([overlay]).addTo(this.map)
 
                 // plot facilities if available
-                this.plotFacilities(sm)
+                // this.plotFacilities(sm)
             }
         });
     }
-
+    
+    /*
     plotFacilities(sm: any) {
         this.smService.getFacilities(sm).subscribe((result: any) => {
             if (result.length > 0) {
@@ -185,6 +200,8 @@ export class MapComponent implements OnInit, OnDestroy {
             }
         }); 
     }
+    */
+    
 
     //////////////////////////////////////////////////////////////
     ///////////////////// Facility Functions /////////////////////
@@ -222,16 +239,33 @@ export class MapComponent implements OnInit, OnDestroy {
 
         marker.bindPopup(popupContent).openPopup();
         // add marker to array -- do we need this still??
-        this.markers[fac.shakecast_id.toString()] = marker
+        this.facilityMarkers[fac.shakecast_id.toString()] = marker
     }
 
     removeFacMarker(fac: any) {
-        var marker: any = this.markers[fac.shakecast_id.toString()];
+        var marker: any = this.facilityMarkers[fac.shakecast_id.toString()];
         if (marker) {
             this.map.removeLayer(marker);
+
+            // remove from marker array
+            var index: number = this.facilityMarkers.indexOf(marker);
+            if (index > -1) {
+                this.facilityMarkers.splice(index, 1);
+            }
+        }
+
+        if (Object.keys(this.facilityMarkers).length == 0) {
+                this.plotLastEvent();
         }
     }
 
+    plotLastEvent() {
+        if (this.eventMarkers.length > 0) {
+            var marker: any = this.eventMarkers[this.eventMarkers.length - 1] 
+            this.map.setView(marker.getLatLng());
+            marker.openPopup()
+        }
+    }
 
     ////////// Clean Up Before Closing //////////
     ngOnDestroy() {

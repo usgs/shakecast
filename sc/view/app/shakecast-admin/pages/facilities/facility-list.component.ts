@@ -55,9 +55,12 @@ export class FacilityListComponent implements OnInit, OnDestroy {
                 this.facService.selectedFacs = this.selectedFacs
             }
 
-            this.selectedFacs.push(this.facilityData[0]);
-            this.facilityData[0].selected = true;
-            this.plotFac(this.facilityData[0]);
+            console.log(this.facilityData);
+            if (this.facilityData.length > 0) {
+                this.selectedFacs.push(this.facilityData[0]);
+                this.facilityData[0].selected = true;
+                this.plotFac(this.facilityData[0]);
+            }
         }));
 
         this.subscriptions.push(this.facService.selection.subscribe(select => {
