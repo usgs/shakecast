@@ -272,6 +272,17 @@ class TestFull(unittest.TestCase):
         '''
         data = check_new()
         self.assertEqual(data['error'], '')
+
+    def step12_NotificationAssoc(self):
+        '''
+        Make sure events and notifications are linked
+        '''
+        session = Session()
+        nots = session.query(Notification).all()
+        bad_nots = [n for n in nots if n if n.event_id == None]
+
+        self.assertEqual(len(bad_nots), 0)
+        Session.remove()
         
     def steps(self):
         '''
