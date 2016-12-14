@@ -29,17 +29,6 @@ export class MapComponent implements OnInit, OnDestroy {
 
     ngOnInit() {
         this.initMap();
-
-        // if eq page
-        if ((this._router.url === '/shakecast/earthquakes') || 
-                (this._router.url === '/shakecast/dashboard')) {
-            this.initEqMap();
-        } else if (this._router.url === '/shakecast-admin/facilities') {
-            // if fac page
-            this.initFacMap();
-        }
-
-        
     }
 
     initMap() {
@@ -51,6 +40,34 @@ export class MapComponent implements OnInit, OnDestroy {
             attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
             subdomains: ['a','b','c']
         }).addTo(this.map);
+
+        // subscribe to earthquake markers
+        this.subscriptions.push(this.mapService.eqMarkers.subscribe(markers => {
+            // clear existing layers
+            this.clearLayers();
+
+                for (var mark in markers) {
+                    this.plotEventMarker(markers[mark]);
+                }
+        }));
+
+        // subscribe to center
+        this.subscriptions.push(this.mapService.center.subscribe(center => {
+            this.center = center;
+            this.map.setView([center.lat + .5,center.lon], 8);
+        }));
+
+        // subscribe to facility markers
+        this.subscriptions.push(this.mapService.facMarkers.subscribe(markers => {
+                for (var mark in markers) {
+                    this.plotFacMarker(markers[mark]);
+                }
+        }));
+
+        // subscribe to REMOVING facility markers
+        this.subscriptions.push(this.mapService.removeFacMarkers.subscribe(fac => {
+            this.removeFacMarker(fac);
+        }));
     }
 
     clearLayers() {
@@ -81,36 +98,6 @@ export class MapComponent implements OnInit, OnDestroy {
 
     //////////////////////////////////////////////////////////////
     //////////////////// Earthquake Functions ////////////////////
-    initEqMap() {
-        // subscribe to earthquake markers
-        this.subscriptions.push(this.mapService.eqMarkers.subscribe(markers => {
-            // clear existing layers
-            this.clearLayers();
-
-                for (var mark in markers) {
-                    this.plotEventMarker(markers[mark]);
-                }
-        }));
-
-        // subscribe to center
-        this.subscriptions.push(this.mapService.center.subscribe(center => {
-            this.center = center;
-            this.map.setView([center.lat + .5,center.lon], 8);
-        }));
-
-        // subscribe to facility markers
-        this.subscriptions.push(this.mapService.facMarkers.subscribe(markers => {
-                for (var mark in markers) {
-                    this.plotFacMarker(markers[mark]);
-                }
-        }));
-
-        // subscribe to REMOVING facility markers
-        this.subscriptions.push(this.mapService.removeFacMarkers.subscribe(fac => {
-            this.removeFacMarker(fac);
-        }));
-    }
-
     plotEventMarker(marker: any) {
         // create event marker and plot it
         this.createEventMarker(marker)
@@ -155,6 +142,14 @@ export class MapComponent implements OnInit, OnDestroy {
         this.eventMarkers.push(marker)
     }
 
+    plotLastEvent() {
+        if (this.eventMarkers.length > 0) {
+            var marker: any = this.eventMarkers[this.eventMarkers.length - 1] 
+            this.map.setView(marker.getLatLng());
+            marker.openPopup()
+        }
+    }
+
     plotShakemap(event: any) {
         this.smService.shakemapCheck(event).subscribe((result: any) => {
             if (result.length > 0) {
@@ -169,62 +164,12 @@ export class MapComponent implements OnInit, OnDestroy {
                                 {opacity: .6})
 
                 this.overlayLayer = L.layerGroup([overlay]).addTo(this.map)
-
-                // plot facilities if available
-                // this.plotFacilities(sm)
             }
         });
     }
-    
-    /*
-    plotFacilities(sm: any) {
-        this.smService.getFacilities(sm).subscribe((result: any) => {
-            if (result.length > 0) {
-                var facs: any[] = []
-                var popupContent = ''
-                for (var fac in result) {
-                    var myFac = result[fac]
-                    var marker = L.marker([(myFac.lat_min + myFac.lat_max)/2, 
-                                            (myFac.lon_min + myFac.lon_max)/2]);
-
-
-                    popupContent = `<table class="my-table">
-                                            <tr>
-                                                <th>` + myFac.name + `</th>
-                                            </tr>    
-                                        </table>`
-                    marker.bindPopup(popupContent).openPopup();
-                    facs.push(marker)
-                } 
-                this.facilityLayer = L.layerGroup(facs).addTo(this.map)
-            }
-        }); 
-    }
-    */
-    
 
     //////////////////////////////////////////////////////////////
     ///////////////////// Facility Functions /////////////////////
-    initFacMap() {
-        // subscribe to facility markers
-        this.subscriptions.push(this.mapService.facMarkers.subscribe(markers => {
-                for (var mark in markers) {
-                    this.plotFacMarker(markers[mark]);
-                }
-        }));
-
-        // subscribe to REMOVING facility markers
-        this.subscriptions.push(this.mapService.removeFacMarkers.subscribe(fac => {
-            this.removeFacMarker(fac);
-        }));
-
-        // subscribe to center
-        this.subscriptions.push(this.mapService.center.subscribe(center => {
-            this.center = center;
-            this.map.setView([center.lat, center.lon]);
-        }));
-    }
-
     plotFacMarker(marker: any) {
         // create event marker and plot it
         this.createFacMarker(marker)
@@ -232,9 +177,7 @@ export class MapComponent implements OnInit, OnDestroy {
 
     createFacMarker(fac: any) {
         var marker: any = L.marker([fac.lat, fac.lon]);
-
         var popupContent = fac.name
-
         this.markerLayer = L.layerGroup([marker]).addTo(this.map);
 
         marker.bindPopup(popupContent).openPopup();
@@ -256,14 +199,6 @@ export class MapComponent implements OnInit, OnDestroy {
 
         if (Object.keys(this.facilityMarkers).length == 0) {
                 this.plotLastEvent();
-        }
-    }
-
-    plotLastEvent() {
-        if (this.eventMarkers.length > 0) {
-            var marker: any = this.eventMarkers[this.eventMarkers.length - 1] 
-            this.map.setView(marker.getLatLng());
-            marker.openPopup()
         }
     }
 
