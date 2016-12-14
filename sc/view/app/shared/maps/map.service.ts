@@ -35,6 +35,10 @@ export class MapService {
         this.center.next(marker);
     }
 
+    setCenter(marker: any) {
+        this.center.next(marker);
+    }
+
     removeFac(fac: Facility) {
         this.removeFacMarkers.next(fac);
     }

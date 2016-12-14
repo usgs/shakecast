@@ -20,6 +20,7 @@ export interface Facility {
 @Injectable()
 export class FacilityService {
     public facilityData = new ReplaySubject(1);
+    public shakingData = new ReplaySubject(1);
     public selectedFacs: Facility[] = [];
     public selection = new ReplaySubject(1);
     public filter = {};
@@ -41,7 +42,10 @@ export class FacilityService {
         this._http.get('/api/shakemaps/' + event.event_id + '/facilities')
             .map((result: Response) => result.json())
             .subscribe((result: any) => {
-                this.facilityData.next(result);
+                this.facilityData.next(result.facilities);
+                this.shakingData.next(result.shaking);
+
+                this.selection.next('all');
             })
     }
     

@@ -253,11 +253,29 @@ def get_affected_facilities(shakemap_id):
             s_dict.pop('_sa_instance_state', None)
             fac_dict['shaking'] = s_dict
             fac_dicts += [fac_dict]
+    alert = {'grey': 0,
+             'green': 0,
+             'yellow': 0,
+             'orange': 0,
+             'red': 0}
     
-    fac_json = json.dumps(fac_dicts, cls=AlchemyEncoder)
+    alert['grey'] = [f for f in fac_dicts if 
+                            f['shaking']['alert_level'] == 'grey']
+    alert['green'] = [f for f in fac_dicts if 
+                            f['shaking']['alert_level'] == 'green']
+    alert['yellow'] = [f for f in fac_dicts if 
+                            f['shaking']['alert_level'] == 'yellow']
+    alert['orange'] = [f for f in fac_dicts if 
+                            f['shaking']['alert_level'] == 'orange']
+    alert['red'] = [f for f in fac_dicts if 
+                            f['shaking']['alert_level'] == 'red']
+    
+    shaking_data = {'alert': alert, 'facilities': fac_dicts}
+
+    shaking_json = json.dumps(shaking_data, cls=AlchemyEncoder)
     
     Session.remove()    
-    return fac_json
+    return shaking_json
 
 @app.route('/api/shakemaps/<shakemap_id>/overlay')
 @login_required
