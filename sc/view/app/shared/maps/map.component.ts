@@ -19,7 +19,7 @@ export class MapComponent implements OnInit, OnDestroy {
     public center: any = {};
     private markerLayer: any = L.layerGroup()
     private overlayLayer: any = L.layerGroup()
-    private facilityLayer: any= L.layerGroup()
+    private facilityLayer: any = L.markerClusterGroup()
     private subscriptions: any = [];
     private map: any;
 
@@ -40,6 +40,13 @@ export class MapComponent implements OnInit, OnDestroy {
             attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
             subdomains: ['a','b','c']
         }).addTo(this.map);
+
+        this.map.addLayer(this.facilityLayer)
+        var layers: any  = {
+            'Facility': this.facilityLayer
+        }
+
+        L.control.layers(layers).addTo(this.map);
 
         // subscribe to earthquake markers
         this.subscriptions.push(this.mapService.eqMarkers.subscribe(markers => {
@@ -178,7 +185,8 @@ export class MapComponent implements OnInit, OnDestroy {
     createFacMarker(fac: any) {
         var marker: any = L.marker([fac.lat, fac.lon]);
         var popupContent = fac.name
-        this.markerLayer = L.layerGroup([marker]).addTo(this.map);
+        
+        this.markerLayer = this.facilityLayer.addLayer(marker);
 
         marker.bindPopup(popupContent).openPopup();
         // add marker to array -- do we need this still??
