@@ -1052,9 +1052,12 @@ class URLOpener(object):
         """
 
         # create context to avoid certificate errors
-        ctx = ssl.create_default_context()
-        ctx.check_hostname = False
-        ctx.verify_mode = ssl.CERT_NONE
+        try:
+            ctx = ssl.create_default_context()
+            ctx.check_hostname = False
+            ctx.verify_mode = ssl.CERT_NONE
+        except:
+            ctx = None
 
         try:
             sc = SC()
@@ -1072,7 +1075,11 @@ class URLOpener(object):
                     auth = urllib2.HTTPBasicAuthHandler()
                     opener = urllib2.build_opener(proxy, auth, urllib2.HTTPHandler)
                     
-                    url_obj = opener.open(url, timeout=60, context=ctx)
+                    if ctx is not None:
+                        url_obj = opener.open(url, timeout=60, context=ctx)
+                    else:
+                        url_obj = opener.open(url, timeout=60)
+
                     url_read = url_obj.read()
                     url_obj.close()
                     return url_read
@@ -1082,13 +1089,21 @@ class URLOpener(object):
                                                   'https': 'https://{0}:{1}'.format(sc.proxy_server,sc.proxy_port)})
                     opener = urllib2.build_opener(proxy)
                     
-                    url_obj = opener.open(url, timeout=60, context=ctx)
+                    if ctx is not None:
+                        url_obj = opener.open(url, timeout=60, context=ctx)
+                    else:
+                        url_obj = opener.open(url, timeout=60)
+                        
                     url_read = url_obj.read()
                     url_obj.close()
                     return url_read
     
             else:
-                url_obj = urllib2.urlopen(url, timeout=60, context=ctx)
+                if ctx is not None:
+                    url_obj = urllib2.urlopen(url, timeout=60, context=ctx)
+                else:
+                    url_obj = urllib2.urlopen(url, timeout=60)
+                    
                 url_read = url_obj.read()
                 url_obj.close()
                 return url_read

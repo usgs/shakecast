@@ -11,8 +11,6 @@ import { HeaderComponent } from './header/header.component'
 import { NavComponent } from './nav/nav.component'
 
 import { DashboardComponent } from './pages/dashboard/dashboard.component'
-import { EarthquakeDashComponent } from './pages/dashboard/earthquake-dash/earthquake-dash.component.ts'
-import { FacilityDashComponent } from './pages/dashboard/facility-dash/facility-dash.component.ts'
 import { NotificationDashComponent } from './pages/dashboard/notification-dash/notification-dash.component.ts'
 
 import { EarthquakesComponent} from './pages/earthquakes/earthquakes.component'
@@ -35,8 +33,6 @@ import { SharedModule } from '../shared/shared.module'
     HeaderComponent,
     NavComponent,
     DashboardComponent,
-    EarthquakeDashComponent,
-    FacilityDashComponent,
     NotificationDashComponent,
     EarthquakesComponent,
     EarthquakeListComponent,
