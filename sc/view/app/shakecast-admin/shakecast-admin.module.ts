@@ -19,6 +19,9 @@ import { FacilityFilter } from './pages/facilities/facility-filter/facility-filt
 import { EarthquakesComponent } from './pages/earthquakes/earthquakes.component'
 import { EarthquakeListComponent } from './pages/earthquakes/earthquake-list.component'
 
+import { GroupsComponent } from './pages/groups/groups.component'
+
+import { UsersComponent } from './pages/users/users.component'
 //import { UploadComponent } from './pages/upload/upload.component'
 
 import { SharedModule } from '../shared/shared.module'
@@ -40,6 +43,8 @@ import { SharedModule } from '../shared/shared.module'
     FacilityFilter,
     EarthquakesComponent,
     EarthquakeListComponent,
+    GroupsComponent,
+    UsersComponent
     //UploadComponent
   ],
   providers: [
