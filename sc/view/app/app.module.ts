@@ -21,6 +21,7 @@ import { SharedModule } from './shared/shared.module'
 import { MapService } from './shared/maps/map.service'
 import { ShakemapService } from './shared/maps/shakemap.service'
 import { ScreenDimmerService } from './shared/screen-dimmer/screen-dimmer.service'
+import { GroupService } from './shakecast-admin/pages/groups/group.service'
 
 import { StickToTopService } from './shared/directives/stick-to-top.service';
 
@@ -48,7 +49,8 @@ import { StickToTopService } from './shared/directives/stick-to-top.service';
     ShakemapService,
     StickToTopService,
     ScreenDimmerService,
-    NotificationService
+    NotificationService,
+    GroupService
   ],
   bootstrap: [ AppComponent ]
 })

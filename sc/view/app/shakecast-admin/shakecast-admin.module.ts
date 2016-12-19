@@ -20,8 +20,10 @@ import { EarthquakesComponent } from './pages/earthquakes/earthquakes.component'
 import { EarthquakeListComponent } from './pages/earthquakes/earthquake-list.component'
 
 import { GroupsComponent } from './pages/groups/groups.component'
+import { GroupListComponent } from './pages/groups/group-list.component'
 
 import { UsersComponent } from './pages/users/users.component'
+import { UserListComponent } from './pages/users/user-list.component'
 //import { UploadComponent } from './pages/upload/upload.component'
 
 import { SharedModule } from '../shared/shared.module'
@@ -44,7 +46,9 @@ import { SharedModule } from '../shared/shared.module'
     EarthquakesComponent,
     EarthquakeListComponent,
     GroupsComponent,
-    UsersComponent
+    GroupListComponent,
+    UsersComponent,
+    UserListComponent
     //UploadComponent
   ],
   providers: [

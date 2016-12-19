@@ -1,6 +1,11 @@
-import { Component } from '@angular/core';
-
-//mport { FacilityListComponent } from './facility-list.component'
+import { Component,
+         OnInit, 
+         OnDestroy,
+         trigger,
+         state,
+         style,
+         transition,
+         animate } from '@angular/core';
 
 @Component({
   selector: 'groups',
