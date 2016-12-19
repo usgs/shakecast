@@ -19,6 +19,7 @@ export interface Facility {
 
 @Injectable()
 export class FacilityService {
+    public loadingData = new ReplaySubject(1);
     public facilityData = new ReplaySubject(1);
     public shakingData = new ReplaySubject(1);
     public selectedFacs: Facility[] = [];
@@ -29,16 +30,19 @@ export class FacilityService {
                 private mapService: MapService) {}
 
     getData(filter: any = {}) {
+        this.loadingData.next(true)
         let params = new URLSearchParams();
         params.set('filter', JSON.stringify(filter))
         this._http.get('/api/facility-data', {search: params})
             .map((result: Response) => result.json())
             .subscribe((result: any) => {
                 this.facilityData.next(result.data);
+                this.loadingData.next(false)
             })
     }
 
     getShakeMapData(event: any) {
+        this.loadingData.next(true)
         this._http.get('/api/shakemaps/' + event.event_id + '/facilities')
             .map((result: Response) => result.json())
             .subscribe((result: any) => {
@@ -46,6 +50,7 @@ export class FacilityService {
                 this.shakingData.next(result.shaking);
 
                 this.selectAll()
+                this.loadingData.next(false)
             })
     }
     
@@ -58,12 +63,14 @@ export class FacilityService {
     }
 
     deleteFacs() {
+        this.loadingData.next(true)
         let params = new URLSearchParams();
         params.set('facilities', JSON.stringify(this.selectedFacs))
         this._http.delete('/api/delete/facilities', {search: params})
             .map((result: Response) => result.json())
             .subscribe((result: any) => {
                 this.getData();
+                this.loadingData.next(false)
             })
     }
 

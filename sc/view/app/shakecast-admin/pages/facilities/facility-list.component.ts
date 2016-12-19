@@ -31,6 +31,7 @@ import { filter } from './facility-filter/facility-filter.component'
     ]
 })
 export class FacilityListComponent implements OnInit, OnDestroy {
+    public loadingData: boolean = false
     public facilityData: any = [];
     public selectedFacs: any = [];
     public filter: filter = {};
@@ -72,6 +73,10 @@ export class FacilityListComponent implements OnInit, OnDestroy {
             }
 
             this.facService.selectedFacs = this.selectedFacs;
+        }));
+
+        this.subscriptions.push(this.facService.loadingData.subscribe(loading => {
+            this.loadingData = loading
         }));
 
         this.facService.getData(this.filter);

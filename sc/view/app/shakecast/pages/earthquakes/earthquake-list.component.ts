@@ -35,7 +35,8 @@ import { filter } from './earthquake-filter/earthquake-filter.component'
 })
 export class EarthquakeListComponent implements OnInit, OnDestroy {
     public earthquakeData: any = [];
-    public pulledRight: boolean = false
+    public pulledRight: boolean = false;
+    public dataLoading: boolean = false;
 
     public filter: filter = {
         shakemap: false,
@@ -49,6 +50,10 @@ export class EarthquakeListComponent implements OnInit, OnDestroy {
         this.subscriptions.push(this.eqService.earthquakeData.subscribe(eqs => {
             this.earthquakeData = eqs
             this.plotEq(eqs[0])
+        }));
+
+        this.subscriptions.push(this.eqService.dataLoading.subscribe(loading => {
+            this.dataLoading = loading
         }));
 
         this.eqService.getData(this.filter);
