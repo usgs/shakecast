@@ -6,6 +6,8 @@ import { ShakeCastAdminComponent } from './shakecast-admin.component'
 import { DashboardComponent } from './pages/dashboard/dashboard.component'
 import { FacilitiesComponent } from './pages/facilities/facilities.component'
 import { EarthquakesComponent } from './pages/earthquakes/earthquakes.component'
+import { GroupsComponent } from './pages/groups/groups.component'
+import { UsersComponent } from './pages/users/users.component'
 //import { UploadComponent } from './pages/upload/upload.component'
 
 import { LoginGuard } from '../auth/login.guard'
@@ -28,6 +30,14 @@ const appRoutes: Routes = [
             {
                 path: 'earthquakes',
                 component: EarthquakesComponent
+            },
+            {
+                path: 'groups',
+                component: GroupsComponent
+            },
+            {
+                path: 'users',
+                component: UsersComponent
             },
             //{
                 //path: 'upload',

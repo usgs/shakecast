@@ -189,15 +189,14 @@ export class MapComponent implements OnInit, OnDestroy {
         this.markerLayer = this.facilityLayer.addLayer(marker);
 
         marker.bindPopup(popupContent).openPopup();
-        // add marker to array -- do we need this still??
         this.facilityMarkers[fac.shakecast_id.toString()] = marker
     }
 
     removeFacMarker(fac: any) {
         var marker: any = this.facilityMarkers[fac.shakecast_id.toString()];
         if (marker) {
-            this.map.removeLayer(marker);
-
+            //this.map.removeLayer(marker);
+            this.facilityLayer.removeLayer(marker);
             // remove from marker array
             var index: number = this.facilityMarkers.indexOf(marker);
             if (index > -1) {

@@ -193,6 +193,59 @@ def delete_facilities():
     Session.remove()
     return jsonify(success=True)
 
+@app.route('/api/groups')
+@login_required
+def get_groups():
+    session = Session()
+    groups = (session.query(Group)
+                .filter(Group.shakecast_id > request.args.get('last_id', 0))
+                .limit(50)
+                .all())
+    
+    group_dicts = []
+    for group in groups:
+        group_dict = group.__dict__.copy()
+        group_dict.pop('_sa_instance_state', None)
+        group_dicts += [group_dict]
+        
+    group_json = json.dumps(group_dicts, cls=AlchemyEncoder)
+    
+    Session.remove()    
+    return group_json
+
+@app.route('/api/users')
+@login_required
+def get_users():
+    session = Session()
+    filter_ = literal_eval(request.args.get('filter', 'None'))
+    if filter_:
+        if filter_.get('group', None):
+            users = (session.query(User)
+                            .filter(User.shakecast_id > request.args.get('last_id', 0))
+                            .filter(User.groups.any(Group.name.like(filter_['group'])))
+                            .limit(50)
+                            .all())
+            
+        else:
+            users = (session.query(User)
+                            .filter(User.shakecast_id > request.args.get('last_id', 0))
+                            .limit(50)
+                            .all())
+    else:   
+        users = session.query(User).filter(User.shakecast_id > request.args.get('last_id', 0)).limit(50).all()
+    
+    user_dicts = []
+    for user in users:
+        user_dict = user.__dict__.copy()
+        user_dict.pop('_sa_instance_state', None)
+        user_dict.pop('password', None)
+        user_dicts += [user_dict]
+        
+    user_json = json.dumps(user_dicts, cls=AlchemyEncoder)
+    
+    Session.remove()    
+    return user_json
+
 @app.route('/api/shakemaps')
 @login_required
 def get_shakemaps():
@@ -450,27 +503,6 @@ def notification_html(group_id, notification_type):
 def admin_eqs():
     return render_template('admin/earthquakes.html')
 
-@app.route('/admin/get/groups')
-@admin_only
-@login_required
-def get_groups():
-    session = Session()
-    groups = (session.query(Group)
-                .filter(Group.shakecast_id > request.args.get('last_id', 0))
-                .limit(50)
-                .all())
-    
-    group_dicts = []
-    for group in groups:
-        group_dict = group.__dict__.copy()
-        group_dict.pop('_sa_instance_state', None)
-        group_dicts += [group_dict]
-        
-    group_json = json.dumps(group_dicts, cls=AlchemyEncoder)
-    
-    Session.remove()    
-    return group_json
-
 @app.route('/admin/get/groups/<group_id>/specs')
 @admin_only
 @login_required
@@ -505,39 +537,6 @@ def get_group_specs(group_id):
     
     Session.remove()    
     return specs_json
-
-@app.route('/admin/get/users')
-@admin_only
-@login_required
-def get_users():
-    session = Session()
-    filter_ = literal_eval(request.args.get('filter', 'None'))
-    if filter_:
-        if filter_.get('group', None):
-            users = (session.query(User)
-                            .filter(User.shakecast_id > request.args.get('last_id', 0))
-                            .filter(User.groups.any(Group.name.like(filter_['group'])))
-                            .limit(50)
-                            .all())
-            
-        else:
-            users = (session.query(User)
-                            .filter(User.shakecast_id > request.args.get('last_id', 0))
-                            .limit(50)
-                            .all())
-    else:   
-        users = session.query(User).filter(User.shakecast_id > request.args.get('last_id', 0)).limit(50).all()
-    
-    user_dicts = []
-    for user in users:
-        user_dict = user.__dict__.copy()
-        user_dict.pop('_sa_instance_state', None)
-        user_dicts += [user_dict]
-        
-    user_json = json.dumps(user_dicts, cls=AlchemyEncoder)
-    
-    Session.remove()    
-    return user_json
 
 @app.route('/admin/get/users/<user_id>/groups')
 @admin_only

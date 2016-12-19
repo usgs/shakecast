@@ -1,27 +1,32 @@
 <div class="outer-container">
     <div class="eqs-container" stickToTop [@pulledRight]="pulledRight">
-        <div *ngIf="earthquakeData">
-            <div class="eq" *ngFor="let eq of earthquakeData" (click)="plotEq(eq)">
-                <div class="eq-header">
-                    <h3>{{eq.event_id}}</h3>
-                </div>
-                <div class="eq-body">
-                    <div class="info-container">
-                        <table>
-                            <tr>
-                                <th>Magnitude: </th><td><p>{{eq.magnitude}}</p></td>
-                            </tr>
-                            <tr>
-                                <th>Location: </th><td><p>{{eq.lat}}, {{eq.lon}}</p></td>
-                            </tr>
-                        </table>
-                        <p class="place">{{eq.place}}</p>
+        <div *ngIf="!dataLoading">
+            <div *ngIf="earthquakeData">
+                <div class="eq" *ngFor="let eq of earthquakeData" (click)="plotEq(eq)">
+                    <div class="eq-header">
+                        <h3>{{eq.event_id}}</h3>
+                    </div>
+                    <div class="eq-body">
+                        <div class="info-container">
+                            <table>
+                                <tr>
+                                    <th>Magnitude: </th><td><p>{{eq.magnitude}}</p></td>
+                                </tr>
+                                <tr>
+                                    <th>Location: </th><td><p>{{eq.lat}}, {{eq.lon}}</p></td>
+                                </tr>
+                            </table>
+                            <p class="place">{{eq.place}}</p>
+                        </div>
                     </div>
                 </div>
             </div>
+            <div *ngIf="!earthquakeData">
+                <h1>No Earthquake Data</h1>
+            </div>
         </div>
-        <div *ngIf="!earthquakeData">
-            <h1>No Earthquake Data</h1>
+        <div *ngIf="dataLoading">
+            <p>loading...</p>
         </div>
     </div>
 </div>

@@ -7,11 +7,4 @@
     width: 100%;
     height: 500px;
     position: relative;
-    margin-top: 100px;
-}
-
-.eqs-outer-container {
-    height: 250px;
-    position: relative;
-    overflow: visible;
 }

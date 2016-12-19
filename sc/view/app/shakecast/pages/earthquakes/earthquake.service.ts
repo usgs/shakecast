@@ -23,6 +23,7 @@ export interface Earthquake {
 @Injectable()
 export class EarthquakeService {
     public earthquakeData = new ReplaySubject(1);
+    public dataLoading = new ReplaySubject(1);
     public filter = {};
 
     constructor(private _http: Http,
@@ -31,12 +32,14 @@ export class EarthquakeService {
                 private facService: FacilityService) {}
 
     getData(filter: any = {}) {
+        this.dataLoading.next(true);
         let params = new URLSearchParams();
         params.set('filter', JSON.stringify(filter))
         this._http.get('/api/earthquake-data', {search: params})
             .map((result: Response) => result.json())
             .subscribe((result: any) => {
                 this.earthquakeData.next(result.data);
+                this.dataLoading.next(false);
             })
     }
     

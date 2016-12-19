@@ -7,22 +7,18 @@ import { ReplaySubject } from 'rxjs/ReplaySubject';
 
 import { MapService } from '../../../shared/maps/map.service'
 
-export interface Facility {
-    shakecast_id: string;
-    facility_id: string;
-    lat: number;
-    lon: number;
+export interface Group {
+    lat_min: number;
+    lon_min: number;
+    lat_max: number;
+    lon_max: number;
     name: string;
-    description: string;
-    selected?:boolean
 }
 
 @Injectable()
-export class FacilityService {
+export class GroupService {
     public loadingData = new ReplaySubject(1);
-    public facilityData = new ReplaySubject(1);
-    public shakingData = new ReplaySubject(1);
-    public selectedFacs: Facility[] = [];
+    public groupData = new ReplaySubject(1);
     public selection = new ReplaySubject(1);
     public filter = {};
 
@@ -33,23 +29,10 @@ export class FacilityService {
         this.loadingData.next(true)
         let params = new URLSearchParams();
         params.set('filter', JSON.stringify(filter))
-        this._http.get('/api/facility-data', {search: params})
+        this._http.get('/api/groups', {search: params})
             .map((result: Response) => result.json())
             .subscribe((result: any) => {
-                this.facilityData.next(result.data);
-                this.loadingData.next(false)
-            })
-    }
-
-    getShakeMapData(event: any) {
-        this.loadingData.next(true)
-        this._http.get('/api/shakemaps/' + event.event_id + '/facilities')
-            .map((result: Response) => result.json())
-            .subscribe((result: any) => {
-                this.facilityData.next(result.facilities);
-                this.shakingData.next(result.shaking);
-
-                this.selectAll()
+                this.groupData.next(result);
                 this.loadingData.next(false)
             })
     }
@@ -62,7 +45,8 @@ export class FacilityService {
         this.selection.next('none');
     }
 
-    deleteFacs() {
+    deleteGroups() {
+        /*
         this.loadingData.next(true)
         let params = new URLSearchParams();
         params.set('facilities', JSON.stringify(this.selectedFacs))
@@ -72,14 +56,19 @@ export class FacilityService {
                 this.getData();
                 this.loadingData.next(false)
             })
+            */
     }
 
     plotFac(fac: Facility) {
+        /*
         this.mapService.plotFac(fac);
+        */
     }
 
     removeFac(fac: Facility) {
+        /*
         this.mapService.removeFac(fac);
+        */
     }
     
 }

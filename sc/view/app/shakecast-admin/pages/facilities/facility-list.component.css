@@ -32,6 +32,11 @@
     margin-top: 10px;
 }
 
+.no-facs {
+    color: #aaaaaa;
+    text-align: center;
+}
+
 /* header */
 .eq-header {
     height: 40px;
