@@ -33,12 +33,18 @@ export class GroupListComponent implements OnInit, OnDestroy {
     public loadingData: boolean = false
     public groupData: any = [];
     public filter: filter = {};
+    public selected: Group;
     private subscriptions: any[] = [];
 
     constructor(private groupService: GroupService) {}
     ngOnInit() {
         this.subscriptions.push(this.groupService.groupData.subscribe(data => {
             this.groupData = data;
+            for (var group in this.groupData) {
+                this.groupData[group].selected = false;
+                this.selected = this.groupData[0];
+                this.selected.selected = true;
+            }
         }));
 /*
         this.subscriptions.push(this.groupService.selection.subscribe(select => {
@@ -56,7 +62,15 @@ export class GroupListComponent implements OnInit, OnDestroy {
             this.loadingData = loading
         }));
 
-        this.groupService.getData(this.filter);}
+        this.groupService.getData(this.filter);
+    }
+
+    clickGroup(group: Group) {
+        this.selected.selected = false;
+        group.selected = true;
+        this.selected = group
+    }
+
     ngOnDestroy() {
         this.endSubscriptions()
     }
