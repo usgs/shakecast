@@ -204,8 +204,10 @@ export class MapComponent implements OnInit, OnDestroy {
             }
         }
 
-        if (Object.keys(this.facilityMarkers).length == 0) {
+        if (this._router.url == '/shakecast/dashboard') {
+            if (Object.keys(this.facilityMarkers).length == 0) {
                 this.plotLastEvent();
+            }
         }
     }
 
