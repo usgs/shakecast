@@ -156,10 +156,10 @@ class TestFull(unittest.TestCase):
         group = Group()
         group.name = 'GLOBAL'
         group.facility_type = 'All'
-        group.lon_min = -179.99
-        group.lon_max = 179.99
-        group.lat_min = -89.99
-        group.lat_max = 89.99
+        group.lon_min = -180
+        group.lon_max = 180
+        group.lat_min = -90
+        group.lat_max = 90
         session.add(group)
         
         gs = Group_Specification()
