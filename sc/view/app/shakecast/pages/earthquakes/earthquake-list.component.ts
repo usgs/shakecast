@@ -6,6 +6,7 @@ import { Component,
          style,
          transition,
          animate } from '@angular/core';
+import { Router } from '@angular/router'
 import { EarthquakeService, Earthquake } from './earthquake.service'
 
 import { filter } from './earthquake-filter/earthquake-filter.component'
@@ -43,18 +44,25 @@ export class EarthquakeListComponent implements OnInit, OnDestroy {
         facilities: false
     }
     private subscriptions: any[] = []
-    constructor(private eqService: EarthquakeService) {}
+    constructor(private eqService: EarthquakeService,
+                private _router: Router) {}
 
     ngOnInit() {
         //this.getEqs()
         this.subscriptions.push(this.eqService.earthquakeData.subscribe(eqs => {
             this.earthquakeData = eqs
-            this.plotEq(eqs[0])
+            if (this.earthquakeData.length > 0) {
+                this.plotEq(eqs[0])
+            }
         }));
 
         this.subscriptions.push(this.eqService.dataLoading.subscribe(loading => {
             this.dataLoading = loading
         }));
+
+        if (this._router.url == '/shakecast/dashboard') {
+            this.filter['timeframe'] = 'day';
+        }
 
         this.eqService.getData(this.filter);
     }

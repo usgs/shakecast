@@ -20,6 +20,7 @@ export class MapComponent implements OnInit, OnDestroy {
     private markerLayer: any = L.layerGroup()
     private overlayLayer: any = L.layerGroup()
     private facilityLayer: any = L.markerClusterGroup()
+    private groupLayer: any = L.geoJson()
     private subscriptions: any = [];
     private map: any;
 
@@ -69,6 +70,11 @@ export class MapComponent implements OnInit, OnDestroy {
                 for (var mark in markers) {
                     this.plotFacMarker(markers[mark]);
                 }
+        }));
+
+        // subscribe to group poly
+        this.subscriptions.push(this.mapService.groupPoly.subscribe(groupPoly => {
+                this.plotGroup(groupPoly);
         }));
 
         // subscribe to REMOVING facility markers
@@ -209,6 +215,12 @@ export class MapComponent implements OnInit, OnDestroy {
                 this.plotLastEvent();
             }
         }
+    }
+
+    plotGroup(group: any) {
+        this.map.removeLayer(this.groupLayer);
+        this.groupLayer = new L.GeoJSON(group);
+        this.map.addLayer(this.groupLayer);
     }
 
     ////////// Clean Up Before Closing //////////

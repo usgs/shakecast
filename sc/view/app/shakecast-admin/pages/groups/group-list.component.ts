@@ -44,6 +44,8 @@ export class GroupListComponent implements OnInit, OnDestroy {
                 this.groupData[group].selected = false;
                 this.selected = this.groupData[0];
                 this.selected.selected = true;
+
+                this.groupService.plotGroup(this.groupData[0])
             }
         }));
 /*
@@ -68,7 +70,8 @@ export class GroupListComponent implements OnInit, OnDestroy {
     clickGroup(group: Group) {
         this.selected.selected = false;
         group.selected = true;
-        this.selected = group
+        this.selected = group;
+        this.groupService.plotGroup(group);
     }
 
     ngOnDestroy() {

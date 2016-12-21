@@ -3,11 +3,13 @@ import { ReplaySubject } from 'rxjs/ReplaySubject';
 
 import { Earthquake } from '../../shakecast/pages/earthquakes/earthquake.service'
 import { Facility } from '../../shakecast-admin/pages/facilities/facility.service'
+import { Group } from '../../shakecast-admin/pages/groups/group.service'
 
 @Injectable()
 export class MapService {
     public eqMarkers = new ReplaySubject(1)
     public facMarkers = new ReplaySubject(1)
+    public groupPoly = new ReplaySubject(1)
     public removeFacMarkers = new ReplaySubject(1)
     public center = new ReplaySubject(1)
 
@@ -35,6 +37,11 @@ export class MapService {
         this.center.next(marker);
     }
 
+    plotGroup(group: Group) {
+        var groupPoly: any = this.makePoly(group);
+        this.groupPoly.next(groupPoly);
+    }
+
     setCenter(marker: any) {
         this.center.next(marker);
     }
@@ -59,6 +66,24 @@ export class MapService {
         }
         return marker;
     }
+
+    makePoly(notPoly: any) {
+        var poly: Poly = {
+            type: '',
+            properties: {},
+            geometry: {}
+        }
+
+        poly.type = 'Feature'
+        poly.properties['name'] = notPoly.name
+        poly.properties['popupContent'] = notPoly.name
+        poly.geometry['type'] = 'Polygon'
+        poly.geometry['coordinates'] = [[[notPoly.lon_min, notPoly.lat_min],
+                                            [notPoly.lon_max, notPoly.lat_min],
+                                            [notPoly.lon_max, notPoly.lat_max],
+                                            [notPoly.lon_min, notPoly.lat_max]]]
+        return poly
+    }
 }
 
 // just an interface for type safety.
@@ -69,4 +94,10 @@ export interface Marker {
     zoom?: number;
     label?: string;
     draggable: boolean;
+}
+
+export interface Poly {
+    type: string;
+    properties: any
+    geometry: any
 }
