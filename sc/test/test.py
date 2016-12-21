@@ -639,10 +639,10 @@ def create_group():
         group = Group()
     
     group.name = 'GLOBAL_AUTO'
-    group.lon_min = -179
-    group.lon_max = 179
-    group.lat_min = -179
-    group.lat_max = 179
+    group.lon_min = -180
+    group.lon_max = 180
+    group.lat_min = -90
+    group.lat_max = 90
     
     facs = session.query(Facility).filter(Facility.in_grid(group)).all()
     group.facilities = facs
