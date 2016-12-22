@@ -17,11 +17,12 @@ export class MapComponent implements OnInit, OnDestroy {
     public eventMarkers: any = [];
     public facilityMarkers: any = [];
     public center: any = {};
-    private markerLayer: any = L.layerGroup()
-    private eventLayer: any = L.layerGroup()
-    private overlayLayer: any = L.layerGroup()
-    private facilityLayer: any = L.markerClusterGroup()
-    private groupLayer: any = L.geoJson()
+    private markerLayer: any = L.layerGroup();
+    private eventLayer: any = L.layerGroup();
+    private overlayLayer: any = L.layerGroup();
+    private facilityLayer: any = L.markerClusterGroup();
+    private facMarker: any = L.marker();
+    private groupLayer: any = L.geoJson();
     private subscriptions: any = [];
     private map: any;
 
@@ -62,7 +63,11 @@ export class MapComponent implements OnInit, OnDestroy {
         // subscribe to center
         this.subscriptions.push(this.mapService.center.subscribe(center => {
             this.center = center;
-            this.map.setView([center.lat + .5,center.lon], 8);
+            if (center['type'] === 'facility') {
+                this.map.setView([center.lat,center.lon]);
+            } else {
+                this.map.setView([center.lat + .5,center.lon]);
+            }
         }));
 
         // subscribe to facility markers
@@ -204,19 +209,30 @@ export class MapComponent implements OnInit, OnDestroy {
     createFacMarker(fac: any) {
         var marker: any = L.marker([fac.lat, fac.lon]);
         var popupContent = fac.name
-    
-        this.facilityLayer.addLayer(marker);
-        marker.bindPopup(popupContent).openPopup();
+        if (this.map.hasLayer(this.facMarker)) {
+            this.map.removeLayer(this.facMarker);
+            this.facilityLayer.addLayer(this.facMarker);
+            this.facilityLayer.addTo(this.map);
+        }
+
+        this.facMarker = marker;
         this.facilityMarkers[fac.shakecast_id.toString()] = marker;
 
-        this.facilityLayer.addTo(this.map)
+        this.facMarker.addTo(this.map);
+        marker.bindPopup(popupContent).openPopup();
     }
 
     removeFacMarker(fac: any) {
         var marker: any = this.facilityMarkers[fac.shakecast_id.toString()];
     
-        if (marker) {
+        if (this.facilityLayer.hasLayer(marker)) {
             this.facilityLayer.removeLayer(marker);
+            var index: number = this.facilityMarkers.indexOf(marker);
+            if (index > -1) {
+                this.facilityMarkers.splice(index, 1);
+            }
+        } else if (this.map.hasLayer(marker)) {
+            this.map.removeLayer(marker)
             var index: number = this.facilityMarkers.indexOf(marker);
             if (index > -1) {
                 this.facilityMarkers.splice(index, 1);
