@@ -93,40 +93,6 @@ export class MapComponent implements OnInit, OnDestroy {
         }));
     }
 
-    clearLayers() {
-        /*
-        Clear all layers besides basemaps
-        */
-        
-        if (this.map.hasLayer(this.markerLayer)) {
-            this.map.removeLayer(this.markerLayer);
-            this.markerLayer = L.layerGroup()
-        }
-
-        if (this.map.hasLayer(this.eventLayer)) {
-            this.map.removeLayer(this.eventLayer);
-            this.eventLayer = L.layerGroup()
-        }
-
-        if (this.map.hasLayer(this.overlayLayer)) {
-            this.map.removeLayer(this.overlayLayer);
-            this.overlayLayer = L.layerGroup()
-        }        
-        
-        if (this.map.hasLayer(this.facilityLayer)) {
-            this.map.removeLayer(this.facilityLayer);
-            this.facilityLayer = L.markerClusterGroup()
-        }
-
-        if (this.map.hasLayer(this.groupLayer)) {
-            this.map.removeLayer(this.groupLayer);
-            this.groupLayer = L.layerGroup()
-        }
-
-        this.eventMarkers = [];
-        this.facilityMarkers = [];
-    }
-
     //////////////////////////////////////////////////////////////
     //////////////////// Earthquake Functions ////////////////////
     plotEventMarker(marker: any) {
@@ -246,6 +212,45 @@ export class MapComponent implements OnInit, OnDestroy {
         this.groupLayer = new L.GeoJSON(group);
         this.map.addLayer(this.groupLayer);
         this.map.fitBounds(this.groupLayer.getBounds());
+    }
+
+    clearLayers() {
+        /*
+        Clear all layers besides basemaps
+        */
+        
+        if (this.map.hasLayer(this.markerLayer)) {
+            this.map.removeLayer(this.markerLayer);
+            this.markerLayer = L.layerGroup();
+        }
+
+        if (this.map.hasLayer(this.eventLayer)) {
+            this.map.removeLayer(this.eventLayer);
+            this.eventLayer = L.layerGroup();
+        }
+
+        if (this.map.hasLayer(this.overlayLayer)) {
+            this.map.removeLayer(this.overlayLayer);
+            this.overlayLayer = L.layerGroup();
+        }        
+        
+        if (this.map.hasLayer(this.facilityLayer)) {
+            this.map.removeLayer(this.facilityLayer);
+            this.facilityLayer = L.markerClusterGroup();
+        }
+
+        if (this.map.hasLayer(this.facMarker)) {
+            this.map.removeLayer(this.facMarker);
+            this.facMarker = L.marker();
+        }
+
+        if (this.map.hasLayer(this.groupLayer)) {
+            this.map.removeLayer(this.groupLayer);
+            this.groupLayer = L.layerGroup();
+        }
+
+        this.eventMarkers = [];
+        this.facilityMarkers = [];
     }
 
     ////////// Clean Up Before Closing //////////

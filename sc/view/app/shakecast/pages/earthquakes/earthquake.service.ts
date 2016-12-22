@@ -45,7 +45,7 @@ export class EarthquakeService {
     
     plotEq(eq: Earthquake) {
         this.notService.getNotifications(eq)
-        this.mapService.plotEq(eq)
         this.facService.getShakeMapData(eq);
+        this.mapService.plotEq(eq)
     }
 }

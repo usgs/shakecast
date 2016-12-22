@@ -49,7 +49,7 @@ export class FacilityService {
                 this.facilityData.next(result.facilities);
                 this.shakingData.next(result.shaking);
 
-                this.selectAll()
+                this.unselectAll()
                 this.loadingData.next(false)
             })
     }
