@@ -15,7 +15,7 @@ export class MapComponent implements OnInit, OnDestroy {
     public markers: any = {};
     public overlays: any = [];
     public eventMarkers: any = [];
-    public facilityMarkers: any = [];
+    public facilityMarkers: any = {};
     public center: any = {};
     private markerLayer: any = L.layerGroup();
     private eventLayer: any = L.layerGroup();
@@ -227,16 +227,10 @@ export class MapComponent implements OnInit, OnDestroy {
     
         if (this.facilityLayer.hasLayer(marker)) {
             this.facilityLayer.removeLayer(marker);
-            var index: number = this.facilityMarkers.indexOf(marker);
-            if (index > -1) {
-                this.facilityMarkers.splice(index, 1);
-            }
+            delete this.facilityMarkers[fac.shakecast_id.toString()]
         } else if (this.map.hasLayer(marker)) {
             this.map.removeLayer(marker)
-            var index: number = this.facilityMarkers.indexOf(marker);
-            if (index > -1) {
-                this.facilityMarkers.splice(index, 1);
-            }
+            delete this.facilityMarkers[fac.shakecast_id.toString()]
         }
 
         if (this._router.url == '/shakecast/dashboard') {
