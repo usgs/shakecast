@@ -59,10 +59,8 @@ export class GroupService {
             */
     }
 
-    plotFac(fac: Facility) {
-        /*
-        this.mapService.plotFac(fac);
-        */
+    plotGroup(group: Group) {
+        this.mapService.plotGroup(group);
     }
 
     removeFac(fac: Facility) {

@@ -156,10 +156,10 @@ class TestFull(unittest.TestCase):
         group = Group()
         group.name = 'GLOBAL'
         group.facility_type = 'All'
-        group.lon_min = -179.99
-        group.lon_max = 179.99
-        group.lat_min = -89.99
-        group.lat_max = 89.99
+        group.lon_min = -180
+        group.lon_max = 180
+        group.lat_min = -90
+        group.lat_max = 90
         session.add(group)
         
         gs = Group_Specification()
@@ -639,10 +639,10 @@ def create_group():
         group = Group()
     
     group.name = 'GLOBAL_AUTO'
-    group.lon_min = -179
-    group.lon_max = 179
-    group.lat_min = -179
-    group.lat_max = 179
+    group.lon_min = -180
+    group.lon_max = 180
+    group.lat_min = -90
+    group.lat_max = 90
     
     facs = session.query(Facility).filter(Facility.in_grid(group)).all()
     group.facilities = facs
