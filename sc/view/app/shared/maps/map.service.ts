@@ -11,6 +11,7 @@ export class MapService {
     public facMarkers = new ReplaySubject(1)
     public groupPoly = new ReplaySubject(1)
     public removeFacMarkers = new ReplaySubject(1)
+    public clearMapNotify = new ReplaySubject(1)
     public center = new ReplaySubject(1)
 
     plotEq(eq: Earthquake) {
@@ -83,6 +84,10 @@ export class MapService {
                                             [notPoly.lon_max, notPoly.lat_max],
                                             [notPoly.lon_min, notPoly.lat_max]]]
         return poly
+    }
+
+    clearMap() {
+        this.clearMapNotify.next(true)
     }
 }
 

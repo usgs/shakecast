@@ -18,6 +18,7 @@ export class MapComponent implements OnInit, OnDestroy {
     public facilityMarkers: any = [];
     public center: any = {};
     private markerLayer: any = L.layerGroup()
+    private eventLayer: any = L.layerGroup()
     private overlayLayer: any = L.layerGroup()
     private facilityLayer: any = L.markerClusterGroup()
     private groupLayer: any = L.geoJson()
@@ -41,13 +42,12 @@ export class MapComponent implements OnInit, OnDestroy {
             attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
             subdomains: ['a','b','c']
         }).addTo(this.map);
+    
 
-        this.map.addLayer(this.facilityLayer)
         var layers: any  = {
             'Facility': this.facilityLayer
         }
-
-        L.control.layers(layers).addTo(this.map);
+        L.control.layers(null,layers).addTo(this.map);
 
         // subscribe to earthquake markers
         this.subscriptions.push(this.mapService.eqMarkers.subscribe(markers => {
@@ -81,32 +81,45 @@ export class MapComponent implements OnInit, OnDestroy {
         this.subscriptions.push(this.mapService.removeFacMarkers.subscribe(fac => {
             this.removeFacMarker(fac);
         }));
+
+        // subscribe to clearing the map
+        this.subscriptions.push(this.mapService.clearMapNotify.subscribe(notification => {
+            this.clearLayers();
+        }));
     }
 
     clearLayers() {
+        /*
+        Clear all layers besides basemaps
+        */
+        
         if (this.map.hasLayer(this.markerLayer)) {
-            this.map.removeLayer(this.markerLayer)
+            this.map.removeLayer(this.markerLayer);
+            this.markerLayer = L.layerGroup()
+        }
+
+        if (this.map.hasLayer(this.eventLayer)) {
+            this.map.removeLayer(this.eventLayer);
+            this.eventLayer = L.layerGroup()
         }
 
         if (this.map.hasLayer(this.overlayLayer)) {
-            this.map.removeLayer(this.overlayLayer)
+            this.map.removeLayer(this.overlayLayer);
+            this.overlayLayer = L.layerGroup()
         }        
         
         if (this.map.hasLayer(this.facilityLayer)) {
-            this.map.removeLayer(this.facilityLayer)
+            this.map.removeLayer(this.facilityLayer);
+            this.facilityLayer = L.markerClusterGroup()
         }
-    }
 
-    clearMarkers() {
-        if (this.map.hasLayer(this.markerLayer)) {
-            this.map.removeLayer(this.markerLayer)
+        if (this.map.hasLayer(this.groupLayer)) {
+            this.map.removeLayer(this.groupLayer);
+            this.groupLayer = L.layerGroup()
         }
-    }
 
-    clearOverlays() {
-        if (this.map.hasLayer(this.overlayLayer)) {
-            this.map.removeLayer(this.overlayLayer)
-        }
+        this.eventMarkers = [];
+        this.facilityMarkers = [];
     }
 
     //////////////////////////////////////////////////////////////
@@ -148,10 +161,10 @@ export class MapComponent implements OnInit, OnDestroy {
                                 </tr>
                             </table>`
 
-        this.markerLayer = L.layerGroup([marker]).addTo(this.map);
-
+        this.markerLayer = L.layerGroup([marker]).addTo(this.eventLayer);
+        this.eventLayer.addTo(this.map)
         marker.bindPopup(popupContent).openPopup();
-        // add marker to array -- do we need this still??
+        
         this.eventMarkers.push(marker)
     }
 
@@ -191,19 +204,19 @@ export class MapComponent implements OnInit, OnDestroy {
     createFacMarker(fac: any) {
         var marker: any = L.marker([fac.lat, fac.lon]);
         var popupContent = fac.name
-        
-        this.markerLayer = this.facilityLayer.addLayer(marker);
-
+    
+        this.facilityLayer.addLayer(marker);
         marker.bindPopup(popupContent).openPopup();
-        this.facilityMarkers[fac.shakecast_id.toString()] = marker
+        this.facilityMarkers[fac.shakecast_id.toString()] = marker;
+
+        this.facilityLayer.addTo(this.map)
     }
 
     removeFacMarker(fac: any) {
         var marker: any = this.facilityMarkers[fac.shakecast_id.toString()];
+    
         if (marker) {
-            //this.map.removeLayer(marker);
             this.facilityLayer.removeLayer(marker);
-            // remove from marker array
             var index: number = this.facilityMarkers.indexOf(marker);
             if (index > -1) {
                 this.facilityMarkers.splice(index, 1);
@@ -218,9 +231,11 @@ export class MapComponent implements OnInit, OnDestroy {
     }
 
     plotGroup(group: any) {
-        this.map.removeLayer(this.groupLayer);
+        this.clearLayers();
+
         this.groupLayer = new L.GeoJSON(group);
         this.map.addLayer(this.groupLayer);
+        this.map.fitBounds(this.groupLayer.getBounds());
     }
 
     ////////// Clean Up Before Closing //////////

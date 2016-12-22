@@ -81,5 +81,9 @@ export class FacilityService {
     removeFac(fac: Facility) {
         this.mapService.removeFac(fac);
     }
+
+    clearMap() {
+        this.mapService.clearMap();
+    }
     
 }
