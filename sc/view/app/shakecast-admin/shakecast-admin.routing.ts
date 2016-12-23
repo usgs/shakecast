@@ -45,7 +45,7 @@ const appRoutes: Routes = [
             //},
             {
                 path: '',
-                redirectTo: 'dashboard',
+                redirectTo: 'facilities',
                 pathMatch: 'full'
             }
         ]
