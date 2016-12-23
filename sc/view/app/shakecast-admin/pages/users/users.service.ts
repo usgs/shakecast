@@ -7,18 +7,15 @@ import { ReplaySubject } from 'rxjs/ReplaySubject';
 
 import { MapService } from '../../../shared/maps/map.service'
 
-export interface Group {
-    lat_min: number;
-    lon_min: number;
-    lat_max: number;
-    lon_max: number;
+export interface User {
     name: string;
+    email?: string;
 }
 
 @Injectable()
-export class GroupService {
+export class UsersService {
     public loadingData = new ReplaySubject(1);
-    public groupData = new ReplaySubject(1);
+    public userData = new ReplaySubject(1);
     public selection = new ReplaySubject(1);
     public filter = {};
 
@@ -29,10 +26,10 @@ export class GroupService {
         this.loadingData.next(true)
         let params = new URLSearchParams();
         params.set('filter', JSON.stringify(filter))
-        this._http.get('/api/groups', {search: params})
+        this._http.get('/api/users', {search: params})
             .map((result: Response) => result.json())
             .subscribe((result: any) => {
-                this.groupData.next(result);
+                this.userData.next(result);
                 this.loadingData.next(false)
             })
     }
@@ -59,14 +56,8 @@ export class GroupService {
             */
     }
 
-    plotGroup(group: Group) {
-        this.mapService.plotGroup(group);
-    }
-
-    removeFac(fac: Facility) {
-        /*
-        this.mapService.removeFac(fac);
-        */
+    plotUser(user: any) {
+        this.mapService.plotUser(user);
     }
 
     clearMap() {

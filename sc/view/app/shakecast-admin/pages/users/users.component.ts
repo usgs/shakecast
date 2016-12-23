@@ -18,6 +18,8 @@ export class UsersComponent {
     ngOnInit() {
         this.subscriptions.push(this.groupService.groupData.subscribe(data => {
             this.groupData = data;
+
+            this.groupService.clearMap();
             for (var group in this.groupData) {
                 this.groupService.plotGroup(this.groupData[group])
             }

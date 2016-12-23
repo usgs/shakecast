@@ -7,10 +7,17 @@ import { Component,
          transition,
          animate } from '@angular/core';
 
+import { GroupService } from './group.service'
+
 @Component({
-  selector: 'groups',
-  templateUrl: 'app/shakecast-admin/pages/groups/groups.component.html',
-  styleUrls: ['app/shakecast-admin/pages/groups/groups.component.css'], 
+    selector: 'groups',
+    templateUrl: 'app/shakecast-admin/pages/groups/groups.component.html',
+    styleUrls: ['app/shakecast-admin/pages/groups/groups.component.css'], 
 })
-export class GroupsComponent {
+export class GroupsComponent implements OnInit {
+    constructor(private groupService: GroupService) {}
+
+    ngOnInit() {
+        //this.groupService.clearMap();
+    }
 }

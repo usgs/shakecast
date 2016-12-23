@@ -22,7 +22,7 @@ export class MapComponent implements OnInit, OnDestroy {
     private overlayLayer: any = L.layerGroup();
     private facilityLayer: any = L.markerClusterGroup();
     private facMarker: any = L.marker();
-    private groupLayer: any = L.geoJson();
+    private groupLayers: any = L.featureGroup();
     private subscriptions: any = [];
     private map: any;
 
@@ -207,11 +207,11 @@ export class MapComponent implements OnInit, OnDestroy {
     }
 
     plotGroup(group: any) {
-        this.clearLayers();
-
-        this.groupLayer = new L.GeoJSON(group);
-        this.map.addLayer(this.groupLayer);
-        this.map.fitBounds(this.groupLayer.getBounds());
+        var groupLayer: any = new L.GeoJSON(group);
+        
+        this.groupLayers.addLayer(groupLayer);
+        this.map.addLayer(this.groupLayers);
+        this.map.fitBounds(this.groupLayers.getBounds());
     }
 
     clearLayers() {
@@ -244,9 +244,9 @@ export class MapComponent implements OnInit, OnDestroy {
             this.facMarker = L.marker();
         }
 
-        if (this.map.hasLayer(this.groupLayer)) {
-            this.map.removeLayer(this.groupLayer);
-            this.groupLayer = L.layerGroup();
+        if (this.map.hasLayer(this.groupLayers)) {
+            this.map.removeLayer(this.groupLayers);
+            this.groupLayers = L.featureGroup();
         }
 
         this.eventMarkers = [];
