@@ -68,5 +68,9 @@ export class GroupService {
         this.mapService.removeFac(fac);
         */
     }
+
+    clearMap() {
+        this.mapService.clearMap();
+    }
     
 }

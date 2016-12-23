@@ -15,13 +15,14 @@ export class MapComponent implements OnInit, OnDestroy {
     public markers: any = {};
     public overlays: any = [];
     public eventMarkers: any = [];
-    public facilityMarkers: any = [];
+    public facilityMarkers: any = {};
     public center: any = {};
-    private markerLayer: any = L.layerGroup()
-    private eventLayer: any = L.layerGroup()
-    private overlayLayer: any = L.layerGroup()
-    private facilityLayer: any = L.markerClusterGroup()
-    private groupLayer: any = L.geoJson()
+    private markerLayer: any = L.layerGroup();
+    private eventLayer: any = L.layerGroup();
+    private overlayLayer: any = L.layerGroup();
+    private facilityLayer: any = L.markerClusterGroup();
+    private facMarker: any = L.marker();
+    private groupLayers: any = L.featureGroup();
     private subscriptions: any = [];
     private map: any;
 
@@ -62,7 +63,11 @@ export class MapComponent implements OnInit, OnDestroy {
         // subscribe to center
         this.subscriptions.push(this.mapService.center.subscribe(center => {
             this.center = center;
-            this.map.setView([center.lat + .5,center.lon], 8);
+            if (center['type'] === 'facility') {
+                this.map.setView([center.lat,center.lon]);
+            } else {
+                this.map.setView([center.lat + .5,center.lon]);
+            }
         }));
 
         // subscribe to facility markers
@@ -86,40 +91,6 @@ export class MapComponent implements OnInit, OnDestroy {
         this.subscriptions.push(this.mapService.clearMapNotify.subscribe(notification => {
             this.clearLayers();
         }));
-    }
-
-    clearLayers() {
-        /*
-        Clear all layers besides basemaps
-        */
-        
-        if (this.map.hasLayer(this.markerLayer)) {
-            this.map.removeLayer(this.markerLayer);
-            this.markerLayer = L.layerGroup()
-        }
-
-        if (this.map.hasLayer(this.eventLayer)) {
-            this.map.removeLayer(this.eventLayer);
-            this.eventLayer = L.layerGroup()
-        }
-
-        if (this.map.hasLayer(this.overlayLayer)) {
-            this.map.removeLayer(this.overlayLayer);
-            this.overlayLayer = L.layerGroup()
-        }        
-        
-        if (this.map.hasLayer(this.facilityLayer)) {
-            this.map.removeLayer(this.facilityLayer);
-            this.facilityLayer = L.markerClusterGroup()
-        }
-
-        if (this.map.hasLayer(this.groupLayer)) {
-            this.map.removeLayer(this.groupLayer);
-            this.groupLayer = L.layerGroup()
-        }
-
-        this.eventMarkers = [];
-        this.facilityMarkers = [];
     }
 
     //////////////////////////////////////////////////////////////
@@ -204,23 +175,28 @@ export class MapComponent implements OnInit, OnDestroy {
     createFacMarker(fac: any) {
         var marker: any = L.marker([fac.lat, fac.lon]);
         var popupContent = fac.name
-    
-        this.facilityLayer.addLayer(marker);
-        marker.bindPopup(popupContent).openPopup();
+        if (this.map.hasLayer(this.facMarker)) {
+            this.map.removeLayer(this.facMarker);
+            this.facilityLayer.addLayer(this.facMarker);
+            this.facilityLayer.addTo(this.map);
+        }
+
+        this.facMarker = marker;
         this.facilityMarkers[fac.shakecast_id.toString()] = marker;
 
-        this.facilityLayer.addTo(this.map)
+        this.facMarker.addTo(this.map);
+        marker.bindPopup(popupContent).openPopup();
     }
 
     removeFacMarker(fac: any) {
         var marker: any = this.facilityMarkers[fac.shakecast_id.toString()];
     
-        if (marker) {
+        if (this.facilityLayer.hasLayer(marker)) {
             this.facilityLayer.removeLayer(marker);
-            var index: number = this.facilityMarkers.indexOf(marker);
-            if (index > -1) {
-                this.facilityMarkers.splice(index, 1);
-            }
+            delete this.facilityMarkers[fac.shakecast_id.toString()]
+        } else if (this.map.hasLayer(marker)) {
+            this.map.removeLayer(marker)
+            delete this.facilityMarkers[fac.shakecast_id.toString()]
         }
 
         if (this._router.url == '/shakecast/dashboard') {
@@ -231,11 +207,50 @@ export class MapComponent implements OnInit, OnDestroy {
     }
 
     plotGroup(group: any) {
-        this.clearLayers();
+        var groupLayer: any = new L.GeoJSON(group);
+        
+        this.groupLayers.addLayer(groupLayer);
+        this.map.addLayer(this.groupLayers);
+        this.map.fitBounds(this.groupLayers.getBounds());
+    }
 
-        this.groupLayer = new L.GeoJSON(group);
-        this.map.addLayer(this.groupLayer);
-        this.map.fitBounds(this.groupLayer.getBounds());
+    clearLayers() {
+        /*
+        Clear all layers besides basemaps
+        */
+        
+        if (this.map.hasLayer(this.markerLayer)) {
+            this.map.removeLayer(this.markerLayer);
+            this.markerLayer = L.layerGroup();
+        }
+
+        if (this.map.hasLayer(this.eventLayer)) {
+            this.map.removeLayer(this.eventLayer);
+            this.eventLayer = L.layerGroup();
+        }
+
+        if (this.map.hasLayer(this.overlayLayer)) {
+            this.map.removeLayer(this.overlayLayer);
+            this.overlayLayer = L.layerGroup();
+        }        
+        
+        if (this.map.hasLayer(this.facilityLayer)) {
+            this.map.removeLayer(this.facilityLayer);
+            this.facilityLayer = L.markerClusterGroup();
+        }
+
+        if (this.map.hasLayer(this.facMarker)) {
+            this.map.removeLayer(this.facMarker);
+            this.facMarker = L.marker();
+        }
+
+        if (this.map.hasLayer(this.groupLayers)) {
+            this.map.removeLayer(this.groupLayers);
+            this.groupLayers = L.featureGroup();
+        }
+
+        this.eventMarkers = [];
+        this.facilityMarkers = [];
     }
 
     ////////// Clean Up Before Closing //////////

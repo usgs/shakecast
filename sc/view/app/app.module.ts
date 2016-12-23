@@ -22,6 +22,7 @@ import { MapService } from './shared/maps/map.service'
 import { ShakemapService } from './shared/maps/shakemap.service'
 import { ScreenDimmerService } from './shared/screen-dimmer/screen-dimmer.service'
 import { GroupService } from './shakecast-admin/pages/groups/group.service'
+import { UsersService } from './shakecast-admin/pages/users/users.service'
 
 import { StickToTopService } from './shared/directives/stick-to-top.service';
 
@@ -50,7 +51,8 @@ import { StickToTopService } from './shared/directives/stick-to-top.service';
     StickToTopService,
     ScreenDimmerService,
     NotificationService,
-    GroupService
+    GroupService,
+    UsersService
   ],
   bootstrap: [ AppComponent ]
 })

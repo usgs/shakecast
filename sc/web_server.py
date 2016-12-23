@@ -197,10 +197,13 @@ def delete_facilities():
 @login_required
 def get_groups():
     session = Session()
-    groups = (session.query(Group)
-                .filter(Group.shakecast_id > request.args.get('last_id', 0))
-                .limit(50)
-                .all())
+    filter_ = json.loads(request.args.get('filter', '{}'))
+    query = session.query(Group)
+    if filter_:
+        if filter_.get('user', None):
+            query = query.filter(Group.users.any(User.username == filter_['user']))
+
+    groups = query.all()
     
     group_dicts = []
     for group in groups:
@@ -604,6 +607,10 @@ def get_inventory():
 def get_settings():
     sc = SC()
     return sc.json
+
+@app.errorhandler(404)
+def page_not_found(error):
+    return render_template('index.html')
 
 ############################# Upload Setup ############################
 app.config['UPLOADED_XMLFILES_DEST'] = os.path.join(sc_dir(), 'tmp')

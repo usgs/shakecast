@@ -13,7 +13,7 @@ export interface User {
 }
 
 @Injectable()
-export class UserService {
+export class UsersService {
     public loadingData = new ReplaySubject(1);
     public userData = new ReplaySubject(1);
     public selection = new ReplaySubject(1);
@@ -29,7 +29,7 @@ export class UserService {
         this._http.get('/api/users', {search: params})
             .map((result: Response) => result.json())
             .subscribe((result: any) => {
-                this.userData.next(result.data);
+                this.userData.next(result);
                 this.loadingData.next(false)
             })
     }
@@ -56,16 +56,12 @@ export class UserService {
             */
     }
 
-    plotFac(fac: Facility) {
-        /*
-        this.mapService.plotFac(fac);
-        */
+    plotUser(user: any) {
+        this.mapService.plotUser(user);
     }
 
-    removeFac(fac: Facility) {
-        /*
-        this.mapService.removeFac(fac);
-        */
+    clearMap() {
+        this.mapService.clearMap();
     }
     
 }
