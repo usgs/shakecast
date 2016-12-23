@@ -1,0 +1,28 @@
+<div class="outer-container">
+    <div class="inner-container" stickToTop>
+        <div *ngIf="!loadingData">
+            <div *ngIf="dataList.length > 0">
+                <div class="data" [@selected]="data.selected" *ngFor="let data of dataList" (click)="clickData(data)">
+                    <div [@headerSelected]="data.selected" class="data-header">
+                        <h3> {{ data.username }} </h3>
+                    </div>
+                    <div class="data-body">
+                        <div class="info-container">
+                            <table>
+                                <tr>
+                                    <th> {{ data.username }} </th>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div *ngIf="dataList.length == 0">
+                <h1 class="no-data">No Users</h1>
+            </div>
+        </div>
+        <div *ngIf="loadingData">
+            <p>loading...</p>
+        </div>
+    </div>
+</div>
