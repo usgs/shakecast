@@ -605,6 +605,10 @@ def get_settings():
     sc = SC()
     return sc.json
 
+@app.errorhandler(404)
+def page_not_found(error):
+    return render_template('index.html')
+
 ############################# Upload Setup ############################
 app.config['UPLOADED_XMLFILES_DEST'] = os.path.join(sc_dir(), 'tmp')
 app.config['EARTHQUAKES'] = os.path.join(sc_dir(), 'data')
