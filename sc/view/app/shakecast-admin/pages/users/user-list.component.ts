@@ -8,6 +8,7 @@ import { Component,
          animate } from '@angular/core';
 
 import { UsersService, User } from './users.service'
+import { GroupService, Group } from '../groups/group.service'
 @Component({
     selector: 'user-list',
     templateUrl: 'app/shakecast-admin/pages/users/user-list.component.html',
@@ -35,7 +36,8 @@ export class UserListComponent implements OnInit, OnDestroy {
     public selected: User;
     private subscriptions: any[] = [];
 
-    constructor(private userService: UsersService) {}
+    constructor(private userService: UsersService,
+                private groupService: GroupService) {}
 
     ngOnInit() {
         this.subscriptions.push(this.userService.userData.subscribe(data => {
@@ -61,6 +63,8 @@ export class UserListComponent implements OnInit, OnDestroy {
         this.selected.selected = false;
         data.selected = true;
         this.selected = data;
+
+        this.groupService.getData({'user': data.username})
     }
 
     ngOnDestroy() {
