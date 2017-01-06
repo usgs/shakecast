@@ -140,7 +140,7 @@ class TestFull(unittest.TestCase):
     '''
     Test the individual ShakeCast functions
     '''
-    def step1_createUser(self):
+    def step01_createUser(self):
         session = Session()
         user = User()
         user.username = 'test_user'
@@ -151,15 +151,15 @@ class TestFull(unittest.TestCase):
         session.commit()
         Session.remove()
         
-    def step2_createGroup(self):
+    def step02_createGroup(self):
         session = Session()
         group = Group()
         group.name = 'GLOBAL'
         group.facility_type = 'All'
-        group.lon_min = -179.99
-        group.lon_max = 179.99
-        group.lat_min = -89.99
-        group.lat_max = 89.99
+        group.lon_min = -180
+        group.lon_max = 180
+        group.lat_min = -90
+        group.lat_max = 90
         session.add(group)
         
         gs = Group_Specification()
@@ -184,13 +184,13 @@ class TestFull(unittest.TestCase):
         session.commit()
         Session.remove()
         
-    def step3_addUsersToGroups(self):
+    def step03_addUsersToGroups(self):
         session = Session()
         add_users_to_groups(session=session)
         session.commit()
         Session.remove()
         
-    def step4_geoJSON(self):
+    def step04_geoJSON(self):
         '''
         Test run of geo_json
         '''
@@ -202,7 +202,7 @@ class TestFull(unittest.TestCase):
         if not shakemaps:
             geo_json(query_period='week')
         
-    def step5_createFacility(self):
+    def step05_createFacility(self):
         session = Session()
         sms = session.query(ShakeMap).all()
         if sms:
@@ -215,17 +215,17 @@ class TestFull(unittest.TestCase):
         else:
             print '\nNo ShakeMaps to test facility processing'
     
-    def step6_addFacsToGroups(self):
+    def step06_addFacsToGroups(self):
         session = Session()
         add_facs_to_groups(session=session)
         session.commit()
         Session.remove()
         
-    def step7_checkNew(self):
+    def step07_checkNew(self):
         data = check_new()
         self.assertEqual(data['error'], '')
     
-    def step8_checkEvents(self):
+    def step08_checkEvents(self):
         session = Session()
         events = session.query(Event).all()
         for event in events:
@@ -240,7 +240,7 @@ class TestFull(unittest.TestCase):
                     
         Session.remove()
         
-    def step9_checkShakeMaps(self):
+    def step09_checkShakeMaps(self):
         session = Session()
         shakemaps = session.query(ShakeMap).all()
         for shakemap in shakemaps:
@@ -252,6 +252,36 @@ class TestFull(unittest.TestCase):
                     raise ValueError('Notification not sent... {}: {}, {}'.format(shakemap.shakemap_id,
                                                                                   notification.notification_type,
                                                                                   notification.status))
+        Session.remove()
+    
+    def step10_geoJSON2(self):
+        '''
+        Second run of geo_json
+        '''
+        data = geo_json()
+        self.assertEqual(data['error'], '')
+        
+        # check if there are shakemaps
+        shakemaps = session.query(ShakeMap).all()
+        if not shakemaps:
+            geo_json(query_period='week')
+
+    def step11_checkNew2(self):
+        '''
+        Check new a second time
+        '''
+        data = check_new()
+        self.assertEqual(data['error'], '')
+
+    def step12_NotificationAssoc(self):
+        '''
+        Make sure events and notifications are linked
+        '''
+        session = Session()
+        nots = session.query(Notification).all()
+        bad_nots = [n for n in nots if n if n.event_id == None]
+
+        self.assertEqual(len(bad_nots), 0)
         Session.remove()
         
     def steps(self):
@@ -609,10 +639,10 @@ def create_group():
         group = Group()
     
     group.name = 'GLOBAL_AUTO'
-    group.lon_min = -179
-    group.lon_max = 179
-    group.lat_min = -179
-    group.lat_max = 179
+    group.lon_min = -180
+    group.lon_max = 180
+    group.lat_min = -90
+    group.lat_max = 90
     
     facs = session.query(Facility).filter(Facility.in_grid(group)).all()
     group.facilities = facs

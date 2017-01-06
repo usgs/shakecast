@@ -1,0 +1,87 @@
+.outer-container {
+    height: 250px;
+    position: relative;
+    overflow: visible;
+}
+
+.eqs-container {
+    height: 230px;
+    overflow-x: scroll;
+    overflow-y: hidden;
+    white-space: nowrap;
+}
+
+.eq {
+    margin-top: 20px;
+    width: 20%;
+    min-width: 280px;
+    display: inline-block;
+    min-height: 200px;
+    margin-left: 5px;
+    margin-right: 5px;
+    border-width: 1px; 
+    border-radius: 5px;
+    border-style: solid;
+    border-color:#aaaaaa;
+    vertical-align: top;
+    cursor: pointer;
+}
+
+
+.eq.selected {
+    margin-top: 10px;
+}
+
+.no-facs {
+    color: #aaaaaa;
+    text-align: center;
+}
+
+/* header */
+.eq-header {
+    height: 40px;
+    border-radius: 4px;
+    background-color: #aaaaaa;
+    overflow-x: scroll;
+}
+
+.eq:hover .eq-header {
+    background-color: #cccccc
+}
+
+.eq-header h3 {
+    margin-top: 0;
+    margin-bottom: 0;
+    text-align: center;
+    padding-top: 5px;
+}
+
+/* body */
+.info-container {
+    margin: 5px;
+}
+
+.eq p {
+    white-space: normal;
+    text-align: center;
+}
+
+th, td {
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+    padding: 5px;
+}
+
+td p {
+    padding: 0px;
+    margin: 0px;
+}
+
+table {
+    width: 95%
+}
+
+/* eq filter */
+.eq-filter {
+    z-index: 1000;
+}

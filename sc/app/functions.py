@@ -72,7 +72,6 @@ def check_new():
     error = ''
     try:
         session = Session()
-        
         new_events = (session.query(Event)
                              .filter(Event.status=='new')
                              .all())
@@ -153,11 +152,11 @@ def process_events(events=[], session=None, scenario=False):
                                     if group.has_spec(not_type='heartbeat')]
             all_groups_affected.update(groups_affected)
         
-        event.status = 'processing_started'
         if not groups_affected:
             event.status = 'no groups'
             session.commit()
-            continue
+        else:
+            event.status = 'processing_started'
         
         for group in groups_affected:
             # Check if the group gets NEW_EVENT messages
@@ -174,6 +173,7 @@ def process_events(events=[], session=None, scenario=False):
                                             notification_type='NEW_EVENT',
                                             status='created')
                 session.add(notification)
+        session.commit()
     
     if all_groups_affected:
         for group in all_groups_affected:
@@ -185,7 +185,7 @@ def process_events(events=[], session=None, scenario=False):
             
             filter_nots = filter(lambda x: x.event is not None, nots)
             new_event_notification(notifications=filter_nots)
-            processed_events = [n.event for n in nots]
+            processed_events = [n.event for n in filter_nots]
             for e in processed_events:
                 e.status = 'processed'
             session.commit()
@@ -247,6 +247,7 @@ def process_shakemaps(shakemaps=[], session=None, scenario=False):
                     
                 notification = Notification(group=group,
                                             shakemap=shakemap,
+                                            event=shakemap.event,
                                             notification_type='DAMAGE',
                                             status='created')
                 
@@ -356,7 +357,7 @@ def process_shakemaps(shakemaps=[], session=None, scenario=False):
                 
             shakemap.status = 'processed'
         else:
-            shakemap.status = 'no facs'
+            shakemap.status = 'processed - no facs'
         
         if notifications:
             # send inspection notifications for the shaking levels we
@@ -436,7 +437,7 @@ def new_event_notification(notifications = [],
 
     # create HTML for the event email
     not_builder = NotificationBuilder()
-    html = not_builder.build_new_event_html(events=events)
+    html = not_builder.build_new_event_html(events=events, notification=notification)
     
     notification.status = 'HTML success'
 
@@ -454,7 +455,7 @@ def new_event_notification(notifications = [],
         msg_gmap = MIMEImage(map_image.read(), _subtype='png')
         map_image.close()
         
-        msg_gmap.add_header('Content-ID', '<gmap{0}>'.format(count))
+        msg_gmap.add_header('Content-ID', '<gmap{0}_{1}>'.format(count, notification.shakecast_id))
         msg_gmap.add_header('Content-Disposition', 'inline')
         msg.attach(msg_gmap)
     
@@ -465,7 +466,7 @@ def new_event_notification(notifications = [],
     logo_file = open(logo_str, 'rb')
     msg_image = MIMEImage(logo_file.read(), _subtype='png')
     logo_file.close()
-    msg_image.add_header('Content-ID', '<sc_logo>')
+    msg_image.add_header('Content-ID', '<sc_logo_{0}>'.format(notification.shakecast_id))
     msg_image.add_header('Content-Disposition', 'inline')
     msg.attach(msg_image)
     
@@ -527,7 +528,7 @@ def inspection_notification(notification=Notification(),
             
             # get and attach shakemap
             msg_shakemap = MIMEImage(shakemap.get_map(), _subtype='jpeg')
-            msg_shakemap.add_header('Content-ID', '<shakemap>')
+            msg_shakemap.add_header('Content-ID', '<shakemap{0}>'.format(shakemap.shakecast_id))
             msg_shakemap.add_header('Content-Disposition', 'inline')
             msg.attach(msg_shakemap)
             
@@ -538,7 +539,7 @@ def inspection_notification(notification=Notification(),
             logo_file = open(logo_str, 'rb')
             msg_image = MIMEImage(logo_file.read())
             logo_file.close()
-            msg_image.add_header('Content-ID', '<sc_logo>')
+            msg_image.add_header('Content-ID', '<sc_logo{0}>'.format(shakemap.shakecast_id))
             msg_image.add_header('Content-Disposition', 'inline')
             msg.attach(msg_image)
             

@@ -8,7 +8,7 @@ modules_dir = os.path.join(sc_dir(), 'modules')
 if modules_dir not in sys.path:
     sys.path += [modules_dir]
 
-from flask import Flask, render_template, url_for, request, session, flash, redirect, send_file
+from flask import Flask, render_template, url_for, request, session, flash, redirect, send_file, send_from_directory, Response, jsonify
 from flask_login import LoginManager, login_user, logout_user, current_user, login_required
 from flask_uploads import UploadSet, configure_uploads
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -22,17 +22,24 @@ from app.objects import Clock, SC, NotificationBuilder
 from app.functions import determine_xml
 from ui import UI
 
+BASE_DIR = os.path.join(sc_dir(),'view')
 app = Flask(__name__,
-            template_folder=os.path.join(sc_dir(),'view','html'),
+            template_folder=BASE_DIR,
             static_folder=os.path.join(sc_dir(),'view','static'))
 
 ################################ Login ################################
 
 app.secret_key = 'super secret key'
 app.config['SESSION_TYPE'] = 'filesystem'
+app.json_encoder = AlchemyEncoder
 login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = 'login'
+
+# send Angular 2 files
+@app.route('/<path:filename>')
+def client_app_angular2_folder(filename):
+    return send_from_directory(os.path.join(BASE_DIR), filename)
 
 @login_manager.user_loader
 def load_user(user_id):
@@ -46,9 +53,10 @@ def load_user(user_id):
 def login():
     if request.method == 'GET':
         return render_template('login.html')
+
     session = Session()
-    username = request.form['username']
-    password = request.form['password']
+    username = request.json.get('username', '')
+    password = request.json.get('password', '')
     
     registered_user = (session.query(User)
                             .filter(and_(User.username==username)).first())
@@ -56,55 +64,52 @@ def login():
     if (registered_user is None or not
             check_password_hash(registered_user.password, password)):
         Session.remove()
-        return redirect('/#login-fail')
+        return jsonify(success=False)
 
     login_user(registered_user)
     flash('Logged in successfully')
     Session.remove()
-    return redirect(request.args.get('next') or url_for('index'))
+
+    user = current_user.__dict__.copy()
+    user.pop('_sa_instance_state', None)
+    return jsonify(success=True, isAdmin=current_user.is_admin(), **user)
+
+@app.route('/logged_in')
+def logged_in():
+    return jsonify(success=True, 
+                   loggedIn=bool(current_user.is_authenticated),
+                   isAdmin=bool(current_user.is_admin()))
 
 @app.route('/logout')
 def logout():
     logout_user()
-    flash('Logged out successfully')
-    return redirect(url_for('login'))
+    return jsonify(success=True)
 
 ############################# User Domain #############################
 
 @app.route('/')
-@login_required
 def index():
     return render_template('index.html')
 
-@app.route('/earthquakes')
-@login_required
-def earthquakes():
-    return render_template('earthquakes.html')
-
-@app.route('/home')
-@login_required
-def home():
-    return render_template('home.html')
-
-@app.route('/get/eqdata')
+@app.route('/api/earthquake-data')
 @login_required
 def get_eq_data():
     session = Session()
     filter_ = json.loads(request.args.get('filter', '{}'))
     DAY = 24*60*60
-    
     query = session.query(Event)
+    
     if filter_:
         if filter_.get('group', None):
             query = query.filter(Event.groups.any(Group.name.like(filter_['group'])))
-        if filter_.get('lat_max', None):
-            query = query.filter(Event.lat < filter_['lat_max'])
-        if filter_.get('lat_min', None):
-            query = query.filter(Event.lat > filter_['lat_min'])
-        if filter_.get('lon_max', None):
-            query = query.filter(Event.lon < filter_['lon_max'])
-        if filter_.get('lon_min', None):
-            query = query.filter(Event.lat > filter_['lon_min'])
+        if filter_.get('latMax', None):
+            query = query.filter(Event.lat < float(filter_['latMax']))
+        if filter_.get('latMin', None):
+            query = query.filter(Event.lat > float(filter_['latMin']))
+        if filter_.get('lonMax', None):
+            query = query.filter(Event.lon < float(filter_['lonMax']))
+        if filter_.get('lonMin', None):
+            query = query.filter(Event.lon > float(filter_['lonMin']))
 
         if filter_.get('timeframe', None):
             timeframe = filter_.get('timeframe')
@@ -116,9 +121,9 @@ def get_eq_data():
                 query = query.filter(Event.time > time.time() - 31*DAY)    
             elif timeframe == 'year':
                 query = query.filter(Event.time > time.time() - 365*DAY)    
-        if filter_.get('all_events', False) is False:
+        if filter_.get('shakemap', True) is True:
             query = query.filter(Event.shakemaps)
-    
+
     # get the time of the last earthquake in UI,
     # should be 0 for a new request
     eq_time = float(request.args.get('time', 0))
@@ -134,15 +139,117 @@ def get_eq_data():
     eq_dicts = []
     for eq in eqs:
         eq_dict = eq.__dict__.copy()
+        eq_dict['shakemaps'] = len(eq.shakemaps)
         eq_dict.pop('_sa_instance_state', None)
         eq_dicts += [eq_dict]
     
-    eq_json = json.dumps(eq_dicts, cls=AlchemyEncoder)
+    Session.remove()
+    return jsonify(success=True, data=eq_dicts)
+
+@app.route('/api/facility-data')
+@login_required
+def get_fac_data():
+    session = Session()
+    filter_ = json.loads(request.args.get('filter', '{}'))
+    query = session.query(Facility)
+
+    if filter_:
+        if filter_.get('group', None):
+            query = query.filter(Facility.groups.any(Group.name.like(filter_['group'])))
+        if filter_.get('latMax', None):
+            query = query.filter(Facility.lat_min < float(filter_['latMax']))
+        if filter_.get('latMin', None):
+            query = query.filter(Facility.lat_max > float(filter_['latMin']))
+        if filter_.get('lonMax', None):
+            query = query.filter(Facility.lon_min < float(filter_['lonMax']))
+        if filter_.get('lonMin', None):
+            query = query.filter(Facility.lon_max > float(filter_['lonMin']))
+
+    facs = (query.limit(50)
+                 .all())
+    
+    dicts = []
+    for fac in facs:
+        dict_ = fac.__dict__.copy()
+        dict_.pop('_sa_instance_state', None)
+        dicts += [dict_]
+    
+    Session.remove()
+    return jsonify(success=True, data=dicts)
+
+@app.route('/api/delete/facilities', methods=['DELETE'])
+@login_required
+def delete_facilities():
+    session = Session()
+    facilities_json = json.loads(request.args.get('facilities', '[]'))
+    fac_ids = [fac['shakecast_id'] for fac in facilities_json]
+    facilities = (session.query(Facility)
+                            .filter(Facility.shakecast_id.in_(fac_ids))
+                            .all())
+
+    deleted = [session.delete(fac) for fac in facilities]
+
+    session.commit()
+    Session.remove()
+    return jsonify(success=True)
+
+@app.route('/api/groups')
+@login_required
+def get_groups():
+    session = Session()
+    filter_ = json.loads(request.args.get('filter', '{}'))
+    query = session.query(Group)
+    if filter_:
+        if filter_.get('user', None):
+            query = query.filter(Group.users.any(User.username == filter_['user']))
+
+    groups = query.all()
+    
+    group_dicts = []
+    for group in groups:
+        group_dict = group.__dict__.copy()
+        group_dict.pop('_sa_instance_state', None)
+        group_dicts += [group_dict]
+        
+    group_json = json.dumps(group_dicts, cls=AlchemyEncoder)
     
     Session.remove()    
-    return eq_json
+    return group_json
 
-@app.route('/get/shakemaps')
+@app.route('/api/users')
+@login_required
+def get_users():
+    session = Session()
+    filter_ = literal_eval(request.args.get('filter', 'None'))
+    if filter_:
+        if filter_.get('group', None):
+            users = (session.query(User)
+                            .filter(User.shakecast_id > request.args.get('last_id', 0))
+                            .filter(User.groups.any(Group.name.like(filter_['group'])))
+                            .limit(50)
+                            .all())
+            
+        else:
+            users = (session.query(User)
+                            .filter(User.shakecast_id > request.args.get('last_id', 0))
+                            .limit(50)
+                            .all())
+    else:   
+        users = session.query(User).filter(User.shakecast_id > request.args.get('last_id', 0)).limit(50).all()
+    
+    user_dicts = []
+    for user in users:
+        user_dict = user.__dict__.copy()
+        user_dict.pop('_sa_instance_state', None)
+        user_dict.pop('password', None)
+        user_dicts += [user_dict]
+        
+    user_json = json.dumps(user_dicts, cls=AlchemyEncoder)
+    
+    Session.remove()    
+    return user_json
+
+@app.route('/api/shakemaps')
 @login_required
 def get_shakemaps():
     session = Session()
@@ -161,7 +268,7 @@ def get_shakemaps():
     Session.remove()    
     return sm_json
 
-@app.route('/get/shakemaps/<shakemap_id>')
+@app.route('/api/shakemaps/<shakemap_id>')
 @login_required
 def get_shakemap(shakemap_id):
     session = Session()
@@ -181,7 +288,7 @@ def get_shakemap(shakemap_id):
     Session.remove()    
     return sm_json
 
-@app.route('/get/shakemaps/<shakemap_id>/facilities')
+@app.route('/api/shakemaps/<shakemap_id>/facilities')
 @login_required
 def get_affected_facilities(shakemap_id):
     session = Session()
@@ -202,13 +309,31 @@ def get_affected_facilities(shakemap_id):
             s_dict.pop('_sa_instance_state', None)
             fac_dict['shaking'] = s_dict
             fac_dicts += [fac_dict]
+    alert = {'grey': 0,
+             'green': 0,
+             'yellow': 0,
+             'orange': 0,
+             'red': 0}
     
-    fac_json = json.dumps(fac_dicts, cls=AlchemyEncoder)
+    alert['grey'] = [f for f in fac_dicts if
+                            f['shaking']['alert_level'] == 'grey']
+    alert['green'] = [f for f in fac_dicts if
+                            f['shaking']['alert_level'] == 'green']
+    alert['yellow'] = [f for f in fac_dicts if
+                            f['shaking']['alert_level'] == 'yellow']
+    alert['orange'] = [f for f in fac_dicts if
+                            f['shaking']['alert_level'] == 'orange']
+    alert['red'] = [f for f in fac_dicts if
+                            f['shaking']['alert_level'] == 'red']
+    
+    shaking_data = {'alert': alert, 'facilities': fac_dicts}
+
+    shaking_json = json.dumps(shaking_data, cls=AlchemyEncoder)
     
     Session.remove()    
-    return fac_json
+    return shaking_json
 
-@app.route('/get/shakemaps/<shakemap_id>/overlay')
+@app.route('/api/shakemaps/<shakemap_id>/overlay')
 @login_required
 def shakemap_overlay(shakemap_id):
     session = Session()
@@ -228,7 +353,7 @@ def shakemap_overlay(shakemap_id):
     Session.remove()
     return send_file(img, mimetype='image/gif')
 
-@app.route('/get/shakemaps/<shakemap_id>/shakemap')
+@app.route('/api/shakemaps/<shakemap_id>/shakemap')
 @login_required
 def shakemap_map(shakemap_id):
     session = Session()
@@ -241,7 +366,7 @@ def shakemap_map(shakemap_id):
 
     return send_file(io.BytesIO(img), mimetype='image/png')
 
-@app.route('/get/events/<event_id>/image')
+@app.route('/api/events/<event_id>/image')
 @login_required
 def event_image(event_id):
     session = Session()
@@ -258,6 +383,27 @@ def event_image(event_id):
         
     Session.remove()
     return send_file(img, mimetype='image/gif')
+
+@app.route('/api/notifications/<event_id>/')
+@login_required
+def get_notification(event_id):
+    session = Session()
+    nots = (session.query(Notification)
+                    .filter(or_(Notification.event_id == event_id,
+                                Notification.shakemap_id == event_id))
+                    .all())
+
+    dicts = []
+    for obj in nots:
+        dict_ = obj.__dict__.copy()
+        dict_.pop('_sa_instance_state', None)
+        dicts += [dict_]
+    
+    json_ = json.dumps(dicts, cls=AlchemyEncoder)
+    Session.remove()    
+    return json_
+
+
 
 ############################ Admin Pages ##############################
 
@@ -276,12 +422,6 @@ def admin_only(func):
             return redirect(url_for('login'))
     return func_wrapper
 
-@app.route('/admin/')
-@admin_only
-@login_required
-def admin():
-    return render_template('admin/admin.html')
-
 @app.route('/admin/settings/', methods=['GET','POST'])
 @admin_only
 @login_required
@@ -295,24 +435,6 @@ def settings():
     if sc.validate() is True:
         sc.save()
         return redirect('/admin/#/settings/')
-
-@app.route('/admin/inventory/')
-@admin_only
-@login_required
-def inventory():
-    return render_template('admin/inventory.html')
-
-@app.route('/admin/users/')
-@admin_only
-@login_required
-def users():
-    return render_template('admin/users.html')
-
-@app.route('/admin/groups/')
-@admin_only
-@login_required
-def groups():
-    return render_template('admin/groups.html')
 
 @app.route('/admin/upload/', methods=['GET','POST'])
 @admin_only
@@ -384,27 +506,6 @@ def notification_html(group_id, notification_type):
 def admin_eqs():
     return render_template('admin/earthquakes.html')
 
-@app.route('/admin/get/groups')
-@admin_only
-@login_required
-def get_groups():
-    session = Session()
-    groups = (session.query(Group)
-                .filter(Group.shakecast_id > request.args.get('last_id', 0))
-                .limit(50)
-                .all())
-    
-    group_dicts = []
-    for group in groups:
-        group_dict = group.__dict__.copy()
-        group_dict.pop('_sa_instance_state', None)
-        group_dicts += [group_dict]
-        
-    group_json = json.dumps(group_dicts, cls=AlchemyEncoder)
-    
-    Session.remove()    
-    return group_json
-
 @app.route('/admin/get/groups/<group_id>/specs')
 @admin_only
 @login_required
@@ -439,39 +540,6 @@ def get_group_specs(group_id):
     
     Session.remove()    
     return specs_json
-
-@app.route('/admin/get/users')
-@admin_only
-@login_required
-def get_users():
-    session = Session()
-    filter_ = literal_eval(request.args.get('filter', 'None'))
-    if filter_:
-        if filter_.get('group', None):
-            users = (session.query(User)
-                            .filter(User.shakecast_id > request.args.get('last_id', 0))
-                            .filter(User.groups.any(Group.name.like(filter_['group'])))
-                            .limit(50)
-                            .all())
-            
-        else:
-            users = (session.query(User)
-                            .filter(User.shakecast_id > request.args.get('last_id', 0))
-                            .limit(50)
-                            .all())
-    else:   
-        users = session.query(User).filter(User.shakecast_id > request.args.get('last_id', 0)).limit(50).all()
-    
-    user_dicts = []
-    for user in users:
-        user_dict = user.__dict__.copy()
-        user_dict.pop('_sa_instance_state', None)
-        user_dicts += [user_dict]
-        
-    user_json = json.dumps(user_dicts, cls=AlchemyEncoder)
-    
-    Session.remove()    
-    return user_json
 
 @app.route('/admin/get/users/<user_id>/groups')
 @admin_only
@@ -539,6 +607,10 @@ def get_inventory():
 def get_settings():
     sc = SC()
     return sc.json
+
+@app.errorhandler(404)
+def page_not_found(error):
+    return render_template('index.html')
 
 ############################# Upload Setup ############################
 app.config['UPLOADED_XMLFILES_DEST'] = os.path.join(sc_dir(), 'tmp')

@@ -1,0 +1,15 @@
+<form>
+
+    <h2>Login</h2>
+
+    <input type="text" id="username" name="username"
+    placeholder="Enter Username" [(ngModel)]="user.username"
+    required>
+
+    <input type="password" id="password" name="password" 
+    placeholder="Enter Password" [(ngModel)]="user.password"
+    required>
+
+    <button type="submit" class="btn btn-success" (click)="onSubmit(user.username, user.password)">Login</button>
+
+</form>

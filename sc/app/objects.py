@@ -4,6 +4,7 @@ ShakeCast to run. These objects are used in the functions.py program
 """
 
 import urllib2
+import ssl
 import json
 import os
 import sys
@@ -105,14 +106,13 @@ class ProductGrabber(object):
             # get event id and all ids
             event = Event()
             event.all_event_ids = eq['properties']['ids']
+            event.event_id = eq_id
             event.magnitude = eq['properties']['mag']
-            
-            event.directory_name = os.path.join(self.data_dir,
-                                                eq_id)
             
             # use id and all ids to determine if the event is new and
             # query the old event if necessary
             old_shakemaps = []
+            old_notifications = []
             if event.is_new() is False:
                 event.status = 'ignore'
                 ids = event.all_event_ids.strip(',').split(',')
@@ -124,6 +124,7 @@ class ProductGrabber(object):
                 # remove older events
                 for old_event in old_events:
                     if old_event is not None:
+                        old_notifications += old_event.notifications
                         old_shakemaps += old_event.shakemaps
                         
                         # if one of these old events hasn't had
@@ -136,7 +137,8 @@ class ProductGrabber(object):
                 event.status = 'new'
                         
             # Fill the rest of the event info
-            event.event_id = eq_id
+            event.directory_name = os.path.join(self.data_dir,
+                                                eq_id)
             event.title = self.earthquakes[eq_id]['properties']['title']
             event.place = self.earthquakes[eq_id]['properties']['place']
             event.time = self.earthquakes[eq_id]['properties']['time']/1000.0
@@ -148,6 +150,9 @@ class ProductGrabber(object):
             
             if old_shakemaps:
                 event.shakemaps = old_shakemaps
+            if old_notifications:
+                event.notifications = old_notifications
+
             session.add(event)
             session.commit()
             
@@ -254,9 +259,7 @@ class ProductGrabber(object):
                                                    shakemap.shakemap_id + '-' + shakemap.shakemap_version)
             if not os.path.exists(shakemap.directory_name):
                 os.makedirs(shakemap.directory_name)
-            
-            
-            
+        
             # download products
             for product_name in self.req_products:
                 product = Product(shakemap = shakemap,
@@ -971,7 +974,7 @@ class NotificationBuilder(object):
         pass
     
     @staticmethod
-    def build_new_event_html(events=[], group=None, web=False):
+    def build_new_event_html(events=[], notification=None, group=None, web=False):
         conf_file = os.path.join(sc_dir(),
                                  'templates',
                                  'new_event',
@@ -992,6 +995,7 @@ class NotificationBuilder(object):
         
         return template.render(events=events,
                                group=group,
+                               notification=notification,
                                sc=SC(),
                                config=config,
                                web=web)
@@ -1046,6 +1050,15 @@ class URLOpener(object):
         Returns:
             str: the string read from the webpage
         """
+
+        # create context to avoid certificate errors
+        try:
+            ctx = ssl.create_default_context()
+            ctx.check_hostname = False
+            ctx.verify_mode = ssl.CERT_NONE
+        except:
+            ctx = None
+
         try:
             sc = SC()
             if sc.use_proxy is True:
@@ -1062,7 +1075,11 @@ class URLOpener(object):
                     auth = urllib2.HTTPBasicAuthHandler()
                     opener = urllib2.build_opener(proxy, auth, urllib2.HTTPHandler)
                     
-                    url_obj = opener.open(url, timeout=60)
+                    if ctx is not None:
+                        url_obj = opener.open(url, timeout=60, context=ctx)
+                    else:
+                        url_obj = opener.open(url, timeout=60)
+
                     url_read = url_obj.read()
                     url_obj.close()
                     return url_read
@@ -1072,13 +1089,21 @@ class URLOpener(object):
                                                   'https': 'https://{0}:{1}'.format(sc.proxy_server,sc.proxy_port)})
                     opener = urllib2.build_opener(proxy)
                     
-                    url_obj = opener.open(url, timeout=60)
+                    if ctx is not None:
+                        url_obj = opener.open(url, timeout=60, context=ctx)
+                    else:
+                        url_obj = opener.open(url, timeout=60)
+                        
                     url_read = url_obj.read()
                     url_obj.close()
                     return url_read
     
             else:
-                url_obj = urllib2.urlopen(url, timeout=60)
+                if ctx is not None:
+                    url_obj = urllib2.urlopen(url, timeout=60, context=ctx)
+                else:
+                    url_obj = urllib2.urlopen(url, timeout=60)
+                    
                 url_read = url_obj.read()
                 url_obj.close()
                 return url_read

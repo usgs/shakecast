@@ -1,0 +1,14 @@
+<h3>New Event:</h3>
+<div *ngFor="let not of notifications">
+    <p *ngIf="not.notification_type == 'NEW_EVENT'">
+        {{ not.group_name}}
+    </p>
+</div>
+
+<h3>Inspection:</h3>
+<div *ngFor="let not of notifications">
+    <p *ngIf="not.notification_type != 'NEW_EVENT'">
+        {{ not.group_name}}
+    </p>
+</div>
+

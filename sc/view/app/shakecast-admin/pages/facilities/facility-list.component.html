@@ -1,0 +1,31 @@
+<div class="outer-container">
+    <div class="eqs-container" stickToTop>
+        <div *ngIf="!loadingData">
+            <div *ngIf="facilityData.length > 0">
+                <div class="eq" [@selected]="fac.selected" *ngFor="let fac of facilityData" (click)="clickFac(fac)">
+                    <div [@headerSelected]="fac.selected" class="eq-header">
+                        <h3>{{fac.name}}</h3>
+                    </div>
+                    <div class="eq-body">
+                        <div class="info-container">
+                            <table>
+                                <tr>
+                                    <th>Desc: </th><td><p>{{fac.description}}</p></td>
+                                </tr>
+                                <tr>
+                                    <th>Location: </th><td><p>{{ (fac.lat_max + fac.lat_min) / 2 }}, {{ (fac.lon_max + fac.lon_min) / 2 }}</p></td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div *ngIf="facilityData.length == 0">
+                <h1 class="no-facs">No Facilities</h1>
+            </div>
+        </div>
+        <div *ngIf="loadingData">
+            <p>loading...</p>
+        </div>
+    </div>
+</div>
