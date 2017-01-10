@@ -18,3 +18,9 @@
 .spin-table td, .spin-table tr, .spin-table th {
     border-width: 0px;
 }
+
+.save, .reset {
+    display: inline-block;
+    margin-left: 10px;
+    margin-right: 10px;
+}

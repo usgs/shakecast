@@ -27,9 +27,9 @@
                     <td>{{ configs.Services.nighttime }}:00</td>
                     <table class="spin-table">
                         <tr class="button spin" 
-                            (click)="configs.Services.nighttime=configs.Services.nighttime+1"><th>&#9650;</th></tr>
+                            (click)="nighttimeUp()"><th>&#9650;</th></tr>
                         <tr class="button spin" 
-                            (click)="configs.Services.nighttime=configs.Services.nighttime-1"><th>&#x25bc;</th></tr>
+                            (click)="nighttimeDown()"><th>&#x25bc;</th></tr>
                     </table>
                 </tr>
                 <tr>
@@ -37,9 +37,9 @@
                     <td>{{ configs.Services.morning }}:00</td>
                     <table class="spin-table">
                         <tr class="button spin" 
-                            (click)="configs.Services.morning=configs.Services.morning+1"><th>&#9650;</th></tr>
+                            (click)="morningUp()"><th>&#9650;</th></tr>
                         <tr class="button spin" 
-                            (click)="configs.Services.morning=configs.Services.morning-1"><th>&#x25bc;</th></tr>
+                            (click)="morningDown()"><th>&#x25bc;</th></tr>
                     </table>
                 </tr>
             </table>
@@ -71,4 +71,6 @@
     </div>
 </div>
 
-<h1 class="button" (click)="saveConfigs()">SAVE</h1>
+<h1 class="button save" (click)="saveConfigs()">SAVE</h1>
+<h1 class="button reset" (click)="resetConfigs()">RESET</h1>
+
