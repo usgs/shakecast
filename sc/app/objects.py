@@ -30,7 +30,7 @@ class ProductGrabber(object):
     """
     
     def __init__(self,
-                 req_products=[],
+                 req_products=None,
                  data_dir=''):
         
         sc = SC()
@@ -750,7 +750,7 @@ class Mailer(object):
                     except:
                         self.log += 'Unable to access SMTP through proxy'
         
-    def send(self, msg=None, you=[], debug=False):
+    def send(self, msg=None, you=None, debug=False):
         """
         Send an email (msg) to specified addresses (you) using SMTP
         server details associated with the object
@@ -974,7 +974,7 @@ class NotificationBuilder(object):
         pass
     
     @staticmethod
-    def build_new_event_html(events=[], notification=None, group=None, web=False):
+    def build_new_event_html(events=None, notification=None, group=None, web=False):
         conf_file = os.path.join(sc_dir(),
                                  'templates',
                                  'new_event',

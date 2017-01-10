@@ -107,7 +107,7 @@ def check_new():
     
     return data
 
-def process_events(events=[], session=None, scenario=False):
+def process_events(events=None, session=None, scenario=False):
     '''
     Process or reprocess events passed into the function. Will send
     NEW_EVENT and UPDATE emails
@@ -190,7 +190,7 @@ def process_events(events=[], session=None, scenario=False):
                 e.status = 'processed'
             session.commit()
     
-def process_shakemaps(shakemaps=[], session=None, scenario=False):
+def process_shakemaps(shakemaps=None, session=None, scenario=False):
     '''
     Process or reprocess the shakemaps passed into the function
     
@@ -370,7 +370,7 @@ def process_shakemaps(shakemaps=[], session=None, scenario=False):
 def make_inspection_prios(facility=None,
                           shakemap=None,
                           grid=None,
-                          notifications=[]):
+                          notifications=None):
     '''
     Determines inspection priorities for the input facility
     
@@ -410,7 +410,7 @@ def make_inspection_prios(facility=None,
                                             notifications=notifications)
     return fac_shaking
     
-def new_event_notification(notifications = [],
+def new_event_notification(notifications = None,
                            scenario=False):
     """
     Build and send HTML email for a new event or scenario
