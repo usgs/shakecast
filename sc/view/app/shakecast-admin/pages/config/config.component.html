@@ -9,7 +9,7 @@
     <div class="timezone">
         <h3 class="settings-header">ShakeCast Clock</h3>
         <div class="settings-entries">
-            <p>UTC time</p>
+            <p>UTC time</p><p>{{ timeService.getUTCTime() | date:'dd-M-yyyy H:mm'}}</p>
             <p>ShakeCast Time</p>
             <p>difference</p>
             <p>nighttime</p>
