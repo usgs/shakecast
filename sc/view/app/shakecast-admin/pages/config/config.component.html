@@ -1,0 +1,44 @@
+<h1 class="title">Settings</h1>
+
+<div class="settings">
+    <div class="server">
+        <label for="server-name">Server Name: </label><input id="server-name" 
+                                                                placeholder="ShakeCast" 
+                                                                [(ngModel)]="configs.Server.name">
+    </div>
+    <div class="timezone">
+        <h3 class="settings-header">ShakeCast Clock</h3>
+        <div class="settings-entries">
+            <p>UTC time</p>
+            <p>ShakeCast Time</p>
+            <p>difference</p>
+            <p>nighttime</p>
+        </div>
+    </div>
+
+    <div class="smtp">
+        <h3 class="settings-header">SMTP Server</h3>
+        <div class="settings-entries">
+            <input placeholder="Username" type="text" [(ngModel)]="configs.SMTP.username">
+            <input placeholder="Password" type="password" [(ngModel)]="configs.SMTP.password">
+            <input placeholder="Server" type="text" [(ngModel)]="configs.SMTP.server">
+        </div>
+    </div>
+
+    <div class="Proxy">
+        <h3 class="settings-header">Proxy Setup</h3>
+        <div class="settings-entries">
+            <label for="proxy">Use a proxy: </label><input type="checkbox" 
+                                                            id="proxy" 
+                                                            [(ngModel)]="configs.Proxy.use">
+
+            <div *ngIf="configs.Proxy.use">
+                <input placeholder="Username" type="text" [(ngModel)]="configs.Proxy.username">
+                <input placeholder="Password" type="password" [(ngModel)]="configs.Proxy.password">
+                <input placeholder="Server" type="text" [(ngModel)]="configs.Proxy.server">
+            </div>
+        </div>
+    </div>
+</div>
+
+<h1 (click)="saveConfigs()">SAVE</h1>
