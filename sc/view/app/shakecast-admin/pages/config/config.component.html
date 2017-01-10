@@ -17,34 +17,30 @@
                 <tr>
                     <th>ShakeCast Time</th>
                     <td>{{ timeService.getOffsetTime(configs.timezone) | date:'dd-M-yyyy H:mm'}}</td>
-                    <table>
-                        <tr class="button" (click)="hourUp()"><th>&#9650;</th></tr>
-                        <tr class="button" (click)="hourDown()"><th>&#x25bc;</th></tr>
+                    <table class="spin-table">
+                        <tr class="button spin" (click)="hourUp()"><th>&#9650;</th></tr>
+                        <tr class="button spin" (click)="hourDown()"><th>&#x25bc;</th></tr>
                     </table>
                 </tr>
                 <tr>
                     <th>Nighttime</th>
                     <td>{{ configs.Services.nighttime }}:00</td>
-                    <td>
-                        <table>
-                            <tr class="button" 
-                                (click)="configs.Services.nighttime=configs.Services.nighttime+1"><th>&#9650;</th></tr>
-                            <tr class="button" 
-                                (click)="configs.Services.nighttime=configs.Services.nighttime-1"><th>&#x25bc;</th></tr>
-                        </table>
-                    </td>
+                    <table class="spin-table">
+                        <tr class="button spin" 
+                            (click)="configs.Services.nighttime=configs.Services.nighttime+1"><th>&#9650;</th></tr>
+                        <tr class="button spin" 
+                            (click)="configs.Services.nighttime=configs.Services.nighttime-1"><th>&#x25bc;</th></tr>
+                    </table>
                 </tr>
                 <tr>
                     <th>Morning</th>
                     <td>{{ configs.Services.morning }}:00</td>
-                    <td>
-                        <table>
-                            <tr class="button" 
-                                (click)="configs.Services.morning=configs.Services.morning+1"><th>&#9650;</th></tr>
-                            <tr class="button" 
-                                (click)="configs.Services.morning=configs.Services.morning-1"><th>&#x25bc;</th></tr>
-                        </table>
-                    </td>
+                    <table class="spin-table">
+                        <tr class="button spin" 
+                            (click)="configs.Services.morning=configs.Services.morning+1"><th>&#9650;</th></tr>
+                        <tr class="button spin" 
+                            (click)="configs.Services.morning=configs.Services.morning-1"><th>&#x25bc;</th></tr>
+                    </table>
                 </tr>
             </table>
         </div>

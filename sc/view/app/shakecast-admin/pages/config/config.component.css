@@ -10,3 +10,11 @@
 .button {
     cursor: pointer;
 }
+
+.spin:hover {
+    background-color: #aaaaaa
+}
+
+.spin-table td, .spin-table tr, .spin-table th {
+    border-width: 0px;
+}
