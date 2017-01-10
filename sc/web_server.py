@@ -403,6 +403,19 @@ def get_notification(event_id):
     Session.remove()    
     return json_
 
+@app.route('/admin/api/configs', methods=['GET','POST'])
+@login_required
+def get_settings():
+    sc = SC()
+    if request.method == 'POST':
+        configs = request.json.get('configs', '')
+        if configs:
+            sc.json = json.dumps(configs)
+            if sc.validate() is True:
+                sc.save()
+
+    return sc.json
+
 
 
 ############################ Admin Pages ##############################
@@ -421,20 +434,6 @@ def admin_only(func):
             flash('Login as an administrator to access this page')
             return redirect(url_for('login'))
     return func_wrapper
-
-@app.route('/admin/settings/', methods=['GET','POST'])
-@admin_only
-@login_required
-def settings():
-    if request.method == 'GET':
-        return render_template('admin/settings.html')
-    sc = SC()
-    settings = request.get_json().get('settings', '')
-    sc.json = json.dumps(settings)
-    
-    if sc.validate() is True:
-        sc.save()
-        return redirect('/admin/#/settings/')
 
 @app.route('/admin/upload/', methods=['GET','POST'])
 @admin_only
@@ -600,13 +599,6 @@ def get_inventory():
     
     Session.remove()    
     return facilities_json
-
-@app.route('/admin/get/settings')
-@admin_only
-@login_required
-def get_settings():
-    sc = SC()
-    return sc.json
 
 @app.errorhandler(404)
 def page_not_found(error):

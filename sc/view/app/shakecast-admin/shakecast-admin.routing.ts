@@ -8,6 +8,7 @@ import { FacilitiesComponent } from './pages/facilities/facilities.component'
 import { EarthquakesComponent } from './pages/earthquakes/earthquakes.component'
 import { GroupsComponent } from './pages/groups/groups.component'
 import { UsersComponent } from './pages/users/users.component'
+import { ConfigComponent } from './pages/config/config.component'
 //import { UploadComponent } from './pages/upload/upload.component'
 
 import { LoginGuard } from '../auth/login.guard'
@@ -38,6 +39,10 @@ const appRoutes: Routes = [
             {
                 path: 'users',
                 component: UsersComponent
+            },
+            {
+                path: 'config',
+                component: ConfigComponent
             },
             //{
                 //path: 'upload',
