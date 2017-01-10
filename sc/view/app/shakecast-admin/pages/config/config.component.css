@@ -6,3 +6,7 @@
 .settings-entries {
     margin-left: 15px;
 }
+
+.button {
+    cursor: pointer;
+}

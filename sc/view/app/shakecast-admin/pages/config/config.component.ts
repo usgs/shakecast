@@ -25,6 +25,22 @@ export class ConfigComponent implements OnInit, OnDestroy {
         this.confService.getConfigs();
     }
 
+    hourUp() {
+        this.configs.timezone += 1
+    }
+
+    hourDown () {
+        this.configs.timezone -= 1
+    }
+
+    nighttimeUp() {
+        this.configs.Services.nighttime += 1
+    }
+
+    nighttimeDown () {
+        this.configs.Services.nighttime -= 1
+    }
+
     saveConfigs() {
         this.confService.saveConfigs(this.configs);
     }

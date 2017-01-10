@@ -11,13 +11,21 @@ import { ReplaySubject } from 'rxjs/ReplaySubject';
 @Injectable()
 export class TimeService {
     constructor() {}
-    toUTCDate = function(date: Date){
+    toUTCDate(date: Date) {
         var _utc = new Date(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate(),  date.getUTCHours(), date.getUTCMinutes(), date.getUTCSeconds());
         return _utc;
     };
 
-    getUTCTime = function(){
-        return this.toUTCDate(new Date());
+    getUTCTime() {
+        var date = new Date()
+        var _utc = new Date(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate(),  date.getUTCHours(), date.getUTCMinutes(), date.getUTCSeconds());
+        return _utc;
     };
+
+    getOffsetTime(hourOffset: number) {
+        var date = new Date()
+        var _utc = new Date(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate(),  date.getUTCHours() + hourOffset, date.getUTCMinutes(), date.getUTCSeconds());
+        return _utc;
+    }
 
 }  
