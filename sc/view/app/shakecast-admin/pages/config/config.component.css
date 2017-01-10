@@ -1,0 +1,26 @@
+.settings {
+    margin-top: 100px;
+    margin-left: 5px;
+}
+
+.settings-entries {
+    margin-left: 15px;
+}
+
+.button {
+    cursor: pointer;
+}
+
+.spin:hover {
+    background-color: #aaaaaa
+}
+
+.spin-table td, .spin-table tr, .spin-table th {
+    border-width: 0px;
+}
+
+.save, .reset {
+    display: inline-block;
+    margin-left: 10px;
+    margin-right: 10px;
+}

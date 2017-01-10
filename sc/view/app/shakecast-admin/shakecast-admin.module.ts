@@ -24,6 +24,10 @@ import { GroupListComponent } from './pages/groups/group-list.component'
 
 import { UsersComponent } from './pages/users/users.component'
 import { UserListComponent } from './pages/users/user-list.component'
+
+import { ConfigComponent } from './pages/config/config.component'
+import { ConfigService } from './pages/config/config.service'
+
 //import { UploadComponent } from './pages/upload/upload.component'
 
 import { SharedModule } from '../shared/shared.module'
@@ -48,18 +52,13 @@ import { SharedModule } from '../shared/shared.module'
     GroupsComponent,
     GroupListComponent,
     UsersComponent,
-    UserListComponent
+    UserListComponent,
+    ConfigComponent
     //UploadComponent
   ],
   providers: [
+    ConfigService
   ]
 })
 export class ShakeCastAdminModule {
 }
-
-
-/*
-Copyright 2016 Google Inc. All Rights Reserved.
-Use of this source code is governed by an MIT-style license that
-can be found in the LICENSE file at http://angular.io/license
-*/
