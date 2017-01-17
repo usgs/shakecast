@@ -1,10 +1,10 @@
 .upload-window {
     width: 80%;
     margin-left: 10%;
-    height: 600px;
+    max-height: 800px;
     top: -600px;
-    overflow-y: scroll;
     position: fixed;
+    overflow-y: scroll;
     z-index: 2000;
 }
 
@@ -20,22 +20,55 @@
     top: 300px;
 }
 
-.content {
-    background: #ffffff
+.file-info {
+    margin-top: 5px;
 }
 
 .drop-zone { 
-    border: dotted 5px lightgray;
+    border: dotted 5px #fff;
     width: 80%;
     height: 300px;
     margin-left: auto;
     margin-right: auto;
+    text-align: center;
+    border-radius: 5px;
+    overflow: scroll;
+}
+
+.drop-zone p, .drop-zone h2 {
+    color: #fff;
 }
 
 .file-over { 
-    border-color: red; 
+    border-color: #55aaee;
+    color: #55aaee;
 } /* Default class applied to drop zones on over */
 
-html, body { 
-    height: 100%; 
+.done {
+    color:#fff;
+    text-align: center;
+    background: #55aaee;
+    cursor: pointer;
+    width: 30%;
+    margin-left:auto;
+    margin-right:auto;
+    border-radius: 5px;
+}
+
+.done:hover {
+    color: #55aaee;
+    background: #fff;
+}
+
+.button {
+    color: #55aaee;
+    background: #aaa;
+    border-radius: 5px;
+    display: inline-block;
+    margin: 5px;
+}
+
+.button:hover {
+    color: #aaa;
+    background: #55aaee;
 }

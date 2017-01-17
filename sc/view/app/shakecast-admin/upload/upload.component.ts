@@ -17,8 +17,8 @@ import { ScreenDimmerService } from '../../shared/screen-dimmer/screen-dimmer.se
     styleUrls: ['app/shakecast-admin/upload/upload.component.css'],  
     animations: [
       trigger('showUpload', [
-        state('false', style({top: '-600px'})),
-        state('true', style({top: '100px'})),
+        state('false', style({top: '-800px'})),
+        state('true', style({top: '20px'})),
           transition('true => false', animate('100ms ease-out')),
           transition('false => true', animate('100ms ease-in'))
       ])
