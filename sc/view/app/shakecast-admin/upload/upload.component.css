@@ -61,14 +61,30 @@
 }
 
 .button {
-    color: #55aaee;
-    background: #aaa;
+    background: #55aaee;;
     border-radius: 5px;
     display: inline-block;
     margin: 5px;
+    cursor: pointer;
+}
+
+.button .button-text {
+    color: #fff;
 }
 
 .button:hover {
-    color: #aaa;
-    background: #55aaee;
+    background: #fff;
+}
+
+.button:hover .button-text {
+    color: #55aaee;
+}
+
+td {
+    color: #ffffff;
+    font-weight: bolder;
+}
+
+table, tr, td {
+    border: none;
 }
