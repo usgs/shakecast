@@ -12,9 +12,6 @@ import { FacilityListComponent } from '../shakecast-admin/pages/facilities/facil
 // Earthquake Blurb
 import { EarthquakeBlurbComponent } from './earthquake-blurb/earthquake-blurb.component'
 
-// dropzone
-import { DropzoneComponent } from './dropzone/dropzone.component'
-
 // ng2-file-upload
 import { FileSelectDirective, FileDropDirective } from 'ng2-file-upload';
 
@@ -23,8 +20,6 @@ import { StickToTopDirective } from './directives/stick-to-top.directive';
 // screen dimmer
 import { ScreenDimmerComponent } from './screen-dimmer/screen-dimmer.component'
 
-// upload
-import { UploadComponent } from './upload/upload.component'
 
 @NgModule({
   imports: [
@@ -35,7 +30,6 @@ import { UploadComponent } from './upload/upload.component'
                  EarthquakeBlurbComponent,
                  ScreenDimmerComponent,
                  FacilityListComponent,
-                 DropzoneComponent,
                  FileSelectDirective,
                  FileDropDirective],
   providers: [
@@ -47,7 +41,6 @@ import { UploadComponent } from './upload/upload.component'
             FormsModule,
             StickToTopDirective,
             ScreenDimmerComponent,
-            DropzoneComponent,
             FileSelectDirective,
             FileDropDirective]
 })
