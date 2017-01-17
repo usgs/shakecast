@@ -11,10 +11,20 @@ import { FacilityListComponent } from '../shakecast-admin/pages/facilities/facil
 
 // Earthquake Blurb
 import { EarthquakeBlurbComponent } from './earthquake-blurb/earthquake-blurb.component'
+
+// dropzone
+import { DropzoneComponent } from './dropzone/dropzone.component'
+
+// ng2-file-upload
+import { FileSelectDirective, FileDropDirective } from 'ng2-file-upload';
+
 // scroll behavior
 import { StickToTopDirective } from './directives/stick-to-top.directive';
 // screen dimmer
 import { ScreenDimmerComponent } from './screen-dimmer/screen-dimmer.component'
+
+// upload
+import { UploadComponent } from './upload/upload.component'
 
 @NgModule({
   imports: [
@@ -24,7 +34,10 @@ import { ScreenDimmerComponent } from './screen-dimmer/screen-dimmer.component'
                  StickToTopDirective,
                  EarthquakeBlurbComponent,
                  ScreenDimmerComponent,
-                 FacilityListComponent],
+                 FacilityListComponent,
+                 DropzoneComponent,
+                 FileSelectDirective,
+                 FileDropDirective],
   providers: [
   ],
   exports: [MapComponent,
@@ -33,6 +46,9 @@ import { ScreenDimmerComponent } from './screen-dimmer/screen-dimmer.component'
             CommonModule, 
             FormsModule,
             StickToTopDirective,
-            ScreenDimmerComponent]
+            ScreenDimmerComponent,
+            DropzoneComponent,
+            FileSelectDirective,
+            FileDropDirective]
 })
 export class SharedModule { }

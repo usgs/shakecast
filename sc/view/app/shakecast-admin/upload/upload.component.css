@@ -1,0 +1,41 @@
+.upload-window {
+    width: 80%;
+    margin-left: 10%;
+    height: 600px;
+    top: -600px;
+    overflow-y: scroll;
+    position: fixed;
+    z-index: 2000;
+}
+
+.upload-title {
+    color: #ffffff;
+    font-size: 72px;
+    text-align: center;
+    margin-bottom: 10px;
+    margin-top: 0px;
+}
+
+.show-upload-window {
+    top: 300px;
+}
+
+.content {
+    background: #ffffff
+}
+
+.drop-zone { 
+    border: dotted 5px lightgray;
+    width: 80%;
+    height: 300px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.file-over { 
+    border-color: red; 
+} /* Default class applied to drop zones on over */
+
+html, body { 
+    height: 100%; 
+}

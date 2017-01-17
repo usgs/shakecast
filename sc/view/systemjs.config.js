@@ -41,7 +41,8 @@
       'angular2-in-memory-web-api':   'npm:angular2-in-memory-web-api',
       'ts':                           'npm:plugin-typescript@4.0.10/lib/plugin.js',
       'typescript':                   'npm:typescript@1.9.0-dev.20160409/lib/typescript.js',
-      'angular2-notifications':       'ven:angular2-notifications'
+      'angular2-notifications':       'ven:angular2-notifications',
+      'ng2-file-upload':              'ven:ng2-file-upload',
     },
     // packages tells the System loader how to load when no filename and/or no extension
     packages: {
@@ -59,6 +60,10 @@
         'angular2-notifications': {
             main: './components.js', 
             defaultExtension: 'js' 
+        },
+        'ng2-file-upload': {
+          main: 'ng2-file-upload.js',
+          defaultExtension: 'js'
         }
     }
   });

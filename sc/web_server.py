@@ -435,10 +435,12 @@ def admin_only(func):
             return redirect(url_for('login'))
     return func_wrapper
 
+import pdb
 @app.route('/admin/upload/', methods=['GET','POST'])
 @admin_only
 @login_required
 def upload():
+    pdb.set_trace()
     if request.method == 'GET':
         return render_template('admin/upload.html')
     

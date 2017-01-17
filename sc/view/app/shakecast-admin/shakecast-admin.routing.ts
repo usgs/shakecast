@@ -9,7 +9,7 @@ import { EarthquakesComponent } from './pages/earthquakes/earthquakes.component'
 import { GroupsComponent } from './pages/groups/groups.component'
 import { UsersComponent } from './pages/users/users.component'
 import { ConfigComponent } from './pages/config/config.component'
-//import { UploadComponent } from './pages/upload/upload.component'
+import { UploadComponent } from './pages/upload/upload.component'
 
 import { LoginGuard } from '../auth/login.guard'
 import { AdminGuard } from '../auth/admin.guard'
@@ -44,10 +44,6 @@ const appRoutes: Routes = [
                 path: 'config',
                 component: ConfigComponent
             },
-            //{
-                //path: 'upload',
-                //component: UploadComponent
-            //},
             {
                 path: '',
                 redirectTo: 'facilities',
