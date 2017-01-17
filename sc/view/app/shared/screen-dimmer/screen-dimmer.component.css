@@ -5,6 +5,6 @@
     position: fixed;
     top: 0;
     z-index: -1;
-    background: #666666;
+    background: #222222;
     transition: opacity .5s ease-in-out;
 }

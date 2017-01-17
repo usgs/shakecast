@@ -28,7 +28,8 @@ import { UserListComponent } from './pages/users/user-list.component'
 import { ConfigComponent } from './pages/config/config.component'
 import { ConfigService } from './pages/config/config.service'
 
-//import { UploadComponent } from './pages/upload/upload.component'
+import { UploadComponent } from './upload/upload.component'
+import { UploadService } from './upload/upload.service'
 
 import { SharedModule } from '../shared/shared.module'
 
@@ -53,11 +54,12 @@ import { SharedModule } from '../shared/shared.module'
     GroupListComponent,
     UsersComponent,
     UserListComponent,
-    ConfigComponent
-    //UploadComponent
+    ConfigComponent,
+    UploadComponent
   ],
   providers: [
-    ConfigService
+    ConfigService,
+    UploadService
   ]
 })
 export class ShakeCastAdminModule {
