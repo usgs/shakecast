@@ -15,7 +15,7 @@ import { ScreenDimmerService } from './screen-dimmer.service'
     animations: [
       trigger('dimmerOn', [
         state('false', style({opacity: 0, zIndex: -1})),
-        state('true', style({opacity: .4, zIndex: 1000})),
+        state('true', style({opacity: .6, zIndex: 1000})),
           transition('true => false', animate('100ms ease-out')),
           transition('false => true', animate('100ms ease-in'))
       ])

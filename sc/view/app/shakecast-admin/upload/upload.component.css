@@ -1,0 +1,90 @@
+.upload-window {
+    width: 80%;
+    margin-left: 10%;
+    max-height: 800px;
+    top: -600px;
+    position: fixed;
+    overflow-y: scroll;
+    z-index: 2000;
+}
+
+.upload-title {
+    color: #ffffff;
+    font-size: 72px;
+    text-align: center;
+    margin-bottom: 10px;
+    margin-top: 0px;
+}
+
+.show-upload-window {
+    top: 300px;
+}
+
+.file-info {
+    margin-top: 5px;
+}
+
+.drop-zone { 
+    border: dotted 5px #fff;
+    width: 80%;
+    height: 300px;
+    margin-left: auto;
+    margin-right: auto;
+    text-align: center;
+    border-radius: 5px;
+    overflow: scroll;
+}
+
+.drop-zone p, .drop-zone h2 {
+    color: #fff;
+}
+
+.file-over { 
+    border-color: #55aaee;
+    color: #55aaee;
+} /* Default class applied to drop zones on over */
+
+.done {
+    color:#fff;
+    text-align: center;
+    background: #55aaee;
+    cursor: pointer;
+    width: 30%;
+    margin-left:auto;
+    margin-right:auto;
+    border-radius: 5px;
+}
+
+.done:hover {
+    color: #55aaee;
+    background: #fff;
+}
+
+.button {
+    background: #55aaee;;
+    border-radius: 5px;
+    display: inline-block;
+    margin: 5px;
+    cursor: pointer;
+}
+
+.button .button-text {
+    color: #fff;
+}
+
+.button:hover {
+    background: #fff;
+}
+
+.button:hover .button-text {
+    color: #55aaee;
+}
+
+td {
+    color: #ffffff;
+    font-weight: bolder;
+}
+
+table, tr, td {
+    border: none;
+}
