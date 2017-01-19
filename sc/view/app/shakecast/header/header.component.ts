@@ -10,6 +10,8 @@ import { Component,
          animate } from '@angular/core';
 
 import { Observable } from 'rxjs/Observable';
+import { UserService } from '../../login/user.service'
+import { NotificationsService } from 'angular2-notifications'
 
 @Component({
   selector: 'my-header',
@@ -18,7 +20,7 @@ import { Observable } from 'rxjs/Observable';
   animations: [
       trigger('scrollChange', [
         state('false', style({top: 0})),
-        state('true', style({top: "-45px"})),
+        state('true', style({top: "-55px"})),
           transition('true => false', animate('100ms ease-in')),
           transition('false => true', animate('100ms ease-out'))
       ])
@@ -30,7 +32,8 @@ export class HeaderComponent implements onInit {
     private ignoreTime: number = 0;
     private hovering: boolean = false;
 
-    conscructor() {}
+    constructor(private userService: UserService,
+                private notService: NotificationsService) {}
 
     ngOnInit() {
         Observable.interval(500)
@@ -74,6 +77,11 @@ export class HeaderComponent implements onInit {
             this.scrollUp = false
             this.ignoreTime = 0
         }
+    }  
+    
+    logout() {
+        this.userService.logout()
+        this.notService.success('Logout', 'success')
     }
     
 }

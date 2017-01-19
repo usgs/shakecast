@@ -1,5 +1,10 @@
 <div class="header" [@scrollChange]="scrollUp" (mouseover)="setHover(true)" (mouseleave)="setHover(false)">
-    <nav-bar class="nav-bar"></nav-bar>
+    <div class="nav-bar">
+        <a routerLink="dashboard">Dashboard</a>
+        <a routerLink="earthquakes">Earthquakes</a>
+        <a routerLink="/shakecast-admin">Admin Panel</a>
+        <a (click)="logout()">Logout</a>
+    </div>
     <div class="cont">
         <img class="sc-logo" src="/images/sc_logo.png">
         <p>ShakeCast</p>
