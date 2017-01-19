@@ -2,7 +2,7 @@ import { Component,
          ElementRef, 
          Input, 
          Renderer, 
-         onInit,  
+         OnInit,  
          trigger,
          state,
          style,
@@ -10,13 +10,13 @@ import { Component,
          animate } from '@angular/core';
 
 import { Observable } from 'rxjs/Observable';
-import { UserService } from '../../login/user.service'
+import { UserService } from '../login/user.service'
 import { NotificationsService } from 'angular2-notifications'
 
 @Component({
-  selector: 'my-header',
-  templateUrl: 'app/shakecast/header/header.component.html',
-  styleUrls: ['app/shakecast/header/header.component.css'],    
+  selector: 'navbar',
+  templateUrl: 'app/nav/nav.component.html',
+  styleUrls: ['app/nav/nav.component.css'],    
   animations: [
       trigger('scrollChange', [
         state('false', style({top: 0})),
@@ -26,7 +26,7 @@ import { NotificationsService } from 'angular2-notifications'
       ])
     ]
 })
-export class HeaderComponent implements onInit {
+export class NavComponent implements OnInit {
     public scrollUp: boolean = false;
     public scrolled: number = document.querySelector('body').scrollTop;
     private ignoreTime: number = 0;

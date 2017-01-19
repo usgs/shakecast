@@ -1,7 +1,7 @@
 <div class="header" [@scrollChange]="scrollUp" (mouseover)="setHover(true)" (mouseleave)="setHover(false)">
     <div class="nav-bar">
-        <a routerLink="dashboard">Dashboard</a>
-        <a routerLink="earthquakes">Earthquakes</a>
+        <a routerLink="/shakecast/dashboard">Dashboard</a>
+        <a routerLink="/shakecast/earthquakes">Earthquakes</a>
         <a routerLink="/shakecast-admin">Admin Panel</a>
         <a (click)="logout()">Logout</a>
     </div>

@@ -12,7 +12,10 @@ import { LoginModule } from './login/login.module'
 import { ShakeCastModule } from './shakecast/shakecast.module'
 import { ShakeCastAdminModule } from './shakecast-admin/shakecast-admin.module'
 
-// General services used by all modules
+// navbar
+import { NavComponent } from './nav/nav.component'
+
+// General services used by multiple modules
 import { UserService } from './login/user.service'
 import { EarthquakeService } from './shakecast/pages/earthquakes/earthquake.service'
 import { FacilityService } from './shakecast-admin/pages/facilities/facility.service'
@@ -40,7 +43,8 @@ import { StickToTopService } from './shared/directives/stick-to-top.service';
     SharedModule
   ],
   declarations: [
-    AppComponent
+    AppComponent,
+    NavComponent
   ],
   providers: [
     appRoutingProviders,

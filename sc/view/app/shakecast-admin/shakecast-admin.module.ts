@@ -7,10 +7,6 @@ import { ShakeCastAdminComponent }       from './shakecast-admin.component';
 import { routing,
         appRoutingProviders } from './shakecast-admin.routing';
 
-import { HeaderComponent } from './header/header.component'
-import { NavComponent } from './nav/nav.component'
-
-
 import { DashboardComponent } from './pages/dashboard/dashboard.component'
 
 import { FacilitiesComponent } from './pages/facilities/facilities.component'
@@ -43,8 +39,6 @@ import { SharedModule } from '../shared/shared.module'
   ],
   declarations: [
     ShakeCastAdminComponent,
-    HeaderComponent,
-    NavComponent,
     DashboardComponent,
     FacilitiesComponent,
     FacilityFilter,
