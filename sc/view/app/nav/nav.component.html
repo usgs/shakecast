@@ -2,25 +2,44 @@
     <div class="header" [@scrollChange]="scrollUp" (mouseover)="setHover(true)" (mouseleave)="setHover(false)">
         <div class="nav-bar">
             <div *ngIf="!router.url.includes('/shakecast-admin')">
-                <a routerLink="/shakecast/dashboard">Dashboard</a>
-                <a routerLink="/shakecast/earthquakes">Earthquakes</a>
-                <a routerLink="/shakecast-admin">Admin Panel</a>
-                <a (click)="logout()">Logout</a>
+                <div class="link" (click)="changeRoute('/shakecast/dashboard')">
+                    <a routerLink="/shakecast/dashboard">Dashboard</a>
+                </div>
+                <div class="link" (click)="changeRoute('/shakecast/earthquakes')">
+                    <a routerLink="/shakecast/earthquakes">Earthquakes</a>
+                </div>
+                <div class="link" (click)="changeRoute('/shakecast-admin')">
+                    <a routerLink="/shakecast-admin">Admin Panel</a>
+                </div>
+                <div class="link" (click)="logout()">
+                    <a (click)="logout()">Logout</a>
+                </div>
             </div>
             <div *ngIf="router.url.includes('/shakecast-admin')">
-                <!-- <a routerLink="dashboard">Dashboard</a> -->
-                <a routerLink="facilities">Facilities</a>
-                <!-- <a routerLink="earthquakes">Earthquakes</a> -->
-                <a routerLink="groups">Groups</a>
-                <a routerLink="users">Users</a>
-                <a routerLink="config">Settings</a>
-                <a routerLink="/shakecast">Back to ShakeCast</a>
-                <a (click)="logout()">Logout</a>
+                <div class="link" (click)="changeRoute('/shakecast-admin/facilities')">
+                    <a routerLink="/shakecast-admin/facilities">Facilities</a>
+                </div>
+                <div class="link" (click)="changeRoute('/shakecast-admin/groups')">
+                    <a routerLink="/shakecast-admin/groups">Groups</a>
+                </div>
+                <div class="link" (click)="changeRoute('/shakecast-admin/users')">
+                    <a routerLink="/shakecast-admin/users">Users</a>
+                </div>
+                <div class="link" (click)="changeRoute('/shakecast-admin/config')">
+                    <a routerLink="/shakecast-admin/config">Settings</a>
+                </div>
+                <div class="link" (click)="changeRoute('/shakecast')">
+                    <a routerLink="/shakecast">Back to ShakeCast</a>
+                </div>
+                <div class="link" (click)="logout()">
+                    <a (click)="logout()">Logout</a>
+                </div>
             </div>
         </div>
         <div class="cont">
-            <img class="sc-logo" src="/images/sc_logo.png">
-            <p>ShakeCast</p>
+            <!-- <img class="sc-logo" src="/images/sc_logo.png"> -->
+            <img class="block-stack" src="/images/block_stack2.png">
+            <!-- <p>ShakeCast</p> -->
         </div>
     </div>
     <div class="header-space"></div>

@@ -80,6 +80,10 @@ export class NavComponent implements OnInit {
             this.ignoreTime = 0
         }
     }  
+
+    changeRoute(url: string) {
+        this.router.navigate([url]);
+    }
     
     logout() {
         this.userService.logout()

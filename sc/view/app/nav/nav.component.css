@@ -6,11 +6,15 @@
     position: fixed;
     display: flex;
     align-items: center;
+    vertical-align: middle;
     transition: top 0.2s ease-in-out;
     z-index: 1000;
     width: 80%;
-    left: 10%;
     margin-top: 5px;
+    min-width: 695px;
+    max-width: 1000px;
+    left: 50%;
+    transform: translateX(-50%)
 }
 
 .header-space {
@@ -47,3 +51,28 @@ p {
 .nav-bar {
     margin-left: 5px;
 }
+
+.link {
+    display: inline-block;
+    text-align: center;
+    border-bottom: 3px solid #eeeeee;
+    background: #eeeeee;
+    padding:5px;
+    cursor: pointer;
+}
+
+.link:hover {
+    background: #bbbbbb;
+    border-bottom: 3px solid #55aaee
+}
+
+a {
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.block-stack {
+    height: 40px;
+    margin-left: auto;
+}
+
