@@ -7,9 +7,6 @@ import { ShakeCastComponent }       from './shakecast.component';
 import { routing,
         appRoutingProviders } from './shakecast.routing';
 
-import { HeaderComponent } from './header/header.component'
-import { NavComponent } from './nav/nav.component'
-
 import { DashboardComponent } from './pages/dashboard/dashboard.component'
 import { NotificationDashComponent } from './pages/dashboard/notification-dash/notification-dash.component.ts'
 
@@ -30,8 +27,6 @@ import { SharedModule } from '../shared/shared.module'
   ],
   declarations: [
     ShakeCastComponent,
-    HeaderComponent,
-    NavComponent,
     DashboardComponent,
     NotificationDashComponent,
     EarthquakesComponent,

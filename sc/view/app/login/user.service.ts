@@ -29,7 +29,7 @@ export class UserService {
   login(username: string, password: string) {
     let headers = new Headers();
     headers.append('Content-Type', 'application/json');
-    return this._http.post('/login', 
+    return this._http.post('/api/login', 
                           JSON.stringify({username: username,
                                          password: password}), 
                           {headers}

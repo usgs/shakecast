@@ -2,35 +2,40 @@ import { Component,
          ElementRef, 
          Input, 
          Renderer, 
-         onInit,  
+         OnInit,  
          trigger,
          state,
          style,
          transition,
          animate } from '@angular/core';
+import { Router } from '@angular/router';
 
 import { Observable } from 'rxjs/Observable';
+import { UserService } from '../login/user.service'
+import { NotificationsService } from 'angular2-notifications'
 
 @Component({
-  selector: 'my-header',
-  templateUrl: 'app/shakecast/header/header.component.html',
-  styleUrls: ['app/shakecast/header/header.component.css'],    
+  selector: 'navbar',
+  templateUrl: 'app/nav/nav.component.html',
+  styleUrls: ['app/nav/nav.component.css'],    
   animations: [
       trigger('scrollChange', [
         state('false', style({top: 0})),
-        state('true', style({top: "-45px"})),
+        state('true', style({top: "-55px"})),
           transition('true => false', animate('100ms ease-in')),
           transition('false => true', animate('100ms ease-out'))
       ])
     ]
 })
-export class HeaderComponent implements onInit {
+export class NavComponent implements OnInit {
     public scrollUp: boolean = false;
     public scrolled: number = document.querySelector('body').scrollTop;
     private ignoreTime: number = 0;
     private hovering: boolean = false;
 
-    conscructor() {}
+    constructor(private userService: UserService,
+                private notService: NotificationsService,
+                private router: Router) {}
 
     ngOnInit() {
         Observable.interval(500)
@@ -74,6 +79,15 @@ export class HeaderComponent implements onInit {
             this.scrollUp = false
             this.ignoreTime = 0
         }
+    }  
+
+    changeRoute(url: string) {
+        this.router.navigate([url]);
+    }
+    
+    logout() {
+        this.userService.logout()
+        this.notService.success('Logout', 'success')
     }
     
 }

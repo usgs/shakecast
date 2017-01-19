@@ -19,16 +19,6 @@ html, body
     height: 100%;
 }
 
-.title {
-    font-size: 72px;
-    opacity: .8;
-    position: fixed;
-    top: 0;
-    left: 5%;
-    margin-top: 35px;
-    color: #46a;
-}
-
 /* For Tables */
 th, td {
     text-align: left;
@@ -94,4 +84,9 @@ th, td {
 .col-12 {
     width: 100%;
     display: inline-block;
+}
+
+.router-buffer {
+    width:100%;
+    height: 100px;
 }
