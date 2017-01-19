@@ -8,6 +8,7 @@ import { Component,
          style,
          transition,
          animate } from '@angular/core';
+import { Router } from '@angular/router';
 
 import { Observable } from 'rxjs/Observable';
 import { UserService } from '../login/user.service'
@@ -33,7 +34,8 @@ export class NavComponent implements OnInit {
     private hovering: boolean = false;
 
     constructor(private userService: UserService,
-                private notService: NotificationsService) {}
+                private notService: NotificationsService,
+                private router: Router) {}
 
     ngOnInit() {
         Observable.interval(500)

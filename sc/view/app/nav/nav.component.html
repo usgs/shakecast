@@ -1,13 +1,27 @@
-<div class="header" [@scrollChange]="scrollUp" (mouseover)="setHover(true)" (mouseleave)="setHover(false)">
-    <div class="nav-bar">
-        <a routerLink="/shakecast/dashboard">Dashboard</a>
-        <a routerLink="/shakecast/earthquakes">Earthquakes</a>
-        <a routerLink="/shakecast-admin">Admin Panel</a>
-        <a (click)="logout()">Logout</a>
+<div *ngIf="router.url.includes('/shakecast')">
+    <div class="header" [@scrollChange]="scrollUp" (mouseover)="setHover(true)" (mouseleave)="setHover(false)">
+        <div class="nav-bar">
+            <div *ngIf="!router.url.includes('/shakecast-admin')">
+                <a routerLink="/shakecast/dashboard">Dashboard</a>
+                <a routerLink="/shakecast/earthquakes">Earthquakes</a>
+                <a routerLink="/shakecast-admin">Admin Panel</a>
+                <a (click)="logout()">Logout</a>
+            </div>
+            <div *ngIf="router.url.includes('/shakecast-admin')">
+                <!-- <a routerLink="dashboard">Dashboard</a> -->
+                <a routerLink="facilities">Facilities</a>
+                <!-- <a routerLink="earthquakes">Earthquakes</a> -->
+                <a routerLink="groups">Groups</a>
+                <a routerLink="users">Users</a>
+                <a routerLink="config">Settings</a>
+                <a routerLink="/shakecast">Back to ShakeCast</a>
+                <a (click)="logout()">Logout</a>
+            </div>
+        </div>
+        <div class="cont">
+            <img class="sc-logo" src="/images/sc_logo.png">
+            <p>ShakeCast</p>
+        </div>
     </div>
-    <div class="cont">
-        <img class="sc-logo" src="/images/sc_logo.png">
-        <p>ShakeCast</p>
-    </div>
+    <div class="header-space"></div>
 </div>
-<div class="header-space"></div>
