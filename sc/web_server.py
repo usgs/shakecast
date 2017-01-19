@@ -49,7 +49,7 @@ def load_user(user_id):
     Session.remove()
     return user
 
-@app.route('/login', methods=['GET','POST'])
+@app.route('/api/login', methods=['GET','POST'])
 def login():
     if request.method == 'GET':
         return render_template('login.html')
