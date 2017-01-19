@@ -6,7 +6,7 @@ import { Component,
          style,
          transition,
          animate } from '@angular/core';
-
+import { TitleService } from '../../../title/title.service';
 import { GroupService } from './group.service'
 
 @Component({
@@ -15,9 +15,11 @@ import { GroupService } from './group.service'
     styleUrls: ['app/shakecast-admin/pages/groups/groups.component.css'], 
 })
 export class GroupsComponent implements OnInit {
-    constructor(private groupService: GroupService) {}
+    constructor(private groupService: GroupService,
+                private titleService: TitleService) {}
 
     ngOnInit() {
+        this.titleService.title.next('Groups')
         //this.groupService.clearMap();
     }
 }
