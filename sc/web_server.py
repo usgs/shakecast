@@ -484,10 +484,10 @@ def upload():
 def notification():
     return render_template('admin/notification.html')
 
-@app.route('/admin/get/notification/<group_id>/<notification_type>', methods=['GET','POST'])
+@app.route('/api/notification-html/<notification_type>', methods=['GET','POST'])
 @admin_only
 @login_required
-def notification_html(group_id, notification_type):
+def notification_html(notification_type):
     session = Session()
     not_builder = NotificationBuilder()
 
