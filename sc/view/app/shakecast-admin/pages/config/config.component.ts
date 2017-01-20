@@ -2,9 +2,10 @@ import { Component,
          OnInit,
          OnDestroy } from '@angular/core';
 
-import { ConfigService } from './config.service'
-import { TimeService } from './time.service'
-import { NotificationsService } from 'angular2-notifications'
+import { TitleService } from '../../../title/title.service';
+import { ConfigService } from './config.service';
+import { TimeService } from './time.service';
+import { NotificationsService } from 'angular2-notifications';
 declare var _: any;
 
 @Component({
@@ -19,9 +20,11 @@ export class ConfigComponent implements OnInit, OnDestroy {
 
     constructor(private confService: ConfigService,
                 public timeService: TimeService,
-                private notService: NotificationsService) {}
+                private notService: NotificationsService,
+                private titleService: TitleService) {}
 
     ngOnInit() {
+        this.titleService.title.next('Settings');
         this.subscriptions.push(this.confService.configs.subscribe(configs => {
             this.configs = configs;
             this.oldConfigs = JSON.parse(JSON.stringify(this.configs));

@@ -49,7 +49,7 @@ def load_user(user_id):
     Session.remove()
     return user
 
-@app.route('/login', methods=['GET','POST'])
+@app.route('/api/login', methods=['GET','POST'])
 def login():
     if request.method == 'GET':
         return render_template('login.html')
@@ -76,9 +76,14 @@ def login():
 
 @app.route('/logged_in')
 def logged_in():
+    
+    try:
+        is_admin = current_user.is_admin()
+    except Exception:
+        is_admin = false
     return jsonify(success=True, 
                    loggedIn=bool(current_user.is_authenticated),
-                   isAdmin=bool(current_user.is_admin()))
+                   isAdmin=bool(is_admin))
 
 @app.route('/logout')
 def logout():

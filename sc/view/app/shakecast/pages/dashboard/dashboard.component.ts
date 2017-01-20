@@ -4,6 +4,7 @@ import { Component,
 
 import { EarthquakeService } from '../earthquakes/earthquake.service'
 import { FacilityService } from '../../../shakecast-admin/pages/facilities/facility.service'
+import { TitleService } from '../../../title/title.service';
 
 @Component({
   selector: 'dashboard',
@@ -16,9 +17,11 @@ export class DashboardComponent implements OnInit, OnDestroy {
     
     private subscriptions: any[] = []
     constructor(private eqService: EarthquakeService,
-                private facService: FacilityService) {}
+                private facService: FacilityService,
+                private titleService: TitleService) {}
   
   ngOnInit() {
+      this.titleService.title.next('Dashboard')
       this.subscriptions.push(this.eqService.earthquakeData.subscribe(eqs => {
           this.earthquakeData = eqs;
       }));
