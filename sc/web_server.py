@@ -442,7 +442,7 @@ def admin_only(func):
 @admin_only
 @login_required
 def notification_html(notification_type):
-    config = literal_eval(request.args.get('configs', 'None'))
+    config = literal_eval(request.args.get('config', 'None'))
     
     session = Session()
     not_builder = NotificationBuilder()
@@ -459,6 +459,16 @@ def notification_html(notification_type):
         html = not_builder.build_insp_html(sm, web=True)
     Session.remove()
     return html
+
+@app.route('/api/notification-config/<notification_type>/<name>', methods=['GET','POST'])
+@admin_only
+@login_required
+def notification_config(notification_type, name):
+    if request.method == 'GET':
+        not_builder = NotificationBuilder()
+        config = not_builder.get_configs(notification_type, name)
+
+    return json.dumps(config)
 
 @app.route('/admin/upload/', methods=['GET','POST'])
 @admin_only

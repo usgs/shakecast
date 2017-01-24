@@ -972,7 +972,7 @@ class NotificationBuilder(object):
     Uses Jinja to build notifications
     """
     def __init__(self):
-        pass
+        self.config = {}
     
     def build_new_event_html(self, events=None, notification=None, group=None, web=False, config=None):
         if not config:
