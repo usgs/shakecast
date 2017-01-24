@@ -1,0 +1,23 @@
+.container {
+    width: 100%;
+    background: #fff;
+    display: flex;
+}
+
+.column {
+    display: inline-block;
+    padding: 5px;
+}
+
+.not-column {
+    width: 70%
+}
+
+.conf-column {
+    width: 30%;
+}
+
+.conf-column h2 {
+    margin-top: 0;
+    padding-top: 20px;
+}

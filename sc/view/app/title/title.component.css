@@ -6,4 +6,5 @@
     left: 5%;
     margin-top: 45px;
     color: #46a;
+    z-index: -1;
 }
