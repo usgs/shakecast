@@ -21,3 +21,11 @@
     margin-top: 0;
     padding-top: 20px;
 }
+
+.item p {
+    display: inline-block;
+}
+
+.item .label {
+    font-weight: bolder;
+}

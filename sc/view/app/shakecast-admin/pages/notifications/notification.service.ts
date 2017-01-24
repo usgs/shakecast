@@ -9,10 +9,11 @@ import { ReplaySubject } from 'rxjs/ReplaySubject';
 export class NotificationHTMLService {
     public loadingData = new ReplaySubject(1);
     public notification = new ReplaySubject(1);
+    public config = new ReplaySubject(1);
 
     constructor(private _http: Http) {}
 
-    getNewEvent() {
+    getNewEvent(name: string) {
         this.loadingData.next(true)
         this._http.get('/api/notification-html/new_event')
             .subscribe((result: Response) => {
@@ -21,11 +22,22 @@ export class NotificationHTMLService {
             });
     }
 
-    getNewShakeMap() {
+    getNewShakeMap(name: string) {
         this.loadingData.next(true)
         this._http.get('/api/notification-html/shakemap')
             .subscribe((result: any) => {
                 this.notification.next(result);
+                this.loadingData.next(false)
+            });
+    }
+
+    getConfigs(notType: string,
+                name: string) {
+        this.loadingData.next(true)
+        this._http.get('/api/notification-config/' + notType + '/' + name)
+            .map((result: Response) => result.json())
+            .subscribe((result: any) => {
+                this.config.next(result);
                 this.loadingData.next(false)
             });
     }
