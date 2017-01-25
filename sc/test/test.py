@@ -83,6 +83,8 @@ class TestNotificationConfigs(unittest.TestCase):
         nb = NotificationBuilder()
         bad_configs = nb.get_configs('new_event', 'template_DOES_NOT_EXIST_!@#$')
         self.assertIsNone(bad_configs)
+        bad_configs = nb.save_configs('new_event', 'template_DOES_NOT_EXIST_!@#$', bad_configs)
+        self.assertIsNone(bad_configs)
 
     def test_getTemplate(self):
         nb = NotificationBuilder()

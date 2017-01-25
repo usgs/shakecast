@@ -1029,7 +1029,7 @@ class NotificationBuilder(object):
 
     @staticmethod
     def save_configs(not_type, name, config):
-        try:
+        if isinstance(config, dict):
             conf_file = os.path.join(sc_dir(),
                                     'templates',
                                     not_type,
@@ -1038,7 +1038,7 @@ class NotificationBuilder(object):
             conf_str.write(json.dumps(config))
             conf_str.close()
             return config
-        except Exception:
+        else:
             return None
 
     @staticmethod
