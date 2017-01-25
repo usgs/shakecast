@@ -83,9 +83,16 @@ class TestNotificationConfigs(unittest.TestCase):
         nb = NotificationBuilder()
         bad_configs = nb.get_configs('new_event', 'template_DOES_NOT_EXIST_!@#$')
         self.assertIsNone(bad_configs)
-        bad_configs = nb.save_configs('new_event', 'default', bad_configs)
-        self.assertIsNone(bad_configs)
 
+    def test_getTemplate(self):
+        nb = NotificationBuilder()
+        temp = nb.get_template('new_event', 'default')
+        self.assertIsNotNone(temp)
+
+    def test_badTemplate(self):
+        nb = NotificationBuilder()
+        temp = nb.get_template('new_event', 'template_DOES_NOT_EXIST_!@#$')
+        self.assertIsNone(temp)
 
 class TestURLOpener(unittest.TestCase):
     '''
