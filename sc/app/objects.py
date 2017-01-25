@@ -1015,11 +1015,11 @@ class NotificationBuilder(object):
         else:
             temp_name = name.lower() + '.json'
 
-        conf_file = os.path.join(sc_dir(),
+        try:
+            conf_file = os.path.join(sc_dir(),
                                     'templates',
                                     not_type,
                                     temp_name)
-        try:
             conf_str = open(conf_file, 'r')
             config = json.loads(conf_str.read())
             conf_str.close()
@@ -1029,11 +1029,11 @@ class NotificationBuilder(object):
 
     @staticmethod
     def save_configs(not_type, name, config):
-        conf_file = os.path.join(sc_dir(),
+        try:
+            conf_file = os.path.join(sc_dir(),
                                     'templates',
                                     not_type,
                                     name + '.json')
-        try:
             conf_str = open(conf_file, 'w')
             conf_str.write(json.dumps(config))
             conf_str.close()

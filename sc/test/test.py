@@ -66,8 +66,27 @@ class TestSC(unittest.TestCase):
     '''
     def test_initSC(self):
         sc = SC()
-        
-        
+
+class TestNotificationConfigs(unittest.TestCase):
+    '''
+    Test the ShakeCast notification configuration. Fails if code errors
+    '''
+
+    def test_notificationConfigs(self):
+        nb = NotificationBuilder()
+        configs = nb.get_configs('new_event', 'default')
+        self.assertIsNotNone(configs)
+        configs = nb.save_configs('new_event', 'default', configs)
+        self.assertIsNotNone(configs)
+    
+    def test_badNotificationConfigs(self):
+        nb = NotificationBuilder()
+        bad_configs = nb.get_configs('new_event', 'template_DOES_NOT_EXIST_!@#$')
+        self.assertIsNone(bad_configs)
+        bad_configs = nb.save_configs('new_event', 'default', bad_configs)
+        self.assertIsNone(bad_configs)
+
+
 class TestURLOpener(unittest.TestCase):
     '''
     Test the URLOpener Object
