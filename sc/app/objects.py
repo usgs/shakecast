@@ -966,32 +966,19 @@ class SC(object):
                  os.path.join(conf_dir, 'sc.json'))
         self.load()
 
+
 class NotificationBuilder(object):
     """
     Uses Jinja to build notifications
     """
     def __init__(self):
-        pass
+        self.config = {}
     
-    @staticmethod
-    def build_new_event_html(events=None, notification=None, group=None, web=False):
-        conf_file = os.path.join(sc_dir(),
-                                 'templates',
-                                 'new_event',
-                                 'default.json')
-        conf_str = open(conf_file, 'r')
-        config = json.loads(conf_str.read())
-        conf_str.close()
-        
-        
-        temp_file = os.path.join(sc_dir(),
-                                 'templates',
-                                 'new_event',
-                                 'default.html')
-        
-        temp_str = open(temp_file, 'r')
-        template = Template(temp_str.read())
-        temp_str.close()
+    def build_new_event_html(self, events=None, notification=None, group=None, web=False, config=None):
+        if not config:
+            config = self.get_configs('new_event')
+
+        template = self.get_template('new_event')
         
         return template.render(events=events,
                                group=group,
@@ -1000,25 +987,12 @@ class NotificationBuilder(object):
                                config=config,
                                web=web)
     
-    @staticmethod
-    def build_insp_html(shakemap, web=False):
-        conf_file = os.path.join(sc_dir(),
-                                 'templates',
-                                 'inspection',
-                                 'default.json')
-        conf_str = open(conf_file, 'r')
-        config = json.loads(conf_str.read())
-        conf_str.close()
+    def build_insp_html(self, shakemap, web=False, config=None):
+        if not config:
+            config = self.get_configs('inspection')
         
-        
-        temp_file = os.path.join(sc_dir(),
-                                 'templates',
-                                 'inspection',
-                                 'default.html')
-        temp_str = open(temp_file, 'r')
-        template = Template(temp_str.read())
-        temp_str.close()
-        
+        template = self.get_template('inspection')
+
         facility_shaking = shakemap.facility_shaking
         fac_details = {'all': 0, 'grey': 0, 'green': 0,
                        'yellow': 0, 'orange': 0, 'red': 0}
@@ -1033,7 +1007,59 @@ class NotificationBuilder(object):
                                sc=SC(),
                                config=config,
                                web=web)
-    
+
+    @staticmethod
+    def get_configs(not_type, name=None):
+        if name is None:
+            temp_name = 'default.json'
+        else:
+            temp_name = name.lower() + '.json'
+
+        try:
+            conf_file = os.path.join(sc_dir(),
+                                    'templates',
+                                    not_type,
+                                    temp_name)
+            conf_str = open(conf_file, 'r')
+            config = json.loads(conf_str.read())
+            conf_str.close()
+            return config
+        except Exception:
+            return None
+
+    @staticmethod
+    def save_configs(not_type, name, config):
+        if isinstance(config, dict):
+            conf_file = os.path.join(sc_dir(),
+                                    'templates',
+                                    not_type,
+                                    name + '.json')
+            conf_str = open(conf_file, 'w')
+            conf_str.write(json.dumps(config))
+            conf_str.close()
+            return config
+        else:
+            return None
+
+    @staticmethod
+    def get_template(not_type, name=None):
+        if name is None:
+            temp_name = 'default.html'
+        else:
+            temp_name = name + '.html'
+
+        temp_file = os.path.join(sc_dir(),
+                                    'templates',
+                                    not_type,
+                                    temp_name)
+        try:
+            temp_str = open(temp_file, 'r')
+            template = Template(temp_str.read())
+            temp_str.close()
+            return template
+        except Exception:
+            return None
+
     
 class URLOpener(object):
     """

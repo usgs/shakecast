@@ -20,7 +20,7 @@ html, body
 }
 
 /* For Tables */
-th, td {
+.my-table th, .my-table td {
     text-align: left;
     padding: 5px;
     border-bottom: 1px solid #ddd;

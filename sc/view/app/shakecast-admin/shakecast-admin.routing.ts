@@ -1,15 +1,15 @@
 import { ModuleWithProviders } from '@angular/core';
 import { Routes, RouterModule }   from '@angular/router';
 
-import { ShakeCastAdminComponent } from './shakecast-admin.component'
+import { ShakeCastAdminComponent } from './shakecast-admin.component';
 
-import { DashboardComponent } from './pages/dashboard/dashboard.component'
-import { FacilitiesComponent } from './pages/facilities/facilities.component'
-import { EarthquakesComponent } from './pages/earthquakes/earthquakes.component'
-import { GroupsComponent } from './pages/groups/groups.component'
-import { UsersComponent } from './pages/users/users.component'
-import { ConfigComponent } from './pages/config/config.component'
-import { UploadComponent } from './pages/upload/upload.component'
+import { DashboardComponent } from './pages/dashboard/dashboard.component';
+import { FacilitiesComponent } from './pages/facilities/facilities.component';
+import { EarthquakesComponent } from './pages/earthquakes/earthquakes.component';
+import { GroupsComponent } from './pages/groups/groups.component';
+import { UsersComponent } from './pages/users/users.component';
+import { ConfigComponent } from './pages/config/config.component';
+import { NotificationsComponent } from './pages/notifications/notifications.component';
 
 import { LoginGuard } from '../auth/login.guard'
 import { AdminGuard } from '../auth/admin.guard'
@@ -39,6 +39,10 @@ const appRoutes: Routes = [
             {
                 path: 'users',
                 component: UsersComponent
+            },
+            {
+                path: 'notifications',
+                component: NotificationsComponent
             },
             {
                 path: 'config',

@@ -1,4 +1,5 @@
 {
+    "type": "inspection",
     "body_color": "#ffffff",
     "admin_email": "sc.admin@gmail.com",
     "table_head": [{"name": "name",
