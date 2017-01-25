@@ -75,7 +75,7 @@
                                 {% if web is sameas false %}
                                     <img src="cid:gmap{{ loop.index0 }}_{{ notification.shakecast_id }}">
                                 {% else %}
-                                    <img src="/get/events/{{ event.event_id }}/image">
+                                    <img src="/api/events/{{ event.event_id }}/image">
                                 {% endif %}
                             </td>
                             <td style="border: 2px solid #444444;padding: 5px;">{{ event.event_id }}</td>

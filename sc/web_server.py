@@ -421,8 +421,6 @@ def get_settings():
 
     return sc.json
 
-
-
 ############################ Admin Pages ##############################
 
 # wrapper for admin only URLs
@@ -439,6 +437,43 @@ def admin_only(func):
             flash('Login as an administrator to access this page')
             return redirect(url_for('login'))
     return func_wrapper
+
+@app.route('/api/notification-html/<notification_type>', methods=['GET','POST'])
+@admin_only
+@login_required
+def notification_html(notification_type):
+    config = json.loads(request.args.get('config', 'null'))
+    
+    session = Session()
+    not_builder = NotificationBuilder()
+
+    if notification_type == 'new_event':
+        # get the two most recent events
+        events = session.query(Event).all()
+        events = events[-2:]
+        html = not_builder.build_new_event_html(events=events, web=True, config=config)
+    else:
+        # get the most recent shakemap
+        sms = session.query(ShakeMap).all()
+        sm = sms[-1]
+        html = not_builder.build_insp_html(sm, web=True)
+    Session.remove()
+    return html
+
+@app.route('/api/notification-config/<notification_type>/<name>', methods=['GET','POST'])
+@admin_only
+@login_required
+def notification_config(notification_type, name):
+    not_builder = NotificationBuilder()
+    if request.method == 'GET':
+        config = not_builder.get_configs(notification_type, name)
+
+    elif request.method == 'POST':
+        config = request.json.get('config', None)
+        if config:
+            not_builder.save_configs(notification_type, name, config)
+    
+    return json.dumps(config)
 
 @app.route('/admin/upload/', methods=['GET','POST'])
 @admin_only
@@ -483,26 +518,6 @@ def upload():
 @login_required
 def notification():
     return render_template('admin/notification.html')
-
-@app.route('/admin/get/notification/<group_id>/<notification_type>', methods=['GET','POST'])
-@admin_only
-@login_required
-def notification_html(group_id, notification_type):
-    session = Session()
-    not_builder = NotificationBuilder()
-
-    if notification_type == 'new_event':
-        # get the two most recent events
-        events = session.query(Event).all()
-        events = events[-2:]
-        html = not_builder.build_new_event_html(events=events, web=True)
-    else:
-        # get the most recent shakemap
-        sms = session.query(ShakeMap).all()
-        sm = sms[-1]
-        html = not_builder.build_insp_html(sm, web=True)
-    Session.remove()
-    return html
 
 @app.route('/admin/earthquakes')
 @admin_only
