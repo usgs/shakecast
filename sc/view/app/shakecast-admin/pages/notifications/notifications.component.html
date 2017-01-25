@@ -10,44 +10,83 @@
                     <option value="default">Default</option>
                 </select>
                 <div class="item">
-                    <p class="label">Type: </p><p class="conf">{{ config?.type=='new_event' }}</p>
+                    <p class="label">Type: </p><p class="conf">{{ config?.type=='new_event' ? 'New Event' : 'Inspection'}}</p>
                 </div>
                 <div class="item">
-                    <p class="label">Admin Email:</p><p class="conf">{{ config?.admin_email }}</p>
+                    <p class="label">Admin Email:</p><input class="conf" *ngIf="config" [(ngModel)]="config.admin_email">
                 </div>
                 <div class="item">
-                    <p class="label">Body Color: </p><p class="conf">{{ config?.body_color }}</p>
+                    <p class="label">Body Color: </p><input class="conf" *ngIf="config" [(ngModel)]="config.body_color">
                 </div>
                 <div class="item">
-                    <p class="label">Header Background Color: </p><p class="conf">{{ config?.section_head?.back_color }}</p>
+                    <p class="label">Header Background Color: </p>
+                    <input class="conf" 
+                            *ngIf="config.section_head" 
+                            [(ngModel)]="config.section_head.back_color">
                 </div>
                 <div class="item">
-                    <p class="label">Header Font Color: </p><p class="conf">{{ config?.section_head?.font_color }}</p>
+                    <p class="label">Header Font Color: </p>
+                    <input class="conf" 
+                            *ngIf="config.section_head" 
+                            [(ngModel)]="config.section_head.font_color">
+                </div>
+                                <div class="item">
+                    <p class="label">Intro Font Color: </p>
+                    <input class="conf" 
+                            *ngIf="config.intro" 
+                            [(ngModel)]="config.intro.font_color">
                 </div>
                 <div class="item">
-                    <p class="label">Second Header Border Color: </p><p class="conf">{{ config?.second_head?.border_color }}</p>
+                    <p class="label">Intro Background Color: </p>
+                    <input class="conf" 
+                            *ngIf="config.intro" 
+                            [(ngModel)]="config.intro.back_color">
                 </div>
                 <div class="item">
-                    <p class="label">Second Header Font Color: </p><p class="conf">{{ config?.second_head?.font_color }}</p>
+                    <p class="label">Intro Text: </p>
+                    <textarea
+                                *ngIf="config.intro" 
+                                [(ngModel)]="config.intro.text">
+                    </textarea>
+                <div class="item">
+                    <p class="label">Second Header Border Color: </p>
+                    <input class="conf" 
+                            *ngIf="config.second_head" 
+                            [(ngModel)]="config.second_head.border_color">
                 </div>
                 <div class="item">
-                    <p class="label">Intro Font Color: </p><p class="conf">{{ config?.intro?.font_color }}</p>
+                    <p class="label">Second Header Font Color: </p>
+                    <input class="conf" 
+                            *ngIf="config.section_head" 
+                            [(ngModel)]="config.second_head.font_color">
+
+                <!-- 
+                </div>
                 </div>
                 <div class="item">
-                    <p class="label">Intro Background Color: </p><p class="conf">{{ config?.intro?.back_color }}</p>
+                    <p class="label">Footer Header Color: </p>
+                    <input class="conf" 
+                            *ngIf="config.footer" 
+                            [(ngModel)]="config.footer.header_color">
                 </div>
                 <div class="item">
-                    <p class="label">Intro Text: </p><p class="conf">{{ config?.intro?.text }}</p>
+                    <p class="label">Footer Font Color: </p>
+                    <input class="conf" 
+                            *ngIf="config.footer" 
+                            [(ngModel)]="config.footer.font_color">
                 </div>
                 <div class="item">
-                    <p class="label">Footer Header Color: </p><p class="conf">{{ config?.footer?.header_color }}</p>
+                    <p class="label">Table Border Color: </p>
+                    <input class="conf" 
+                            *ngIf="config.table" 
+                            [(ngModel)]="config.table.border_color">
                 </div>
-                <div class="item">
-                    <p class="label">Footer Font Color: </p><p class="conf">{{ config?.footer?.font_color }}</p>
-                </div>
-                <div class="item">
-                    <p class="label">Table Border Color: </p><p class="conf">{{ config?.table?.border_color }}</p>
-                </div>
+                -->
+
+                <h2 (click)="previewNewEvent()">Preview</h2>
+                <h2 (click)="saveConfigs()">Save</h2>
+                <h2 (click)="reset()">Reset</h2>
+
             </div>
         </div>
     </div>

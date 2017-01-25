@@ -10,11 +10,11 @@
 }
 
 .not-column {
-    width: 70%
+    width: 55%
 }
 
 .conf-column {
-    width: 30%;
+    width: 40%;
 }
 
 .conf-column h2 {
@@ -24,6 +24,7 @@
 
 .item p {
     display: inline-block;
+    margin: 5px;
 }
 
 .item .label {

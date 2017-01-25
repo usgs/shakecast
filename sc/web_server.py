@@ -442,7 +442,7 @@ def admin_only(func):
 @admin_only
 @login_required
 def notification_html(notification_type):
-    config = literal_eval(request.args.get('config', 'None'))
+    config = json.loads(request.args.get('config', 'null'))
     
     session = Session()
     not_builder = NotificationBuilder()
@@ -464,10 +464,15 @@ def notification_html(notification_type):
 @admin_only
 @login_required
 def notification_config(notification_type, name):
+    not_builder = NotificationBuilder()
     if request.method == 'GET':
-        not_builder = NotificationBuilder()
         config = not_builder.get_configs(notification_type, name)
 
+    elif request.method == 'POST':
+        config = request.json.get('config', None)
+        if config:
+            not_builder.save_configs(notification_type, name, config)
+    
     return json.dumps(config)
 
 @app.route('/admin/upload/', methods=['GET','POST'])

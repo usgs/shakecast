@@ -4,6 +4,7 @@ import 'rxjs/add/operator/map';
 import 'rxjs/add/operator/catch';
 import { Observable } from 'rxjs/Observable';
 import { ReplaySubject } from 'rxjs/ReplaySubject';
+import { NotificationsService } from 'angular2-notifications'
 
 @Injectable()
 export class NotificationHTMLService {
@@ -11,11 +12,16 @@ export class NotificationHTMLService {
     public notification = new ReplaySubject(1);
     public config = new ReplaySubject(1);
 
-    constructor(private _http: Http) {}
+    constructor(private _http: Http,
+                private notService: NotificationsService) {}
 
-    getNewEvent(name: string) {
+    getNewEvent(name: string,
+                config: any = null) {
         this.loadingData.next(true)
-        this._http.get('/api/notification-html/new_event')
+        let params = new URLSearchParams();
+        params.set('config', JSON.stringify(config))
+        this._http.get('/api/notification-html/new_event',
+                        {search: params})
             .subscribe((result: Response) => {
                 this.notification.next(result._body);
                 this.loadingData.next(false)
@@ -41,4 +47,21 @@ export class NotificationHTMLService {
                 this.loadingData.next(false)
             });
     }
+
+    saveConfigs(name: string,
+                config: any) {
+        let headers = new Headers();
+        headers.append('Content-Type', 'application/json');
+        this._http.post('/api/notification-config/' + config.type + '/' + name, 
+                        JSON.stringify({config: config}),
+                        {headers}
+        ).subscribe((result: any) => {
+            this.notService.success('Success!', 'New Configurations Saved');
+
+            if (config.type === 'new_event') {
+                this.getNewEvent(name);
+            }
+        });
+    }
+
 }

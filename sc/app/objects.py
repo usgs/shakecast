@@ -1028,6 +1028,20 @@ class NotificationBuilder(object):
             return None
 
     @staticmethod
+    def save_configs(not_type, name, config):
+        conf_file = os.path.join(sc_dir(),
+                                    'templates',
+                                    not_type,
+                                    name + '.json')
+        try:
+            conf_str = open(conf_file, 'w')
+            conf_str.write(json.dumps(config))
+            conf_str.close()
+            return config
+        except Exception:
+            return None
+
+    @staticmethod
     def get_template(not_type, name=None):
         if name is None:
             temp_name = 'default.html'
