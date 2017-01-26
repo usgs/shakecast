@@ -301,7 +301,7 @@ class TestFull(unittest.TestCase):
         data = check_new()
         self.assertEqual(data['error'], '')
 
-    def step12_NotificationAssoc(self):
+    def step12_notificationAssoc(self):
         '''
         Make sure events and notifications are linked
         '''
@@ -310,6 +310,15 @@ class TestFull(unittest.TestCase):
         bad_nots = [n for n in nots if n if n.event_id == None]
 
         self.assertEqual(len(bad_nots), 0)
+        Session.remove()
+
+    def step12_scenarioInDB(self):
+        session = Session()
+        sms = session.query(ShakeMap).all()
+        if len(sms) > 0:
+            sm = sms[-1]
+            run_scenario(sm.shakemap_id[2:], sm.shakemap_id[:2])
+
         Session.remove()
         
     def steps(self):
