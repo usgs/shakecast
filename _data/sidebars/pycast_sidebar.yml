@@ -7,7 +7,11 @@ entries:
     folderitems:
       - title: Introduction
         output: web
-        url: /pycast_docs.html
+        url: /pycast_docs.html      
+        
+      - title: AEBM Implementation
+        output: web
+        url: /aebm.html
 
       - title: Developer Documentation
         output: web
