@@ -385,15 +385,24 @@ class TestImport(unittest.TestCase):
     
     def step2_userImport(self):
         user_file = os.path.join(sc_dir(), 'test', 'test_users.xml')
+        file_type = determine_xml(user_file)
         import_user_xml(user_file)
+
+        self.assertEqual(file_type, 'user')
         
     def step3_groupImport(self):
         group_file = os.path.join(sc_dir(), 'test', 'test_groups.xml')
+        file_type = determine_xml(group_file)
         import_group_xml(group_file)
+
+        self.assertEqual(file_type, 'group')
         
     def step4_facImport(self):
         fac_file = os.path.join(sc_dir(), 'test', 'test_facs.xml')
+        file_type = determine_xml(fac_file)
         import_facility_xml(fac_file)
+
+        self.assertEqual(file_type, 'facility')
     
     def step5_checkUser(self):
         session = Session()
