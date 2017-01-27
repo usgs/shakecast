@@ -11,28 +11,21 @@ export class NotificationHTMLService {
     public loadingData = new ReplaySubject(1);
     public notification = new ReplaySubject(1);
     public config = new ReplaySubject(1);
+    public tempNames = new ReplaySubject(1);
 
     constructor(private _http: Http,
                 private notService: NotificationsService) {}
 
-    getNewEvent(name: string,
-                config: any = null) {
+    getNotification(name: string,
+                    notType: string,
+                    config: any = null) {
         this.loadingData.next(true)
         let params = new URLSearchParams();
-        params.set('config', JSON.stringify(config))
-        this._http.get('/api/notification-html/new_event',
+        params.set('config', JSON.stringify(config));
+        this._http.get('/api/notification-html/' + notType + '/' + name,
                         {search: params})
             .subscribe((result: Response) => {
                 this.notification.next(result._body);
-                this.loadingData.next(false)
-            });
-    }
-
-    getNewShakeMap(name: string) {
-        this.loadingData.next(true)
-        this._http.get('/api/notification-html/shakemap')
-            .subscribe((result: any) => {
-                this.notification.next(result);
                 this.loadingData.next(false)
             });
     }
@@ -48,6 +41,16 @@ export class NotificationHTMLService {
             });
     }
 
+    getTemplateNames() {
+        this.loadingData.next(true)
+        this._http.get('/api/template-names')
+            .map((result: Response) => result.json())
+            .subscribe((result: any) => {
+                this.tempNames.next(result);
+                this.loadingData.next(false)
+            });
+    }
+
     saveConfigs(name: string,
                 config: any) {
         let headers = new Headers();
@@ -57,10 +60,6 @@ export class NotificationHTMLService {
                         {headers}
         ).subscribe((result: any) => {
             this.notService.success('Success!', 'New Configurations Saved');
-
-            if (config.type === 'new_event') {
-                this.getNewEvent(name);
-            }
         });
     }
 

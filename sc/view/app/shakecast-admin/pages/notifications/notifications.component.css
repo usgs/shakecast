@@ -19,14 +19,52 @@
 
 .conf-column h2 {
     margin-top: 0;
+}
+
+.conf-content {
     padding-top: 20px;
 }
 
-.item p {
+.item p, .item h3 {
     display: inline-block;
     margin: 5px;
 }
 
 .item .label {
     font-weight: bolder;
+}
+
+.event-type {
+    cursor: pointer;
+    border: 3px solid #ffffff;
+    border-radius: 5px;
+    padding: 5px;
+}
+
+.event-type:hover {
+    background: #55AAD0;
+    border-color: #55AAD0;
+    color: #ffffff;
+}
+
+.event-type.selected {
+    border: 3px solid #55AAD0;
+}
+
+.control-buttons {
+    margin-top: 20px;
+}
+
+.button {
+    display: inline-block;
+    border: 3px solid #55AAD0;
+    margin: 5px;
+    padding: 5px;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+.button:hover {
+    background: #55AAD0;
+    color: #ffffff;
 }
