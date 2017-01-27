@@ -456,7 +456,7 @@ def notification_html(notification_type):
         # get the most recent shakemap
         sms = session.query(ShakeMap).all()
         sm = sms[-1]
-        html = not_builder.build_insp_html(sm, web=True)
+        html = not_builder.build_insp_html(sm, web=True, config=config)
     Session.remove()
     return html
 
