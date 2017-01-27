@@ -73,29 +73,34 @@ class TestTemplateManager(unittest.TestCase):
     '''
 
     def test_notificationConfigs(self):
-        temp_manager = TemplateManager
+        temp_manager = TemplateManager()
         configs = temp_manager.get_configs('new_event', 'default')
         self.assertIsNotNone(configs)
         configs = temp_manager.save_configs('new_event', 'default', configs)
         self.assertIsNotNone(configs)
     
     def test_badNotificationConfigs(self):
-        temp_manager = TemplateManager
+        temp_manager = TemplateManager()
         bad_configs = temp_manager.get_configs('new_event', 'template_DOES_NOT_EXIST_!@#$')
         self.assertIsNone(bad_configs)
         bad_configs = temp_manager.save_configs('new_event', 'template_DOES_NOT_EXIST_!@#$', bad_configs)
         self.assertIsNone(bad_configs)
 
     def test_getTemplate(self):
-        temp_manager = TemplateManager
+        temp_manager = TemplateManager()
         temp = temp_manager.get_template('new_event', 'default')
         self.assertIsNotNone(temp)
 
     def test_badTemplate(self):
-        temp_manager = TemplateManager
+        temp_manager = TemplateManager()
         temp = temp_manager.get_template('new_event', 'template_DOES_NOT_EXIST_!@#$')
         self.assertIsNone(temp)
 
+    def test_templateNames(self):
+        temp_manager = TemplateManager()
+        temp_names = temp_manager.get_template_names()
+        self.assertIn('default', temp_names)
+        
 class TestURLOpener(unittest.TestCase):
     '''
     Test the URLOpener Object

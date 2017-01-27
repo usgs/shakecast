@@ -1069,6 +1069,20 @@ class TemplateManager(object):
             return template
         except Exception:
             return None
+
+    @staticmethod
+    def get_template_names():
+        '''
+        Get a list of the existing template names
+        '''
+        temp_folder = os.path.join(sc_dir(),
+                                   'templates',
+                                   'new_event')
+        file_list = os.listdir(temp_folder)
+
+        # get the names of the templates
+        just_names = [f.split('.')[0] for f in file_list if f[-5:] == '.json']
+        return just_names
     
 class URLOpener(object):
     """
