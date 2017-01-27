@@ -4,18 +4,6 @@ import os
 """
 Functions used by the functions module
 """
-
-def closest(lst = [], Number = 0):
-    '''
-    Find the closest number in a list
-    '''
-    
-    aux = []
-    for valor in lst:
-        aux.append(abs(Number-valor))
-
-    return aux.index(min(aux))
-
 def get_delim():
     """
     Returns which delimeter is appropriate for the operating system

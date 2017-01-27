@@ -18,7 +18,7 @@ import datetime
 from ast import literal_eval
 from app.orm import *
 from app.server import Server
-from app.objects import Clock, SC, NotificationBuilder
+from app.objects import Clock, SC, NotificationBuilder, TemplateManager
 from app.functions import determine_xml
 from ui import UI
 
@@ -464,14 +464,14 @@ def notification_html(notification_type):
 @admin_only
 @login_required
 def notification_config(notification_type, name):
-    not_builder = NotificationBuilder()
+    temp_manager = TemplateManager()
     if request.method == 'GET':
-        config = not_builder.get_configs(notification_type, name)
+        config = temp_manager.get_configs(notification_type, name)
 
     elif request.method == 'POST':
         config = request.json.get('config', None)
         if config:
-            not_builder.save_configs(notification_type, name, config)
+            temp_manager.save_configs(notification_type, name, config)
     
     return json.dumps(config)
 

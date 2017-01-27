@@ -7,7 +7,7 @@ import { Component,
          transition,
          animate } from '@angular/core';
 import {FileUploader} from 'ng2-file-upload';
-
+import { NotificationsService } from 'angular2-notifications'
 import { UploadService } from './upload.service'
 import { ScreenDimmerService } from '../../shared/screen-dimmer/screen-dimmer.service'
 
@@ -18,7 +18,7 @@ import { ScreenDimmerService } from '../../shared/screen-dimmer/screen-dimmer.se
     animations: [
       trigger('showUpload', [
         state('false', style({top: '-800px'})),
-        state('true', style({top: '20px'})),
+        state('true', style({top: '60px'})),
           transition('true => false', animate('100ms ease-out')),
           transition('false => true', animate('100ms ease-in'))
       ])
@@ -32,7 +32,8 @@ export class UploadComponent implements OnInit, OnDestroy{
     private subscriptions: any = []
 
     constructor(private uploadService: UploadService,
-                private screenDimmer: ScreenDimmerService) {}
+                private screenDimmer: ScreenDimmerService,
+                private notService: NotificationsService) {}
     ngOnInit() {
         this.subscriptions.push(this.uploadService.show.subscribe(show => {
             if (show === true) {
@@ -41,6 +42,14 @@ export class UploadComponent implements OnInit, OnDestroy{
                 this.hideUpload();
             }
         }));
+
+        this.uploader.onCompleteItem = (item: any, response: any, status: any, headers: any) => {
+            if (status === 200) {
+                this.notService.success('File Upload', 'Success!')
+            } else {
+                this.notService.error('File Upload', 'Error')
+            }
+        };
     }
 
     showUpload() {

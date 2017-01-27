@@ -67,33 +67,33 @@ class TestSC(unittest.TestCase):
     def test_initSC(self):
         sc = SC()
 
-class TestNotificationConfigs(unittest.TestCase):
+class TestTemplateManager(unittest.TestCase):
     '''
     Test the ShakeCast notification configuration. Fails if code errors
     '''
 
     def test_notificationConfigs(self):
-        nb = NotificationBuilder()
-        configs = nb.get_configs('new_event', 'default')
+        temp_manager = TemplateManager
+        configs = temp_manager.get_configs('new_event', 'default')
         self.assertIsNotNone(configs)
-        configs = nb.save_configs('new_event', 'default', configs)
+        configs = temp_manager.save_configs('new_event', 'default', configs)
         self.assertIsNotNone(configs)
     
     def test_badNotificationConfigs(self):
-        nb = NotificationBuilder()
-        bad_configs = nb.get_configs('new_event', 'template_DOES_NOT_EXIST_!@#$')
+        temp_manager = TemplateManager
+        bad_configs = temp_manager.get_configs('new_event', 'template_DOES_NOT_EXIST_!@#$')
         self.assertIsNone(bad_configs)
-        bad_configs = nb.save_configs('new_event', 'template_DOES_NOT_EXIST_!@#$', bad_configs)
+        bad_configs = temp_manager.save_configs('new_event', 'template_DOES_NOT_EXIST_!@#$', bad_configs)
         self.assertIsNone(bad_configs)
 
     def test_getTemplate(self):
-        nb = NotificationBuilder()
-        temp = nb.get_template('new_event', 'default')
+        temp_manager = TemplateManager
+        temp = temp_manager.get_template('new_event', 'default')
         self.assertIsNotNone(temp)
 
     def test_badTemplate(self):
-        nb = NotificationBuilder()
-        temp = nb.get_template('new_event', 'template_DOES_NOT_EXIST_!@#$')
+        temp_manager = TemplateManager
+        temp = temp_manager.get_template('new_event', 'template_DOES_NOT_EXIST_!@#$')
         self.assertIsNone(temp)
 
 class TestURLOpener(unittest.TestCase):
@@ -301,7 +301,7 @@ class TestFull(unittest.TestCase):
         data = check_new()
         self.assertEqual(data['error'], '')
 
-    def step12_NotificationAssoc(self):
+    def step12_notificationAssoc(self):
         '''
         Make sure events and notifications are linked
         '''
@@ -310,6 +310,15 @@ class TestFull(unittest.TestCase):
         bad_nots = [n for n in nots if n if n.event_id == None]
 
         self.assertEqual(len(bad_nots), 0)
+        Session.remove()
+
+    def step12_scenarioInDB(self):
+        session = Session()
+        sms = session.query(ShakeMap).all()
+        if len(sms) > 0:
+            sm = sms[-1]
+            run_scenario(sm.shakemap_id[2:], sm.shakemap_id[:2])
+
         Session.remove()
         
     def steps(self):
@@ -376,15 +385,24 @@ class TestImport(unittest.TestCase):
     
     def step2_userImport(self):
         user_file = os.path.join(sc_dir(), 'test', 'test_users.xml')
+        file_type = determine_xml(user_file)
         import_user_xml(user_file)
+
+        self.assertEqual(file_type, 'user')
         
     def step3_groupImport(self):
         group_file = os.path.join(sc_dir(), 'test', 'test_groups.xml')
+        file_type = determine_xml(group_file)
         import_group_xml(group_file)
+
+        self.assertEqual(file_type, 'group')
         
     def step4_facImport(self):
         fac_file = os.path.join(sc_dir(), 'test', 'test_facs.xml')
+        file_type = determine_xml(fac_file)
         import_facility_xml(fac_file)
+
+        self.assertEqual(file_type, 'facility')
     
     def step5_checkUser(self):
         session = Session()

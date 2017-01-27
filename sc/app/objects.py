@@ -972,13 +972,15 @@ class NotificationBuilder(object):
     Uses Jinja to build notifications
     """
     def __init__(self):
-        self.config = {}
+        pass
     
-    def build_new_event_html(self, events=None, notification=None, group=None, web=False, config=None):
+    @staticmethod
+    def build_new_event_html(events=None, notification=None, group=None, web=False, config=None):
+        temp_manager = TemplateManager()
         if not config:
-            config = self.get_configs('new_event')
+            config = temp_manager.get_configs('new_event')
 
-        template = self.get_template('new_event')
+        template = temp_manager.get_template('new_event')
         
         return template.render(events=events,
                                group=group,
@@ -987,11 +989,13 @@ class NotificationBuilder(object):
                                config=config,
                                web=web)
     
-    def build_insp_html(self, shakemap, web=False, config=None):
+    @staticmethod
+    def build_insp_html(shakemap, web=False, config=None):
+        temp_manager = TemplateManager()
         if not config:
-            config = self.get_configs('inspection')
+            config = temp_manager.get_configs('inspection')
         
-        template = self.get_template('inspection')
+        template = temp_manager.get_template('inspection')
 
         facility_shaking = shakemap.facility_shaking
         fac_details = {'all': 0, 'grey': 0, 'green': 0,
@@ -1007,6 +1011,12 @@ class NotificationBuilder(object):
                                sc=SC(),
                                config=config,
                                web=web)
+
+
+class TemplateManager(object):
+    """
+    Manages templates and configs for emails
+    """
 
     @staticmethod
     def get_configs(not_type, name=None):
@@ -1059,7 +1069,6 @@ class NotificationBuilder(object):
             return template
         except Exception:
             return None
-
     
 class URLOpener(object):
     """
