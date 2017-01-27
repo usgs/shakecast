@@ -1,6 +1,7 @@
 import { Component,
          OnInit, 
          OnDestroy,
+         HostListener,
          trigger,
          state,
          style,
@@ -90,5 +91,14 @@ export class NotificationsComponent implements OnInit {
 
     reset() {
         this.config = JSON.parse(JSON.stringify(this.oldConfig));
+    }
+
+    @HostListener('window:keydown', ['$event'])
+    keyboardInput(event: any) {
+        if (event.keyCode === 13) {
+            this.preview(this.name,
+                         this.eventType,
+                         this.config);
+        }
     }
 }
