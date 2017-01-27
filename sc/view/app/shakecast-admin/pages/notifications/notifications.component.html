@@ -69,32 +69,10 @@
                             *ngIf="config.section_head" 
                             [(ngModel)]="config.second_head.font_color">
 
-                <!-- 
+                <div class="control-buttons">
+                    <h2 class="button" (click)="saveConfigs()">Save</h2>
+                    <h2 class="button" (click)="reset()">Reset</h2>
                 </div>
-                </div>
-                <div class="item">
-                    <p class="label">Footer Header Color: </p>
-                    <input class="conf" 
-                            *ngIf="config.footer" 
-                            [(ngModel)]="config.footer.header_color">
-                </div>
-                <div class="item">
-                    <p class="label">Footer Font Color: </p>
-                    <input class="conf" 
-                            *ngIf="config.footer" 
-                            [(ngModel)]="config.footer.font_color">
-                </div>
-                <div class="item">
-                    <p class="label">Table Border Color: </p>
-                    <input class="conf" 
-                            *ngIf="config.table" 
-                            [(ngModel)]="config.table.border_color">
-                </div>
-                -->
-
-                <h2 (click)="preview(name, eventType, config)">Preview</h2>
-                <h2 (click)="saveConfigs()">Save</h2>
-                <h2 (click)="reset()">Reset</h2>
 
             </div>
         </div>
