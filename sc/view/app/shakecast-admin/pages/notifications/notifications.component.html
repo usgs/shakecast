@@ -6,8 +6,8 @@
         <div class="conf-content-container">
             <div class="conf-content" stickToTop>
                 <h2>Select Notification</h2>
-                <select>
-                    <option value="default">Default</option>
+                <select [(ngModel)]="name" (change)="getNotification(name, eventType)">
+                    <option *ngFor="let eachName of tempNames" [ngValue]="eachName">{{ eachName }}</option>
                 </select>
                 <div class="item">
                     <h3 class="conf event-type" 
@@ -57,11 +57,13 @@
                                 *ngIf="config.intro" 
                                 [(ngModel)]="config.intro.text">
                     </textarea>
+                    <!--
                 <div class="item">
                     <p class="label">Second Header Border Color: </p>
                     <input class="conf" 
                             *ngIf="config.second_head" 
                             [(ngModel)]="config.second_head.border_color">
+                            -->
                 </div>
                 <div class="item">
                     <p class="label">Second Header Font Color: </p>

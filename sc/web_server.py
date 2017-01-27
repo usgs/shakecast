@@ -438,10 +438,10 @@ def admin_only(func):
             return redirect(url_for('login'))
     return func_wrapper
 
-@app.route('/api/notification-html/<notification_type>', methods=['GET','POST'])
+@app.route('/api/notification-html/<notification_type>/<name>', methods=['GET','POST'])
 @admin_only
 @login_required
-def notification_html(notification_type):
+def notification_html(notification_type, name):
     config = json.loads(request.args.get('config', 'null'))
     
     session = Session()
@@ -451,12 +451,12 @@ def notification_html(notification_type):
         # get the two most recent events
         events = session.query(Event).all()
         events = events[-2:]
-        html = not_builder.build_new_event_html(events=events, web=True, config=config)
+        html = not_builder.build_new_event_html(events=events, name=name, web=True, config=config)
     else:
         # get the most recent shakemap
         sms = session.query(ShakeMap).all()
         sm = sms[-1]
-        html = not_builder.build_insp_html(sm, web=True, config=config)
+        html = not_builder.build_insp_html(sm, name=name, web=True, config=config)
     Session.remove()
     return html
 
@@ -474,6 +474,13 @@ def notification_config(notification_type, name):
             temp_manager.save_configs(notification_type, name, config)
     
     return json.dumps(config)
+
+@app.route('/api/template-names', methods=['GET','POST'])
+@admin_only
+@login_required
+def template_names():
+    temp_manager = TemplateManager()
+    return json.dumps(temp_manager.get_template_names())
 
 @app.route('/admin/upload/', methods=['GET','POST'])
 @admin_only

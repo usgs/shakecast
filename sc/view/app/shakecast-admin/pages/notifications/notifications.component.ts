@@ -25,6 +25,7 @@ export class NotificationsComponent implements OnInit {
     private subscriptions: any[] = [];
     public notification: string = '';
     public name: string = 'default';
+    public tempNames: any = [];
     public config: any = {}
     public oldConfig: any = {}
     public previewConfig: any = {}
@@ -49,6 +50,10 @@ export class NotificationsComponent implements OnInit {
                 this.previewConfig = JSON.parse(JSON.stringify(config));
             })
         );
+        this.subscriptions.push(this.notHTMLService.tempNames.subscribe((names: any) => {
+                this.tempNames = names;
+            })
+        );
 
         this.subscriptions.push(Observable.interval(3000).subscribe(x => {
             this.preview(this.name,
@@ -57,7 +62,8 @@ export class NotificationsComponent implements OnInit {
         }));
 
         this.notHTMLService.getNotification(this.name, 'new_event');
-        this.notHTMLService.getConfigs('new_event', this.name)
+        this.notHTMLService.getConfigs('new_event', this.name);
+        this.notHTMLService.getTemplateNames();
     }
 
     getNotification(name: string,

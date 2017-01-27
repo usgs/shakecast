@@ -11,6 +11,7 @@ export class NotificationHTMLService {
     public loadingData = new ReplaySubject(1);
     public notification = new ReplaySubject(1);
     public config = new ReplaySubject(1);
+    public tempNames = new ReplaySubject(1);
 
     constructor(private _http: Http,
                 private notService: NotificationsService) {}
@@ -21,7 +22,7 @@ export class NotificationHTMLService {
         this.loadingData.next(true)
         let params = new URLSearchParams();
         params.set('config', JSON.stringify(config));
-        this._http.get('/api/notification-html/' + notType,
+        this._http.get('/api/notification-html/' + notType + '/' + name,
                         {search: params})
             .subscribe((result: Response) => {
                 this.notification.next(result._body);
@@ -40,6 +41,16 @@ export class NotificationHTMLService {
             });
     }
 
+    getTemplateNames() {
+        this.loadingData.next(true)
+        this._http.get('/api/template-names')
+            .map((result: Response) => result.json())
+            .subscribe((result: any) => {
+                this.tempNames.next(result);
+                this.loadingData.next(false)
+            });
+    }
+
     saveConfigs(name: string,
                 config: any) {
         let headers = new Headers();
@@ -49,7 +60,6 @@ export class NotificationHTMLService {
                         {headers}
         ).subscribe((result: any) => {
             this.notService.success('Success!', 'New Configurations Saved');
-            this.getNotification(name, config.type);
         });
     }
 
