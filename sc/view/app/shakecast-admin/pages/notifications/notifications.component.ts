@@ -1,6 +1,7 @@
 import { Component,
          OnInit, 
          OnDestroy,
+         HostListener,
          trigger,
          state,
          style,
@@ -11,6 +12,8 @@ import { Component,
 import { TitleService } from '../../../title/title.service';
 import { NotificationHTMLService } from './notification.service'
 import { NotificationsService } from 'angular2-notifications'
+import { Observable } from 'rxjs/Observable';
+
 declare var _: any;
 
 @Component({
@@ -21,12 +24,12 @@ declare var _: any;
 export class NotificationsComponent implements OnInit {
     private subscriptions: any[] = [];
     public notification: string = '';
-    public name: string = 'default'
+    public name: string = 'default';
+    public tempNames: any = [];
     public config: any = {}
     public oldConfig: any = {}
-
-    // Variables to control page behavior
-    public clicked: boolean = false;
+    public previewConfig: any = {}
+    public eventType: string = 'new_event';
 
     constructor(private titleService: TitleService,
                 private notHTMLService: NotificationHTMLService,
@@ -44,21 +47,47 @@ export class NotificationsComponent implements OnInit {
         this.subscriptions.push(this.notHTMLService.config.subscribe((config: any) => {
                 this.config = config;
                 this.oldConfig = JSON.parse(JSON.stringify(config));
+                this.previewConfig = JSON.parse(JSON.stringify(config));
+            })
+        );
+        this.subscriptions.push(this.notHTMLService.tempNames.subscribe((names: any) => {
+                this.tempNames = names;
             })
         );
 
-        this.notHTMLService.getNewEvent(this.name);
-        this.notHTMLService.getConfigs('new_event', 'default')
+        this.subscriptions.push(Observable.interval(3000).subscribe(x => {
+            this.preview(this.name,
+                         this.eventType,
+                         this.config);
+        }));
+
+        this.notHTMLService.getNotification(this.name, 'new_event');
+        this.notHTMLService.getConfigs('new_event', this.name);
+        this.notHTMLService.getTemplateNames();
     }
 
-    previewNewEvent() {
-        this.notHTMLService.getNewEvent(this.name, this.config)
+    getNotification(name: string,
+                    eventType: string,
+                    config: any = null) {
+        this.eventType = eventType;
+        this.name = name;
+        this.notHTMLService.getNotification(name, eventType, config);
+        this.notHTMLService.getConfigs(eventType, name);
+    }
+
+    preview(name:string,
+            eventType: string,
+            config: any = null) {
+        if (!_.isEqual(this.config,this.previewConfig)) {
+            this.notHTMLService.getNotification(name, eventType, config)
+            this.previewConfig = JSON.parse(JSON.stringify(this.config));
+        }
     }
 
     saveConfigs() {
         if (!_.isEqual(this.config,this.oldConfig)) {
             this.notHTMLService.saveConfigs(this.name,
-                                        this.config)
+                                            this.config)
             this.oldConfig = JSON.parse(JSON.stringify(this.config));
         } else {
             this.notService.info('No Changes', 'These configs are already in place!')
@@ -68,5 +97,14 @@ export class NotificationsComponent implements OnInit {
 
     reset() {
         this.config = JSON.parse(JSON.stringify(this.oldConfig));
+    }
+
+    @HostListener('window:keydown', ['$event'])
+    keyboardInput(event: any) {
+        if (event.keyCode === 13) {
+            this.preview(this.name,
+                         this.eventType,
+                         this.config);
+        }
     }
 }

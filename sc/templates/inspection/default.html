@@ -42,8 +42,8 @@
                 <table style="width:90%;margin-left:5%;font-family:Arial;color:#444444;font-weight:bold">
                     <tr>
                         <td>
-                            <h2 style="background-color:#ffffff;margin-top:20px;margin-bottom:0px">Magnitude {{ shakemap.event.magnitude }}</h2>
-                            <h2 style="background-color:#ffffff;margin-top:5px;margin-bottom:5px;border-bottom:2px solid #444444">{{ shakemap.event.place }}</h2>
+                            <h2 style="margin-top:20px;margin-bottom:0px">Magnitude {{ shakemap.event.magnitude }}</h2>
+                            <h2 style="margin-top:5px;margin-bottom:5px;border-bottom:2px solid #444444">{{ shakemap.event.place }}</h2>
                             <table>
                                 <tr>
                                     <td>Number of Facilities Evaluated</td>
@@ -81,7 +81,7 @@
                 {% if web is sameas false %}
                     <img src="cid:shakemap{{ shakemap.shakecast_id }}">
                 {% else %}
-                    <img src="/get/shakemaps/{{ shakemap.shakemap_id }}/shakemap">
+                    <img src="/api/shakemaps/{{ shakemap.shakemap_id }}/shakemap">
                 {% endif %}
             </td>
         </tr>

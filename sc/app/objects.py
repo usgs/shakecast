@@ -975,12 +975,12 @@ class NotificationBuilder(object):
         pass
     
     @staticmethod
-    def build_new_event_html(events=None, notification=None, group=None, web=False, config=None):
+    def build_new_event_html(events=None, notification=None, group=None, name=None, web=False, config=None):
         temp_manager = TemplateManager()
         if not config:
-            config = temp_manager.get_configs('new_event')
+            config = temp_manager.get_configs('new_event', name=name)
 
-        template = temp_manager.get_template('new_event')
+        template = temp_manager.get_template('new_event', name=name)
         
         return template.render(events=events,
                                group=group,
@@ -990,12 +990,12 @@ class NotificationBuilder(object):
                                web=web)
     
     @staticmethod
-    def build_insp_html(shakemap, web=False, config=None):
+    def build_insp_html(shakemap, name=None, web=False, config=None):
         temp_manager = TemplateManager()
         if not config:
-            config = temp_manager.get_configs('inspection')
+            config = temp_manager.get_configs('inspection', name=name)
         
-        template = temp_manager.get_template('inspection')
+        template = temp_manager.get_template('inspection', name=name)
 
         facility_shaking = shakemap.facility_shaking
         fac_details = {'all': 0, 'grey': 0, 'green': 0,
@@ -1069,6 +1069,20 @@ class TemplateManager(object):
             return template
         except Exception:
             return None
+
+    @staticmethod
+    def get_template_names():
+        '''
+        Get a list of the existing template names
+        '''
+        temp_folder = os.path.join(sc_dir(),
+                                   'templates',
+                                   'new_event')
+        file_list = os.listdir(temp_folder)
+
+        # get the names of the templates
+        just_names = [f.split('.')[0] for f in file_list if f[-5:] == '.json']
+        return just_names
     
 class URLOpener(object):
     """
