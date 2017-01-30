@@ -5,8 +5,8 @@
         <description>Documenting ShakeCast software and related products.</description>
         <link>/shakecast/</link>
         <atom:link href="/shakecast/feed.xml" rel="self" type="application/rss+xml"/>
-        <pubDate>Mon, 30 Jan 2017 14:48:26 -0700</pubDate>
-        <lastBuildDate>Mon, 30 Jan 2017 14:48:26 -0700</lastBuildDate>
+        <pubDate>Mon, 30 Jan 2017 15:15:47 -0700</pubDate>
+        <lastBuildDate>Mon, 30 Jan 2017 15:15:47 -0700</lastBuildDate>
         <generator>Jekyll v3.1.6</generator>
         
         <item>
@@ -84,6 +84,27 @@ lwp-download https://raw.githubusercontent.com/klin-usgs/ShakeCast_V3/PC/sc/bin/
             <guid isPermaLink="true">/shakecast/2017_shakecast_transportation_pooled_fund.html</guid>
             
             <category>collaboration</category>
+            
+            
+        </item>
+        
+        <item>
+            <title>2017 Denver SSA Annual Meeting</title>
+            <description>&lt;h2 id=&quot;expansion-of-the-usgs-shakecast-system-for-rapid-post-earthquake-assessments-of-critical-facilities&quot;&gt;Expansion of the USGS ShakeCast System for Rapid Post-Earthquake Assessments of Critical Facilities&lt;/h2&gt;
+
+&lt;p&gt;K. Lin, D. J. Wald, C.A. Kircher, K. Jaiswal, N. Luco, L. Turner, D. Slosky&lt;/p&gt;
+
+&lt;p&gt;ShakeCast is employed by public and private emergency responders, lifeline operators, and facility engineers to automatically receive and process ShakeMap products for situational awareness, inspection priority, or damage assessment. As part of ongoing ShakeCast research and development and an extensive rewrite of the ShakeCast application, we have enhanced functionality, updated the code base (from Perl to Python), and improved the user interface. The engineering-based approaches for determining damage state (or inspection priorities) have been improved, implementing the interactive HAZUS capacity spectrum method and HAZUS Advanced Engineering Building Module (AEBM). An enhanced ShakeCast Workbook (an Excel spreadsheet) exports users’ data into ShakeCast and allows for more intuitive management of facilities, fragilities, users, and notifications, as well as ShakeCast configurations. Users can select structure fragilities based on a minimum set of user-specified facility features (building location, size, height, use, construction age, etc.) and “expert” users can import user-modified structural response properties into facility inventory associated with the HAZUS Advanced Engineering Building Modules (AEBM). In addition to accessing real-time ShakeMaps, ShakeCast now accesses a new collection of scenario and atlas ShakeMaps via the USGS real-time earthquake information GeoJSON feeds for both pre-event planning and loss calibration. Lastly, we describe further expansion of the ShakeCast user base, notably for state Departments of Transportation (DoTs) facilitated by a USDOT Transportation Pooled Fund, connecting the DoTs in 10 states. Though ShakeCast is supported by the USGS, important financial and technical contributions come from critical users including the California Department of Transportation (Caltrans), the U.S. Nuclear Regulatory Commission (USNRC), the International Atomic Energy Agency (IAEA), and the U.S. Department of Veterans Affairs (VA).&lt;/p&gt;
+
+&lt;p&gt;Contacts: Kuo-wan Lin (Klin@usgs.gov); David Wald (wald@usgs.gov)&lt;/p&gt;
+</description>
+            <pubDate>Mon, 09 Jan 2017 00:00:00 -0700</pubDate>
+            <link>/shakecast/2017_ssa_meeting_shakecast.html</link>
+            <guid isPermaLink="true">/shakecast/2017_ssa_meeting_shakecast.html</guid>
+            
+            <category>collaboration</category>
+            
+            <category>presentation</category>
             
             
         </item>
@@ -410,42 +431,6 @@ Fig. 1 – ShakeCast Flowchart showing implementation of HAZUS AEBM Methods. Das
             <pubDate>Sat, 07 May 2016 00:00:00 -0600</pubDate>
             <link>/shakecast/2016_polb_shakecast_meeting.html</link>
             <guid isPermaLink="true">/shakecast/2016_polb_shakecast_meeting.html</guid>
-            
-            <category>collaboration</category>
-            
-            <category>presentation</category>
-            
-            
-        </item>
-        
-        <item>
-            <title>2016 National Earthquake Conference</title>
-            <description>&lt;h2 id=&quot;a-new-shakemap-scenario-collection-for-mitigation--response-planning&quot;&gt;A New ShakeMap Scenario Collection for Mitigation &amp;amp; Response Planning&lt;/h2&gt;
-
-&lt;p&gt;05/04/2016 2:30PM - 3:30PM&lt;/p&gt;
-
-&lt;p&gt;(Atlantic I &amp;amp; II)&lt;/p&gt;
-
-&lt;p&gt;The USGS ShakeMap and Nation Hazard Mapping team is developing a collection of earthquake scenarios to be use for mitigation and response planning, engineering, and loss analyses. The science behind and practical use aspects of these products will be discussed.&lt;/p&gt;
-
-&lt;p&gt;Eric Thompson, Civil Engineer, USGS and David Wald, Seismologist, USGS&lt;/p&gt;
-
-&lt;h2 id=&quot;shakecast-automated-post-earthquake-evaluation-for-critical-facilities&quot;&gt;ShakeCast: Automated Post-Earthquake Evaluation for Critical Facilities&lt;/h2&gt;
-
-&lt;p&gt;05/05/2016 3:30PM - 4:30PM&lt;/p&gt;
-
-&lt;p&gt;(International I)&lt;/p&gt;
-
-&lt;p&gt;The USGS ShakeCast System is employed by numerous critical facility, utility, business, and government agencies. An introduction of ShakeCast will be provided, and users will be updated on evolving ShakeCast technologies. Users will be briefed on developing landslide and liquefaction modules, and improved engineering fragility components of the system.&lt;/p&gt;
-
-&lt;p&gt;Kuo-Wan Lin, Seismologist, USGS and David Wald, Seismologist, USGS&lt;/p&gt;
-
-&lt;p&gt;[]:&lt;/p&gt;
-
-</description>
-            <pubDate>Wed, 04 May 2016 00:00:00 -0600</pubDate>
-            <link>/shakecast/2016_nec.html</link>
-            <guid isPermaLink="true">/shakecast/2016_nec.html</guid>
             
             <category>collaboration</category>
             
