@@ -3,6 +3,36 @@
 
 
 
+{
+"title": "Engineering-based Inspection Priority and Damage Calculations using AEBM",
+"tags": "developmentv4pycastAEBM",
+"keywords": "current, activities, new, AEBM, engineering, damage, probability",
+"url": "/shakecast/aebm.html",
+"summary": ""
+},
+
+
+
+{
+"title": "ShakeCast AEBM Workbook",
+"tags": "getting_startedworkbookadvanced",
+"keywords": "advanced, engineering, building, module, current, activies",
+"url": "/shakecast/aebm_workbook.html",
+"summary": ""
+},
+
+
+
+{
+"title": "ShakeCast Project",
+"tags": "getting_startedintroduction",
+"keywords": "ShakeCast project",
+"url": "/shakecast/doc_project.html",
+"summary": "ShakeCast is an application for automating ShakeMap delivery to critical users and for facilitating notification of shaking levels at user-selected facilities."
+},
+
+
+
 
 
 {
@@ -45,6 +75,16 @@
 
 
 
+{
+"title": "ShakeCast V4 (pyCast)",
+"tags": "developmentv4pycast",
+"keywords": "current, activities, new",
+"url": "/shakecast/pycast_docs.html",
+"summary": ""
+},
+
+
+
 
 
 
@@ -75,7 +115,7 @@
 "title": "About the authors",
 "tags": "getting_started",
 "keywords": "documentation, ShakeCast",
-"url": "/shakecast/doc_about.html",
+"url": "/shakecast/v3_about.html",
 "summary": ""
 },
 
@@ -222,6 +262,16 @@
 
 
 {
+"title": "ShakeCast V3 Packages",
+"tags": "getting_started",
+"keywords": "documentation, ShakeCast",
+"url": "/shakecast/v3_package.html",
+"summary": ""
+},
+
+
+
+{
 "title": "User Guide",
 "tags": "getting_startedtroubleshootingshakecast_v3",
 "keywords": "notification, product",
@@ -271,6 +321,36 @@
 
 
 
+
+
+{
+"title": "USGS Web Switching from http to Encrypted https",
+"tags": "software_updatetroubleshooting",
+"keywords": "",
+"url": "/shakecast/2017_usgs_https.html",
+"summary": "The upcoming change to the USGS web site had a change date of March 1, 2017 which may change at any time."
+}
+,
+
+
+{
+"title": "ShakeCast Unavailable via Amazon Web Services",
+"tags": "software_updatetroubleshooting",
+"keywords": "",
+"url": "/shakecast/2017_shakecast_public_aws.html",
+"summary": "The change to the DOI regarding governance for cloud solutions requires ShakeCast to be moved from the public AWS to under USGS CHS."
+}
+,
+
+
+{
+"title": "ShakeCast Transportation Pooled Fund",
+"tags": "collaboration",
+"keywords": "",
+"url": "/shakecast/2017_shakecast_transportation_pooled_fund.html",
+"summary": "The solicitation period closed on January 11, 2017 with nine state DOT partners onboard."
+}
+,
 
 
 {
