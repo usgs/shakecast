@@ -2,8 +2,11 @@
     <div class="eqs-container" stickToTop>
         <div *ngIf="!loadingData">
             <div *ngIf="facilityData.length > 0">
-                <div class="eq" [@selected]="fac.selected" *ngFor="let fac of facilityData" (click)="clickFac(fac)">
-                    <div [@headerSelected]="fac.selected" class="eq-header">
+                <div class="eq" 
+                        [@selected]="fac.selected" 
+                        *ngFor="let fac of facilityData" 
+                        (click)="clickFac(fac)">
+                    <div [@headerSelected]="fac.selected" class="eq-header" [style.border]="'5px solid ' + fac?.shaking?.alert_level">
                         <h3>{{fac.name}}</h3>
                     </div>
                     <div class="eq-body">
