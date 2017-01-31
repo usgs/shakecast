@@ -16,8 +16,8 @@ import { FacilityService, Facility } from '../facility.service'
       trigger('show', [
         state('false', style({left: '100%'})),
         state('true', style({left: '50%'})),
-          transition('true => false', animate('100ms ease-out')),
-          transition('false => true', animate('100ms ease-in'))
+          transition('true => false', animate('500ms ease-out')),
+          transition('false => true', animate('500ms ease-in'))
       ])
     ]
 })
