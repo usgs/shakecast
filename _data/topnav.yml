@@ -8,7 +8,7 @@ topnav_dropdowns:
           url: /doc_project.html
         - title: ShakeCast V3
           url: /v3_introduction.html
-        - title: ShakeCast V4 (pyCast)
+        - title: ShakeCast V4 "pyCast" (BETA)
           url: /pycast_docs.html
         - title: ShakeCast Workbook
           url: /inventory_workbook.html
@@ -19,12 +19,25 @@ topnav_dropdowns:
           url: /v3_package.html
         - title: ShakeCast Science Base (legacy V2)
           external_url: https://my.usgs.gov/confluence/display/ShakeCast/Home
-
-## Topnav single links
-## if you want to list an external url, use external_url instead of url. the theme will apply a different link base.
-topnav:
-- title: Topnav
-  items:
     - title: Blog
-      url: /blog
+      folderitems:
+        - title: Recent Blogs
+          url: /blog
+        - title: Getting Started
+          url: /tag_getting_started.html
+        - title: News
+          url: /tag_news.html
+        - title: ShakeCast V3
+          url: /tag_shakecast_v3.html
+        - title: ShakeCast V4 "pyCast" (BETA)
+          url: /tag_pycast.html
+        - title: Workbook
+          url: /tag_workbook.html
+        - title: Troubleshooting
+          url: /tag_troubleshooting.html
+        - title: Presentation
+          url: /tag_presentation.html
+        - title: Collaboration
+          url: /tag_collaboration.html
+
 

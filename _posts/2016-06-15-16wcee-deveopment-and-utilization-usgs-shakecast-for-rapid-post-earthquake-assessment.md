@@ -2,7 +2,7 @@
 title:  "Development and Utilization of USGS ShakeCast for Rapid Post-Earthquake Assessment of Critical Facilities and Infrastructure"
 published: true
 permalink: 2017_16WCEE.html
-summary: "The National Earthquake Conference (NEC) is a quadrennial event providing a unique opportunity for academia, building code experts, design/build professionals, FEMA Directorates, first responders, geologists, local emergency managers, insurance and reinsurance professionals, local and tribal governments, private sector interests, public information officers, state government leaders, social science practitioners, U.S. State and Territorial Earthquake Managers, USGS leadership, and volunteers to share the latest advances in earthquake science, best practices for outreach and education, building science and code advancement, and policy initiatives that improve resiliency."
+summary: "The Sixteenth World Conference on Earthquake Engineering (16WCEE) is a quadrennial event providing a unique opportunity for academia, building code experts, design/building professionals, earthquake engineering professionals to share the latest advances in earthquake science, best practices for outreach and education, building science and code advancement, and policy initiatives that improve resiliency."
 tags: [collaboration, presentation]
 ---
 

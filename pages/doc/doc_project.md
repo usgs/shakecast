@@ -9,7 +9,7 @@ summary: ShakeCast is an application for automating ShakeMap delivery to critica
 
 {% include tip.html content="**Who should use ShakeCast**: businesses, utility and other lifeline managers, emergency responders, and others have an urgent need for information about the impact on their own facilities so they can make informed decisions and take quick actions to ensure safety, restore system functionality, and minimize losses." %}
 
-{% include warning.html content="**Who should not use ShakeCast**: individual users without facility inventory or organizations that look for earthquake information infrequently." %}
+{% include warning.html content="**Who should not use ShakeCast**: individual users without a significant number of facilities and knowledge of their inventory.  ShakeCast requires significant commitment of time and both IT and earthquake engineering expertise. " %}
 
 ## Release History
 
