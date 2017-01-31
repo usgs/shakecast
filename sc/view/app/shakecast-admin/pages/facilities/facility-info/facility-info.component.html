@@ -1,0 +1,6 @@
+<div class="fac-info" [@show]="show" style="left:100%">
+    <div *ngIf="facility">
+        <h2>{{ facility.name }}</h2>
+        <h2 (click)="hide()">Hide</h2>
+    </div>
+</div>

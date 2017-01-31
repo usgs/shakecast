@@ -10,7 +10,7 @@ import { TitleService } from '../../../title/title.service'
     styleUrls: ['app/shakecast-admin/pages/facilities/facilities.component.css'], 
 })
 export class FacilitiesComponent implements OnInit{
-    constructor(private facService: FacilityService,
+    constructor(public facService: FacilityService,
                 private titleService: TitleService) {}
     ngOnInit() {
         this.facService.clearMap();

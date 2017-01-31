@@ -11,14 +11,16 @@
                     </div>
                     <div class="eq-body">
                         <div class="info-container">
+                            <p>{{ fac.description }}</p>
                             <table>
                                 <tr>
-                                    <th>Desc: </th><td><p>{{fac.description}}</p></td>
+                                    <th>Type: </th><td><p>{{ fac.facility_type }}</p></td>
                                 </tr>
                                 <tr>
                                     <th>Location: </th><td><p>{{ (fac.lat_max + fac.lat_min) / 2 }}, {{ (fac.lon_max + fac.lon_min) / 2 }}</p></td>
                                 </tr>
                             </table>
+                            <p (click)="facService.showFacInfo(fac, $event)">Fagility</p>
                         </div>
                     </div>
                 </div>
