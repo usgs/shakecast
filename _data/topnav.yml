@@ -2,8 +2,10 @@
 topnav_dropdowns:
 - title: Topnav dropdowns
   folders:
-    - title: Documentation
+    - title: The Project
       folderitems:
+        - title: Project Background
+          url: /doc_project.html
         - title: ShakeCast V3
           url: /v3_introduction.html
         - title: ShakeCast V4 (pyCast)
@@ -23,8 +25,6 @@ topnav_dropdowns:
 topnav:
 - title: Topnav
   items:
-    - title: The Project
-      url: /doc_project.html
     - title: Blog
       url: /blog
 

@@ -40,7 +40,7 @@
 "tags": "getting_startedintroduction",
 "keywords": "ShakeCast document",
 "url": "/shakecast/index.html",
-"summary": "ShakeCast oview will help you get started quickly with the documentation. The other topics in this help provide additional information and detail about working with other aspects of ShakeCast."
+"summary": "ShakeCast overview will help you get started quickly with the documentation. The other topics in this help provide additional information and detail about working with other aspects of ShakeCast."
 },
 
 
@@ -76,7 +76,7 @@
 
 
 {
-"title": "ShakeCast V4 (pyCast)",
+"title": "ShakeCast V4 &quot;pyCast&quot; (BETA)",
 "tags": "developmentv4pycast",
 "keywords": "current, activities, new",
 "url": "/shakecast/pycast_docs.html",
