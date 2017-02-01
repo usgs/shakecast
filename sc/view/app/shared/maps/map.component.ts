@@ -4,6 +4,7 @@ import { Marker } from './map.service';
 import { ShakemapService } from './shakemap.service'
 import { MapService } from './map.service'
 declare var L: any;
+declare var _: any;
 
 @Component({
     selector: 'my-map',
@@ -175,17 +176,25 @@ export class MapComponent implements OnInit, OnDestroy {
     createFacMarker(fac: any) {
         var marker: any = L.marker([fac.lat, fac.lon]);
         var popupContent = fac.name
-        if (this.map.hasLayer(this.facMarker)) {
-            this.map.removeLayer(this.facMarker);
-            this.facilityLayer.addLayer(this.facMarker);
-            this.facilityLayer.addTo(this.map);
+        var existingMarker: any = this.facilityMarkers[fac.shakecast_id.toString()];
+
+        // Check if the marker already exists
+        if (_.isEqual(this.facMarker, marker)) {
+            this.facMarker.openPopup();
+        } else if (existingMarker) {
+            existingMarker.openPopup();
+        } else {
+            if (this.map.hasLayer(this.facMarker)) {
+                this.map.removeLayer(this.facMarker);
+                this.facilityLayer.addLayer(this.facMarker);
+                this.facilityLayer.addTo(this.map);
+            }
+            this.facMarker = marker;
+            this.facilityMarkers[fac.shakecast_id.toString()] = marker;
+
+            this.facMarker.addTo(this.map);
+            marker.bindPopup(popupContent).openPopup();
         }
-
-        this.facMarker = marker;
-        this.facilityMarkers[fac.shakecast_id.toString()] = marker;
-
-        this.facMarker.addTo(this.map);
-        marker.bindPopup(popupContent).openPopup();
     }
 
     removeFacMarker(fac: any) {

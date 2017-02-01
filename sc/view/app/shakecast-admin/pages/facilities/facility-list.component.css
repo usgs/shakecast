@@ -59,6 +59,7 @@
 /* body */
 .info-container {
     margin: 5px;
+    text-align: center;
 }
 
 .eq p {

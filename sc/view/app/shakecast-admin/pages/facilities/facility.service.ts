@@ -22,6 +22,7 @@ export class FacilityService {
     public loadingData = new ReplaySubject(1);
     public facilityData = new ReplaySubject(1);
     public facilityInfo = new ReplaySubject(1);
+    public showInfo = new ReplaySubject(1);
     public shakingData = new ReplaySubject(1);
     public selectedFacs: Facility[] = [];
     public selection = new ReplaySubject(1);
@@ -56,11 +57,15 @@ export class FacilityService {
     }
 
     showFacInfo(fac: Facility, event: Event) {
-        this.facilityInfo.next(fac);
+        this.showInfo.next(fac);
         if (fac.selected) {
             event.stopPropagation();
-            this.plotFac(fac);
+            this.plotFac(fac)
         }
+    }
+
+    hideFacInfo() {
+        this.showInfo.next(null);
     }
     
     selectAll() {
@@ -84,6 +89,7 @@ export class FacilityService {
     }
 
     plotFac(fac: Facility) {
+        this.facilityInfo.next(fac);
         this.mapService.plotFac(fac);
     }
 

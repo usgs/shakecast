@@ -15,5 +15,6 @@ export class FacilitiesComponent implements OnInit{
     ngOnInit() {
         this.facService.clearMap();
         this.titleService.title.next('Facilities')
+        this.facService.getData();
     }
 }

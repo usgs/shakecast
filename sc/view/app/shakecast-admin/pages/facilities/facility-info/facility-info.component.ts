@@ -28,8 +28,16 @@ export class FacilityInfoComponent implements OnInit, OnDestroy{
 
     constructor(private facService: FacilityService) {}
     ngOnInit() {
+        this.subscriptions.push(this.facService.showInfo.subscribe((facility: Facility) => {
+            if (facility) {
+                this.show = true;
+                this.facility = facility;
+            } else {
+                this.show = false;
+            }
+        }));
+
         this.subscriptions.push(this.facService.facilityInfo.subscribe((facility: Facility) => {
-            this.show = true;
             this.facility = facility;
         }));
     }

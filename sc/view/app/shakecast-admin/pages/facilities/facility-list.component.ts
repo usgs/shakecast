@@ -53,7 +53,8 @@ export class FacilityListComponent implements OnInit, OnDestroy {
 
             if (this.selectedFacs.length === 0) {
                 // add a facility if the array is empty
-                this.facService.selectedFacs = this.selectedFacs
+                this.facService.selectedFacs = this.selectedFacs;
+                this.facService.hideFacInfo();
             }
 
             if (this.facilityData.length > 0) {
@@ -74,11 +75,11 @@ export class FacilityListComponent implements OnInit, OnDestroy {
             this.facService.selectedFacs = this.selectedFacs;
         }));
 
-        this.subscriptions.push(this.facService.loadingData.subscribe(loading => {
+        this.subscriptions.push(this.facService.loadingData.subscribe((loading: boolean) => {
             this.loadingData = loading
         }));
 
-        this.facService.getData(this.filter);
+        //this.facService.getData(this.filter);
     }
     
     clickFac(fac: Facility) {
