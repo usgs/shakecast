@@ -100,7 +100,7 @@ class TestTemplateManager(unittest.TestCase):
         temp_manager = TemplateManager()
         temp_names = temp_manager.get_template_names()
         self.assertIn('default', temp_names)
-        
+
 class TestURLOpener(unittest.TestCase):
     '''
     Test the URLOpener Object
@@ -636,11 +636,13 @@ def create_fac(grid=None, fac_id='AUTO_GENERATED'):
     '''
     
     facility = Facility()
+    lat_adjust = abs((grid.lat_max - grid.lat_min) / 10)
+    lon_adjust = abs((grid.lon_max - grid.lon_min) / 10)
     if grid:
-        facility.lat_min = grid.lat_min + 1
-        facility.lat_max = facility.lat_min + .1
-        facility.lon_min = grid.lon_min + 1
-        facility.lon_max = facility.lon_min + .1
+        facility.lat_min = grid.lat_min + lat_adjust
+        facility.lat_max = facility.lat_min + (2 * lat_adjust)
+        facility.lon_min = grid.lon_min + lon_adjust
+        facility.lon_max = facility.lon_min + (2 * lon_adjust)
     
     facility.facility_id = fac_id
     facility.facility_type = 'Bridge'
