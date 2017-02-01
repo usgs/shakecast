@@ -21,7 +21,7 @@ import { NotificationsService } from 'angular2-notifications'
   animations: [
       trigger('scrollChange', [
         state('false', style({top: 0})),
-        state('true', style({top: "-55px"})),
+        state('true', style({top: "-60px"})),
           transition('true => false', animate('100ms ease-in')),
           transition('false => true', animate('100ms ease-out'))
       ])

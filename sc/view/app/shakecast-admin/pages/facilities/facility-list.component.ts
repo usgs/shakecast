@@ -24,7 +24,7 @@ import { filter } from './facility-filter/facility-filter.component'
       ]),
       trigger('headerSelected', [
         state('true', style({'background-color': '#7af'})),
-        state('false', style({'background-color': '#aaaaaa'})),
+        state('false', style({'background-color': ''})),
           transition('true => false', animate('100ms ease-out')),
           transition('false => true', animate('100ms ease-in'))
       ])
