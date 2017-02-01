@@ -13,7 +13,8 @@ import { filter } from './facility-filter/facility-filter.component'
 @Component({
   selector: 'facility-list',
   templateUrl: 'app/shakecast-admin/pages/facilities/facility-list.component.html',
-  styleUrls: ['app/shakecast-admin/pages/facilities/facility-list.component.css'],
+  styleUrls: ['app/shakecast-admin/pages/facilities/facility-list.component.css',
+                'app/shared/css/data-list.css'],
   animations: [
       trigger('selected', [
         state('true', style({transform: 'translateY(-10px)'})),
@@ -32,7 +33,7 @@ import { filter } from './facility-filter/facility-filter.component'
 })
 export class FacilityListComponent implements OnInit, OnDestroy {
     public loadingData: boolean = false
-    public facilityData: any = [];
+    public dataList: any = [];
     public selectedFacs: any = [];
     public filter: filter = {};
     private subscriptions: any[] = [];
@@ -46,9 +47,9 @@ export class FacilityListComponent implements OnInit, OnDestroy {
                 this.removeFac(this.selectedFacs[fac])
             }
 
-            this.facilityData = facs;
-            for (var fac in this.facilityData) {
-                this.facilityData[fac].selected = false;
+            this.dataList = facs;
+            for (var fac in this.dataList) {
+                this.dataList[fac].selected = false;
             }
 
             if (this.selectedFacs.length === 0) {
@@ -57,10 +58,10 @@ export class FacilityListComponent implements OnInit, OnDestroy {
                 this.facService.hideFacInfo();
             }
 
-            if (this.facilityData.length > 0) {
-                this.selectedFacs.push(this.facilityData[0]);
-                this.facilityData[0].selected = true;
-                this.plotFac(this.facilityData[0]);
+            if (this.dataList.length > 0) {
+                this.selectedFacs.push(this.dataList[0]);
+                this.dataList[0].selected = true;
+                this.plotFac(this.dataList[0]);
             }
         }));
 
@@ -82,7 +83,7 @@ export class FacilityListComponent implements OnInit, OnDestroy {
         //this.facService.getData(this.filter);
     }
     
-    clickFac(fac: Facility) {
+    clickData(fac: Facility) {
         fac.selected = !fac.selected;
 
         if (fac.selected) {
@@ -105,8 +106,8 @@ export class FacilityListComponent implements OnInit, OnDestroy {
             this.removeFac(fac);
         }
         this.selectedFacs = [];
-        for (var facID in this.facilityData) {
-            var fac: Facility = this.facilityData[facID];
+        for (var facID in this.dataList) {
+            var fac: Facility = this.dataList[facID];
             fac.selected = true;
             this.selectedFacs.push(fac);
             this.plotFac(fac);

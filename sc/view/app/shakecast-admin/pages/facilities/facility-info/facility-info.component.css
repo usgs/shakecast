@@ -7,8 +7,11 @@
     border: 3px solid #55aaee;
     border-radius: 5px;
     background: #ffffff;
-    z-index: 999;
+    z-index: 1000;
     transition: left .5s ease-in-out;
+    box-shadow: 5px 5px 15px rgba(0,0,0,0.4);
+    -webkit-box-shadow: 5px 5px 15px rgba(0,0,0,0.4);
+    -moz-box-shadow: 5px 5px 15px rgba(0,0,0,0.4);
 }
 
 .info-content {
@@ -20,4 +23,30 @@
     position: absolute;
     bottom: 10px;
     left: 10px;
+}
+
+.header {
+    border-bottom: 5px solid #AED8FA;
+}
+
+.desc {
+    text-align: center;
+    font-style: italic;
+    background: #efefef;
+    padding: 10px;
+    margin: 10px;
+    border-radius: 10px;
+    font-weight: bold;
+}
+
+.fragility-table, .colors-table {
+    width: 100%;
+}
+
+.colors-table {
+    padding: 1em;
+}
+
+.colors-table th {
+    padding: .5em;
 }

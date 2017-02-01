@@ -14,23 +14,20 @@ import { filter } from './earthquake-filter/earthquake-filter.component'
 @Component({
     selector: 'earthquake-list',
     templateUrl: 'app/shakecast/pages/earthquakes/earthquake-list.component.html',
-    styleUrls: ['app/shakecast/pages/earthquakes/earthquake-list.component.css'],
+    styleUrls: ['app/shakecast/pages/earthquakes/earthquake-list.component.css',
+                    'app/shared/css/data-list.css'],
     animations: [
-      trigger('pulledRight', [
-        state('false', style({transform: 'translateX(0)'})),
-        state('true', style({transform: 'translateX(100%)'})),
-        transition('false => true', [
-            animate('500ms ease-in-out', style({
-                transform: 'translateX(100%)'
-            }))
-            ]
-        ),
-        transition('true => false', [
-            animate('500ms ease-in-out', style({
-                transform: 'translateX(0%)'
-            }))
-            ]
-        )
+      trigger('selected', [
+        state('true', style({transform: 'translateY(-10px)'})),
+        state('false', style({transform: 'translateY(0px)'})),
+          transition('true => false', animate('100ms ease-out')),
+          transition('false => true', animate('100ms ease-in'))
+      ]),
+      trigger('headerSelected', [
+        state('true', style({'background-color': '#7af'})),
+        state('false', style({'background-color': '#aaaaaa'})),
+          transition('true => false', animate('100ms ease-out')),
+          transition('false => true', animate('100ms ease-in'))
       ])
     ]
 })
@@ -38,6 +35,8 @@ export class EarthquakeListComponent implements OnInit, OnDestroy {
     public earthquakeData: any = [];
     public pulledRight: boolean = false;
     public dataLoading: boolean = false;
+    public moreData: boolean = false;
+    public selected: Earthquake = null;
 
     public filter: filter = {
         shakemap: false,
@@ -52,7 +51,9 @@ export class EarthquakeListComponent implements OnInit, OnDestroy {
         this.subscriptions.push(this.eqService.earthquakeData.subscribe(eqs => {
             this.earthquakeData = eqs
             if (this.earthquakeData.length > 0) {
-                this.plotEq(eqs[0])
+                this.plotEq(eqs[0]);
+                this.selected = eqs[0];
+                this.selected.selected = true;
             }
         }));
 
@@ -69,6 +70,13 @@ export class EarthquakeListComponent implements OnInit, OnDestroy {
 
     plotEq(eq: Earthquake) {
         this.eqService.plotEq(eq)
+
+        if (this.selected) {
+            this.selected.selected = false;
+        }
+
+        eq.selected = true;
+        this.selected = eq;
     }
 
     ngOnDestroy() {

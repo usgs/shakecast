@@ -25,11 +25,19 @@
     border-color:#aaaaaa;
     vertical-align: top;
     cursor: pointer;
+    transform: translateX(0);
+    transition: transform .1s ease-in-out;
+    box-shadow: 1px 1px 5px 1px rgba(0,0,0,0.3);
+    -webkit-box-shadow: 1px 1px 5px 1px rgba(0,0,0,0.3);
+    -moz-box-shadow: 1px 1px 5px 1px rgba(0,0,0,0.3);
 }
 
 
 .data.selected {
     margin-top: 10px;
+    box-shadow: 1px 1px 5px 2px rgba(0,0,0,0.4);
+    -webkit-box-shadow: 1px 1px 5px 2px rgba(0,0,0,0.4);
+    -moz-box-shadow: 1px 1px 5px 2px rgba(0,0,0,0.4);
 }
 
 .no-data {
@@ -57,7 +65,7 @@
 }
 
 /* body */
-.info-container {
+.data-info-container {
     margin: 5px;
 }
 
@@ -66,22 +74,17 @@
     text-align: center;
 }
 
-th, td {
+.data th, .data td {
     text-align: left;
     border-bottom: 1px solid #ddd;
     padding: 5px;
 }
 
-td p {
+.data td p {
     padding: 0px;
     margin: 0px;
 }
 
-table {
+.data table {
     width: 95%
-}
-
-/* eq filter */
-.eq-filter {
-    z-index: 1000;
 }

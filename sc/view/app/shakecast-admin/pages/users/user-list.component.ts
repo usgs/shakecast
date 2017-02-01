@@ -12,7 +12,7 @@ import { GroupService, Group } from '../groups/group.service'
 @Component({
     selector: 'user-list',
     templateUrl: 'app/shakecast-admin/pages/users/user-list.component.html',
-    styleUrls: ['app/shakecast-admin/pages/users/user-list.component.css'],
+    styleUrls: ['app/shared/css/data-list.css'],
     animations: [
       trigger('selected', [
         state('true', style({transform: 'translateY(-10px)'})),
