@@ -2,13 +2,16 @@
     <div class="inner-container" stickToTop>
         <div *ngIf="!loadingData">
             <div *ngIf="dataList.length > 0">
-                <div class="data" [@selected]="data.selected" *ngFor="let data of dataList" (click)="clickData(data)">
+                <div class="data" 
+                        [@selected]="data.selected" 
+                        *ngFor="let data of dataList" 
+                        (click)="clickData(data)">
                     <div [@headerSelected]="data.selected" class="data-header">
                         <h3 *ngIf="data.full_name"> {{ data.full_name }} </h3>
                         <h3 *ngIf="!data.full_name"> {{ data.username }} </h3>
                     </div>
                     <div class="data-body">
-                        <div class="info-container">
+                        <div class="data-info-container">
                             <table>
                                 <tr>
                                     <th>Username: </th><td>{{ data.username }}

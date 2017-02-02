@@ -13,7 +13,8 @@ import { filter } from './facility-filter/facility-filter.component'
 @Component({
   selector: 'facility-list',
   templateUrl: 'app/shakecast-admin/pages/facilities/facility-list.component.html',
-  styleUrls: ['app/shakecast-admin/pages/facilities/facility-list.component.css'],
+  styleUrls: ['app/shakecast-admin/pages/facilities/facility-list.component.css',
+                'app/shared/css/data-list.css'],
   animations: [
       trigger('selected', [
         state('true', style({transform: 'translateY(-10px)'})),
@@ -23,7 +24,7 @@ import { filter } from './facility-filter/facility-filter.component'
       ]),
       trigger('headerSelected', [
         state('true', style({'background-color': '#7af'})),
-        state('false', style({'background-color': '#aaaaaa'})),
+        state('false', style({'background-color': ''})),
           transition('true => false', animate('100ms ease-out')),
           transition('false => true', animate('100ms ease-in'))
       ])
@@ -53,7 +54,8 @@ export class FacilityListComponent implements OnInit, OnDestroy {
 
             if (this.selectedFacs.length === 0) {
                 // add a facility if the array is empty
-                this.facService.selectedFacs = this.selectedFacs
+                this.facService.selectedFacs = this.selectedFacs;
+                this.facService.hideFacInfo();
             }
 
             if (this.facilityData.length > 0) {
@@ -74,11 +76,11 @@ export class FacilityListComponent implements OnInit, OnDestroy {
             this.facService.selectedFacs = this.selectedFacs;
         }));
 
-        this.subscriptions.push(this.facService.loadingData.subscribe(loading => {
+        this.subscriptions.push(this.facService.loadingData.subscribe((loading: boolean) => {
             this.loadingData = loading
         }));
 
-        this.facService.getData(this.filter);
+        //this.facService.getData(this.filter);
     }
     
     clickFac(fac: Facility) {

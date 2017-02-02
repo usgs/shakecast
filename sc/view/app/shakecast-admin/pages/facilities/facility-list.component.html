@@ -1,27 +1,31 @@
 <div class="outer-container">
-    <div class="eqs-container" stickToTop>
+    <div class="inner-container" stickToTop>
         <div *ngIf="!loadingData">
             <div *ngIf="facilityData.length > 0">
-                <div class="eq" [@selected]="fac.selected" *ngFor="let fac of facilityData" (click)="clickFac(fac)">
-                    <div [@headerSelected]="fac.selected" class="eq-header">
-                        <h3>{{fac.name}}</h3>
+                <div class="data" 
+                        [@selected]="fac.selected" 
+                        *ngFor="let fac of facilityData" 
+                        (click)="clickFac(fac)">
+                    <div [@headerSelected]="fac.selected" class="data-header" [style.border]="'5px solid ' + fac?.shaking?.alert_level">
+                        <h3>{{ fac.name }}</h3>
                     </div>
-                    <div class="eq-body">
-                        <div class="info-container">
+                    <div class="data-body">
+                        <div class="data-info-container">
                             <table>
                                 <tr>
-                                    <th>Desc: </th><td><p>{{fac.description}}</p></td>
+                                    <th>Type: </th><td><p>{{ fac.facility_type }}</p></td>
                                 </tr>
                                 <tr>
                                     <th>Location: </th><td><p>{{ (fac.lat_max + fac.lat_min) / 2 }}, {{ (fac.lon_max + fac.lon_min) / 2 }}</p></td>
                                 </tr>
                             </table>
+                            <h3 class="button fac-info" (click)="facService.showFacInfo(fac, $event)">More Info</h3>
                         </div>
                     </div>
                 </div>
             </div>
             <div *ngIf="facilityData.length == 0">
-                <h1 class="no-facs">No Facilities</h1>
+                <h1 class="no-data">No Facilities</h1>
             </div>
         </div>
         <div *ngIf="loadingData">
@@ -29,3 +33,5 @@
         </div>
     </div>
 </div>
+
+<facility-info></facility-info>

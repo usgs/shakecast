@@ -12,7 +12,8 @@ import { GroupService, Group } from './group.service'
 @Component({
     selector: 'group-list',
     templateUrl: 'app/shakecast-admin/pages/groups/group-list.component.html',
-    styleUrls: ['app/shakecast-admin/pages/groups/group-list.component.css'], 
+    styleUrls: ['app/shakecast-admin/pages/groups/group-list.component.css',
+                    'app/shared/css/data-list.css'], 
     animations: [
       trigger('selected', [
         state('true', style({transform: 'translateY(-10px)'})),
@@ -26,7 +27,6 @@ import { GroupService, Group } from './group.service'
           transition('true => false', animate('100ms ease-out')),
           transition('false => true', animate('100ms ease-in'))
       ])
-
     ]
 })
 export class GroupListComponent implements OnInit, OnDestroy {

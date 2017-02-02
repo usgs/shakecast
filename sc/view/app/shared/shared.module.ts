@@ -8,6 +8,7 @@ import { ShakemapService } from './maps/shakemap.service.ts'
 
 // Facility List
 import { FacilityListComponent } from '../shakecast-admin/pages/facilities/facility-list.component'
+import { FacilityInfoComponent } from '../shakecast-admin/pages/facilities/facility-info/facility-info.component'
 
 // Earthquake Blurb
 import { EarthquakeBlurbComponent } from './earthquake-blurb/earthquake-blurb.component'
@@ -31,6 +32,7 @@ import { LoadingComponent } from './loading/loading.component'
                  EarthquakeBlurbComponent,
                  ScreenDimmerComponent,
                  FacilityListComponent,
+                 FacilityInfoComponent,
                  FileSelectDirective,
                  FileDropDirective,
                  LoadingComponent],
@@ -39,6 +41,7 @@ import { LoadingComponent } from './loading/loading.component'
   exports: [MapComponent,
             EarthquakeBlurbComponent,
             FacilityListComponent,
+            FacilityInfoComponent,
             CommonModule, 
             FormsModule,
             StickToTopDirective,
