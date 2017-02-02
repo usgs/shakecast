@@ -65,7 +65,7 @@ export class EarthquakeListComponent implements OnInit, OnDestroy {
             this.filter['timeframe'] = 'day';
         }
 
-        this.eqService.getData(this.filter);
+        //this.eqService.getData(this.filter);
     }
 
     plotEq(eq: Earthquake) {

@@ -29,6 +29,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
       this.subscriptions.push(this.facService.facilityData.subscribe(facs => {
           this.facilityData = facs;
       }));
+      this.eqService.getData({filter: {'timeframe': 'day'}});
   }    
   
   ngOnDestroy() {

@@ -39,12 +39,17 @@
     font-weight: bold;
 }
 
-.fragility-table, .colors-table {
+.fragility-table {
+    margin-top: 10px
+}
+
+table {
     width: 100%;
 }
 
 .colors-table {
-    padding: 1em;
+    padding-left: 1em;
+    padding-right: 1em;
 }
 
 .colors-table th {
