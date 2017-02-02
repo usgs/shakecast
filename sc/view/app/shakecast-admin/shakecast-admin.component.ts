@@ -1,13 +1,20 @@
-import { Component, ViewEncapsulation } from '@angular/core';
+import { Component, 
+         ViewEncapsulation,
+         HostBinding } from '@angular/core';
 import { UploadService } from './upload/upload.service'
-
+import { fadeAnimation }   from '../shared/animations/animations';
 @Component({
   selector: 'shakecast-admin',
-  templateUrl: 'app/shakecast-admin/shakecast-admin.component.html'
+  templateUrl: 'app/shakecast-admin/shakecast-admin.component.html',
+    animations: [ fadeAnimation ]
 })
 export class ShakeCastAdminComponent {
-  constructor(public uploadService: UploadService) {}
-  showUpload() {
-    this.uploadService.showUpload();
-  }
+    @HostBinding('@routeAnimation') routeAnimation = true;
+    @HostBinding('style.display')   display = 'block';
+    @HostBinding('style.position')  position = 'static';
+
+    constructor(public uploadService: UploadService) {}
+    showUpload() {
+        this.uploadService.showUpload();
+    }
 }
