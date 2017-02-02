@@ -169,14 +169,9 @@ export class MapComponent implements OnInit, OnDestroy {
 
     //////////////////////////////////////////////////////////////
     ///////////////////// Facility Functions /////////////////////
-    plotFacMarker(marker: any) {
+    plotFacMarker(fac: any) {
         // create event marker and plot it
-        this.createFacMarker(marker)
-    }
-
-    createFacMarker(fac: any) {
-        var marker: any = L.marker([fac.lat, fac.lon]);
-        var popupContent = fac.name
+        var marker: any = this.createFacMarker(fac);
         var existingMarker: any = this.facilityMarkers[fac.shakecast_id.toString()];
 
         // Check if the marker already exists
@@ -195,9 +190,36 @@ export class MapComponent implements OnInit, OnDestroy {
             this.facilityMarkers[fac.shakecast_id.toString()] = marker;
 
             this.facMarker.addTo(this.facilityLayer);
-            marker.bindPopup(popupContent).openPopup();
+            marker.bindPopup(marker.popupContent).openPopup();
             this.facilityLayer.addTo(this.map);
         }
+    }
+
+    createFacMarker(fac: any) {
+        var marker: any = L.marker([fac.lat, fac.lon]);
+        var desc: string = ''
+        if (fac.html) {
+            fac['popupContent'] = fac.html
+        } else {
+            if (fac.description) {
+                desc = fac.description
+            } else {
+                desc = 'No Description'
+            }
+            marker['popupContent'] = `<table style="text-align:center;">
+                                        <tr>
+                                            <th>` + 
+                                                fac.name + `
+                                            </th>
+                                        </tr>
+                                        <tr>
+                                            <td style="font-style:italic;">` +
+                                                desc + `
+                                            </td>
+                                        </tr>
+                                    </table>`
+        }
+        return marker
     }
 
     removeFacMarker(fac: any) {
@@ -264,7 +286,6 @@ export class MapComponent implements OnInit, OnDestroy {
         this.facilityMarkers = [];
     }
 
-    ////////// Clean Up Before Closing //////////
     ngOnDestroy() {
         this.endSubscriptions()
     }

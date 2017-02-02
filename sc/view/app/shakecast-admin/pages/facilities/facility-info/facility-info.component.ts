@@ -16,7 +16,7 @@ import { Router } from '@angular/router';
     animations: [
       trigger('show', [
         state('false', style({left: '100%'})),
-        state('true', style({left: '50%'})),
+        state('true', style({left: '55%'})),
           transition('true => false', animate('500ms ease-out')),
           transition('false => true', animate('500ms ease-in'))
       ])
