@@ -21,7 +21,8 @@ export class MapComponent implements OnInit, OnDestroy {
     private markerLayer: any = L.layerGroup();
     private eventLayer: any = L.layerGroup();
     private overlayLayer: any = L.layerGroup();
-    private facilityLayer: any = L.markerClusterGroup();
+    private facilityCluster: any = L.markerClusterGroup();
+    private facilityLayer: any = L.layerGroup();
     private facMarker: any = L.marker();
     private groupLayers: any = L.featureGroup();
     private subscriptions: any = [];
@@ -184,16 +185,18 @@ export class MapComponent implements OnInit, OnDestroy {
         } else if (existingMarker) {
             existingMarker.openPopup();
         } else {
-            if (this.map.hasLayer(this.facMarker)) {
-                this.map.removeLayer(this.facMarker);
-                this.facilityLayer.addLayer(this.facMarker);
+            if (this.facilityLayer.hasLayer(this.facMarker)) {
+                this.facilityLayer.removeLayer(this.facMarker);
+                this.facilityCluster.addLayer(this.facMarker);
+                this.facilityCluster.addTo(this.facilityLayer);
                 this.facilityLayer.addTo(this.map);
             }
             this.facMarker = marker;
             this.facilityMarkers[fac.shakecast_id.toString()] = marker;
 
-            this.facMarker.addTo(this.map);
+            this.facMarker.addTo(this.facilityLayer);
             marker.bindPopup(popupContent).openPopup();
+            this.facilityLayer.addTo(this.map);
         }
     }
 
@@ -202,12 +205,11 @@ export class MapComponent implements OnInit, OnDestroy {
     
         if (this.facilityLayer.hasLayer(marker)) {
             this.facilityLayer.removeLayer(marker);
-            delete this.facilityMarkers[fac.shakecast_id.toString()]
-        } else if (this.map.hasLayer(marker)) {
+        } else if (this.facilityCluster.hasLayer(marker)) {
             this.map.removeLayer(marker)
-            delete this.facilityMarkers[fac.shakecast_id.toString()]
         }
 
+        delete this.facilityMarkers[fac.shakecast_id.toString()]
         if (this._router.url == '/shakecast/dashboard') {
             if (Object.keys(this.facilityMarkers).length == 0) {
                 this.plotLastEvent();
@@ -243,14 +245,14 @@ export class MapComponent implements OnInit, OnDestroy {
             this.overlayLayer = L.layerGroup();
         }        
         
-        if (this.map.hasLayer(this.facilityLayer)) {
-            this.map.removeLayer(this.facilityLayer);
-            this.facilityLayer = L.markerClusterGroup();
+        if (this.facilityLayer.hasLayer(this.facilityCluster)) {
+            this.facilityLayer.removeLayer(this.facilityCluster);
+            this.facilityCluster = L.markerClusterGroup();
         }
 
-        if (this.map.hasLayer(this.facMarker)) {
-            this.map.removeLayer(this.facMarker);
-            this.facMarker = L.marker();
+        if (this.facilityLayer.hasLayer(this.facMarker)) {
+            this.facilityLayer.removeLayer(this.facMarker);
+            this.facMarker= L.marker();
         }
 
         if (this.map.hasLayer(this.groupLayers)) {
