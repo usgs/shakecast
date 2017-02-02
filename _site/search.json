@@ -4,201 +4,31 @@
 
 
 {
-"title": "About the authors",
-"tags": "getting_started",
-"keywords": "documentation, ShakeCast",
-"url": "/shakecast/doc_about.html",
+"title": "Engineering-based Inspection Priority and Damage Calculations using AEBM",
+"tags": "developmentv4pycastAEBM",
+"keywords": "current, activities, new, AEBM, engineering, damage, probability",
+"url": "/shakecast/aebm.html",
 "summary": ""
 },
 
 
 
 {
-"title": "ShakeCast FAQ",
-"tags": "troubleshooting",
-"keywords": "frequently asked questions, FAQ, question and answer, collapsible sections, expand, collapse",
-"url": "/shakecast/doc_faq.html",
+"title": "ShakeCast AEBM Workbook",
+"tags": "getting_startedworkbookadvanced",
+"keywords": "advanced, engineering, building, module, current, activies",
+"url": "/shakecast/aebm_workbook.html",
 "summary": ""
 },
 
 
 
 {
-"title": "Install ShakeCast on AWS",
-"tags": "getting_startedtroubleshootingshakecast_v3",
-"keywords": "install, aws, linux, cloud",
-"url": "/shakecast/doc_install_shakecast_on_aws.html",
-"summary": ""
-},
-
-
-
-{
-"title": "Install ShakeCast on Windows",
-"tags": "getting_startedtroubleshootingshakecast_v3",
-"keywords": "windows, pc, installer",
-"url": "/shakecast/doc_install_shakecast_on_windows.html",
-"summary": ""
-},
-
-
-
-{
-"title": "ShakeCast Implementation Recommendation",
-"tags": "getting_startedtroubleshootingshakecast_v3",
-"keywords": "installation, requirements, hardware, software, management, security, maintenance",
-"url": "/shakecast/doc_introduction.html",
-"summary": ""
-},
-
-
-
-{
-"title": "System Administration",
-"tags": "getting_startedtroubleshootingshakecast_v3",
-"keywords": "administration, inventory, management, upload, earthquake, facility, group, user",
-"url": "/shakecast/doc_operator_admin.html",
-"summary": "The ShakeCast administrative interface is platform independent and is designed for an administrator to perform common tasks ranging from management of facility and user inventory to system-wide maintenance and configuration."
-},
-
-
-
-{
-"title": "User Inventory Format",
-"tags": "troubleshootingshakecast_v3",
-"keywords": "appendix, inventory, format, facility, group, user",
-"url": "/shakecast/doc_operator_appenda.html",
-"summary": ""
-},
-
-
-
-{
-"title": "XML/JSON Metadata Formats",
-"tags": "troubleshootingshakecast_v3",
-"keywords": "appendix, product, format",
-"url": "/shakecast/doc_operator_appendb.html",
-"summary": ""
-},
-
-
-
-{
-"title": "Utility Scripts",
-"tags": "troubleshootingshakecast_v3",
-"keywords": "appendix, command line, utility",
-"url": "/shakecast/doc_operator_appendc.html",
-"summary": ""
-},
-
-
-
-{
-"title": "HAZUS MBT",
-"tags": "troubleshootingshakecast_v3",
-"keywords": "appendix, hazus, mbt, fragility",
-"url": "/shakecast/doc_operator_appendd.html",
-"summary": "Relating HAZUS Structure Types to Seismic Performance"
-},
-
-
-
-{
-"title": "MBT Fragility",
-"tags": "troubleshootingshakecast_v3",
-"keywords": "appendix, hazus, mbt, fragility",
-"url": "/shakecast/doc_operator_appende.html",
-"summary": "HAZUS Model Building Fragility Table"
-},
-
-
-
-{
-"title": "Template Keywords",
-"tags": "troubleshootingshakecast_v3",
-"keywords": "appendix, template, notification, keyword",
-"url": "/shakecast/doc_operator_appendf.html",
-"summary": "ShakeCast Notification Template Keywords"
-},
-
-
-
-{
-"title": "System Configuration",
-"tags": "getting_startedtroubleshootingshakecast_v3",
-"keywords": "configuration, post-installation, group, facility, user, inventory",
-"url": "/shakecast/doc_operator_config.html",
-"summary": ""
-},
-
-
-
-{
-"title": "Customization",
-"tags": "getting_startedtroubleshootingshakecast_v3",
-"keywords": "customization, template, notification",
-"url": "/shakecast/doc_operator_custom.html",
-"summary": "Tags provide another means of navigation for your content. Unlike the table of contents, tags can show the content in a variety of arrangements and groupings. Implementing tags in this Jekyll theme is somewhat of a manual process."
-},
-
-
-
-{
-"title": "Installation Notes",
-"tags": "getting_startedtroubleshootingshakecast_v3",
-"keywords": "installation, virtual machine, hardware, software",
-"url": "/shakecast/doc_operator_install.html",
-"summary": "This guide is intended for ShakeCast system managers, operators and IT support staff. This guide is for you if you are installing, operating, or configuring a ShakeCast system."
-},
-
-
-
-{
-"title": "User Guide",
-"tags": "getting_startedtroubleshootingshakecast_v3",
-"keywords": "notification, product",
-"url": "/shakecast/doc_pages.html",
-"summary": "This guide is intended for ShakeCast V3 users. This guide is for you if you are using ShakeCast notifications, facility assessment or inspection reports, or the ShakeCast website."
-},
-
-
-
-{
-"title": "Release notes 3.0",
-"tags": "getting_startedshakecast_v3",
-"keywords": "release notes, announcements, what's new, new features",
-"url": "/shakecast/doc_release_notes_3.html",
-"summary": "Version 3 of ShakeCast, released October 2015."
-},
-
-
-
-{
-"title": "System Requirements",
-"tags": "getting_startedtroubleshootingshakecast_v3",
-"keywords": "installation, hardware, software",
-"url": "/shakecast/doc_requirements.html",
-"summary": "This document presents recommendations for the technology infrastructure and setup requirements for deploying the ShakeCast V3 system.  The contents of this report are intended for use by information technology (IT) professionals to serve as a technical reference during the deployment process."
-},
-
-
-
-{
-"title": "Support",
-"tags": "getting_startedtroubleshooting",
-"keywords": "questions, troubleshooting, contact, support",
-"url": "/shakecast/doc_support.html",
-"summary": "Contact us for any support issues."
-},
-
-
-
-{
-"title": "Migrate Inventory from ShakeCast V2 to V3",
-"tags": "troubleshootingshakecast_v3",
-"keywords": "trouble, problems, support, migration, inventory",
-"url": "/shakecast/doc_v2_to_v3.html",
-"summary": "This page describes steps for migrating from V2 to V3 system."
+"title": "ShakeCast Project",
+"tags": "getting_startedintroduction",
+"keywords": "ShakeCast project",
+"url": "/shakecast/doc_project.html",
+"summary": "ShakeCast is an application for automating ShakeMap delivery to critical users and for facilitating notification of shaking levels at user-selected facilities."
 },
 
 
@@ -206,27 +36,37 @@
 
 
 {
-"title": "ShakeCast Documentation",
+"title": "ShakeCast",
 "tags": "getting_startedintroduction",
 "keywords": "ShakeCast document",
 "url": "/shakecast/index.html",
-"summary": "ShakeCast oview will help you get started quickly with the documentation. The other topics in this help provide additional information and detail about working with other aspects of ShakeCast."
+"summary": "ShakeCast overview will help you get started quickly with the documentation. The other topics in this help provide additional information and detail about working with other aspects of ShakeCast."
 },
 
 
 
 {
-"title": "News",
-"tags": "",
-"keywords": "news, blog, updates, release notes, announcements",
-"url": "/shakecast/news.html",
+"title": "ShakeCast Inventory Workbook",
+"tags": "getting_startedworkbook",
+"keywords": "installation, inventory, shakecast_v3, facility, user, group",
+"url": "/shakecast/inventory_workbook.html",
 "summary": ""
 },
 
 
 
 {
-"title": "News",
+"title": "Blog",
+"tags": "",
+"keywords": "news, blog, updates, release notes, announcements",
+"url": "/shakecast/blog.html",
+"summary": ""
+},
+
+
+
+{
+"title": "Blogs",
 "tags": "",
 "keywords": "news, blog, updates, release notes, announcements",
 "url": "/shakecast/news_archive.html",
@@ -236,259 +76,331 @@
 
 
 {
-"title": "Product 1",
-"tags": "",
-"keywords": "mydoc",
-"url": "/shakecast/p1_landing_page.html",
+"title": "ShakeCast V4 &quot;pyCast&quot; (BETA)",
+"tags": "developmentv4pycast",
+"keywords": "current, activities, new",
+"url": "/shakecast/pycast_docs.html",
+"summary": ""
+},
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+{
+"title": "About the authors",
+"tags": "getting_started",
+"keywords": "documentation, ShakeCast",
+"url": "/shakecast/v3_about.html",
 "summary": ""
 },
 
 
 
 {
-"title": "Sample 1 Topic (Product 1)",
-"tags": "",
-"keywords": "sample",
-"url": "/shakecast/p1_sample1.html",
-"summary": "This is just a sample topic..."
-},
-
-
-
-{
-"title": "Sample 2 Topic (Product 1)",
-"tags": "",
-"keywords": "sample",
-"url": "/shakecast/p1_sample2.html",
-"summary": "This is just a sample topic..."
-},
-
-
-
-{
-"title": "Sample 3 Topic (Product 1)",
-"tags": "",
-"keywords": "sample",
-"url": "/shakecast/p1_sample3.html",
-"summary": "This is just a sample topic..."
-},
-
-
-
-{
-"title": "Sample 4 Topic (Product 1)",
-"tags": "",
-"keywords": "sample",
-"url": "/shakecast/p1_sample4.html",
-"summary": "This is just a sample topic..."
-},
-
-
-
-{
-"title": "Sample 5 Topic (Product 1)",
-"tags": "",
-"keywords": "sample",
-"url": "/shakecast/p1_sample5.html",
-"summary": "This is just a sample topic..."
-},
-
-
-
-{
-"title": "Sample 6 Topic (Product 1)",
-"tags": "",
-"keywords": "sample",
-"url": "/shakecast/p1_sample6.html",
-"summary": "This is just a sample topic..."
-},
-
-
-
-{
-"title": "Sample 7 Topic (Product 1)",
-"tags": "",
-"keywords": "sample",
-"url": "/shakecast/p1_sample7.html",
-"summary": "This is just a sample topic..."
-},
-
-
-
-{
-"title": "Product 2",
-"tags": "",
-"keywords": "mydoc",
-"url": "/shakecast/p2_landing_page.html",
+"title": "ShakeCast FAQ",
+"tags": "troubleshooting",
+"keywords": "frequently asked questions, FAQ, question and answer, collapsible sections, expand, collapse",
+"url": "/shakecast/v3_faq.html",
 "summary": ""
 },
 
 
 
 {
-"title": "Sample 1 Topic",
-"tags": "",
-"keywords": "sample",
-"url": "/shakecast/p2_sample1.html",
-"summary": "This is just a sample topic..."
+"title": "Install ShakeCast on AWS",
+"tags": "getting_startedtroubleshootingshakecast_v3",
+"keywords": "install, aws, linux, cloud",
+"url": "/shakecast/v3_install_shakecast_on_aws.html",
+"summary": ""
 },
 
 
 
 {
-"title": "Sample 10 Topic",
-"tags": "",
-"keywords": "sample",
-"url": "/shakecast/p2_sample10.html",
-"summary": "This is just a sample topic..."
+"title": "Install ShakeCast on Windows",
+"tags": "getting_startedtroubleshootingshakecast_v3",
+"keywords": "windows, pc, installer",
+"url": "/shakecast/v3_install_shakecast_on_windows.html",
+"summary": ""
 },
 
 
 
 {
-"title": "Sample 11 Topic",
-"tags": "",
-"keywords": "sample",
-"url": "/shakecast/p2_sample11.html",
-"summary": "This is just a sample topic..."
+"title": "ShakeCast Implementation Recommendation",
+"tags": "getting_startedtroubleshootingshakecast_v3",
+"keywords": "installation, requirements, hardware, software, management, security, maintenance",
+"url": "/shakecast/v3_introduction.html",
+"summary": ""
 },
 
 
 
 {
-"title": "Sample 12 Topic",
-"tags": "",
-"keywords": "sample",
-"url": "/shakecast/p2_sample12.html",
-"summary": "This is just a sample topic..."
+"title": "System Administration",
+"tags": "getting_startedtroubleshootingshakecast_v3",
+"keywords": "administration, inventory, management, upload, earthquake, facility, group, user",
+"url": "/shakecast/v3_operator_admin.html",
+"summary": "The ShakeCast administrative interface is platform independent and is designed for an administrator to perform common tasks ranging from management of facility and user inventory to system-wide maintenance and configuration."
 },
 
 
 
 {
-"title": "Sample 13 Topic",
-"tags": "",
-"keywords": "sample",
-"url": "/shakecast/p2_sample13.html",
-"summary": "This is just a sample topic..."
+"title": "User Inventory Format",
+"tags": "troubleshootingshakecast_v3",
+"keywords": "appendix, inventory, format, facility, group, user",
+"url": "/shakecast/v3_operator_appenda.html",
+"summary": ""
 },
 
 
 
 {
-"title": "Sample 14 Topic",
-"tags": "",
-"keywords": "sample",
-"url": "/shakecast/p2_sample14.html",
-"summary": "This is just a sample topic..."
+"title": "XML/JSON Metadata Formats",
+"tags": "troubleshootingshakecast_v3",
+"keywords": "appendix, product, format",
+"url": "/shakecast/v3_operator_appendb.html",
+"summary": ""
 },
 
 
 
 {
-"title": "Sample 2 Topic",
-"tags": "",
-"keywords": "sample",
-"url": "/shakecast/p2_sample2.html",
-"summary": "This is just a sample topic..."
+"title": "Utility Scripts",
+"tags": "troubleshootingshakecast_v3",
+"keywords": "appendix, command line, utility",
+"url": "/shakecast/v3_operator_appendc.html",
+"summary": ""
 },
 
 
 
 {
-"title": "Sample 3 Topic",
-"tags": "",
-"keywords": "sample",
-"url": "/shakecast/p2_sample3.html",
-"summary": "This is just a sample topic..."
+"title": "HAZUS MBT",
+"tags": "troubleshootingshakecast_v3",
+"keywords": "appendix, hazus, mbt, fragility",
+"url": "/shakecast/v3_operator_appendd.html",
+"summary": "Relating HAZUS Structure Types to Seismic Performance"
 },
 
 
 
 {
-"title": "Sample 4 Topic",
-"tags": "",
-"keywords": "sample",
-"url": "/shakecast/p2_sample4.html",
-"summary": "This is just a sample topic..."
+"title": "MBT Fragility",
+"tags": "troubleshootingshakecast_v3",
+"keywords": "appendix, hazus, mbt, fragility",
+"url": "/shakecast/v3_operator_appende.html",
+"summary": "HAZUS Model Building Fragility Table"
 },
 
 
 
 {
-"title": "Sample 5 Topic",
-"tags": "",
-"keywords": "sample",
-"url": "/shakecast/p2_sample5.html",
-"summary": "This is just a sample topic..."
+"title": "Template Keywords",
+"tags": "troubleshootingshakecast_v3",
+"keywords": "appendix, template, notification, keyword",
+"url": "/shakecast/v3_operator_appendf.html",
+"summary": "ShakeCast Notification Template Keywords"
 },
 
 
 
 {
-"title": "Sample 6 Topic",
-"tags": "",
-"keywords": "sample",
-"url": "/shakecast/p2_sample6.html",
-"summary": "This is just a sample topic..."
+"title": "System Configuration",
+"tags": "getting_startedtroubleshootingshakecast_v3",
+"keywords": "configuration, post-installation, group, facility, user, inventory",
+"url": "/shakecast/v3_operator_config.html",
+"summary": ""
 },
 
 
 
 {
-"title": "Sample 7 Topic",
-"tags": "",
-"keywords": "sample",
-"url": "/shakecast/p2_sample7.html",
-"summary": "This is just a sample topic..."
+"title": "Customization",
+"tags": "getting_startedtroubleshootingshakecast_v3",
+"keywords": "customization, template, notification",
+"url": "/shakecast/v3_operator_custom.html",
+"summary": "Tags provide another means of navigation for your content. Unlike the table of contents, tags can show the content in a variety of arrangements and groupings. Implementing tags in this Jekyll theme is somewhat of a manual process."
 },
 
 
 
 {
-"title": "Sample 8 Topic",
-"tags": "",
-"keywords": "sample",
-"url": "/shakecast/p2_sample8.html",
-"summary": "This is just a sample topic..."
+"title": "Installation Notes",
+"tags": "getting_startedtroubleshootingshakecast_v3",
+"keywords": "installation, virtual machine, hardware, software",
+"url": "/shakecast/v3_operator_install.html",
+"summary": "This guide is intended for ShakeCast system managers, operators and IT support staff. This guide is for you if you are installing, operating, or configuring a ShakeCast system."
 },
 
 
 
 {
-"title": "Sample 9 Topic",
-"tags": "",
-"keywords": "sample",
-"url": "/shakecast/p2_sample9.html",
-"summary": "This is just a sample topic..."
+"title": "ShakeCast V3 Packages",
+"tags": "getting_started",
+"keywords": "documentation, ShakeCast",
+"url": "/shakecast/v3_package.html",
+"summary": ""
+},
+
+
+
+{
+"title": "User Guide",
+"tags": "getting_startedtroubleshootingshakecast_v3",
+"keywords": "notification, product",
+"url": "/shakecast/v3_pages.html",
+"summary": "This guide is intended for ShakeCast V3 users. This guide is for you if you are using ShakeCast notifications, facility assessment or inspection reports, or the ShakeCast website."
+},
+
+
+
+{
+"title": "Release notes 3.0",
+"tags": "getting_startedshakecast_v3",
+"keywords": "release notes, announcements, what's new, new features",
+"url": "/shakecast/v3_release_notes_3.html",
+"summary": "Version 3 of ShakeCast, released October 2015."
+},
+
+
+
+{
+"title": "System Requirements",
+"tags": "getting_startedtroubleshootingshakecast_v3",
+"keywords": "installation, hardware, software",
+"url": "/shakecast/v3_requirements.html",
+"summary": "This document presents recommendations for the technology infrastructure and setup requirements for deploying the ShakeCast V3 system.  The contents of this report are intended for use by information technology (IT) professionals to serve as a technical reference during the deployment process."
+},
+
+
+
+{
+"title": "Support",
+"tags": "getting_startedtroubleshooting",
+"keywords": "questions, troubleshooting, contact, support",
+"url": "/shakecast/v3_support.html",
+"summary": "Contact us for any support issues."
+},
+
+
+
+{
+"title": "Migrate Inventory from ShakeCast V2 to V3",
+"tags": "troubleshootingshakecast_v3",
+"keywords": "trouble, problems, support, migration, inventory",
+"url": "/shakecast/v3_v2_to_v3.html",
+"summary": "This page describes steps for migrating from V2 to V3 system."
 },
 
 
 
 
 
+{
+"title": "USGS Web Switching from http to Encrypted https",
+"tags": "software_updatetroubleshooting",
+"keywords": "",
+"url": "/shakecast/2017_usgs_https.html",
+"summary": "The upcoming change to the USGS web site had a change date of March 1, 2017 which may change at any time."
+}
+,
 
 
+{
+"title": "ShakeCast Unavailable via Amazon Web Services",
+"tags": "software_updatetroubleshooting",
+"keywords": "",
+"url": "/shakecast/2017_shakecast_public_aws.html",
+"summary": "The change to the DOI regarding governance for cloud solutions requires ShakeCast to be moved from the public AWS to under USGS CHS."
+}
+,
 
 
+{
+"title": "ShakeCast Transportation Pooled Fund",
+"tags": "collaboration",
+"keywords": "",
+"url": "/shakecast/2017_shakecast_transportation_pooled_fund.html",
+"summary": "The solicitation period closed on January 11, 2017 with nine state DOT partners onboard."
+}
+,
 
 
+{
+"title": "2017 Denver SSA Annual Meeting",
+"tags": "collaborationpresentation",
+"keywords": "",
+"url": "/shakecast/2017_ssa_meeting_shakecast.html",
+"summary": "ShakeCast abstract submitted to the 2017 SSA Meeting Session on Earthquake Impacts on the Natural and Built Environment and Hazard Forecasts"
+}
+,
 
 
+{
+"title": "U.S. Nuclear Regulatory Commission (USNRC) to Support Nuclear ShakeCast Implementation",
+"tags": "collaboration",
+"keywords": "",
+"url": "/shakecast/2016_nrc_mou.html",
+"summary": "The USNRC entered into a new agreement with the USGS for implementation and operation of a ShakeCast instance"
+}
+,
 
 
+{
+"title": "Reference to %dns address% keyword for ShakeCast notification",
+"tags": "troubleshooting",
+"keywords": "",
+"url": "/shakecast/2016_reference_to_dns_address_notification.html",
+"summary": "Reference to %dns address% keyword for ShakeCast notification"
+}
+,
 
 
+{
+"title": "Default Browser Key for Google Maps API",
+"tags": "software_updatetroubleshooting",
+"keywords": "",
+"url": "/shakecast/2016_google_maps_api_key.html",
+"summary": "ShakeCast includes a default browser key for Google Maps API in latest github revision to satisfy key requirement."
+}
+,
 
 
-
-
-
-
-
-
-
-
+{
+"title": "Development and Utilization of USGS ShakeCast for Rapid Post-Earthquake Assessment of Critical Facilities and Infrastructure",
+"tags": "collaborationpresentation",
+"keywords": "",
+"url": "/shakecast/2017_16WCEE.html",
+"summary": "The Sixteenth World Conference on Earthquake Engineering (16WCEE) is a quadrennial event providing a unique opportunity for academia, building code experts, design/building professionals, earthquake engineering professionals to share the latest advances in earthquake science, best practices for outreach and education, building science and code advancement, and policy initiatives that improve resiliency."
+}
+,
 
 
 {

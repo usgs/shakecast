@@ -60,10 +60,12 @@
     <div class="col-lg-12">&nbsp;</div>
     <!-- Content Row -->
     <div class="row">
+    {% if page.sidebar != 'no_sidebar' %}
         <!-- Sidebar Column -->
         <div class="col-md-3">
 
           {% include sidebar.html %}
+    {% endif %}
     <!-- Content Column -->
     <div class="col-md-9">
         {% if page.slideshow %}

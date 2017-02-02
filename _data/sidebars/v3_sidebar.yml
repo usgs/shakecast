@@ -1,0 +1,110 @@
+# This is your sidebar TOC. The sidebar code loops through sections here and provides the appropriate formatting.
+
+entries:
+- title: sidebar
+  product: ShakeCast Documentation
+  version: 3.0
+  folders:
+
+  - title:
+    output: pdf
+    type: frontmatter
+    folderitems:
+    - title:
+      url: /titlepage.html
+      output: pdf
+      type: frontmatter
+    - title:
+      url: /tocpage.html
+      output: pdf
+      type: frontmatter
+
+  - title: Installation
+    output: web, pdf
+    folderitems:
+
+    - title: System Requirements
+      url: /v3_requirements.html
+      output: web, pdf
+
+    - title: Install ShakeCast on Windows
+      url: /v3_install_shakecast_on_windows.html
+      output: web, pdf
+
+    - title: Install ShakeCast on AWS
+      url: /v3_install_shakecast_on_aws.html
+      output: web, pdf
+
+  - title: Release Notes
+    output: web, pdf
+    folderitems:
+
+    - title: V3 Release notes
+      url: /v3_release_notes_3.html
+      output: web, pdf
+
+  - title: User Guide
+    output: web, pdf
+
+    folderitems:
+    - title: User Guide
+      url: /v3_pages.html
+      output: web, pdf
+
+  - title: Technical Guide
+    output: web, pdf
+
+    folderitems:
+    - title: Installation
+      url: /v3_operator_install.html
+      output: web, pdf
+
+    - title: System Configuration
+      url: /v3_operator_config.html
+      output: web, pdf
+
+    - title: Customization
+      url: /v3_operator_custom.html
+      output: web, pdf
+
+    - title: Administration
+      url: /v3_operator_admin.html
+      output: web, pdf
+
+    - title: Append. Inventory Format
+      url: /v3_operator_appenda.html
+      output: web, pdf
+
+    - title: Append. Metadata Format
+      url: /v3_operator_appendb.html
+      output: web, pdf
+
+    - title: Append. Utility Scripts
+      url: /v3_operator_appendc.html
+      output: web, pdf
+
+    - title: Append. HAZUS MBT
+      url: /v3_operator_appendd.html
+      output: web, pdf
+
+    - title: Append. MBT Fragility
+      url: /v3_operator_appende.html
+      output: web, pdf
+
+    - title: Append. Template Keywords
+      url: /v3_operator_appendf.html
+      output: web, pdf
+
+  - title: Troubleshooting
+    output: web, pdf
+
+    folderitems:
+
+    - title: V2 to V3
+      url: /v3_v2_to_v3.html
+      output: web, pdf
+
+    - title: FAQ
+      url: /v3_faq.html
+      output: web, pdf
+

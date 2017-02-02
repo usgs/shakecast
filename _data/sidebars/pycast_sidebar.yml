@@ -1,0 +1,18 @@
+entries:
+- title: Sidebar
+  levels: one
+  folders:
+  - title: pyCast
+    output: web
+    folderitems:
+      - title: Introduction
+        output: web
+        url: /pycast_docs.html      
+        
+      - title: AEBM Implementation
+        output: web
+        url: /aebm.html
+
+      - title: Developer Documentation
+        output: web
+        url: /apidocs

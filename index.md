@@ -1,10 +1,10 @@
 ---
-title: ShakeCast Documentation
+title: ShakeCast
 keywords: ShakeCast document
 tags: [getting_started, introduction]
-sidebar: doc_sidebar
+sidebar: no_sidebar
 permalink: index.html
-summary: ShakeCast oview will help you get started quickly with the documentation. The other topics in this help provide additional information and detail about working with other aspects of ShakeCast.
+summary: ShakeCast overview will help you get started quickly with the documentation. The other topics in this help provide additional information and detail about working with other aspects of ShakeCast.
 slideshow: yes
 ---
 
@@ -35,8 +35,8 @@ ShakeCast Cloud is an application hosting service for the full ShakeCast system 
 
  Businesses, utility and other lifeline managers, emergency responders, and others have an urgent need for information about the impact on their own facilities so they can make informed decisions and take quick actions to ensure safety, restore system functionality, and minimize losses.
 
-## Who should not use ShakeCast
+## Who should probably not use ShakeCast
 
- Individual users without facility inventory or organizations that look for earthquake information infrequently. 
+ Individual users without a significant number of facilities and knowledge of their inventory.  ShakeCast requires significant commitment of time and both IT and earthquake engineering expertise. 
 
 {% include links.html %}

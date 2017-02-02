@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="description" content="">
 <meta name="keywords" content=" news, blog, updates, release notes, announcements">
-<title>News | ShakeCast Documentation</title>
+<title>Blogs | USGS ShakeCast</title>
 <link rel="stylesheet" href="css/syntax.css">
 
 
@@ -90,75 +90,106 @@
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
             </button>
-            <a class="navbar-brand" href="index.html"><img src="images/usgs_sc_logo.png">&nbsp;<span class="projectTitle"> ShakeCast Documentation</span></a>
+            <a class="navbar-brand" href="index.html"><img src="images/usgs_sc_logo.png">&nbsp;<span class="projectTitle"> USGS ShakeCast</span></a>
         </div>
         <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
             <ul class="nav navbar-nav navbar-right">
-                <!-- entries without drop-downs appear here -->
-                
-                
-                
-                <li class="active"><a href="news">News</a></li>
-                
-                
-                
                 <!-- entries with drop-downs appear here -->
                 <!-- conditional logic to control which topnav appears for the audience defined in the configuration file.-->
                 
                 
                 <li class="dropdown">
-                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">ShakeCast Resources<b class="caret"></b></a>
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">The Project<b class="caret"></b></a>
                     <ul class="dropdown-menu">
                         
                         
-                        <li><a href="https://github.com/klin-usgs/ShakeCast" target="_blank">Github Repo</a></li>
+                        <li><a href="doc_project.html">Project Background</a></li>
                         
                         
                         
-                        <li><a href="http://earthquake.usgs.gov/research/software/shakecast/" target="_blank">ShakeCast Web</a></li>
+                        <li><a href="v3_introduction.html">ShakeCast V3</a></li>
                         
                         
                         
-                        <li><a href="ftp://ftpext.usgs.gov/pub/cr/co/Golden/ShakeCast" target="_blank">ShakeCast FTP</a></li>
+                        <li><a href="pycast_docs.html">ShakeCast V4 "pyCast" (BETA)</a></li>
                         
                         
                         
-                        <li><a href="https://my.usgs.gov/confluence/display/ShakeCast/Home" target="_blank">ShakeCast Science Base</a></li>
+                        <li><a href="inventory_workbook.html">ShakeCast Workbook</a></li>
+                        
+                        
                         
                         
                     </ul>
                 </li>
                 
                 <li class="dropdown">
-                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">Products<b class="caret"></b></a>
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">Packages<b class="caret"></b></a>
                     <ul class="dropdown-menu">
                         
                         
-                        <li><a href="doc_introduction.html">ShakeCast V3</a></li>
+                        <li><a href="v3_package.html">ShakeCast V3</a></li>
                         
                         
                         
-                        <li><a href="apidocs">ShakeCast V4 (pyCast)</a></li>
+                        <li><a href="https://my.usgs.gov/confluence/display/ShakeCast/Home" target="_blank">ShakeCast Science Base (legacy V2)</a></li>
+                        
+                        
+                    </ul>
+                </li>
+                
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">Blog<b class="caret"></b></a>
+                    <ul class="dropdown-menu">
+                        
+                        
+                        <li><a href="blog">Recent Blogs</a></li>
                         
                         
                         
-                        <li><a href="index.html">ShakeCast Workbook</a></li>
+                        <li><a href="tag_getting_started.html">Getting Started</a></li>
                         
                         
                         
-                        <li><a href="index.html">ShakeCast Lite</a></li>
+                        <li><a href="tag_news.html">News</a></li>
+                        
+                        
+                        
+                        <li><a href="tag_shakecast_v3.html">ShakeCast V3</a></li>
+                        
+                        
+                        
+                        <li><a href="tag_pycast.html">ShakeCast V4 "pyCast" (BETA)</a></li>
+                        
+                        
+                        
+                        <li><a href="tag_workbook.html">Workbook</a></li>
+                        
+                        
+                        
+                        <li><a href="tag_troubleshooting.html">Troubleshooting</a></li>
+                        
+                        
+                        
+                        <li><a href="tag_presentation.html">Presentation</a></li>
+                        
+                        
+                        
+                        <li><a href="tag_collaboration.html">Collaboration</a></li>
                         
                         
                     </ul>
                 </li>
                 
                 
+                <!-- entries without drop-downs appear here -->
+                
                 
 			<!-- Send feedback function -->
 <script>
 function SendLinkByMail(href) {
-var subject= "ShakeCast Documentation feedback";
-var body = "I have some feedback about the News page: ";
+var subject= "USGS ShakeCast feedback";
+var body = "I have some feedback about the Blogs page: ";
 body += window.location.href;
 body += "";
 var uri = "mailto:shakecast-help@usgs.gov?subject=";
@@ -185,7 +216,7 @@ window.location.href = uri;
                                 searchInput: document.getElementById('search-input'),
                                 resultsContainer: document.getElementById('results-container'),
                                 dataSource: './search.json',
-                                searchResultTemplate: '<li><a href="{url}" title="News">{title}</a></li>',
+                                searchResultTemplate: '<li><a href="{url}" title="Blogs">{title}</a></li>',
                     noResultsText: 'No results found.',
                             limit: 10,
                             fuzzy: true,
@@ -204,6 +235,7 @@ window.location.href = uri;
     <div class="col-lg-12">&nbsp;</div>
     <!-- Content Row -->
     <div class="row">
+    
         <!-- Sidebar Column -->
         <div class="col-md-3">
 
@@ -226,55 +258,19 @@ window.location.href = uri;
     
     
     <li>
-        <a href="#">Category</a>
-        <ul>
-            
-            
-            
-            <li><a href="news.html">News</a></li>
-            
-            
-            
-            
-            
-            
-            <li><a href="doc_introduction.html">ShakeCast V3</a></li>
-            
-            
-            
-            
-            
-            
-            <li><a href="apidocs">ShakeCast V4 (pyCast)</a></li>
-            
-            
-            
-            
-            
-            
-            <li><a href="index.html">ShakeCast Workbook</a></li>
-            
-            
-            
-            
-            
-            
-            <li><a href="index.html">ShakeCast Lite</a></li>
-            
-            
-            
-            
-        </ul>
-        
-        
-    
-    <li>
         <a href="#">Tag archive pages</a>
         <ul>
             
             
             
             <li><a href="tag_getting_started.html">Getting Started</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="tag_news.html">News pages</a></li>
             
             
             
@@ -295,7 +291,35 @@ window.location.href = uri;
             
             
             
+            <li><a href="tag_workbook.html">Workbook pages</a></li>
+            
+            
+            
+            
+            
+            
             <li><a href="tag_troubleshooting.html">Troubleshooting pages</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="tag_software_update.html">Software update pages</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="tag_presentation.html">Presentation pages</a></li>
+            
+            
+            
+            
+            
+            
+            <li><a href="tag_collaboration.html">Collaboration pages</a></li>
             
             
             
@@ -316,11 +340,12 @@ window.location.href = uri;
 <!-- this highlights the active parent class in the navgoco sidebar. this is critical so that the parent expands when you're viewing a page. This must appear below the sidebar code above. Otherwise, if placed inside customscripts.js, the script runs before the sidebar code runs and the class never gets inserted.-->
 <script>$("li.active").parents('li').toggleClass("active");</script>
 
+    
     <!-- Content Column -->
     <div class="col-md-9">
         
         <div class="post-header">
-   <h1 class="post-title-main">News</h1>
+   <h1 class="post-title-main">Blogs</h1>
 </div>
 
 
@@ -332,7 +357,7 @@ window.location.href = uri;
     
 
     
-    <a target="_blank" href="https://github.com/klin-usgs/shakecast/blob/gh-pages//pages/news//news_archive.md" class="btn btn-default githubEditButton" role="button"><i class="fa fa-github fa-lg"></i> Edit me</a>
+    <a target="_blank" href="https://github.com/usgs/shakecast/blob/gh-pages//pages/blog//news_archive.md" class="btn btn-default githubEditButton" role="button"><i class="fa fa-github fa-lg"></i> Edit me</a>
     
     
 
@@ -346,6 +371,66 @@ window.location.href = uri;
         
         
         <ul class="this">
+            
+            <li><time>30 Jan</time><a href="/shakecast/2017_usgs_https.html">USGS Web Switching from http to Encrypted https</a></li>
+            
+        
+            
+            
+            
+            
+            <li><time>24 Jan</time><a href="/shakecast/2017_shakecast_public_aws.html">ShakeCast Unavailable via Amazon Web Services</a></li>
+            
+        
+            
+            
+            
+            
+            <li><time>17 Jan</time><a href="/shakecast/2017_shakecast_transportation_pooled_fund.html">ShakeCast Transportation Pooled Fund</a></li>
+            
+        
+            
+            
+            
+            
+            <li><time>09 Jan</time><a href="/shakecast/2017_ssa_meeting_shakecast.html">2017 Denver SSA Annual Meeting</a></li>
+            
+        
+            
+            
+            
+        </ul>
+        <h3>2016</h3>
+        <ul class="past">
+            
+            
+            <li><time>15 Sep</time><a href="/shakecast/2016_nrc_mou.html">U.S. Nuclear Regulatory Commission (USNRC) to Support Nuclear ShakeCast Implementation</a></li>
+            
+        
+            
+            
+            
+            
+            <li><time>21 Jul</time><a href="/shakecast/2016_reference_to_dns_address_notification.html">Reference to %dns address% keyword for ShakeCast notification</a></li>
+            
+        
+            
+            
+            
+            
+            <li><time>20 Jul</time><a href="/shakecast/2016_google_maps_api_key.html">Default Browser Key for Google Maps API</a></li>
+            
+        
+            
+            
+            
+            
+            <li><time>15 Jun</time><a href="/shakecast/2017_16WCEE.html">Development and Utilization of USGS ShakeCast for Rapid Post-Earthquake Assessment of Critical Facilities and Infrastructure</a></li>
+            
+        
+            
+            
+            
             
             <li><time>01 Jun</time><a href="/shakecast/2016_iaea_cnsc.html">CNSC adopts world-class earthquake notification system</a></li>
             
@@ -390,8 +475,8 @@ window.location.href = uri;
 <footer>
             <div class="row">
                 <div class="col-lg-12 footer">
-               &copy;2016 U.S. Geological Survey. All rights reserved. <br />
- Site last generated: Jul 14, 2016 <br />
+               &copy;2017 U.S. Geological Survey. All rights reserved. <br />
+ Site last generated: Jan 31, 2017 <br />
 <p><img src="images/usgs.png" alt="USGS logo"/></p>
                 </div>
             </div>

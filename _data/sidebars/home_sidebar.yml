@@ -4,43 +4,19 @@ entries:
 - title: Sidebar
   levels: one
   folders:
-
-  - title: Category
-    output: web
-    folderitems:
-    - title: News
-      url: /news.html
-      output: web
-    - title: ShakeCast V3
-      url: /doc_introduction.html
-      output: web
-    - title: ShakeCast V4 (pyCast)
-      url: /apidocs
-      output: web
-    - title: ShakeCast Workbook
-      url: /index.html
-      output: web
-    - title: ShakeCast Lite
-      url: /index.html
-      output: web
-
-  - title: Tag archive pages
+  - title: Documentation Pages
     output: web
     folderitems:
 
-      - title: Getting Started
-        url: /tag_getting_started.html
+      - title: ShakeCast V3 
+        url: /v3_introduction.html
         output: web
 
-      - title: ShakeCast V3 pages
-        url: /tag_shakecast_v3.html
+      - title: ShakeCast V4 (pyCast) 
+        url: /pycast_docs.html
         output: web
 
-      - title: ShakeCast V4 (pyCast) pages
-        url: /tag_pycast.html
-        output: web
-
-      - title: Troubleshooting pages
-        url: /tag_troubleshooting.html
+      - title: Workbook 
+        url: /inventory_workbook.html
         output: web
 
