@@ -57,7 +57,12 @@ export class MapComponent implements OnInit, OnDestroy {
         // subscribe to earthquake markers
         this.subscriptions.push(this.mapService.eqMarkers.subscribe(eqData => {
             if (eqData['clear']) {
-                this.clearLayers();
+                if (eqData['clear'] == 'all') {
+                    // clear all layers
+                    this.clearLayers();
+                } else if (eqData['clear'] == 'events') {
+                    this.clearEventLayers();
+                }
             }
             for (var mark in eqData['events']) {
                 this.plotEventMarker(eqData['events'][mark]);
@@ -255,31 +260,34 @@ export class MapComponent implements OnInit, OnDestroy {
         this.map.fitBounds(this.groupLayers.getBounds());
     }
 
+    clearEventLayers() {
+        if (this.eventLayer.hasLayer(this.eventMarker)) {
+            this.eventLayer.removeLayer(this.eventMarker);
+            this.overlayLayer = L.marker();
+        }
+
+        if (this.eventLayer.hasLayer(this.overlayLayer)) {
+            this.eventLayer.removeLayer(this.overlayLayer);
+            this.overlayLayer = L.imageOverlay();
+        }
+
+        if (this.map.hasLayer(this.eventLayer)) {
+            this.map.removeLayer(this.eventLayer);
+            this.eventLayer = L.layerGroup();
+        }
+    }
+
     clearLayers() {
         /*
         Clear all layers besides basemaps
         */
+        this.clearEventLayers();
 
         if (this.map.hasLayer(this.markerLayer)) {
             this.map.removeLayer(this.markerLayer);
             this.markerLayer = L.layerGroup();
         }
 
-        if (this.eventLayer.hasLayer(this.eventMarker)) {
-            this.eventLayer.removeLayer(this.eventMarker);
-            this.overlayLayer = L.marker();
-        }    
-
-        if (this.eventLayer.hasLayer(this.overlayLayer)) {
-            this.eventLayer.removeLayer(this.overlayLayer);
-            this.overlayLayer = L.imageOverlay();
-        }      
-
-        if (this.map.hasLayer(this.eventLayer)) {
-            this.map.removeLayer(this.eventLayer);
-            this.eventLayer = L.layerGroup();
-        }  
-    
         if (this.facilityLayer.hasLayer(this.facilityCluster)) {
             this.facilityLayer.removeLayer(this.facilityCluster);
             this.facilityCluster = L.markerClusterGroup();

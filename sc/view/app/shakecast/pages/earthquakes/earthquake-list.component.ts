@@ -50,12 +50,9 @@ export class EarthquakeListComponent implements OnInit, OnDestroy {
         //this.getEqs()
         this.subscriptions.push(this.eqService.earthquakeData.subscribe(eqs => {
             this.earthquakeData = eqs
-            if (this.earthquakeData.length > 0) {
-                if (this._router.url != '/shakecast-admin/facilities') {
-                    this.plotEq(eqs[0]);
-                    this.selected = eqs[0];
-                    this.selected['selected'] = true;
-                }
+            if ((eqs.length > 0) && 
+                    (this._router.url != '/shakecast-admin/facilities')) {
+                this.selectEq(eqs[0]);
             }
         }));
 
@@ -72,11 +69,13 @@ export class EarthquakeListComponent implements OnInit, OnDestroy {
 
     plotEq(eq: Earthquake) {
         this.eqService.plotEq(eq)
+        this.selectEq(eq);
+    }
 
+    selectEq(eq: Earthquake) {
         if (this.selected) {
             this.selected['selected'] = false;
         }
-
         eq['selected'] = true;
         this.selected = eq;
     }

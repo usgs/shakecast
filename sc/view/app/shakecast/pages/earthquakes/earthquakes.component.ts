@@ -10,12 +10,16 @@ import { EarthquakeService } from './earthquake.service.ts';
                   'app/shared/css/data-list.css']
 })
 export class EarthquakesComponent implements OnInit {
+    subscriptions: any[] = [];
+
     constructor(private titleService: TitleService,
                 private eqService: EarthquakeService) {}
 
     ngOnInit() {
         this.titleService.title.next('Earthquakes');
-        this.eqService.getData({});
+        //this.getEqs()
+        this.subscriptions.push(this.eqService.earthquakeData.subscribe(eqs => {
+            this.eqService.plotEq(eqs[0])
+        }));
     }
-    
 }

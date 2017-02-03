@@ -28,7 +28,7 @@ export class StickToTopDirective implements OnInit, OnDestroy {
 
     ngOnInit() {
         this.checkLock()
-        Observable.interval(50)
+        Observable.interval(10)
                 .subscribe(x => {
             if(this.didScroll) {
                 this.didScroll = false;

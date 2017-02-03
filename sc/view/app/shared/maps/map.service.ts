@@ -1,10 +1,10 @@
 import { Injectable } from '@angular/core';
 import { ReplaySubject } from 'rxjs/ReplaySubject';
 
-import { Earthquake } from '../../shakecast/pages/earthquakes/earthquake.service'
-import { Facility } from '../../shakecast-admin/pages/facilities/facility.service'
-import { Group } from '../../shakecast-admin/pages/groups/group.service'
-import { User } from '../../shakecast-admin/pages/users/users.service'
+import { Earthquake } from '../../shakecast/pages/earthquakes/earthquake.service';
+import { Facility } from '../../shakecast-admin/pages/facilities/facility.service';
+import { Group } from '../../shakecast-admin/pages/groups/group.service';
+import { User } from '../../shakecast-admin/pages/users/users.service';
 
 @Injectable()
 export class MapService {
@@ -16,7 +16,7 @@ export class MapService {
     public center = new ReplaySubject(1)
 
     plotEq(eq: Earthquake,
-            clear: boolean = false) {
+           clear: any = null) {
         var eqMarker = this.makeMarker(eq)
         eqMarker['type'] = 'earthquake';
         eqMarker['zoom'] = 8;
@@ -42,13 +42,13 @@ export class MapService {
     }
 
     plotGroup(group: Group,
-            clear: boolean = false) {
+              clear: boolean = false) {
         var groupPoly: any = this.makePoly(group);
         this.groupPoly.next(groupPoly);
     }
 
     plotUser(user: User,
-            clear: boolean = false) {
+             clear: boolean = false) {
 
     }
 

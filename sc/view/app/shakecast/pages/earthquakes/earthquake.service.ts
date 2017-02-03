@@ -26,7 +26,7 @@ export class EarthquakeService {
     public earthquakeData = new ReplaySubject(1);
     public dataLoading = new ReplaySubject(1);
     public filter = {};
-    public configs: any = {clearOnPlot: true};
+    public configs: any = {clearOnPlot: 'all'};
 
     constructor(private _http: Http,
                 private notService: NotificationService,

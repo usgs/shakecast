@@ -3,6 +3,7 @@ import { Component,
 
 import { FacilityListComponent } from './facility-list.component'
 import { FacilityService } from './facility.service'
+import { EarthquakeService } from '../../../shakecast/pages/earthquakes/earthquake.service'
 import { TitleService } from '../../../title/title.service'
 @Component({
     selector: 'facilities',
@@ -12,9 +13,11 @@ import { TitleService } from '../../../title/title.service'
 })
 export class FacilitiesComponent implements OnInit{
     constructor(public facService: FacilityService,
-                private titleService: TitleService) {}
+                private titleService: TitleService,
+                private eqService: EarthquakeService) {}
     ngOnInit() {
         this.titleService.title.next('Facilities')
+        this.eqService.configs['clearOnPlot'] = 'events';
         this.facService.getData();
     }
 }
