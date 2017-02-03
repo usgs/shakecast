@@ -7,7 +7,7 @@ import { Component,
          transition,
          animate } from '@angular/core';
 import { FacilityService, Facility } from './facility.service'
-
+declare var _: any;
 import { filter } from './facility-filter/facility-filter.component'
 
 @Component({
@@ -92,7 +92,7 @@ export class FacilityListComponent implements OnInit, OnDestroy {
             this.plotFac(fac);
         } else {
             // remove it from the list
-            var index: number = this.selectedFacs.indexOf('shakecast_id', fac.shakecast_id);
+            var index: number = _.findIndex(this.selectedFacs,{shakecast_id: fac.shakecast_id});
             this.selectedFacs.splice(index, 1);
             this.removeFac(fac);
         }
@@ -101,11 +101,7 @@ export class FacilityListComponent implements OnInit, OnDestroy {
     }
 
     selectAll() {
-        for (facID in this.selectedFacs) {
-            fac = this.selectedFacs[facID];
-            this.removeFac(fac);
-        }
-        this.selectedFacs = [];
+        this.unselectAll();
         for (var facID in this.facilityData) {
             var fac: Facility = this.facilityData[facID];
             fac.selected = true;
@@ -121,6 +117,7 @@ export class FacilityListComponent implements OnInit, OnDestroy {
             this.removeFac(fac);
         }
         this.selectedFacs = [];
+        this.facService.selectedFacs = [];
     }
 
     removeFac(fac: Facility) {

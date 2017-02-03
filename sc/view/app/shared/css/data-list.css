@@ -69,6 +69,7 @@
 .data-info-container {
     margin: 5px;
     text-align: center;
+    overflow: scroll;
 }
 
 .data p {

@@ -97,9 +97,15 @@ export class MapComponent implements OnInit, OnDestroy {
 
     //////////////////////////////////////////////////////////////
     //////////////////// Earthquake Functions ////////////////////
-    plotEventMarker(marker: any) {
+    plotEventMarker(event: any) {
         // create event marker and plot it
-        this.createEventMarker(marker)
+        var marker: any = this.createEventMarker(event)
+
+        marker.addTo(this.eventLayer);
+        this.eventLayer.addTo(this.map)
+        marker.bindPopup(marker.popupContent).openPopup();
+        
+        this.eventMarkers.push(marker)
         // plot shakemap if available
         this.plotShakemap(marker)
     }
@@ -107,7 +113,7 @@ export class MapComponent implements OnInit, OnDestroy {
     createEventMarker(event: any) {
         var marker: any = L.marker([event.lat, event.lon]);
 
-        var popupContent = `<table class="my-table">    
+        marker['popupContent'] = `<table class="my-table">    
                                 <tr>
                                     <th>ID:</th>
                                     <td>` + event.event_id + `</td>
@@ -134,11 +140,7 @@ export class MapComponent implements OnInit, OnDestroy {
                                 </tr>
                             </table>`
 
-        this.markerLayer = L.layerGroup([marker]).addTo(this.eventLayer);
-        this.eventLayer.addTo(this.map)
-        marker.bindPopup(popupContent).openPopup();
-        
-        this.eventMarkers.push(marker)
+        return marker
     }
 
     plotLastEvent() {
@@ -228,7 +230,7 @@ export class MapComponent implements OnInit, OnDestroy {
         if (this.facilityLayer.hasLayer(marker)) {
             this.facilityLayer.removeLayer(marker);
         } else if (this.facilityCluster.hasLayer(marker)) {
-            this.map.removeLayer(marker)
+            this.facilityCluster.removeLayer(marker)
         }
 
         delete this.facilityMarkers[fac.shakecast_id.toString()]
