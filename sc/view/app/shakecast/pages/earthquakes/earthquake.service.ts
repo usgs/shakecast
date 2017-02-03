@@ -4,6 +4,7 @@ import 'rxjs/add/operator/map';
 import 'rxjs/add/operator/catch';
 import { Observable } from 'rxjs/Observable';
 import { ReplaySubject } from 'rxjs/ReplaySubject';
+import { Router } from '@angular/router';
 
 import { MapService } from '../../../shared/maps/map.service'
 import { NotificationService } from '../dashboard/notification-dash/notification.service.ts'
@@ -29,7 +30,8 @@ export class EarthquakeService {
     constructor(private _http: Http,
                 private notService: NotificationService,
                 private mapService: MapService,
-                private facService: FacilityService) {}
+                private facService: FacilityService,
+                private _router: Router) {}
 
     getData(filter: any = {}) {
         this.dataLoading.next(true);
@@ -44,8 +46,12 @@ export class EarthquakeService {
     }
     
     plotEq(eq: Earthquake) {
-        this.notService.getNotifications(eq)
-        this.facService.getShakeMapData(eq);
-        this.mapService.plotEq(eq)
+        this.notService.getNotifications(eq);
+
+        if (this._router.url == '/shakecast/dashboard') {
+            this.facService.getShakeMapData(eq);
+        }
+
+        this.mapService.plotEq(eq);
     }
 }

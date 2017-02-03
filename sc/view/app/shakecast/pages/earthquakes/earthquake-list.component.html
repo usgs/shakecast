@@ -1,35 +1,33 @@
-<div class="outer-container">
-    <div class="inner-container" stickToTop>
-        <div *ngIf="!dataLoading">
-            <div *ngIf="earthquakeData">
-                <div class="data" [@selected]="eq?.selected" *ngFor="let eq of earthquakeData" (click)="plotEq(eq)">
-                    <div class="data-header" [@headerSelected]="eq.selected">
-                        <h3>{{eq.event_id}}</h3>
-                    </div>
-                    <div class="data-body">
-                        <div class="data-info-container">
-                            <table>
-                                <tr>
-                                    <th>Magnitude: </th><td><p>{{eq.magnitude}}</p></td>
-                                </tr>
-                                <tr>
-                                    <th>Location: </th><td><p>{{eq.lat}}, {{eq.lon}}</p></td>
-                                </tr>
-                            </table>
-                            <p class="place">{{eq.place}}</p>
-                        </div>
+<div class="data-list-inner-container">
+    <div *ngIf="!dataLoading">
+        <div *ngIf="earthquakeData">
+            <div class="data" [@selected]="eq?.selected" *ngFor="let eq of earthquakeData" (click)="plotEq(eq)">
+                <div class="data-header" [@headerSelected]="eq.selected">
+                    <h3>{{eq.event_id}}</h3>
+                </div>
+                <div class="data-body">
+                    <div class="data-info-container">
+                        <table>
+                            <tr>
+                                <th>Magnitude: </th><td><p>{{eq.magnitude}}</p></td>
+                            </tr>
+                            <tr>
+                                <th>Location: </th><td><p>{{eq.lat}}, {{eq.lon}}</p></td>
+                            </tr>
+                        </table>
+                        <p class="place">{{eq.place}}</p>
                     </div>
                 </div>
-                <div *ngIf="moreData" class="eq loading">
-                    <loading></loading>
-                </div>
             </div>
-            <div *ngIf="!earthquakeData">
-                <h1>No Earthquake Data</h1>
+            <div *ngIf="moreData" class="eq loading">
+                <loading></loading>
             </div>
         </div>
-        <div *ngIf="dataLoading">
-            <p><loading></loading></p>
+        <div *ngIf="!earthquakeData">
+            <h1>No Earthquake Data</h1>
         </div>
+    </div>
+    <div *ngIf="dataLoading">
+        <p><loading></loading></p>
     </div>
 </div>

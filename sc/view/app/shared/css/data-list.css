@@ -1,10 +1,11 @@
-.outer-container {
+.data-list-outer-container {
     height: 230px;
+    width: 100%;
     position: relative;
     overflow: visible;
 }
 
-.inner-container {
+.data-list-inner-container {
     height: 230px;
     overflow-x: scroll;
     overflow-y: hidden;

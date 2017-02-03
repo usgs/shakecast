@@ -9,11 +9,12 @@ import { TitleService } from '../../../title/title.service';
 @Component({
     selector: 'users',
     templateUrl: 'app/shakecast-admin/pages/users/users.component.html',
-    styleUrls: ['app/shakecast-admin/pages/users/users.component.css'], 
+    styleUrls: ['app/shakecast-admin/pages/users/users.component.css',
+                  'app/shared/css/data-list.css'], 
 })
 export class UsersComponent {
     private subscriptions: any[] = [];
-
+    public groupData: any = []
     constructor(private groupService: GroupService,
                 private titleService: TitleService) {}
 

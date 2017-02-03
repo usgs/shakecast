@@ -41,6 +41,11 @@
     -moz-box-shadow: 1px 1px 2px 1px rgba(0,0,0,0.3);
 }
 
+.fragility-title {
+    margin-bottom: 0;
+    text-align: center;
+}
+
 .fragility-table {
     margin-top: 10px
 }

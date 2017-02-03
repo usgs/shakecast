@@ -6,7 +6,8 @@ import { EarthquakeService } from './earthquake.service.ts';
 @Component({
     selector: 'earthquakes',
     templateUrl: 'app/shakecast/pages/earthquakes/earthquakes.component.html',
-    styleUrls: ['app/shakecast/pages/earthquakes/earthquakes.component.css']
+    styleUrls: ['app/shakecast/pages/earthquakes/earthquakes.component.css',
+                  'app/shared/css/data-list.css']
 })
 export class EarthquakesComponent implements OnInit {
     constructor(private titleService: TitleService,

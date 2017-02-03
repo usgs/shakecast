@@ -9,7 +9,7 @@ import { StickToTopService } from './stick-to-top.service'
     selector: '[stickToTop]',
     host: {'[class.stick-to-top]':'stuck',
             '[style.top.px]': 'stuckTop',
-            '(window:scroll)': 'checkLock($event)'}
+            '(window:scroll)': 'setDidScroll($event)'}
 })
 
 export class StickToTopDirective implements OnInit, OnDestroy {
@@ -37,6 +37,10 @@ export class StickToTopDirective implements OnInit, OnDestroy {
         });
     }
 
+    setDidScroll(e: Event) {
+        this.didScroll = true;
+    }
+
     checkLock(event: Event = null) {
         if (this.init) {
             this.init = false
@@ -44,16 +48,15 @@ export class StickToTopDirective implements OnInit, OnDestroy {
         }
         this.scrolled = document.querySelector('body').scrollTop
         if (this.stuck === true) {
-            if (this.el.nativeElement.parentElement.getBoundingClientRect().top + this.scrolled + this.height >= 
-                    this.scrolled + this.sttService.stackHeight) {
+            if (this.el.nativeElement.parentElement.getBoundingClientRect().top + this.height >= 
+                    this.sttService.stackHeight) {
                 //console.log('Unstick it')
                 this.stuckTop = this.top
                 this.sttService.stackHeight -= this.height
                 this.stuck = false
             }
-        } else if ((this.scrolled >= 
-                    (this.el.nativeElement.parentElement.getBoundingClientRect().top + this.scrolled - this.sttService.stackHeight)) 
-                    || this.el.nativeElement.parentElement.getBoundingClientRect().top < 0) {
+        } else if (this.sttService.stackHeight >= 
+                    this.el.nativeElement.parentElement.getBoundingClientRect().top) {
             if (this.stuck !== true) {
                 //console.log('Stick it')
                 this.stuckTop = this.sttService.stackHeight

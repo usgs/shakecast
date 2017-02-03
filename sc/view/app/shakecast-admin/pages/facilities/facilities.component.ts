@@ -7,7 +7,8 @@ import { TitleService } from '../../../title/title.service'
 @Component({
     selector: 'facilities',
     templateUrl: 'app/shakecast-admin/pages/facilities/facilities.component.html',
-    styleUrls: ['app/shakecast-admin/pages/facilities/facilities.component.css'], 
+    styleUrls: ['app/shakecast-admin/pages/facilities/facilities.component.css',
+                  'app/shared/css/data-list.css'], 
 })
 export class FacilitiesComponent implements OnInit{
     constructor(public facService: FacilityService,
