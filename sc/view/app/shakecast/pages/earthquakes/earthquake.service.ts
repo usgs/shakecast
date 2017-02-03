@@ -26,6 +26,7 @@ export class EarthquakeService {
     public earthquakeData = new ReplaySubject(1);
     public dataLoading = new ReplaySubject(1);
     public filter = {};
+    public configs: any = {clearOnPlot: true};
 
     constructor(private _http: Http,
                 private notService: NotificationService,
@@ -52,6 +53,6 @@ export class EarthquakeService {
             this.facService.getShakeMapData(eq);
         }
 
-        this.mapService.plotEq(eq);
+        this.mapService.plotEq(eq, this.configs['clearOnPlot']);
     }
 }

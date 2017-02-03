@@ -6,10 +6,10 @@ import { Component,
          style,
          transition,
          animate } from '@angular/core';
-import { Router } from '@angular/router'
-import { EarthquakeService, Earthquake } from './earthquake.service'
+import { Router } from '@angular/router';
+import { EarthquakeService, Earthquake } from './earthquake.service';
 
-import { filter } from './earthquake-filter/earthquake-filter.component'
+import { filter } from './earthquake-filter/earthquake-filter.component';
 
 @Component({
     selector: 'earthquake-list',
@@ -51,13 +51,15 @@ export class EarthquakeListComponent implements OnInit, OnDestroy {
         this.subscriptions.push(this.eqService.earthquakeData.subscribe(eqs => {
             this.earthquakeData = eqs
             if (this.earthquakeData.length > 0) {
-                this.plotEq(eqs[0]);
-                this.selected = eqs[0];
-                this.selected.selected = true;
+                if (this._router.url != '/shakecast-admin/facilities') {
+                    this.plotEq(eqs[0]);
+                    this.selected = eqs[0];
+                    this.selected['selected'] = true;
+                }
             }
         }));
 
-        this.subscriptions.push(this.eqService.dataLoading.subscribe(loading => {
+        this.subscriptions.push(this.eqService.dataLoading.subscribe((loading: boolean) => {
             this.dataLoading = loading
         }));
 
@@ -72,10 +74,10 @@ export class EarthquakeListComponent implements OnInit, OnDestroy {
         this.eqService.plotEq(eq)
 
         if (this.selected) {
-            this.selected.selected = false;
+            this.selected['selected'] = false;
         }
 
-        eq.selected = true;
+        eq['selected'] = true;
         this.selected = eq;
     }
 

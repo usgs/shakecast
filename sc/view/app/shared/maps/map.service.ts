@@ -15,17 +15,19 @@ export class MapService {
     public clearMapNotify = new ReplaySubject(1)
     public center = new ReplaySubject(1)
 
-    plotEq(eq: Earthquake) {
+    plotEq(eq: Earthquake,
+            clear: boolean = false) {
         var eqMarker = this.makeMarker(eq)
         eqMarker['type'] = 'earthquake';
         eqMarker['zoom'] = 8;
         eqMarker['draggable'] = false;
 
-        this.eqMarkers.next([eqMarker]);
+        this.eqMarkers.next({events: [eqMarker], clear: clear});
         this.center.next(eqMarker);
     }
 
-    plotFac(fac: Facility) {
+    plotFac(fac: Facility,
+            clear: boolean = false) {
         var marker = this.makeMarker(fac);
         marker['type'] = 'facility';
         marker['zoom'] = 8;
@@ -39,12 +41,14 @@ export class MapService {
         this.center.next(marker);
     }
 
-    plotGroup(group: Group) {
+    plotGroup(group: Group,
+            clear: boolean = false) {
         var groupPoly: any = this.makePoly(group);
         this.groupPoly.next(groupPoly);
     }
 
-    plotUser(user: User) {
+    plotUser(user: User,
+            clear: boolean = false) {
 
     }
 

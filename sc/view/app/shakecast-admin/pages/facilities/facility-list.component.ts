@@ -6,9 +6,10 @@ import { Component,
          style,
          transition,
          animate } from '@angular/core';
-import { FacilityService, Facility } from './facility.service'
+import { Router } from '@angular/router';
+import { FacilityService, Facility } from './facility.service';
+import { filter } from './facility-filter/facility-filter.component';
 declare var _: any;
-import { filter } from './facility-filter/facility-filter.component'
 
 @Component({
   selector: 'facility-list',
@@ -36,21 +37,14 @@ export class FacilityListComponent implements OnInit, OnDestroy {
     public facilityData: any = [];
     public selectedFacs: any = [];
     public filter: filter = {};
+    public initPlot: boolean = false;
     private subscriptions: any[] = [];
-    constructor(private facService: FacilityService) {}
+    constructor(public facService: FacilityService,
+                private _router: Router) {}
 
     ngOnInit() {
         this.subscriptions.push(this.facService.facilityData.subscribe(facs => {
-            
-            // clear fac markers from the map
-            for (var fac in this.selectedFacs) {
-                this.removeFac(this.selectedFacs[fac])
-            }
-
             this.facilityData = facs;
-            for (var fac in this.facilityData) {
-                this.facilityData[fac].selected = false;
-            }
 
             if (this.selectedFacs.length === 0) {
                 // add a facility if the array is empty
@@ -58,7 +52,8 @@ export class FacilityListComponent implements OnInit, OnDestroy {
                 this.facService.hideFacInfo();
             }
 
-            if (this.facilityData.length > 0) {
+            if ((this.facilityData.length > 0) && (this._router.url === '/shakecast-admin/facilities')) {
+                this.facService.clearMap();
                 this.selectedFacs.push(this.facilityData[0]);
                 this.facilityData[0].selected = true;
                 this.plotFac(this.facilityData[0]);
@@ -79,7 +74,6 @@ export class FacilityListComponent implements OnInit, OnDestroy {
         this.subscriptions.push(this.facService.loadingData.subscribe((loading: boolean) => {
             this.loadingData = loading
         }));
-
         //this.facService.getData(this.filter);
     }
     
@@ -98,6 +92,14 @@ export class FacilityListComponent implements OnInit, OnDestroy {
         }
 
         this.facService.selectedFacs = this.selectedFacs;
+    }
+
+    plotByIndex(index: number) {
+        if (this.facilityData[index]) {
+            this.clickFac(this.facilityData[index]);
+        } else {
+            this.initPlot = true;
+        }
     }
 
     selectAll() {
