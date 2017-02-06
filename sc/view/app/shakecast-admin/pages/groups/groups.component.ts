@@ -12,7 +12,8 @@ import { GroupService } from './group.service'
 @Component({
     selector: 'groups',
     templateUrl: 'app/shakecast-admin/pages/groups/groups.component.html',
-    styleUrls: ['app/shakecast-admin/pages/groups/groups.component.css'], 
+    styleUrls: ['app/shakecast-admin/pages/groups/groups.component.css',
+                  'app/shared/css/data-list.css'], 
 })
 export class GroupsComponent implements OnInit {
     constructor(private groupService: GroupService,

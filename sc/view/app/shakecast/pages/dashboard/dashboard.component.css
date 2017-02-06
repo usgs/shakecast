@@ -2,7 +2,6 @@
     width: 48%;
     height: 100%;
     margin-left: 1%;
-    position: relative;
     display: inline-block
 }
 
@@ -24,8 +23,8 @@
 }
 
 .outer-fac-not-container {
-    margin-top: 20px;
-    margin-bottom: 20px;
+    padding-top: 20px;
+    padding-bottom: 20px;
     width: 100%;
     height: 40%;
 }
@@ -58,9 +57,10 @@ h2 {
 
 .dash-container {
     background: #fff;
-    height: 100%
+    height: 95%;
+    padding-top: 2.5%;
 }
 
 .outer-dash-container {
-    height: 99%;
+    height: 100vh;
 }

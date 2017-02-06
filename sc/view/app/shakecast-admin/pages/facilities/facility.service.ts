@@ -56,10 +56,10 @@ export class FacilityService {
             })
     }
 
-    showFacInfo(fac: Facility, event: Event) {
+    showFacInfo(fac: Facility, e: Event) {
         this.showInfo.next(fac);
         if (fac.selected) {
-            event.stopPropagation();
+            e.stopPropagation();
             this.plotFac(fac)
         }
     }

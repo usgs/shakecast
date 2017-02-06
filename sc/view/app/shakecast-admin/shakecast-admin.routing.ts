@@ -29,10 +29,6 @@ const appRoutes: Routes = [
                 component: FacilitiesComponent
             },
             {
-                path: 'earthquakes',
-                component: EarthquakesComponent
-            },
-            {
                 path: 'groups',
                 component: GroupsComponent
             },

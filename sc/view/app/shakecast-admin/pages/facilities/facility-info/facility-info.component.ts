@@ -6,7 +6,8 @@ import { Component,
          style,
          transition,
          animate } from '@angular/core';
-import { FacilityService, Facility } from '../facility.service'
+import { FacilityService, Facility } from '../facility.service';
+import { Router } from '@angular/router';
 
 @Component({
     selector: 'facility-info',
@@ -15,7 +16,7 @@ import { FacilityService, Facility } from '../facility.service'
     animations: [
       trigger('show', [
         state('false', style({left: '100%'})),
-        state('true', style({left: '50%'})),
+        state('true', style({left: '55%'})),
           transition('true => false', animate('500ms ease-out')),
           transition('false => true', animate('500ms ease-in'))
       ])
@@ -26,7 +27,9 @@ export class FacilityInfoComponent implements OnInit, OnDestroy{
     private show: boolean = false;
     public facility: Facility = null;
 
-    constructor(private facService: FacilityService) {}
+    constructor(private facService: FacilityService,
+                public _router: Router) {}
+
     ngOnInit() {
         this.subscriptions.push(this.facService.showInfo.subscribe((facility: Facility) => {
             if (facility) {

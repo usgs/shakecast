@@ -10,12 +10,12 @@
                     <option *ngFor="let eachName of tempNames" [ngValue]="eachName">{{ eachName }}</option>
                 </select>
                 <div class="item">
-                    <h3 class="conf event-type" 
+                    <h3 class="conf event-type button" 
                             [ngClass]="{'selected': eventType=='new_event'}"
                             (click)="getNotification(name, 'new_event')">
                         New Event
                     </h3>
-                    <h3 class="conf event-type"
+                    <h3 class="conf event-type button"
                             [ngClass]="{'selected': eventType=='inspection'}"
                             (click)="getNotification(name, 'inspection')">
                         Inspection

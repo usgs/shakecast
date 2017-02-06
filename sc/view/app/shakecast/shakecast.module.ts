@@ -30,7 +30,6 @@ import { SharedModule } from '../shared/shared.module'
     DashboardComponent,
     NotificationDashComponent,
     EarthquakesComponent,
-    EarthquakeListComponent,
     EarthquakeFilter
   ],
   providers: [

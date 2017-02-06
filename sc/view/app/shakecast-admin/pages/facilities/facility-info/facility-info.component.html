@@ -4,28 +4,29 @@
             <h2 class="name">{{ facility.name }}</h2>
             <p class="desc">{{ facility.description ? facility.description : 'No Description' }}</p>
         </div>
+        <h3 class="fragility-title">Fragility</h3>
         <table class="fragility-table">
-            <table>
-                <tr> 
-                    <th>Metric: </th><td>{{ facility.metric }}</td>
-                </tr>
-            </table>
             <tr>
                 <table class="colors-table">
                     <th style="background-color:green" *ngIf="facility.green != -1">
-                        {{ facility.green }}
+                        {{ facility.metric }}: {{ facility.green }} 
                     </th>
                     <th style="background-color:gold" *ngIf="facility.yellow != -1">
-                        {{ facility.yellow }}
+                        {{ facility.metric }}: {{ facility.yellow }}
                     </th>
                     <th style="background-color:orange" *ngIf="facility.orange != -1">
-                        {{ facility.orange }}
+                        {{ facility.metric }}: {{ facility.orange }}
                     </th>
                     <th style="background-color:red" *ngIf="facility.red != -1">
-                        {{ facility.red }}
+                        {{ facility.metric }}: {{ facility.red }}
                     </th>
                 </table>
         </table>
+
+        <div *ngIf="_router.url != '/shakecast/dashboard'">
+            <earthquake-list></earthquake-list>
+        </div>
+
         <div class="hide-container">
             <h2 class="hide button" (click)="hide()">Hide</h2>
         </div>

@@ -19,9 +19,11 @@ export class MapComponent implements OnInit, OnDestroy {
     public facilityMarkers: any = {};
     public center: any = {};
     private markerLayer: any = L.layerGroup();
+    private eventMarker: any = L.marker();
     private eventLayer: any = L.layerGroup();
     private overlayLayer: any = L.layerGroup();
-    private facilityLayer: any = L.markerClusterGroup();
+    private facilityCluster: any = L.markerClusterGroup();
+    private facilityLayer: any = L.layerGroup();
     private facMarker: any = L.marker();
     private groupLayers: any = L.featureGroup();
     private subscriptions: any = [];
@@ -47,18 +49,24 @@ export class MapComponent implements OnInit, OnDestroy {
     
 
         var layers: any  = {
-            'Facility': this.facilityLayer
+            'Facility': this.facilityLayer,
+            'Event': this.eventLayer
         }
         L.control.layers(null,layers).addTo(this.map);
 
         // subscribe to earthquake markers
-        this.subscriptions.push(this.mapService.eqMarkers.subscribe(markers => {
-            // clear existing layers
-            this.clearLayers();
-
-                for (var mark in markers) {
-                    this.plotEventMarker(markers[mark]);
+        this.subscriptions.push(this.mapService.eqMarkers.subscribe(eqData => {
+            if (eqData['clear']) {
+                if (eqData['clear'] == 'all') {
+                    // clear all layers
+                    this.clearLayers();
+                } else if (eqData['clear'] == 'events') {
+                    this.clearEventLayers();
                 }
+            }
+            for (var mark in eqData['events']) {
+                this.plotEventMarker(eqData['events'][mark]);
+            }
         }));
 
         // subscribe to center
@@ -96,17 +104,23 @@ export class MapComponent implements OnInit, OnDestroy {
 
     //////////////////////////////////////////////////////////////
     //////////////////// Earthquake Functions ////////////////////
-    plotEventMarker(marker: any) {
+    plotEventMarker(event: any) {
         // create event marker and plot it
-        this.createEventMarker(marker)
+        this.eventMarker = this.createEventMarker(event)
+
+        this.eventMarker.addTo(this.eventLayer);
+        this.eventLayer.addTo(this.map)
+        this.eventMarker.bindPopup(this.eventMarker.popupContent).openPopup();
+        
+        this.eventMarkers.push(this.eventMarker)
         // plot shakemap if available
-        this.plotShakemap(marker)
+        this.plotShakemap(event)
     }
 
     createEventMarker(event: any) {
         var marker: any = L.marker([event.lat, event.lon]);
 
-        var popupContent = `<table class="my-table">    
+        marker['popupContent'] = `<table class="my-table">    
                                 <tr>
                                     <th>ID:</th>
                                     <td>` + event.event_id + `</td>
@@ -133,11 +147,7 @@ export class MapComponent implements OnInit, OnDestroy {
                                 </tr>
                             </table>`
 
-        this.markerLayer = L.layerGroup([marker]).addTo(this.eventLayer);
-        this.eventLayer.addTo(this.map)
-        marker.bindPopup(popupContent).openPopup();
-        
-        this.eventMarkers.push(marker)
+        return marker
     }
 
     plotLastEvent() {
@@ -150,32 +160,31 @@ export class MapComponent implements OnInit, OnDestroy {
 
     plotShakemap(event: any) {
         this.smService.shakemapCheck(event).subscribe((result: any) => {
-            if (result.length > 0) {
+            if (result.length > 0){
                 // plot shakemaps
                 var sm = result[0]
                 var imageUrl = 'api/shakemaps/' + sm.shakemap_id + '/overlay';
                 var imageBounds = [[sm.lat_min, sm.lon_min], [sm.lat_max, sm.lon_max]];
 
                 
-                var overlay = L.imageOverlay(imageUrl, 
+                this.overlayLayer = L.imageOverlay(imageUrl, 
                                 imageBounds, 
                                 {opacity: .6})
 
-                this.overlayLayer = L.layerGroup([overlay]).addTo(this.map)
+                //this.overlayLayer = L.layerGroup([overlay]);
+                this.overlayLayer.addTo(this.eventLayer);
+                if (this.map.hasLayer(this.eventLayer)) {
+                    this.eventLayer.addTo(this.map)
+                }
             }
         });
     }
 
     //////////////////////////////////////////////////////////////
     ///////////////////// Facility Functions /////////////////////
-    plotFacMarker(marker: any) {
+    plotFacMarker(fac: any) {
         // create event marker and plot it
-        this.createFacMarker(marker)
-    }
-
-    createFacMarker(fac: any) {
-        var marker: any = L.marker([fac.lat, fac.lon]);
-        var popupContent = fac.name
+        var marker: any = this.createFacMarker(fac);
         var existingMarker: any = this.facilityMarkers[fac.shakecast_id.toString()];
 
         // Check if the marker already exists
@@ -184,17 +193,46 @@ export class MapComponent implements OnInit, OnDestroy {
         } else if (existingMarker) {
             existingMarker.openPopup();
         } else {
-            if (this.map.hasLayer(this.facMarker)) {
-                this.map.removeLayer(this.facMarker);
-                this.facilityLayer.addLayer(this.facMarker);
+            if (this.facilityLayer.hasLayer(this.facMarker)) {
+                this.facilityLayer.removeLayer(this.facMarker);
+                this.facilityCluster.addLayer(this.facMarker);
+                this.facilityCluster.addTo(this.facilityLayer);
                 this.facilityLayer.addTo(this.map);
             }
             this.facMarker = marker;
             this.facilityMarkers[fac.shakecast_id.toString()] = marker;
 
-            this.facMarker.addTo(this.map);
-            marker.bindPopup(popupContent).openPopup();
+            this.facMarker.addTo(this.facilityLayer);
+            this.facilityLayer.addTo(this.map);
+            marker.bindPopup(marker.popupContent).openPopup();
         }
+    }
+
+    createFacMarker(fac: any) {
+        var marker: any = L.marker([fac.lat, fac.lon]);
+        var desc: string = ''
+        if (fac.html) {
+            fac['popupContent'] = fac.html
+        } else {
+            if (fac.description) {
+                desc = fac.description
+            } else {
+                desc = 'No Description'
+            }
+            marker['popupContent'] = `<table style="text-align:center;">
+                                        <tr>
+                                            <th>` + 
+                                                fac.name + `
+                                            </th>
+                                        </tr>
+                                        <tr>
+                                            <td style="font-style:italic;">` +
+                                                desc + `
+                                            </td>
+                                        </tr>
+                                    </table>`
+        }
+        return marker
     }
 
     removeFacMarker(fac: any) {
@@ -202,12 +240,11 @@ export class MapComponent implements OnInit, OnDestroy {
     
         if (this.facilityLayer.hasLayer(marker)) {
             this.facilityLayer.removeLayer(marker);
-            delete this.facilityMarkers[fac.shakecast_id.toString()]
-        } else if (this.map.hasLayer(marker)) {
-            this.map.removeLayer(marker)
-            delete this.facilityMarkers[fac.shakecast_id.toString()]
+        } else if (this.facilityCluster.hasLayer(marker)) {
+            this.facilityCluster.removeLayer(marker)
         }
 
+        delete this.facilityMarkers[fac.shakecast_id.toString()]
         if (this._router.url == '/shakecast/dashboard') {
             if (Object.keys(this.facilityMarkers).length == 0) {
                 this.plotLastEvent();
@@ -223,34 +260,42 @@ export class MapComponent implements OnInit, OnDestroy {
         this.map.fitBounds(this.groupLayers.getBounds());
     }
 
-    clearLayers() {
-        /*
-        Clear all layers besides basemaps
-        */
-        
-        if (this.map.hasLayer(this.markerLayer)) {
-            this.map.removeLayer(this.markerLayer);
-            this.markerLayer = L.layerGroup();
+    clearEventLayers() {
+        if (this.eventLayer.hasLayer(this.eventMarker)) {
+            this.eventLayer.removeLayer(this.eventMarker);
+            this.overlayLayer = L.marker();
+        }
+
+        if (this.eventLayer.hasLayer(this.overlayLayer)) {
+            this.eventLayer.removeLayer(this.overlayLayer);
+            this.overlayLayer = L.imageOverlay();
         }
 
         if (this.map.hasLayer(this.eventLayer)) {
             this.map.removeLayer(this.eventLayer);
             this.eventLayer = L.layerGroup();
         }
+    }
 
-        if (this.map.hasLayer(this.overlayLayer)) {
-            this.map.removeLayer(this.overlayLayer);
-            this.overlayLayer = L.layerGroup();
-        }        
-        
-        if (this.map.hasLayer(this.facilityLayer)) {
-            this.map.removeLayer(this.facilityLayer);
-            this.facilityLayer = L.markerClusterGroup();
+    clearLayers() {
+        /*
+        Clear all layers besides basemaps
+        */
+        this.clearEventLayers();
+
+        if (this.map.hasLayer(this.markerLayer)) {
+            this.map.removeLayer(this.markerLayer);
+            this.markerLayer = L.layerGroup();
         }
 
-        if (this.map.hasLayer(this.facMarker)) {
-            this.map.removeLayer(this.facMarker);
-            this.facMarker = L.marker();
+        if (this.facilityLayer.hasLayer(this.facilityCluster)) {
+            this.facilityLayer.removeLayer(this.facilityCluster);
+            this.facilityCluster = L.markerClusterGroup();
+        }
+
+        if (this.facilityLayer.hasLayer(this.facMarker)) {
+            this.facilityLayer.removeLayer(this.facMarker);
+            this.facMarker= L.marker();
         }
 
         if (this.map.hasLayer(this.groupLayers)) {
@@ -262,14 +307,13 @@ export class MapComponent implements OnInit, OnDestroy {
         this.facilityMarkers = [];
     }
 
-    ////////// Clean Up Before Closing //////////
     ngOnDestroy() {
-        this.endSubscriptions()
+        this.endSubscriptions();
     }
 
     endSubscriptions() {
         for (var sub in this.subscriptions) {
-            this.subscriptions[sub].unsubscribe()
+            this.subscriptions[sub].unsubscribe();
         }
     }
 

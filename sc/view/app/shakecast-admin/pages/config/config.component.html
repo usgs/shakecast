@@ -10,11 +10,11 @@
             <table>
                 <tr>
                     <th>UTC time</th>
-                    <td>{{ timeService.getUTCTime() | date:'dd-M-yyyy H:mm'}}</td>
+                    <td>{{ utcTime | date:'dd-M-yyyy H:mm'}}</td>
                 </tr>
                 <tr>
                     <th>ShakeCast Time</th>
-                    <td>{{ timeService.getOffsetTime(configs.timezone) | date:'dd-M-yyyy H:mm'}}</td>
+                    <td>{{ offsetTime | date:'dd-M-yyyy H:mm'}}</td>
                     <table class="spin-table">
                         <tr class="button spin" (click)="hourUp()"><th>&#9650;</th></tr>
                         <tr class="button spin" (click)="hourDown()"><th>&#x25bc;</th></tr>

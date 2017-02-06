@@ -1,38 +1,36 @@
-<div class="outer-container">
-    <div class="inner-container" stickToTop>
-        <div *ngIf="!loadingData">
-            <div *ngIf="dataList.length > 0">
-                <div class="data" 
-                        [@selected]="data.selected" 
-                        *ngFor="let data of dataList" 
-                        (click)="clickData(data)">
-                    <div [@headerSelected]="data.selected" class="data-header">
-                        <h3 *ngIf="data.full_name"> {{ data.full_name }} </h3>
-                        <h3 *ngIf="!data.full_name"> {{ data.username }} </h3>
-                    </div>
-                    <div class="data-body">
-                        <div class="data-info-container">
-                            <table>
-                                <tr>
-                                    <th>Username: </th><td>{{ data.username }}
-                                </tr>
-                                <tr>
-                                    <th>Email: </th><td>{{ data.email }}
-                                </tr>
-                            </table>
-                            <h3 *ngIf="data.user_type == 'ADMIN'">
-                                Admin
-                            </h3>
-                        </div>
+<div class="data-list-inner-container" stickToTop>
+    <div *ngIf="!loadingData">
+        <div *ngIf="dataList.length > 0">
+            <div class="data" 
+                    [@selected]="data.selected" 
+                    *ngFor="let data of dataList" 
+                    (click)="clickData(data)">
+                <div [@headerSelected]="data.selected" class="data-header">
+                    <h3 *ngIf="data.full_name"> {{ data.full_name }} </h3>
+                    <h3 *ngIf="!data.full_name"> {{ data.username }} </h3>
+                </div>
+                <div class="data-body">
+                    <div class="data-info-container">
+                        <table>
+                            <tr>
+                                <th>Username: </th><td>{{ data.username }}
+                            </tr>
+                            <tr>
+                                <th>Email: </th><td>{{ data.email }}
+                            </tr>
+                        </table>
+                        <h3 *ngIf="data.user_type == 'ADMIN'">
+                            Admin
+                        </h3>
                     </div>
                 </div>
             </div>
-            <div *ngIf="dataList.length == 0">
-                <h1 class="no-data">No Users</h1>
-            </div>
         </div>
-        <div *ngIf="loadingData">
-            <p>loading...</p>
+        <div *ngIf="dataList.length == 0">
+            <h1 class="no-data">No Users</h1>
         </div>
+    </div>
+    <div *ngIf="loadingData">
+        <p>loading...</p>
     </div>
 </div>
