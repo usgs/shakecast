@@ -162,7 +162,6 @@ def get_eq_data():
 @login_required
 def get_shaking_events(facility_id):
     session = Session()
-    query = session.query(Event)
     
     fac = session.query(Facility).filter(Facility.shakecast_id == facility_id).first()
     eqs = [fs.shakemap.event for fs in fac.shaking_history]
