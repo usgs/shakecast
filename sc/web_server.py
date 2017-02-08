@@ -144,6 +144,7 @@ def get_eq_data():
         
     eqs = (query.filter(Event.time < eq_time)
                 .filter(Event.event_id != 'heartbeat')
+                .filter(Event.status != 'scenario')
                 .order_by(Event.time.desc())
                 .limit(50)
                 .all())
