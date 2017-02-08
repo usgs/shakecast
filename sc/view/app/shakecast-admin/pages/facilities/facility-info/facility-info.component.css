@@ -17,6 +17,7 @@
 .info-content {
     height: 95%;
     padding: 5px;
+    overflow: hidden;
 }
 
 .hide {
@@ -39,6 +40,7 @@
     box-shadow: 1px 1px 2px 1px rgba(0,0,0,0.3);
     -webkit-box-shadow: 1px 1px 2px 1px rgba(0,0,0,0.3);
     -moz-box-shadow: 1px 1px 2px 1px rgba(0,0,0,0.3);
+    overflow: scroll;
 }
 
 .fragility-title {
@@ -61,4 +63,68 @@ table {
 
 .colors-table th {
     padding: .5em;
+}
+
+.shaking-history-link {
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    cursor: pointer;
+    margin-top: 30%;
+    height: 4.5em;
+}
+
+.shaking-history-link h1 {
+    color:#55aaee;
+    margin-bottom: 2px;
+    text-shadow: 5px 5px 5px rgba(0,0,0,0.3);
+}
+.triangle {
+    color: #55aaee;
+    font-size: 100px;
+    transform: rotate(-90deg) translateX(500%);
+    text-shadow: -5px 5px 5px rgba(0,0,0,0.3);
+}
+
+.shaking-history-link:hover .triangle {
+    text-shadow: -5px 5px 5px rgba(0,0,0,0.5);
+}
+.shaking-history-link:hover h1 {
+    text-shadow: 5px 5px 5px rgba(0,0,0,0.5);
+}
+
+.shaking-history {
+    top: 100%;
+    position: relative;
+}
+
+.impact {
+    padding:5px;
+}
+
+.impact h2 {
+    margin-bottom: 5px;
+}
+
+.impact-level {
+    position: relative;
+    padding: 10px;
+    margin-top: 0;
+    width: 75%;
+    margin-left: auto;
+    margin-right: auto;
+    text-align: center
+}
+
+.shaking-table {
+    width: 100%;
+}
+
+.shaking-table table th, .shaking-table table td {
+    padding: 5px;
+    text-align: center;
+}
+
+.shaking-table table {
+    border-right: 3px solid #AED8FA;
 }

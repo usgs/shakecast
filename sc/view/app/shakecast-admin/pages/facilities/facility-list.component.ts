@@ -74,7 +74,6 @@ export class FacilityListComponent implements OnInit, OnDestroy {
         this.subscriptions.push(this.facService.loadingData.subscribe((loading: boolean) => {
             this.loadingData = loading
         }));
-        //this.facService.getData(this.filter);
     }
     
     clickFac(fac: Facility) {

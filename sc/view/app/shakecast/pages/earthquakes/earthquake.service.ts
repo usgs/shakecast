@@ -25,6 +25,7 @@ export interface Earthquake {
 export class EarthquakeService {
     public earthquakeData = new ReplaySubject(1);
     public dataLoading = new ReplaySubject(1);
+    public plotting = new ReplaySubject(1);
     public filter = {};
     public configs: any = {clearOnPlot: 'all'};
 
@@ -45,9 +46,20 @@ export class EarthquakeService {
                 this.dataLoading.next(false);
             })
     }
+
+    getFacilityData(facility: any) {
+        this.dataLoading.next(true);
+        this._http.get('/api/earthquake-data/facility/' + facility['shakecast_id'])
+            .map((result: Response) => result.json())
+            .subscribe((result: any) => {
+                this.earthquakeData.next(result.data);
+                this.dataLoading.next(false);
+            })
+    }
     
     plotEq(eq: Earthquake) {
         this.notService.getNotifications(eq);
+        this.plotting.next(eq);
 
         if (this._router.url == '/shakecast/dashboard') {
             this.facService.getShakeMapData(eq);

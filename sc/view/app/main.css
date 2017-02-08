@@ -94,6 +94,7 @@ html, body
 .button {
     display: inline-block;
     border: 3px solid #55aaee;
+    background: #ffffff;
     margin: 5px;
     padding: 5px;
     cursor: pointer;

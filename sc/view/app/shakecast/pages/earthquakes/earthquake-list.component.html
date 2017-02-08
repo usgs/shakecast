@@ -1,6 +1,6 @@
 <div class="data-list-inner-container">
-    <div *ngIf="!dataLoading">
-        <div *ngIf="earthquakeData">
+    <div *ngIf="!dataLoading" class="data-list">
+        <div *ngIf="earthquakeData.length > 0">
             <div class="data" [@selected]="eq?.selected" *ngFor="let eq of earthquakeData" (click)="plotEq(eq)">
                 <div class="data-header" [@headerSelected]="eq.selected">
                     <h3>{{eq.event_id}}</h3>
@@ -23,8 +23,8 @@
                 <loading></loading>
             </div>
         </div>
-        <div *ngIf="!earthquakeData">
-            <h1>No Earthquake Data</h1>
+        <div *ngIf="earthquakeData.length == 0" class="data-list-no-data-container">
+            <h1 class="data-list-no-data">No Earthquake Data</h1>
         </div>
     </div>
     <div *ngIf="dataLoading">

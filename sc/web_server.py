@@ -125,9 +125,16 @@ def get_eq_data():
             elif timeframe == 'month':
                 query = query.filter(Event.time > time.time() - 31*DAY)    
             elif timeframe == 'year':
-                query = query.filter(Event.time > time.time() - 365*DAY)    
-        if filter_.get('shakemap', True) is True:
+                query = query.filter(Event.time > time.time() - 365*DAY)
+
+        if filter_.get('shakemap', False) is True:
             query = query.filter(Event.shakemaps)
+
+        if filter_.get('facility', None):
+            query = (query.filter(ShakeMap
+                                    .facility_shaking
+                                    .any(Facility_Shaking
+                                            .facility_id == filter_['facility']['shakecast_id'])))
 
     # get the time of the last earthquake in UI,
     # should be 0 for a new request
@@ -141,6 +148,25 @@ def get_eq_data():
                 .limit(50)
                 .all())
     
+    eq_dicts = []
+    for eq in eqs:
+        eq_dict = eq.__dict__.copy()
+        eq_dict['shakemaps'] = len(eq.shakemaps)
+        eq_dict.pop('_sa_instance_state', None)
+        eq_dicts += [eq_dict]
+    
+    Session.remove()
+    return jsonify(success=True, data=eq_dicts)
+
+@app.route('/api/earthquake-data/facility/<facility_id>')
+@login_required
+def get_shaking_events(facility_id):
+    session = Session()
+    query = session.query(Event)
+    
+    fac = session.query(Facility).filter(Facility.shakecast_id == facility_id).first()
+    eqs = [fs.shakemap.event for fs in fac.shaking_history]
+
     eq_dicts = []
     for eq in eqs:
         eq_dict = eq.__dict__.copy()
@@ -169,7 +195,16 @@ def get_fac_data():
             query = query.filter(Facility.lon_min < float(filter_['lonMax']))
         if filter_.get('lonMin', None):
             query = query.filter(Facility.lon_max > float(filter_['lonMin']))
+        if filter_.get('keywords', None):
 
+            keys_raw = filter_['keywords'].lower().split(',')
+            keys = [key.strip(' ') for key in keys_raw]
+
+            key_filter = [or_(literal(key).contains(func.lower(Facility.name)),
+                                            func.lower(Facility.name).contains(key),
+                                            func.lower(Facility.description).contains(key)) for key in keys]
+            query = query.filter(and_(*key_filter))
+            
     facs = (query.limit(50)
                  .all())
     
@@ -181,6 +216,24 @@ def get_fac_data():
     
     Session.remove()
     return jsonify(success=True, data=dicts)
+
+@app.route('/api/facility-shaking/<facility_id>/<eq_id>')
+@login_required
+def get_shaking_data(facility_id, eq_id):
+    session = Session()
+    shaking = (session.query(Facility_Shaking)
+                    .filter(Facility_Shaking
+                                .shakemap
+                                .has(ShakeMap.shakemap_id == eq_id))
+                    .first())
+
+    shaking_dict = None
+    if shaking:
+        shaking_dict = shaking.__dict__.copy()
+        shaking_dict.pop('_sa_instance_state', None)
+    
+    Session.remove()
+    return jsonify(success=True, data=shaking_dict)
 
 @app.route('/api/delete/facilities', methods=['DELETE'])
 @login_required
