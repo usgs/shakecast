@@ -365,15 +365,14 @@ class ProductGrabber(object):
             
         Session.remove()
         
-    def get_scenario(self, eq_id='', region=''):
+    def get_scenario(self, shakemap_id=''):
         '''
         Grab a shakemap from the USGS web and stick it in the db so
         it can be run as a scenario
         '''
         scenario_ready = True
         try:
-            self.json_feed_url = 'https://earthquake.usgs.gov/fdsnws/event/1/query?format=geojson&eventid={}{}'.format(region,
-                                                                                                        eq_id)
+            self.json_feed_url = 'https://earthquake.usgs.gov/fdsnws/event/1/query?format=geojson&eventid={}{}'.format(shakemap_id)
             self.get_json_feed(scenario=True)
             events = self.get_new_events(scenario=True)
             shakemaps = self.get_new_shakemaps(scenario=True)
