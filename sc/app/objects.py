@@ -234,13 +234,12 @@ class ProductGrabber(object):
             
             # pulls the first shakemap associated with the event
             shakemap = ShakeMap()
-            shakemap.json = eq_info['properties']['products']['shakemap'][0]
 
             if scenario is False:
                 shakemap.shakemap_id = eq_id
             else:
                 shakemap.shakemap_id = eq_id + '_scenario'
-            shakemap.shakemap_version = shakemap.json['properties']['version']
+            shakemap.shakemap_version = eq_info['properties']['products']['shakemap'][0]['properties']['version']
             
             # check if we already have the shakemap
             if shakemap.is_new() is False:
@@ -250,6 +249,8 @@ class ProductGrabber(object):
                     .filter(ShakeMap.shakemap_version == shakemap.shakemap_version)
                     .first()
                 )
+            
+            shakemap.json = eq_info['properties']['products']['shakemap'][0]
             
             # check if the shakemap has required products. If it does,
             # it is not a new map, and can be skipped
@@ -283,7 +284,7 @@ class ProductGrabber(object):
             # make a directory for the new event
             shakemap.directory_name = os.path.join(self.data_dir,
                                                    shakemap.shakemap_id,
-                                                   shakemap.shakemap_id + '-' + shakemap.shakemap_version)
+                                                   shakemap.shakemap_id + '-' + str(shakemap.shakemap_version))
             if not os.path.exists(shakemap.directory_name):
                 os.makedirs(shakemap.directory_name)
         
@@ -317,7 +318,11 @@ class ProductGrabber(object):
                     self.log += 'Failed to download: %s %s' % (eq_id, product_name)
             
             # check for event whose id or one of its old ids matches the shakemap id
-            event = session.query(Event).filter(Event.all_event_ids.contains(shakemap.shakemap_id)).all()
+            if scenario is False:
+                event = session.query(Event).filter(Event.all_event_ids.contains(shakemap.shakemap_id)).all()
+            else:
+                event = session.query(Event).filter(Event.event_id == shakemap.shakemap_id).all()
+
             if event:
                 event = event[0]
                 event.shakemaps.append(shakemap)
@@ -325,7 +330,7 @@ class ProductGrabber(object):
             session.commit()
             
             new_shakemaps += [shakemap]
-            shakemap_str += 'Wrote %s to disk.\n' % eq_id
+            shakemap_str += 'Wrote %s to disk.\n' % shakemap.shakemap_id
         
         self.log += shakemap_str
         Session.remove()
@@ -372,10 +377,10 @@ class ProductGrabber(object):
         '''
         scenario_ready = True
         try:
-            self.json_feed_url = 'https://earthquake.usgs.gov/fdsnws/event/1/query?format=geojson&eventid={}{}'.format(shakemap_id)
+            self.json_feed_url = 'https://earthquake.usgs.gov/fdsnws/event/1/query?format=geojson&eventid={0}'.format(shakemap_id)
             self.get_json_feed(scenario=True)
-            events = self.get_new_events(scenario=True)
-            shakemaps = self.get_new_shakemaps(scenario=True)
+            self.get_new_events(scenario=True)
+            self.get_new_shakemaps(scenario=True)
         except Exception:
             scenario_ready = False
         
