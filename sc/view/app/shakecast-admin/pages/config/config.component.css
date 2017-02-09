@@ -10,7 +10,7 @@
     cursor: pointer;
 }
 
-.spin-table td, .spin-table tr, {
+.spin-table td, .spin-table tr {
     border-width: 0px;
 }
 
