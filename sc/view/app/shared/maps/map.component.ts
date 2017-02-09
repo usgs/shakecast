@@ -56,16 +56,18 @@ export class MapComponent implements OnInit, OnDestroy {
 
         // subscribe to earthquake markers
         this.subscriptions.push(this.mapService.eqMarkers.subscribe(eqData => {
-            if (eqData['clear']) {
-                if (eqData['clear'] == 'all') {
-                    // clear all layers
-                    this.clearLayers();
-                } else if (eqData['clear'] == 'events') {
-                    this.clearEventLayers();
+            if (eqData) {
+                if (eqData['clear']) {
+                    if (eqData['clear'] == 'all') {
+                        // clear all layers
+                        this.clearLayers();
+                    } else if (eqData['clear'] == 'events') {
+                        this.clearEventLayers();
+                    }
                 }
-            }
-            for (var mark in eqData['events']) {
-                this.plotEventMarker(eqData['events'][mark]);
+                for (var mark in eqData['events']) {
+                    this.plotEventMarker(eqData['events'][mark]);
+                }
             }
         }));
 
