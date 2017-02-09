@@ -22,6 +22,7 @@ export class FacilityService {
     public loadingData = new ReplaySubject(1);
     public facilityData = new ReplaySubject(1);
     public facilityInfo = new ReplaySubject(1);
+    public facilityShaking = new ReplaySubject(1);
     public showInfo = new ReplaySubject(1);
     public shakingData = new ReplaySubject(1);
     public selectedFacs: Facility[] = [];
@@ -56,10 +57,22 @@ export class FacilityService {
             })
     }
 
-    showFacInfo(fac: Facility, event: Event) {
+    getFacilityShaking(facility: any, event: any) {
+        this.loadingData.next(true)
+        this._http.get('/api/facility-shaking/' + facility['shakecast_id'] + '/' + event['event_id'])
+            .map((result: Response) => result.json())
+            .subscribe((result: any) => {
+                if (result.data) {
+                    this.facilityShaking.next(result.data);
+                }
+                this.loadingData.next(false)
+            })
+    }
+
+    showFacInfo(fac: Facility, e: Event) {
         this.showInfo.next(fac);
         if (fac.selected) {
-            event.stopPropagation();
+            e.stopPropagation();
             this.plotFac(fac)
         }
     }

@@ -6,7 +6,7 @@
 <div class="filter-form" [@filterShown]="filterShown">
     <p class="exit" (click)="cancelFilter()">X</p>
     <h2>Facility Filter</h2>
-    
+    <input [(ngModel)]="filter.keywords" placeholder="Keywords">
     <input [(ngModel)]="filter.latMin" placeholder="Min Latitude">
     <input [(ngModel)]="filter.latMax" placeholder="Max Latitude">
     <input [(ngModel)]="filter.lonMin" placeholder="Min Longitude">

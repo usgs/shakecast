@@ -76,4 +76,5 @@ export interface filter  {
     lonMax?: number;
     lonMin?: number;
     groupAffected?: string;
+    keywords?: string
 }

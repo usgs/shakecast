@@ -1,28 +1,26 @@
-<div class="outer-container">
-    <div class="inner-container" stickToTop>
-        <div *ngIf="!loadingData">
-            <div *ngIf="groupData.length > 0">
-                <div class="eq" [@selected]="group.selected" *ngFor="let group of groupData" (click)="clickGroup(group)">
-                    <div [@headerSelected]="group.selected" class="data-header">
-                        <h3>{{group.name}}</h3>
-                    </div>
-                    <div class="data-body">
-                        <div class="data-info-container">
-                            <table>
-                                <tr>
-                                    <th>Facility Type:</th><td>{{ group.facility_type }}</td>
-                                </tr>
-                            </table>
-                        </div>
+<div class="data-list-inner-container">
+    <div *ngIf="!loadingData">
+        <div *ngIf="groupData.length > 0">
+            <div class="eq" [@selected]="group.selected" *ngFor="let group of groupData" (click)="clickGroup(group)">
+                <div [@headerSelected]="group.selected" class="data-header">
+                    <h3>{{group.name}}</h3>
+                </div>
+                <div class="data-body">
+                    <div class="data-info-container">
+                        <table>
+                            <tr>
+                                <th>Facility Type:</th><td>{{ group.facility_type }}</td>
+                            </tr>
+                        </table>
                     </div>
                 </div>
             </div>
-            <div *ngIf="groupData.length == 0">
-                <h1 class="no-data">No Groups</h1>
-            </div>
         </div>
-        <div *ngIf="loadingData">
-            <p>loading...</p>
+        <div *ngIf="groupData.length == 0">
+            <h1 class="no-data">No Groups</h1>
         </div>
+    </div>
+    <div *ngIf="loadingData">
+        <p>loading...</p>
     </div>
 </div>

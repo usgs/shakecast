@@ -42,19 +42,20 @@
 }
 
 .event-type:hover {
-    background: #55AAD0;
-    border-color: #55AAD0;
+    background: #55aaee;
+    border-color: #55aaee;
     color: #ffffff;
 }
 
 .event-type.selected {
-    border: 3px solid #55AAD0;
+    border: 3px solid #55aaee;
 }
 
 .control-buttons {
     margin-top: 20px;
 }
 
+/*
 .button {
     display: inline-block;
     border: 3px solid #55AAD0;
@@ -68,3 +69,4 @@
     background: #55AAD0;
     color: #ffffff;
 }
+*/
