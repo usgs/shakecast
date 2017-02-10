@@ -57,8 +57,9 @@ h2 {
 
 .dash-container {
     background: #fff;
-    height: 100%;
-    padding-top: 2.5%;
+    height: 95%;
+    top: 2.5%;
+    position: relative;
 }
 
 .outer-dash-container {
