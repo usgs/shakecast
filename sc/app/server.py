@@ -7,7 +7,7 @@ from newthread import New_Thread
 from task import Task
 import functions as f
 from util import *
-
+import pdb
 class Server(object):
     
     """
@@ -248,13 +248,6 @@ class Server(object):
                 
         self.connections = new_conns
         self.queue = new_queue
-
-    def reload_modules():
-        global f
-        f = reload(f)
-
-        return {'status': 'finished',
-                'message': 'Modules reloaded'}
         
     def info(self):
         """
@@ -356,8 +349,6 @@ class Server(object):
             
                 self.queue += [task]
                 message += 'Started monitoring earthquake feed \n'
-            else:
-                pass
             
             if 'check_new' not in task_names:
                 task = Task()
@@ -370,21 +361,18 @@ class Server(object):
                 
                 self.queue += [task]
                 message += "Waiting for new events"
-            else:
-                pass
 
-            if 'check_new' not in task_names:
+            if 'check_for_updates' not in task_names:
                 task = Task()
                 task.id = int(time.time() * 1000000)
-                task.func = self.reload_modules
+                task.func = f.check_for_updates
                 task.loop = True
-                task.interval = 15
-                task.name = 'reload_modules'
+                task.interval = 60
+                task.name = 'check_for_updates'
                 
                 self.queue += [task]
-                message += "Waiting for new events"
-            else:
-                pass
+                message += "Looking for updates"
+
             status = 'finished'
         except:
             status = 'failed'
