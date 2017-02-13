@@ -3,17 +3,17 @@
         {"version": "1.0.1",
         "files": [
             {"url": "https://raw.githubusercontent.com/dslosky-usgs/shakecast/master/sc/app/functions.py",
-             "path": "sc/app/functions.py"}
+             "path": "sc/app/functions-test.py"}
         ]},
         {"version": "1.0.2",
         "files": [
             {"url": "https://raw.githubusercontent.com/dslosky-usgs/shakecast/master/sc/app/functions.py",
-             "path": "sc/app/functions.py"}
+             "path": "sc/app/functions-test.py"}
         ]},
         {"version": "1.0.3",
         "files": [
             {"url": "https://raw.githubusercontent.com/dslosky-usgs/shakecast/master/sc/app/functions.py",
-             "path": "sc/app/functions.py"}
+             "path": "sc/app/functions-test.py"}
         ]}
     ]
 }
