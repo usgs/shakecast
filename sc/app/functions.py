@@ -1117,6 +1117,17 @@ def add_users_to_groups(session=None):
                     if group:
                         user.groups.append(group[0])
 
+def check_for_updates():
+    status = ''
+    update_required = None
+    try:
+        s = SoftwareUpdater()
+        update_required = s.check_update()
+        status = 'finished'
+    except Exception:
+        status = 'failed'
+
+    return {'status': status, 'message': update_required}
 #######################################################################
 ########################## TEST FUNCTIONS #############################
 def task_test():

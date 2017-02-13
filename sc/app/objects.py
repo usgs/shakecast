@@ -12,8 +12,11 @@ import time
 import xml.etree.ElementTree as ET
 import smtplib
 import datetime
+from email.mime.text import MIMEText
+from email.MIMEImage import MIMEImage
+from email.MIMEMultipart import MIMEMultipart
 from util import *
-from orm import *
+from orm import Session, Event, ShakeMap, Product
 modules_dir = os.path.join(sc_dir(), 'modules')
 if modules_dir not in sys.path:
     sys.path += [modules_dir]
@@ -815,7 +818,8 @@ class SC(object):
         conf_str = conf_file.read()
         self.json = conf_str
         conf_json = json.loads(conf_str)
-        
+        self.dict = conf_json
+
         # timezone
         self.timezone = conf_json['timezone']
         self.gmap_key = conf_json['gmap_key']
@@ -871,14 +875,21 @@ class SC(object):
         # Server
         self.server_name = conf_json['Server']['name']
         self.server_dns = conf_json['Server']['DNS']
-        self.software_version = conf_json['Server']['software_version']
+        self.software_version = conf_json['Server']['update']['software_version']
     
     def validate(self):
         return True
+
+    def save_dict(self):
+        json_str = json.dumps(self.dict)
+        self.save(json_str)
     
-    def save(self):
+    def save(self, json_str=None):
         conf_file = open(self.conf_file_location, 'w')
-        conf_file.write(self.json)
+        if json_str is None:
+            conf_file.write(self.json)
+        else:
+            conf_file.write(json_str)
         conf_file.close()
     
     @staticmethod
@@ -957,6 +968,20 @@ class NotificationBuilder(object):
                                sc=SC(),
                                config=config,
                                web=web)
+
+    @staticmethod
+    def build_update_html(update=None):
+        '''
+        Create local products and send inspection notification
+        
+        Args:
+            notification (Notification): The Notification that will be sent
+            grid (ShakeMapGrid): create from the ShakeMap
+
+        Returns:
+            None
+        '''
+        return '<h1>ShakeCast Software Update</h1>'
 
 
 class TemplateManager(object):
@@ -1169,3 +1194,188 @@ class AlchemyEncoder(json.JSONEncoder):
     
         return json.JSONEncoder.default(self, obj)
 
+
+class SoftwareUpdater(object):
+    '''
+    Check against USGS web to determine 
+    '''
+    def __init__(self):
+        sc = SC()
+        self.json_url = sc.dict['Server']['update']['json_url']
+        self.current_version = sc.dict['Server']['update']['software_version']
+        self.current_update = sc.dict['Server']['update']['update_version']
+        self.admin_notified = sc.dict['Server']['update']['admin_notified']
+        self.sc_root_dir = root_dir()
+
+    def get_update_info(self):
+        """
+        Pulls json feed from USGS web with update information
+        """
+        url_opener = URLOpener()
+        json_str = url_opener.open(self.json_url)
+        update_list = json.loads(json_str)
+
+        return update_list
+
+    def check_update(self, testing=False):
+        '''
+        Check the list of updates to see if any of them require 
+        attention
+        '''
+        sc = SC()
+        self.current_version = sc.dict['Server']['update']['software_version']
+
+        update_list = self.get_update_info()
+        update_required = False
+        notify = False
+        for update in update_list['updates']:
+            if self.check_new_update(update['version'], self.current_version) is True:
+                update_required = True
+
+                if self.check_new_update(update['version'], self.current_update) is True:
+                    # update current update version in sc.conf json
+                    sc = SC()
+                    sc.dict['Server']['update']['update_version'] = update['version']
+
+                    if testing is not True:
+                        sc.save_dict()
+                    notify = True
+    
+        return update_required, notify
+
+
+    @staticmethod
+    def check_new_update(new, existing):
+        new_split = new.split('.')
+        existing_split = existing.split('.')
+
+        for i in range(3):
+            new_split[i] = int(new_split[i])
+            existing_split[i] = int(existing_split[i])
+
+        return ((new_split[0] > existing_split[0]) or 
+                    (new_split[0] == existing_split[0] and 
+                        new_split[1] > existing_split[1]) or
+                    (new_split[0] == existing_split[0] and 
+                        new_split[1] == existing_split[1] and
+                        new_split[2] > existing_split[2]))
+
+    def notify_admin(self, update=None, testing=False):
+        # notify admin
+        admin_notified = False
+        admin_notified = self.send_update_notification(update=update)
+
+        if admin_notified is True:
+            # record admin Notification
+            sc = SC()
+            sc.dict['Server']['update']['admin_notified'] = True
+            if testing is not True:
+                sc.save_dict()
+
+    def update(self, testing=False):
+        update_list = self.get_update_info()
+        version = self.current_version
+        sc = SC()
+        delim = get_delim()
+        failed = []
+        success = []
+        # concatinate files if user is multiple updates behind
+        files = self.condense_files(update_list['updates'])
+        for file_ in files:
+            try:
+                # download file
+                url_opener = URLOpener()
+                text_file = url_opener.open(file_['url'])
+
+                # get the full path to the file
+                file_path = delim.join([root_dir()] +
+                                    file_['path'].split('/'))
+                norm_file_path = os.path.normpath(file_path)
+
+                # open the file
+                file_to_update = open(norm_file_path, 'w')
+                file_to_update.write(text_file)
+                file_to_update.close()
+
+                if self.check_new_update(file_['version'], version):
+                    version = file_['version']
+                success += [file_]
+            except Exception:
+                failed += [file_]
+        # change software version
+        if len(success) > 0:
+            print 'SUCCESS: {}'.format(success)
+        if len(failed) > 0:    
+            print 'FAILED: {}'.format(failed)
+
+        
+        sc.dict['Server']['update']['software_version'] = version
+        if testing is not True:
+            sc.save_dict()
+
+        return success, failed
+
+    def condense_files(self, update_list):
+        files = {}
+        for update in update_list:
+            for file_ in update['files']:
+                file_['version'] = update['version']
+                if files.get(file_['path'], False) is False:
+                    files[file_['path']] = file_
+                else:
+                    # check if this update is newer
+                    if self.check_new_update(file_['version'],
+                                                files[file_['path']]['version']):
+                        files[file_['path']] = file_
+        
+        # convert back to list
+        file_list = []
+        for key in files.keys():
+            file_list.append(files[key])
+
+        return file_list
+
+    @staticmethod
+    def send_update_notification(update=None):
+        '''
+        Create notification to alert admin of software updates
+        '''
+        try:
+            not_builder = NotificationBuilder()
+            html = not_builder.build_update_html(update=update)
+
+            #initiate message
+            msg = MIMEMultipart()
+            msg_html = MIMEText(html, 'html')
+            msg.attach(msg_html)
+
+            # find the ShakeCast logo
+            logo_str = os.path.join(sc_dir(),'view','static','sc_logo.png')
+            
+            # open logo and attach it to the message
+            logo_file = open(logo_str, 'rb')
+            msg_image = MIMEImage(logo_file.read())
+            logo_file.close()
+            msg_image.add_header('Content-ID', '<sc_logo>')
+            msg_image.add_header('Content-Disposition', 'inline')
+            msg.attach(msg_image)
+            
+            mailer = Mailer()
+            me = mailer.me
+
+            # get admin with emails
+            session = Session()
+            admin = session.query(User).filter(User.user_type.like('admin')).filter(User.email != '').all()
+            emails = [a.email for a in admin]
+
+            msg['Subject'] = 'ShakeCast Software Update'
+            msg['To'] = ', '.join(emails)
+            msg['From'] = me
+            
+            if len(emails) > 0:
+                mailer.send(msg=msg, you=emails)
+        
+        except:
+            return False
+
+        return True

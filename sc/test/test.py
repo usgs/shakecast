@@ -140,7 +140,7 @@ class TestClock(unittest.TestCase):
     def test_fromTime(self):
         c = Clock()
         c.from_time(time.time())
-        
+
 
 class TestTask(unittest.TestCase):
     '''
@@ -338,6 +338,38 @@ class TestFull(unittest.TestCase):
         else:
             print 'No ShakeMap to grab for Scenario Test'
         
+
+    def step14_NewUpdate(self):
+        s = SoftwareUpdater()
+        new = s.check_new_update('1.0.0', '1.0.1')
+        self.assertFalse(new)
+        new = s.check_new_update('1.1.1', '1.0.1')
+        self.assertTrue(new)
+        new = s.check_new_update('1.1.2', '1.1.1')
+        self.assertTrue(new)
+        new = s.check_new_update('2.0.0', '1.1.1')
+        self.assertTrue(new)
+        new = s.check_new_update('0.1.2', '1.1.1')
+        self.assertFalse(new)
+        new = s.check_new_update('1.1.1', '1.1.1')
+        self.assertFalse(new)
+
+    def step15_CheckUpdate(self):
+        s = SoftwareUpdater()
+        s.json_url = 'https://dslosky-usgs.github.io/shakecast/update_test.json'
+        s.check_update(testing=True)
+    
+    def step16_Update(self):
+        s = SoftwareUpdater()
+        s.json_url = 'https://dslosky-usgs.github.io/shakecast/update_test.json'
+        s.update(testing=True)
+
+    def step17_NotifyAdmin(self):
+        s = SoftwareUpdater()
+        s.notify_admin()
+
+    def step18_UpdateFunction(self):
+        check_for_updates()
         
     def steps(self):
         '''
@@ -673,66 +705,6 @@ def create_fac(grid=None, fac_id='AUTO_GENERATED'):
     facility.red_beta = .64
     
     return facility
-
-def create_user():
-    """
-    create a generic user for testing
-    """
-    get_user = session.query(User).filter(User.username=='USER_AUTO').all()
-    
-    if get_user:
-        user = get_user[0]
-    else:
-        user = User()
-        
-    user.username = 'USER_AUTO'
-    user.email = 'dslosky@usgs.gov'
-    
-    session.add(user)
-    session.commit()
-    
-    return user
-
-def create_group():
-    """
-    create a generic group for testing
-    """
-    get_group = session.query(Group).filter(Group.name=='GLOBAL_AUTO').all()
-    
-    if get_group:
-        group = get_group[0]
-    else:
-        group = Group()
-    
-    group.name = 'GLOBAL_AUTO'
-    group.lon_min = -180
-    group.lon_max = 180
-    group.lat_min = -90
-    group.lat_max = 90
-    
-    facs = session.query(Facility).filter(Facility.in_grid(group)).all()
-    group.facilities = facs
-    
-    # group specifications
-    specs = ['New_Event', 'Update', 'Inspection']
-    levels = ['green', 'yellow', 'orange', 'red']
-    for spec in specs:
-        if spec != 'Inspection':
-            gs = Group_Specification()
-            gs.group = group
-            gs.notification_type = spec
-        
-        else:
-            for level in levels:
-                gs = Group_Specification()
-                gs.group = group
-                gs.notification_type = spec
-                gs.inspection_priority = level
-    
-    session.merge(group)
-    session.commit()
-    
-    return group
     
 if __name__ == '__main__':
     
