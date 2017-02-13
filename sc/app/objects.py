@@ -981,7 +981,7 @@ class NotificationBuilder(object):
         Returns:
             None
         '''
-        return None
+        return '<h1>ShakeCast Software Update</h1>'
 
 
 class TemplateManager(object):
@@ -1346,7 +1346,7 @@ class SoftwareUpdater(object):
 
             #initiate message
             msg = MIMEMultipart()
-            msg_html = MIMEText('<h1>ShakeCast Software Update</h1>', 'html')
+            msg_html = MIMEText(html, 'html')
             msg.attach(msg_html)
 
             # find the ShakeCast logo
