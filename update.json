@@ -4,6 +4,11 @@
         "files": [
             {"url": "https://raw.githubusercontent.com/dslosky-usgs/shakecast/master/sc/app/functions.py",
              "path": "sc/app/functions.py"}
+        ]},
+        {"version": "1.0.2",
+        "files": [
+            {"url": "https://raw.githubusercontent.com/dslosky-usgs/shakecast/master/sc/app/functions.py",
+             "path": "sc/app/functions.py"}
         ]}
     ]
 }
