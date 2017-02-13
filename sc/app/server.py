@@ -5,7 +5,7 @@ import os
 import sys
 from newthread import New_Thread
 from task import Task
-from functions import *
+import functions as f
 from util import *
 
 class Server(object):
@@ -341,7 +341,7 @@ class Server(object):
             if 'geo_json' not in task_names:
                 task = Task()
                 task.id = int(time.time() * 1000000)
-                task.func = geo_json
+                task.func = f.geo_json
                 task.loop = True
                 task.interval = 60
                 task.db_use = True
@@ -349,13 +349,11 @@ class Server(object):
             
                 self.queue += [task]
                 message += 'Started monitoring earthquake feed \n'
-            else:
-                pass
             
             if 'check_new' not in task_names:
                 task = Task()
                 task.id = int(time.time() * 1000000)
-                task.func = check_new
+                task.func = f.check_new
                 task.loop = True
                 task.interval = 3
                 task.db_use = True
@@ -363,8 +361,18 @@ class Server(object):
                 
                 self.queue += [task]
                 message += "Waiting for new events"
-            else:
-                pass
+
+            if 'check_for_updates' not in task_names:
+                task = Task()
+                task.id = int(time.time() * 1000000)
+                task.func = f.check_for_updates
+                task.loop = True
+                task.interval = 60
+                task.name = 'check_for_updates'
+                
+                self.queue += [task]
+                message += "Looking for updates"
+
             status = 'finished'
         except:
             status = 'failed'
