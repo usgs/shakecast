@@ -140,7 +140,41 @@ class TestClock(unittest.TestCase):
     def test_fromTime(self):
         c = Clock()
         c.from_time(time.time())
-        
+
+
+class TestSoftwareUpdater(unittest.TestCase):
+    '''
+    Test the SoftwareUpdater class
+    '''
+
+    def test_NewUpdate(self):
+        s = SoftwareUpdater()
+        new = s.check_new_update('1.0.0', '1.0.1')
+        self.assertFalse(new)
+        new = s.check_new_update('1.1.1', '1.0.1')
+        self.assertTrue(new)
+        new = s.check_new_update('1.1.2', '1.1.1')
+        self.assertTrue(new)
+        new = s.check_new_update('2.0.0', '1.1.1')
+        self.assertTrue(new)
+        new = s.check_new_update('0.1.2', '1.1.1')
+        self.assertFalse(new)
+        new = s.check_new_update('1.1.1', '1.1.1')
+        self.assertFalse(new)
+
+    def test_CheckUpdate(self):
+        s = SoftwareUpdater()
+        s.json_url = 'https://dslosky-usgs.github.io/shakecast/update_test.json'
+        s.check_update(testing=True)
+    
+    def test_Update(self):
+        s = SoftwareUpdater()
+        s.json_url = 'https://dslosky-usgs.github.io/shakecast/update_test.json'
+        s.update(testing=True)
+
+    def test_NotifyAdmin(self):
+        s = SoftwareUpdater()
+        s.notify_admin()
 
 class TestTask(unittest.TestCase):
     '''

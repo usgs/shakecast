@@ -1217,16 +1217,17 @@ class SoftwareUpdater(object):
 
         return update_list
 
-    def check_update(self):
+    def check_update(self, testing=False):
         '''
         Check the list of updates to see if any of them require 
         attention
         '''
         sc = SC()
         self.current_version = sc.dict['Server']['update']['software_version']
-        
+
         update_list = self.get_update_info()
         update_required = False
+        notify = False
         for update in update_list['updates']:
             if self.check_new_update(update['version'], self.current_version) is True:
                 update_required = True
@@ -1235,10 +1236,12 @@ class SoftwareUpdater(object):
                     # update current update version in sc.conf json
                     sc = SC()
                     sc.dict['Server']['update']['update_version'] = update['version']
-                    sc.save_dict()
-                    self.notify_admin(update=update)
+
+                    if testing is not True:
+                        sc.save_dict()
+                    notify = True
     
-        return update_required
+        return update_required, notify
 
 
     @staticmethod
@@ -1257,7 +1260,7 @@ class SoftwareUpdater(object):
                         new_split[1] == existing_split[1] and
                         new_split[2] > existing_split[2]))
 
-    def notify_admin(self, update=None):
+    def notify_admin(self, update=None, testing=False):
         # notify admin
         admin_notified = False
         admin_notified = self.send_update_notification(update=update)
@@ -1266,9 +1269,10 @@ class SoftwareUpdater(object):
             # record admin Notification
             sc = SC()
             sc.dict['Server']['update']['admin_notified'] = True
-            sc.save_dict()
+            if testing is not True:
+                sc.save_dict()
 
-    def update(self):
+    def update(self, testing=False):
         update_list = self.get_update_info()
         version = self.current_version
         sc = SC()
@@ -1304,8 +1308,10 @@ class SoftwareUpdater(object):
         if len(failed) > 0:    
             print 'FAILED: {}'.format(failed)
 
+        
         sc.dict['Server']['update']['software_version'] = version
-        sc.save_dict()
+        if testing is not True:
+            sc.save_dict()
 
         return success, failed
 
