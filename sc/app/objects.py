@@ -16,7 +16,7 @@ from email.mime.text import MIMEText
 from email.MIMEImage import MIMEImage
 from email.MIMEMultipart import MIMEMultipart
 from util import *
-from orm import Session, Event, ShakeMap, Product, Group
+from orm import Session, Event, ShakeMap, Product
 modules_dir = os.path.join(sc_dir(), 'modules')
 if modules_dir not in sys.path:
     sys.path += [modules_dir]
