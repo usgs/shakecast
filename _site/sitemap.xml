@@ -3,6 +3,30 @@
   
   
   <url>
+    <loc>/shakecast/2017_usgs_https.html</loc>
+  </url>
+  
+  
+  
+  <url>
+    <loc>/shakecast/2017_shakecast_public_aws.html</loc>
+  </url>
+  
+  
+  
+  <url>
+    <loc>/shakecast/2017_shakecast_transportation_pooled_fund.html</loc>
+  </url>
+  
+  
+  
+  <url>
+    <loc>/shakecast/2017_ssa_meeting_shakecast.html</loc>
+  </url>
+  
+  
+  
+  <url>
     <loc>/shakecast/2016_nrc_mou.html</loc>
   </url>
   
@@ -49,6 +73,24 @@
   
   
   
+  <url>
+    <loc>/shakecast/aebm.html</loc>
+  </url>
+  
+  
+  
+  <url>
+    <loc>/shakecast/aebm_workbook.html</loc>
+  </url>
+  
+  
+  
+  <url>
+    <loc>/shakecast/doc_project.html</loc>
+  </url>
+  
+  
+  
   
   
   <url>
@@ -75,6 +117,12 @@
   
   
   
+  <url>
+    <loc>/shakecast/pycast_docs.html</loc>
+  </url>
+  
+  
+  
   
   
   
@@ -102,7 +150,7 @@
   
   
   <url>
-    <loc>/shakecast/doc_about.html</loc>
+    <loc>/shakecast/v3_about.html</loc>
   </url>
   
   
@@ -187,6 +235,12 @@
   
   <url>
     <loc>/shakecast/v3_operator_install.html</loc>
+  </url>
+  
+  
+  
+  <url>
+    <loc>/shakecast/v3_package.html</loc>
   </url>
   
   

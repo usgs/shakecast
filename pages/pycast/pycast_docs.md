@@ -1,5 +1,5 @@
 ---
-title: ShakeCast V4 (pyCast)
+title: ShakeCast V4 "pyCast" (BETA)
 tags: [development, v4, pycast]
 keywords: current, activities, new
 permalink: pycast_docs.html
@@ -7,13 +7,13 @@ sidebar: pycast_sidebar
 folder: pycast
 ---
 
-Our team is in the midst of rebuilding ShakeCast from the ground up with relevation and powerfull technologies. V4 boasts more accurate potential impact assessment as well as a highly improved user experience. Beta testing will begin early in 2017; [Here](/shakecast/apidocs) is a link to the developer documentation.
+Our team is in the midst of rebuilding ShakeCast from the ground up with relevation and powerfull technologies. V4 boasts more accurate potential impact assessment as well as a highly improved user experience. Beta testing will begin early in 2017; [Here](/shakecast/apidocs) is a link to the developer documentation. Please let us know if you are interested in beta-testing of pyCast.
 
 Some of the improvements coming soon:
 
 HAZUS AEBM
 ----------
-Using the newly developed HAZUS Advanced Engineering Building Module, ShakeCast V4 determines potential impact by analyzing multiple spectral accelerations. This provides a much clearer picture of the shaking and allows us to make more precise impact estimates than ever before. Checkout the [next tabe](aebm.html) for a more detailed explanation of how we're implementing AEBM.
+Using the newly developed HAZUS Advanced Engineering Building Module, ShakeCast V4 determines potential impact by analyzing multiple spectral accelerations. This provides a much clearer picture of the shaking and allows us to make more precise impact estimates than ever before. Checkout [AEBM Implementation](aebm.html) for a more detailed explanation of this new strategy.
 
 User Interface Overhaul
 -----------------------
