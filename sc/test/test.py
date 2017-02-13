@@ -176,6 +176,9 @@ class TestSoftwareUpdater(unittest.TestCase):
         s = SoftwareUpdater()
         s.notify_admin()
 
+    def test_UpdateFunction(self):
+        check_for_updates()
+
 class TestTask(unittest.TestCase):
     '''
     Test the Task object the SC server uses to compelte jobs
