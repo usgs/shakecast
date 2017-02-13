@@ -5,7 +5,7 @@ import os
 import sys
 from newthread import New_Thread
 from task import Task
-from functions import *
+import functions as f
 from util import *
 
 class Server(object):
@@ -248,6 +248,13 @@ class Server(object):
                 
         self.connections = new_conns
         self.queue = new_queue
+
+    def reload_modules():
+        global f
+        f = reload(f)
+
+        return {'status': 'finished',
+                'message': 'Modules reloaded'}
         
     def info(self):
         """
@@ -341,7 +348,7 @@ class Server(object):
             if 'geo_json' not in task_names:
                 task = Task()
                 task.id = int(time.time() * 1000000)
-                task.func = geo_json
+                task.func = f.geo_json
                 task.loop = True
                 task.interval = 60
                 task.db_use = True
@@ -355,11 +362,24 @@ class Server(object):
             if 'check_new' not in task_names:
                 task = Task()
                 task.id = int(time.time() * 1000000)
-                task.func = check_new
+                task.func = f.check_new
                 task.loop = True
                 task.interval = 3
                 task.db_use = True
                 task.name = 'check_new'
+                
+                self.queue += [task]
+                message += "Waiting for new events"
+            else:
+                pass
+
+            if 'check_new' not in task_names:
+                task = Task()
+                task.id = int(time.time() * 1000000)
+                task.func = self.reload_modules
+                task.loop = True
+                task.interval = 15
+                task.name = 'reload_modules'
                 
                 self.queue += [task]
                 message += "Waiting for new events"
