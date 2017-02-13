@@ -2,12 +2,12 @@
     "updates": [
         {"version": "500.0.1",
         "files": [
-            {"url": "https://raw.githubusercontent.com/dslosky-usgs/shakecast/master/sc/app/test/update_test.txt",
+            {"url": "https://raw.githubusercontent.com/dslosky-usgs/shakecast/master/sc/test/update_test.txt",
              "path": "sc/app/test/update_test.txt"}
         ]},
         {"version": "0.0.0",
         "files": [
-            {"url": "https://raw.githubusercontent.com/dslosky-usgs/shakecast/master/sc/app/test/update_test.txt",
+            {"url": "https://raw.githubusercontent.com/dslosky-usgs/shakecast/master/sc/test/update_test.txt",
              "path": "sc/app/test/update_test.txt"}
         ]}
     ]
