@@ -553,7 +553,7 @@ class TestImport(unittest.TestCase):
         Session.remove()
 
     def step08_userImport2(self):
-        self.step2_userImport()
+        self.step02_userImport()
         
     def step09_groupImport2(self):
         self.step03_groupImport()
@@ -562,7 +562,7 @@ class TestImport(unittest.TestCase):
         self.step04_facImport()
                 
     def step11_removeData(self):
-        self.step1_clearData()
+        self.step01_clearData()
 
     def steps(self):
         '''
