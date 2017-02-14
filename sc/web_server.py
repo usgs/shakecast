@@ -18,7 +18,7 @@ import datetime
 from ast import literal_eval
 from app.orm import *
 from app.server import Server
-from app.objects import Clock, SC, NotificationBuilder, TemplateManager
+from app.objects import Clock, SC, NotificationBuilder, TemplateManager, SoftwareUpdater
 from app.functions import determine_xml
 from ui import UI
 
@@ -534,6 +534,18 @@ def notification_config(notification_type, name):
 def template_names():
     temp_manager = TemplateManager()
     return json.dumps(temp_manager.get_template_names())
+
+@app.route('/api/software-update', methods=['GET','POST'])
+@admin_only
+@login_required
+def software_update():
+    s = SoftwareUpdater()
+    if request.method == 'POST':
+        s.update()
+
+    update_required, notify, update_info = s.check_update()
+    return json.dumps({'required': update_required,
+                        'update_info': [info for info in update_info]})
 
 @app.route('/admin/upload/', methods=['GET','POST'])
 @admin_only
