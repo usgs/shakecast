@@ -40,13 +40,15 @@
                                 <h3>What's New?</h3>
                             </td>
                         </tr>
-                        {% for info in update_info %}
-                        <tr style="padding:3px">
-                            <td style="font-family:Arial;color:#444444;padding:5px;padding-left:10px">
-                                {{ info }}
-                            </td>
-                        </tr>
-                        {% endfor %}
+                        {% if update_info is not none %}
+                            {% for info in update_info %}
+                            <tr style="padding:3px">
+                                <td style="font-family:Arial;color:#444444;padding:5px;padding-left:10px">
+                                    {{ info }}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        {% endif %}
                         <tr>
                             <td>
                                 <p style="font-family:Arial;color:#444444;margin-top:10px">
