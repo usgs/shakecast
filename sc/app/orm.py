@@ -15,10 +15,8 @@ from sqlalchemy import *
 from sqlalchemy.ext.declarative import *
 from sqlalchemy.ext.hybrid import hybrid_method
 from sqlalchemy.orm import *
-from sqlalchemy.sql import and_, or_, not_
-import time
+from sqlalchemy.sql import and_, or_
 from werkzeug.security import generate_password_hash
-import logging
 
 # Get directory location for database
 path = os.path.dirname(os.path.abspath(__file__))
@@ -118,7 +116,7 @@ class Facility(Base):
         return self.name
     
     
-    def make_alert_level(self, shaking_point=None, shakemap=None, notifications=[]):
+    def make_alert_level(self, shaking_point=None, shakemap=None, notifications=None):
         '''
         Create a dictionary that contains all the information for a
         Facility_Shaking entry in the database
@@ -150,8 +148,10 @@ class Facility(Base):
                      'PSA03': 0,
                      'PSA10': 0,
                      'PSA30': 0,
-                     'PGV': 0,
-                     'notifications': [''] * len(notifications)}
+                     'PGV': 0}
+
+        if notifications is not None:
+            fac_shake['notifications'] = [''] * len(notifications)
         
         if shaking_level is None:
             fac_shake['alert_level'] = None
@@ -180,7 +180,6 @@ class Facility(Base):
                         
             prob_sum = 0
             large_prob = 0
-            alert_level = 'None'
             for level in fragility:
                 
                 if level['med'] < 0 or level['spread'] < 0:
@@ -209,10 +208,11 @@ class Facility(Base):
         fac_shake['shakemap_id'] = shakemap.shakecast_id
         
         not_count = 0
-        for notification in notifications:
-            if notification.group in self.groups:
-                fac_shake['notifications'][not_count] = notification
-                not_count += 1
+        if notifications is not None:
+            for notification in notifications:
+                if notification.group in self.groups:
+                    fac_shake['notifications'][not_count] = notification
+                    not_count += 1
         
         return fac_shake
 
@@ -369,10 +369,10 @@ class Notification(Base):
     
     def __rept__(self):
         return '''Notification(shakemap_id=%s,
-                               self.group_name=%s,
-                               self.notification_type=%s,
-                               self.status=%s,
-                               self.notification_file)''' % (self.shakemap_id,
+                               group_name=%s,
+                               notification_type=%s,
+                               status=%s,
+                               notification_file=%s)''' % (self.shakemap_id,
                                                              self.group_name,
                                                              self.notification_type,
                                                              self.status,
@@ -406,14 +406,17 @@ class User(Base):
                                            self.phone_number,
                                            self.full_name,
                                            self.user_type)
-                       
-    def is_authenticated(self):
+
+    @staticmethod      
+    def is_authenticated():
         return True
  
-    def is_active(self):
+    @staticmethod
+    def is_active():
         return True
  
-    def is_anonymous(self):
+    @staticmethod
+    def is_anonymous():
         return False
  
     def get_id(self):
@@ -550,15 +553,12 @@ class Group(Base):
                     cls.lon_max >= point.lon)
     
     @hybrid_method    
-    def has_spec(self, not_type='', min_mag=0):
+    def has_spec(self, not_type=''):
         specs = [s.notification_type for s in self.specs]
-        if not_type in specs:
-            return True
-        else:
-            return False
+        return bool(not_type in specs)
         
     @has_spec.expression   
-    def has_spec(cls, not_type='', min_mag=0):
+    def has_spec(cls, not_type=''):
         specs = [s.notification_type for s in cls.specs]
         if not_type in specs:
             return 1 == 1

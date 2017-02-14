@@ -1,0 +1,5 @@
+<div class="update-container" *ngIf="info?.required">
+    <h3>ShakeCast requires a software update</h3>
+    <p class="button update" (click)="update()">Update ShakeCast</p>
+    <h2 class="close-button" (click)="close()">X</h2>
+</div>
