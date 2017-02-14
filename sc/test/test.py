@@ -119,6 +119,7 @@ class TestURLOpener(unittest.TestCase):
         url_opener = URLOpener()
         google = url_opener.open('https://www.google.com')
 
+
 class TestClock(unittest.TestCase):
     '''
     Tests for the Clock object
@@ -370,7 +371,17 @@ class TestFull(unittest.TestCase):
 
     def step18_UpdateFunction(self):
         check_for_updates()
-        
+
+    def step19_AlchemyEncoder(self):
+        '''
+        Runs through a default use case of the Alchemy Encoder
+        '''
+        session = Session()
+        events = session.query(Event).all()
+        events_json = json.dumps(events, cls=AlchemyEncoder)
+        Session.remove()
+        event_dict = json.loads(events_json)
+
     def steps(self):
         '''
         Generates the step methods from their parent object
