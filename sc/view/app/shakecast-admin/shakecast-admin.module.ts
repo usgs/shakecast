@@ -27,6 +27,9 @@ import { UploadService } from './upload/upload.service';
 import { NotificationsComponent } from './pages/notifications/notifications.component';
 import { NotificationHTMLService } from './pages/notifications/notification.service';
 
+import { UpdateComponent } from './update/update.component'
+import { UpdateService } from './update/update.service'
+
 import { SharedModule } from '../shared/shared.module'
 
 @NgModule({
@@ -48,12 +51,14 @@ import { SharedModule } from '../shared/shared.module'
     UserListComponent,
     ConfigComponent,
     UploadComponent,
-    NotificationsComponent
+    NotificationsComponent,
+    UpdateComponent
   ],
   providers: [
     ConfigService,
     UploadService,
-    NotificationHTMLService
+    NotificationHTMLService,
+    UpdateService
   ]
 })
 export class ShakeCastAdminModule {

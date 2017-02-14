@@ -1103,7 +1103,10 @@ def check_for_updates():
     update_required = None
     try:
         s = SoftwareUpdater()
-        update_required = s.check_update()
+        update_required, notify, update_info = s.check_update()
+
+        if notify is True:
+            s.notify_admin(update_info=update_info)
         status = 'finished'
     except Exception:
         status = 'failed'

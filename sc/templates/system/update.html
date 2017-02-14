@@ -1,0 +1,65 @@
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+</head>
+    <body style="background-color:#ffffff;width:700px;margin-top:5px">
+        <table style="table-layout:fixed;width:100%">
+            <tr>
+                <td>
+                    <table>
+                        <tr>
+                            <td>
+                                <div style="width: 80px">
+                                    <img style="border-radius:50%" src="cid:sc_logo">
+                                </div>
+                            </td>
+                            <td>
+                                <h1 style="color:#444444;font-size:50px;font-family:Arial;margin:0px">ShakeCast</h1>
+                            </td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <table style="width:95%;margin-left:2.5%">
+                        <tr>
+                            <td>
+                                <h2 style="font-family:Arial;color:#ffffff;background-color:#444444;padding:10px;margin-top:20px;margin-bottom:5px">New Software Update</h2>
+                            </td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <table style="width:90%;margin-left:5%">
+                        <tr>
+                            <td>
+                                <h3>What's New?</h3>
+                            </td>
+                        </tr>
+                        {% if update_info is not none %}
+                            {% for info in update_info %}
+                            <tr style="padding:3px">
+                                <td style="font-family:Arial;color:#444444;padding:5px;padding-left:10px">
+                                    {{ info }}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        {% endif %}
+                        <tr>
+                            <td>
+                                <p style="font-family:Arial;color:#444444;margin-top:10px">
+                                    Any admin user can apply this software update after logging into their ShakeCast instance. Direct any questions to <a href="mailto:shakecast-help@usgs.gov?subject=ShakeCast+Inquiry" target="_blank">shakecast-help@usgs.gov</a>
+                                </p>
+                            </td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+
+        </table>
+    </body>
+</html>

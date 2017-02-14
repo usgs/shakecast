@@ -16,7 +16,7 @@ from email.mime.text import MIMEText
 from email.MIMEImage import MIMEImage
 from email.MIMEMultipart import MIMEMultipart
 from util import *
-from orm import Session, Event, ShakeMap, Product, DeclarativeMeta
+from orm import Session, Event, ShakeMap, Product, User, DeclarativeMeta
 modules_dir = os.path.join(sc_dir(), 'modules')
 if modules_dir not in sys.path:
     sys.path += [modules_dir]
@@ -970,18 +970,14 @@ class NotificationBuilder(object):
                                web=web)
 
     @staticmethod
-    def build_update_html(update=None):
+    def build_update_html(update_info=None):
         '''
-        Create local products and send inspection notification
-        
-        Args:
-            notification (Notification): The Notification that will be sent
-            grid (ShakeMapGrid): create from the ShakeMap
+        Builds an update notification using a jinja2 template
+        '''
+        template_manager = TemplateManager()
+        template = template_manager.get_template('system', name='update')
 
-        Returns:
-            None
-        '''
-        return '<h1>ShakeCast Software Update</h1>'
+        return template.render(update_info=update_info)
 
 
 class TemplateManager(object):
@@ -1228,9 +1224,11 @@ class SoftwareUpdater(object):
         update_list = self.get_update_info()
         update_required = False
         notify = False
+        update_info = set()
         for update in update_list['updates']:
             if self.check_new_update(update['version'], self.current_version) is True:
                 update_required = True
+                update_info.add(update['info'])
 
                 if self.check_new_update(update['version'], self.current_update) is True:
                     # update current update version in sc.conf json
@@ -1241,7 +1239,7 @@ class SoftwareUpdater(object):
                         sc.save_dict()
                     notify = True
     
-        return update_required, notify
+        return update_required, notify, update_info
 
 
     @staticmethod
@@ -1260,10 +1258,10 @@ class SoftwareUpdater(object):
                         new_split[1] == existing_split[1] and
                         new_split[2] > existing_split[2]))
 
-    def notify_admin(self, update=None, testing=False):
+    def notify_admin(self, update_info=None, testing=False):
         # notify admin
         admin_notified = False
-        admin_notified = self.send_update_notification(update=update)
+        admin_notified = self.send_update_notification(update_info=update_info)
 
         if admin_notified is True:
             # record admin Notification
@@ -1336,13 +1334,13 @@ class SoftwareUpdater(object):
         return file_list
 
     @staticmethod
-    def send_update_notification(update=None):
+    def send_update_notification(update_info=None):
         '''
         Create notification to alert admin of software updates
         '''
         try:
             not_builder = NotificationBuilder()
-            html = not_builder.build_update_html(update=update)
+            html = not_builder.build_update_html(update_info=update_info)
 
             #initiate message
             msg = MIMEMultipart()

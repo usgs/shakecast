@@ -381,6 +381,7 @@ class TestFull(unittest.TestCase):
         events_json = json.dumps(events, cls=AlchemyEncoder)
         Session.remove()
         event_dict = json.loads(events_json)
+        self.assertTrue(len(event_dict) > 0)
 
     def steps(self):
         '''
@@ -428,7 +429,7 @@ class TestImport(unittest.TestCase):
     '''
     Run tests on the XML import functions
     '''
-    def step1_clearData(self):
+    def step01_clearData(self):
         '''
         Clear the user, group, and facility data from the test database
         '''
@@ -444,28 +445,28 @@ class TestImport(unittest.TestCase):
         session.commit()
         Session.remove()
     
-    def step2_userImport(self):
+    def step02_userImport(self):
         user_file = os.path.join(sc_dir(), 'test', 'test_users.xml')
         file_type = determine_xml(user_file)
         import_user_xml(user_file)
 
         self.assertEqual(file_type, 'user')
         
-    def step3_groupImport(self):
+    def step03_groupImport(self):
         group_file = os.path.join(sc_dir(), 'test', 'test_groups.xml')
         file_type = determine_xml(group_file)
         import_group_xml(group_file)
 
         self.assertEqual(file_type, 'group')
         
-    def step4_facImport(self):
+    def step04_facImport(self):
         fac_file = os.path.join(sc_dir(), 'test', 'test_facs.xml')
         file_type = determine_xml(fac_file)
         import_facility_xml(fac_file)
 
         self.assertEqual(file_type, 'facility')
     
-    def step5_checkUser(self):
+    def step05_checkUser(self):
         session = Session()
         users = session.query(User).all()
         
@@ -493,7 +494,7 @@ class TestImport(unittest.TestCase):
         
         Session.remove()
         
-    def step6_checkGroup(self):
+    def step06_checkGroup(self):
         session = Session()
         groups = session.query(Group).all()
         
@@ -524,7 +525,7 @@ class TestImport(unittest.TestCase):
         
         Session.remove()
         
-    def step7_checkFacs(self):
+    def step07_checkFacs(self):
         session = Session()
         facs = session.query(Facility).all()
         
@@ -550,10 +551,19 @@ class TestImport(unittest.TestCase):
             raise ValueError(failed_str)
                     
         Session.remove()
+
+    def step08_userImport2(self):
+        self.step02_userImport()
         
-    def step9_removeData(self):
-        self.step1_clearData()
+    def step09_groupImport2(self):
+        self.step03_groupImport()
         
+    def step10_facImport2(self):
+        self.step04_facImport()
+                
+    def step11_removeData(self):
+        self.step01_clearData()
+
     def steps(self):
         '''
         Generates the step methods from their parent object
