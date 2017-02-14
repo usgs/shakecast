@@ -1,6 +1,5 @@
 import re
 import sys
-import time
 import itertools
 import xml.etree.ElementTree as ET
 from email.mime.text import MIMEText
@@ -362,8 +361,9 @@ def process_shakemaps(shakemaps=None, session=None, scenario=False):
         if notifications:
             # send inspection notifications for the shaking levels we
             # just computed
-            [inspection_notification(notification=n,
-                                     grid=grid) for n in notifications]
+            for n in notifications:
+                inspection_notification(notification=n,
+                                        grid=grid)
         
         session.commit()
         
@@ -424,9 +424,6 @@ def new_event_notification(notifications = None,
     Returns:
         None
     """
-    url_opener = URLOpener()
-    sc = SC()
-    
     events = [n.event for n in notifications]
     group = notifications[0].group
     notification = notifications[0]
@@ -513,7 +510,7 @@ def inspection_notification(notification=Notification(),
         html = not_builder.build_insp_html(shakemap)
     
         notification.status = 'file success'
-    except:
+    except Exception:
         notification.status = 'file failed'
     
     # if the file was created successfully, try sending it
@@ -626,8 +623,6 @@ def import_facility_xml(xml_file=''):
     '''
     session = Session()
     
-    groups = session.query(Group).all()
-    
     tree = ET.parse(xml_file)
     root = tree.getroot()
     facs = [child for child in root]
@@ -734,7 +729,8 @@ def import_facility_xml(xml_file=''):
                             .filter(Facility.component_class == component_class)
                             .all())
         if existing:
-            [session.delete(f) for f in existing]
+            for f in existing:
+                session.delete(f)
             
         # determine if we can add to session or not
         if not facility_id:
@@ -782,7 +778,6 @@ def import_facility_xml(xml_file=''):
                 point = geom.split(',')
                 lon = float(point[0])
                 lat = float(point[1])
-                elev = float(point[2])
                 
                 f.lon_min = lon - .01
                 f.lon_max = lon + .01
@@ -793,7 +788,6 @@ def import_facility_xml(xml_file=''):
                 points = geom.split(';').split(',')
                 lons = [pnt[0] for pnt in points]
                 lats = [pnt[1] for pnt in points]
-                elevs = [pnt[2] for pnt in points]
                 
                 f.lon_min = min(lons)
                 f.lon_max = max(lons)
@@ -841,10 +835,6 @@ def import_group_xml(xml_file=''):
     for group in groups:
         name = ''
         facility_type = ''
-        lon_min = 0
-        lon_max = 0
-        lat_min = 0
-        lat_max = 0
         notification_type = ''
         inspection_priority = ''
         minimum_magnitude = 0
@@ -1006,19 +996,16 @@ def import_user_xml(xml_file=''):
             
             elif child.tag == 'GROUP':
                 if child.text:
-                    group_lst = re.split('\s|,|;|:', child.text)
                     group_string = child.text
-                else:
-                    group_lst = []
 
-            elif child.tag == 'DELIVERY':
-                for child2 in child:
-                    if child2.tag == 'EMAIL_HTML':
-                        email_html = child2.text
-                    if child2.tag == 'EMAIL_TEXT':
-                        email_text = child2.text
-                    if child2.tag == 'EMAIL_PAGER':
-                        email_pager = child2.text
+            #elif child.tag == 'DELIVERY':
+            #    for child2 in child:
+            #        if child2.tag == 'EMAIL_HTML':
+            #            email_html = child2.text
+            #        if child2.tag == 'EMAIL_TEXT':
+            #            email_text = child2.text
+            #        if child2.tag == 'EMAIL_PAGER':
+            #            email_pager = child2.text
         
         # input validation
         if not username:
@@ -1030,12 +1017,6 @@ def import_user_xml(xml_file=''):
             u = u[0]
         else:
             u = User()
-        
-        #if group_lst:                
-        #    u.groups = [(session.query(Group)
-        #                    .filter(Group.name == group_name)
-        #                    .first())
-        #                        for group_name in group_lst]
         
         u.group_string = group_string
         u.username = username
