@@ -545,7 +545,8 @@ def software_update():
 
     update_required, notify, update_info = s.check_update()
     return json.dumps({'required': update_required,
-                        'update_info': [info for info in update_info]})
+                        'update_info': [info for info in update_info],
+                        'notify': notify})
 
 @app.route('/admin/upload/', methods=['GET','POST'])
 @admin_only

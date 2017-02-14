@@ -381,6 +381,7 @@ class TestFull(unittest.TestCase):
         events_json = json.dumps(events, cls=AlchemyEncoder)
         Session.remove()
         event_dict = json.loads(events_json)
+        self.assertTrue(len(event_dict) > 0)
 
     def steps(self):
         '''
