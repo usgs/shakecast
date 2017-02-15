@@ -436,15 +436,25 @@ class TestImport(unittest.TestCase):
         session = Session()
         users = session.query(User).all()
         groups = session.query(Group).all()
-        facs = session.query(Facility).all()
+        facilities = session.query(Facility).all()
         
-        [session.delete(user) for user in users]
-        [session.delete(group) for group in groups]
-        [session.delete(fac) for fac in facs]
-        
-        session.commit()
+        user_ids = [User.shakecast_id for user in users]
+        group_ids = [Group.shakecast_id for group in groups]
+        facility_ids = [Facility.shakecast_id for facilit in facilities]
+
+        delete_inventory_by_id(inventory_type='user', ids=user_ids)
+        delete_inventory_by_id(inventory_type='group', ids=group_ids)
+        delete_inventory_by_id(inventory_type='facility', ids=facility_ids)
+
+        users = session.query(User).all()
+        groups = session.query(Group).all()
+        facilities = session.query(Facility).all()
+        self.assertEqual(users, [])
+        self.assertEqual(groups, [])
+        self.assertEqual(facilities, [])
+
         Session.remove()
-    
+
     def step02_userImport(self):
         user_file = os.path.join(sc_dir(), 'test', 'test_users.xml')
         file_type = determine_xml(user_file)
