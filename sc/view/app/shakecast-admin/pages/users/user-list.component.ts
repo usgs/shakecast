@@ -63,7 +63,7 @@ export class UserListComponent implements OnInit, OnDestroy {
         this.selected.selected = false;
         data.selected = true;
         this.selected = data;
-
+        this.userService.current_user = data;
         this.groupService.getData({'user': data.username})
     }
 

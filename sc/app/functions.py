@@ -1125,7 +1125,7 @@ def delete_inventory_by_id(inventory_type=None, ids=None):
 
         Session.remove()
 
-    return deleted
+    return {'status': 'finished', 'message': deleted}
 
 
 def check_for_updates():

@@ -238,11 +238,11 @@ def get_shaking_data(facility_id, eq_id):
 import pdb
 @app.route('/api/delete/inventory', methods=['DELETE'])
 @login_required
-def delete_facilities():
+def delete_inventory():
+    pdb.set_trace()
     inventory = json.loads(request.args.get('inventory', '[]'))
     inv_ids = [inv['shakecast_id'] for inv in inventory if inv['shakecast_id']]
     inv_type = request.args.get('inventory_type', None)
-    pdb.set_trace()
     if len(inv_ids) > 0 and inv_type is not None:
         ui.send("{'delete_inventory: %s': {'func': f.delete_inventory_by_id, \
                         'args_in': {'ids': %s, 'inventory_type': '%s'}, \
