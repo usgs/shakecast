@@ -39,8 +39,9 @@ export class FacilityService {
         this._http.get('/api/facility-data', {search: params})
             .map((result: Response) => result.json())
             .subscribe((result: any) => {
+                this.selectedFacs = [];
                 this.facilityData.next(result.data);
-                this.loadingData.next(false)
+                this.loadingData.next(false);
             })
     }
 
@@ -52,8 +53,8 @@ export class FacilityService {
                 this.facilityData.next(result.facilities);
                 this.shakingData.next(result.shaking);
 
-                this.unselectAll()
-                this.loadingData.next(false)
+                this.unselectAll();
+                this.loadingData.next(false);
             })
     }
 
@@ -92,8 +93,9 @@ export class FacilityService {
     deleteFacs() {
         this.loadingData.next(true)
         let params = new URLSearchParams();
-        params.set('facilities', JSON.stringify(this.selectedFacs))
-        this._http.delete('/api/delete/facilities', {search: params})
+        params.set('inventory', JSON.stringify(this.selectedFacs))
+        params.set('inventory_type', 'facility')
+        this._http.delete('/api/delete/inventory', {search: params})
             .map((result: Response) => result.json())
             .subscribe((result: any) => {
                 this.getData();

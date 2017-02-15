@@ -72,7 +72,7 @@ export class GroupListComponent implements OnInit, OnDestroy {
         this.selected.selected = false;
         group.selected = true;
         this.selected = group;
-
+        this.groupService.current_group = group;
         this.groupService.clearMap();
         this.groupService.plotGroup(group);
     }

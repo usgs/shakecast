@@ -5,6 +5,7 @@ import { Component,
 import { GroupService, Group } from '../groups/group.service'
 //mport { FacilityListComponent } from './facility-list.component'
 import { TitleService } from '../../../title/title.service';
+import { UsersService } from './users.service';
 
 @Component({
     selector: 'users',
@@ -16,7 +17,8 @@ export class UsersComponent {
     private subscriptions: any[] = [];
     public groupData: any = []
     constructor(private groupService: GroupService,
-                private titleService: TitleService) {}
+                private titleService: TitleService,
+                private usersService: UsersService) {}
 
     ngOnInit() {
         this.titleService.title.next('Users');
@@ -28,5 +30,9 @@ export class UsersComponent {
                 this.groupService.plotGroup(this.groupData[group])
             }
         })); 
+    }
+
+    deleteCurrentUser() {
+        this.usersService.deleteUsers([this.usersService.current_user]);
     }
 }

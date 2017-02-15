@@ -20,6 +20,7 @@ export class GroupService {
     public loadingData = new ReplaySubject(1);
     public groupData = new ReplaySubject(1);
     public selection = new ReplaySubject(1);
+    public current_group: Group = null;
     public filter = {};
 
     constructor(private _http: Http,
@@ -33,7 +34,8 @@ export class GroupService {
             .map((result: Response) => result.json())
             .subscribe((result: any) => {
                 this.groupData.next(result);
-                this.loadingData.next(false)
+                this.current_group = result[0];
+                this.loadingData.next(false);
             })
     }
     
@@ -45,28 +47,21 @@ export class GroupService {
         this.selection.next('none');
     }
 
-    deleteGroups() {
-        /*
+    deleteGroups(group: Group[]) {
         this.loadingData.next(true)
         let params = new URLSearchParams();
-        params.set('facilities', JSON.stringify(this.selectedFacs))
-        this._http.delete('/api/delete/facilities', {search: params})
+        params.set('inventory', JSON.stringify(group))
+        params.set('inventory_type', 'group')
+        this._http.delete('/api/delete/inventory', {search: params})
             .map((result: Response) => result.json())
             .subscribe((result: any) => {
                 this.getData();
                 this.loadingData.next(false)
             })
-            */
     }
 
     plotGroup(group: Group) {
         this.mapService.plotGroup(group);
-    }
-
-    removeFac(fac: Facility) {
-        /*
-        this.mapService.removeFac(fac);
-        */
     }
 
     clearMap() {
