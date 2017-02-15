@@ -1,5 +1,7 @@
-<navbar></navbar>
-<page-title></page-title>
+<div *ngIf="router.url.includes('/shakecast')">
+    <navbar></navbar>
+    <page-title></page-title>
+</div>
 <div class="router-buffer">
 </div>
 
