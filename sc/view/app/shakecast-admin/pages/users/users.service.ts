@@ -17,6 +17,7 @@ export class UsersService {
     public loadingData = new ReplaySubject(1);
     public userData = new ReplaySubject(1);
     public selection = new ReplaySubject(1);
+    public current_user: any = null;
     public filter = {};
 
     constructor(private _http: Http,
@@ -30,6 +31,7 @@ export class UsersService {
             .map((result: Response) => result.json())
             .subscribe((result: any) => {
                 this.userData.next(result);
+                this.current_user = result[0];
                 this.loadingData.next(false)
             })
     }
@@ -42,18 +44,17 @@ export class UsersService {
         this.selection.next('none');
     }
 
-    deleteGroups() {
-        /*
+    deleteUsers(user: User[]) {
         this.loadingData.next(true)
         let params = new URLSearchParams();
-        params.set('facilities', JSON.stringify(this.selectedFacs))
-        this._http.delete('/api/delete/facilities', {search: params})
+        params.set('inventory', JSON.stringify(user))
+        params.set('inventory_type', 'user')
+        this._http.delete('/api/delete/inventory', {search: params})
             .map((result: Response) => result.json())
             .subscribe((result: any) => {
                 this.getData();
                 this.loadingData.next(false)
             })
-            */
     }
 
     plotUser(user: any) {

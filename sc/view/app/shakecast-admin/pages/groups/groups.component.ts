@@ -23,4 +23,8 @@ export class GroupsComponent implements OnInit {
         this.titleService.title.next('Groups')
         //this.groupService.clearMap();
     }
+
+    deleteCurrentGroup() {
+        this.groupService.deleteGroups([this.groupService.current_group]);
+    }
 }
