@@ -235,20 +235,20 @@ def get_shaking_data(facility_id, eq_id):
     Session.remove()
     return jsonify(success=True, data=shaking_dict)
 
-@app.route('/api/delete/facilities', methods=['DELETE'])
+import pdb
+@app.route('/api/delete/inventory', methods=['DELETE'])
 @login_required
 def delete_facilities():
-    session = Session()
-    facilities_json = json.loads(request.args.get('facilities', '[]'))
-    fac_ids = [fac['shakecast_id'] for fac in facilities_json]
-    facilities = (session.query(Facility)
-                            .filter(Facility.shakecast_id.in_(fac_ids))
-                            .all())
+    inventory = json.loads(request.args.get('inventory', '[]'))
+    inv_ids = [inv['shakecast_id'] for inv in inventory if inv['shakecast_id']]
+    inv_type = request.args.get('inventory_type', None)
+    pdb.set_trace()
+    if len(inv_ids) > 0 and inv_type is not None:
+        ui.send("{'delete_inventory: %s': {'func': f.delete_inventory_by_id, \
+                        'args_in': {'ids': %s, 'inventory_type': '%s'}, \
+                        'db_use': True, \
+                        'loop': False}}" % (inv_type, inv_ids, inv_type))
 
-    deleted = [session.delete(fac) for fac in facilities]
-
-    session.commit()
-    Session.remove()
     return jsonify(success=True)
 
 @app.route('/api/groups')
@@ -564,26 +564,13 @@ def upload():
     # these import functions need to be submitted to the server instead
     # of run directly
     import_data = {}
-    if xml_file_type is 'facility':
-        ui.send("{'import_facility_xml': {'func': import_facility_xml, \
-                                          'args_in': {'xml_file': r'%s'}, \
-                                          'db_use': True, \
-                                          'loop': False}}" % xml_file)
+    func_name = ''
 
-    if xml_file_type is 'group':
-        send_str = ("{'import_group_xml': {'func': import_group_xml, \
-                                          'args_in': {'xml_file': r'%s'}, \
-                                          'db_use': True, \
-                                          'loop': False}}" % xml_file)
-        ui.send(send_str)
-    if xml_file_type is 'user':
-        ui.send("{'import_user_xml': {'func': import_user_xml, \
-                                          'args_in': {'xml_file': r'%s'}, \
-                                          'db_use': True, \
-                                          'loop': False}}" % xml_file)
-    else:
-        import_data = {'error': 'root'}
-        
+    func_name = 'import_' + xml_file_type + '_xml'
+    if xml_file_type is not None:
+        ui.send("{'%s': {'func': f.%s, 'args_in': {'xml_file': r'%s'}, 'db_use': True, 'loop': False}}" % (func_name, 
+                                                                                                         func_name, 
+                                                                                                         xml_file))
     return 'file uploaded'
 
 @app.route('/admin/notification', methods=['GET','POST'])

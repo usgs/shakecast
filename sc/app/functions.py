@@ -1098,6 +1098,36 @@ def add_users_to_groups(session=None):
                     if group:
                         user.groups.append(group[0])
 
+def delete_inventory_by_id(inventory_type=None, ids=None):
+    '''
+    Function made to be run by the ShakeCast server deletes facilities
+    by their shakecast_id
+    inventory types: facility, group, user, earthquake
+    '''
+    deleted = []
+    if inventory_type is not None and ids is not None:
+        if inventory_type == 'facility':
+            inv_table = Facility
+        elif inventory_type == 'group':
+            inv_table = Group
+        elif inventory_type == 'user':
+            inv_table = User
+
+        session = Session()
+        inventory = session.query(inv_table).filter(inv_table
+                                            .shakecast_id
+                                            .in_(ids)).all()
+        # delete inventory
+        for inv in inventory:
+            session.delete(inv)
+            deleted += [inv]
+        session.commit()
+
+        Session.remove()
+
+    return deleted
+
+
 def check_for_updates():
     status = ''
     update_required = None
