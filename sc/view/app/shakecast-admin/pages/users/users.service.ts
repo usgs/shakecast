@@ -31,6 +31,7 @@ export class UsersService {
             .map((result: Response) => result.json())
             .subscribe((result: any) => {
                 this.userData.next(result);
+                this.current_user = result[0];
                 this.loadingData.next(false)
             })
     }
@@ -43,10 +44,10 @@ export class UsersService {
         this.selection.next('none');
     }
 
-    deleteUsers(user: User) {
+    deleteUsers(user: User[]) {
         this.loadingData.next(true)
         let params = new URLSearchParams();
-        params.set('inventory', JSON.stringify([user]))
+        params.set('inventory', JSON.stringify(user))
         params.set('inventory_type', 'user')
         this._http.delete('/api/delete/inventory', {search: params})
             .map((result: Response) => result.json())

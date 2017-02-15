@@ -33,6 +33,6 @@ export class UsersComponent {
     }
 
     deleteCurrentUser() {
-        this.usersService.deleteUsers(this.usersService.current_user);
+        this.usersService.deleteUsers([this.usersService.current_user]);
     }
 }
