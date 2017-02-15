@@ -6,7 +6,8 @@ import { UserService, User } from './user.service'
 
 @Component({
     selector: 'login',
-    templateUrl: 'app/login/login.component.html'
+    templateUrl: 'app/login/login.component.html',
+    styleUrls: ['app/login/login.component.css']
 })
 export class LoginComponent implements onInit {
     constructor(private userService: UserService, 
