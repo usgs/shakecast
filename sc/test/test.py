@@ -438,9 +438,9 @@ class TestImport(unittest.TestCase):
         groups = session.query(Group).all()
         facilities = session.query(Facility).all()
         
-        user_ids = [User.shakecast_id for user in users]
-        group_ids = [Group.shakecast_id for group in groups]
-        facility_ids = [Facility.shakecast_id for facilit in facilities]
+        user_ids = [user.shakecast_id for user in users]
+        group_ids = [group.shakecast_id for group in groups]
+        facility_ids = [facility.shakecast_id for facility in facilities]
 
         delete_inventory_by_id(inventory_type='user', ids=user_ids)
         delete_inventory_by_id(inventory_type='group', ids=group_ids)
