@@ -1,5 +1,4 @@
 import time
-import pdb
 
 class Task(object):
     
@@ -35,7 +34,6 @@ class Task(object):
         self.db_use = db_use
         self.output = {'status': '',
                        'messege': ''}
-        self.pdb = use_pdb
         self.error = ''
         
     def __str__(self):
@@ -56,9 +54,6 @@ class Task(object):
         
     def run(self):
         self.status = 'running'
-        
-        if self.pdb is True:
-            pdb.set_trace()
         
         if self.func is not None:
             try:

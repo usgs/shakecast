@@ -8,6 +8,7 @@ from email.MIMEMultipart import MIMEMultipart
 from orm import *
 from objects import *
 from util import *
+import xmltodict
 
 modules_dir = os.path.join(sc_dir() + 'modules')
 if modules_dir not in sys.path:
@@ -966,72 +967,47 @@ def import_user_xml(xml_file=''):
                     'log': message to be added to ShakeCast log
                            and should contain info on error}
     '''
-    session = Session()
+    with open(xml_file, 'r') as xml_str:
+        user_xml_dict = json.loads(json.dumps(xmltodict.parse(xml_str)))
+        user_list = user_xml_dict['UserTable']['UserRow']
     
-    tree = ET.parse(xml_file)
-    root = tree.getroot()
-    users = [child for child in root]
+    data = import_user_dicts(user_list)
     
-    for user in users:
-        username = None
-        password = None
-        user_type = 'USER'
-        full_name = None
-        phone_number = ''
-        group_string = ''
-        
-        for child in user:
-            if child.tag == 'USERNAME':
-                username = child.text
-            elif child.tag == 'PASSWORD':
-                password = child.text
-            elif child.tag == 'USER_TYPE':
-                user_type = child.text
-            elif child.tag == 'FULL_NAME':
-                full_name = child.text
-            elif child.tag == 'EMAIL_ADDRESS':
-                email = child.text
-            elif child.tag == 'PHONE_NUMBER':
-                phone_number = child.text
-            
-            elif child.tag == 'GROUP':
-                if child.text:
-                    group_string = child.text
+    return data
 
-            #elif child.tag == 'DELIVERY':
-            #    for child2 in child:
-            #        if child2.tag == 'EMAIL_HTML':
-            #            email_html = child2.text
-            #        if child2.tag == 'EMAIL_TEXT':
-            #            email_text = child2.text
-            #        if child2.tag == 'EMAIL_PAGER':
-            #            email_pager = child2.text
+def import_user_dicts(users=None):
+    session = Session()
+    if users is not None:
+        for user in users:
+            username = user.get('USERNAME', user.get('username', ''))
+            # input validation
+            if not username:
+                continue
         
-        # input validation
-        if not username:
-            continue
+            # get existing user
+            u = session.query(User).filter(User.username == username).all()
+            if u:
+                u = u[0]
+            else:
+                u = User()
+                u.username = username
         
-        # get existing user
-        u = session.query(User).filter(User.username == username).all()
-        if u:
-            u = u[0]
-        else:
-            u = User()
-        
-        u.group_string = group_string
-        u.username = username
-        u.password = generate_password_hash(password, method='pbkdf2:sha512')
-        u.email = email
-        u.user_type = user_type
-        u.full_name = full_name
-        u.phone_number = phone_number
-        
-        session.add(u)
-        
-    add_users_to_groups(session=session)
-    session.commit()
+            u.group_string = user.get('GROUP', user.get('group_string', ''))
+            u.email = user.get('EMAIL_ADDRESS', user.get('email', ''))
+            u.user_type = user.get('USER_TYPE', user.get('user_type', ''))
+            u.full_name = user.get('FULL_NAME', user.get('full_name', ''))
+            u.phone_number = user.get('PHONE_NUMBER', user.get('group_string', ''))
+            
+            password = user.get('PASSWORD', user.get('password', None))
+            if password is not None:
+                u.password = generate_password_hash(password, method='pbkdf2:sha512')
+
+            session.add(u)
+        session.commit()
+        add_users_to_groups(session=session)
+        session.commit()
+
     Session.remove()
-    
     log_message = ''
     status = 'finished'
     data = {'status': status,

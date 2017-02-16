@@ -35,4 +35,8 @@ export class UsersComponent {
     deleteCurrentUser() {
         this.usersService.deleteUsers([this.usersService.current_user]);
     }
+    
+    saveUsers() {
+        this.usersService.saveUsersFromList.next(true);
+    }
 }

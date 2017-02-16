@@ -1,6 +1,7 @@
 import { Component,
          OnInit, 
          OnDestroy,
+         HostListener,
          trigger,
          state,
          style,
@@ -9,6 +10,8 @@ import { Component,
 
 import { UsersService, User } from './users.service'
 import { GroupService, Group } from '../groups/group.service'
+declare var _: any;
+
 @Component({
     selector: 'user-list',
     templateUrl: 'app/shakecast-admin/pages/users/user-list.component.html',
@@ -32,8 +35,10 @@ import { GroupService, Group } from '../groups/group.service'
 export class UserListComponent implements OnInit, OnDestroy {
     public loadingData: boolean = false;
     public dataList: any = [];
+    private oldData: any = [];
     public filter: filter = {};
-    public selected: User;
+    public selected: User = null;
+    public editing: User = null;
     private subscriptions: any[] = [];
 
     constructor(private userService: UsersService,
@@ -46,13 +51,20 @@ export class UserListComponent implements OnInit, OnDestroy {
                 this.dataList[user].selected = false;
                 this.selected = this.dataList[0];
                 this.selected.selected = true;
-
-                //this.userService.plotGroup(this.groupData[0])
+                this.oldData = JSON.parse(JSON.stringify(this.dataList));
             }
         }));
 
         this.subscriptions.push(this.userService.loadingData.subscribe(loading => {
             this.loadingData = loading;
+        }));
+        
+        this.subscriptions.push(this.userService.saveUsersFromList.subscribe(saveUsers => {
+            if ((saveUsers === true) && (!_.isEqual(this.dataList ,this.oldData))){
+                this.oldData = JSON.parse(JSON.stringify(this.dataList));
+                this.saveUsers();
+                this.userService.saveUsersFromList.next(false);
+            }
         }));
 
         this.userService.getData();
@@ -65,6 +77,26 @@ export class UserListComponent implements OnInit, OnDestroy {
         this.selected = data;
         this.userService.current_user = data;
         this.groupService.getData({'user': data.username})
+    }
+
+    editUser(user: User) {
+        if (this.editing) {
+            this.editing.editing = false;
+        }
+
+        this.editing = user;
+        this.editing.editing = true;
+    }
+
+    saveUsers() {
+        this.userService.saveUsers(this.dataList)
+    }
+
+    @HostListener('window:keydown', ['$event'])
+    keyboardInput(event: any) {
+        if (event.keyCode === 13) {
+            this.editing.editing = false;
+        }
     }
 
     ngOnDestroy() {
