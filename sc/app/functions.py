@@ -786,7 +786,7 @@ def import_facility_xml(xml_file=''):
                 f.lat_max = lat + .01
                 
             elif geom_type == 'POLYGON':
-                points = geom.split(';').split(',')
+                points = [p.split(',') for p in geom.split(';')]
                 lons = [pnt[0] for pnt in points]
                 lats = [pnt[1] for pnt in points]
                 
