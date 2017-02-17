@@ -17,6 +17,7 @@ export class UsersService {
     public loadingData = new ReplaySubject(1);
     public userData = new ReplaySubject(1);
     public selection = new ReplaySubject(1);
+    public saveUsersFromList = new ReplaySubject(1);
     public current_user: any = null;
     public filter = {};
 
@@ -44,17 +45,31 @@ export class UsersService {
         this.selection.next('none');
     }
 
-    deleteUsers(user: User[]) {
+    saveUsers(users: User[]) {
+        let headers = new Headers();
+        headers.append('Content-Type', 'application/json');
+        this._http.post('/api/users', 
+                        JSON.stringify({users: users}),
+                        {headers}
+        )
+            .map((result: Response) => result.json())
+            .subscribe((result: any) => {
+                //this.getData();
+                this.loadingData.next(false);
+            });
+    }
+
+    deleteUsers(users: User[]) {
         this.loadingData.next(true)
         let params = new URLSearchParams();
-        params.set('inventory', JSON.stringify(user))
+        params.set('inventory', JSON.stringify(users))
         params.set('inventory_type', 'user')
         this._http.delete('/api/delete/inventory', {search: params})
             .map((result: Response) => result.json())
             .subscribe((result: any) => {
                 this.getData();
-                this.loadingData.next(false)
-            })
+                this.loadingData.next(false);
+            });
     }
 
     plotUser(user: any) {

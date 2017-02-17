@@ -235,11 +235,9 @@ def get_shaking_data(facility_id, eq_id):
     Session.remove()
     return jsonify(success=True, data=shaking_dict)
 
-import pdb
 @app.route('/api/delete/inventory', methods=['DELETE'])
 @login_required
 def delete_inventory():
-    pdb.set_trace()
     inventory = json.loads(request.args.get('inventory', '[]'))
     inv_ids = [inv['shakecast_id'] for inv in inventory if inv['shakecast_id']]
     inv_type = request.args.get('inventory_type', None)
@@ -274,37 +272,47 @@ def get_groups():
     Session.remove()    
     return group_json
 
-@app.route('/api/users')
+@app.route('/api/users', methods=['GET', 'POST'])
 @login_required
 def get_users():
-    session = Session()
-    filter_ = literal_eval(request.args.get('filter', 'None'))
-    if filter_:
-        if filter_.get('group', None):
-            users = (session.query(User)
-                            .filter(User.shakecast_id > request.args.get('last_id', 0))
-                            .filter(User.groups.any(Group.name.like(filter_['group'])))
-                            .limit(50)
-                            .all())
-            
+    if request.method == 'GET':
+        session = Session()
+        filter_ = literal_eval(request.args.get('filter', 'None'))
+        if filter_:
+            if filter_.get('group', None):
+                users = (session.query(User)
+                                .filter(User.shakecast_id > request.args.get('last_id', 0))
+                                .filter(User.groups.any(Group.name.like(filter_['group'])))
+                                .limit(50)
+                                .all())
+                
+            else:
+                users = (session.query(User)
+                                .filter(User.shakecast_id > request.args.get('last_id', 0))
+                                .limit(50)
+                                .all())
         else:
-            users = (session.query(User)
-                            .filter(User.shakecast_id > request.args.get('last_id', 0))
-                            .limit(50)
-                            .all())
-    else:   
-        users = session.query(User).filter(User.shakecast_id > request.args.get('last_id', 0)).limit(50).all()
-    
-    user_dicts = []
-    for user in users:
-        user_dict = user.__dict__.copy()
-        user_dict.pop('_sa_instance_state', None)
-        user_dict.pop('password', None)
-        user_dicts += [user_dict]
+            users = session.query(User).filter(User.shakecast_id > request.args.get('last_id', 0)).limit(50).all()
         
-    user_json = json.dumps(user_dicts, cls=AlchemyEncoder)
-    
-    Session.remove()    
+        user_dicts = []
+        for user in users:
+            user_dict = user.__dict__.copy()
+            user_dict.pop('_sa_instance_state', None)
+            user_dict.pop('password', None)
+            user_dicts += [user_dict]
+            
+        user_json = json.dumps(user_dicts, cls=AlchemyEncoder)
+        
+        Session.remove()  
+        
+    else:
+        users = request.json.get('users', 'null')
+        if users is not None:
+            ui.send("{'import_user_dicts': {'func': f.import_user_dicts, \
+                                           'args_in': {'users': %s}, \
+                                           'db_use': True, 'loop': False}}" % str(users))
+        user_json = json.dumps(users)
+
     return user_json
 
 @app.route('/api/shakemaps')
@@ -555,9 +563,10 @@ def upload():
     if request.method == 'GET':
         return render_template('admin/upload.html')
     
-    xml_files.save(request.files['file'])
+    file_name = str(int(time.time())) + request.files['file'].filename
+    xml_files.save(request.files['file'], name=file_name)
     xml_file = os.path.join(app.config['UPLOADED_XMLFILES_DEST'],
-                            request.files['file'].filename)
+                            file_name)
     # validate XML and determine which import function should be used
     xml_file_type = determine_xml(xml_file)
     
