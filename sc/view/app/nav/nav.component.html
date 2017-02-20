@@ -1,6 +1,6 @@
 <div class="header" [@scrollChange]="scrollUp" (mouseover)="setHover(true)" (mouseleave)="setHover(false)">
     <div class="nav-bar">
-        <div *ngIf="!router.url.includes('/shakecast-admin')">
+        <div *ngIf="!(router.url.indexOf('/shakecast-admin') >= 0)">
             <div class="link" (click)="changeRoute('/shakecast/dashboard')">
                 <a routerLink="/shakecast/dashboard">Dashboard</a>
             </div>
@@ -14,7 +14,7 @@
                 <a (click)="logout()">Logout</a>
             </div>
         </div>
-        <div *ngIf="router.url.includes('/shakecast-admin')">
+        <div *ngIf="router.url.indexOf('/shakecast-admin') >= 0">
             <div class="link" (click)="changeRoute('/shakecast-admin/facilities')">
                 <a routerLink="/shakecast-admin/facilities">Facilities</a>
             </div>
