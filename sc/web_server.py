@@ -96,6 +96,7 @@ def logout():
 def index():
     return render_template('index.html')
 
+import pdb
 @app.route('/api/earthquake-data')
 @login_required
 def get_eq_data():
@@ -127,6 +128,11 @@ def get_eq_data():
             elif timeframe == 'year':
                 query = query.filter(Event.time > time.time() - 365*DAY)
 
+        if filter_.get('scenario', None) is True:
+            query = query.filter(Event.status == 'scenario')
+        else:
+            query = query.filter(Event.status != 'scenario')
+        
         if filter_.get('shakemap', False) is True:
             query = query.filter(Event.shakemaps)
 
@@ -144,7 +150,6 @@ def get_eq_data():
         
     eqs = (query.filter(Event.time < eq_time)
                 .filter(Event.event_id != 'heartbeat')
-                .filter(Event.status != 'scenario')
                 .order_by(Event.time.desc())
                 .limit(50)
                 .all())
