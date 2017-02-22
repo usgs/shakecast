@@ -583,9 +583,9 @@ def download_scenario(shakemap_id=None):
             status = 'finished'
             message = 'Downloaded scenario: ' + shakemap_id
             
-    return {'status': 'finished',
-            'message': 'Downloaded scenario: ' + shakemap_id,
-            'log': 'Downloaded scenario: ' + shakemap_id}
+    return {'status': status,
+            'message': message,
+            'log': message}
 
 def delete_scenario(shakemap_id=None):
     session = Session()
