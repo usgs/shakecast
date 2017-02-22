@@ -366,7 +366,7 @@ def process_shakemaps(shakemaps=None, session=None, scenario=False):
         
         if scenario is True:
             shakemap.status = 'scenario'
-            
+
         if notifications:
             # send inspection notifications for the shaking levels we
             # just computed
@@ -576,8 +576,14 @@ def download_scenario(shakemap_id=None):
     if shakemap_id is not None:
         pg = ProductGrabber()
         success = pg.get_scenario(shakemap_id=shakemap_id)
+        status = 'failed'
+        message = 'Failed scenario download: ' + shakemap_id
 
-    return {'status': 'Finished',
+        if success is True:
+            status = 'finished'
+            message = 'Downloaded scenario: ' + shakemap_id
+            
+    return {'status': 'finished',
             'message': 'Downloaded scenario: ' + shakemap_id,
             'log': 'Downloaded scenario: ' + shakemap_id}
 

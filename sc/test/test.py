@@ -351,7 +351,7 @@ class TestFull(unittest.TestCase):
         Session.remove()
 
         if sm is not None:
-            get_scenario(shakemap_id=sm.shakemap_id)
+            download_scenario(shakemap_id=sm.shakemap_id)
         else:
             print 'No ShakeMap to grab for Scenario Test'
 
