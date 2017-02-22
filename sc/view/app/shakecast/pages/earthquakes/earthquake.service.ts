@@ -92,6 +92,25 @@ export class EarthquakeService {
             });
     }
 
+    deleteScenario(scenario_id: string) {
+        this.dataLoading.next(true);
+        this._http.delete('/api/scenario-delete/' + scenario_id)
+            .map((result: Response) => result.json())
+            .subscribe((result: any) => {
+                this.toastService.success('Delete Scenario: ' + scenario_id, 'Deleting... This may take a moment')
+                this.dataLoading.next(false);
+            });
+    }
+
+    runScenario(scenario_id: string) {
+        this._http.post('/api/scenario-run/' + scenario_id)
+            .map((result: Response) => result.json())
+            .subscribe((result: any) => {
+                this.toastService.success('Run Scenario: ' + scenario_id, 'Running Scenario... This may take a moment')
+                this.dataLoading.next(false);
+            });
+    }
+
     getFacilityData(facility: any) {
         this.dataLoading.next(true);
         this._http.get('/api/earthquake-data/facility/' + facility['shakecast_id'])

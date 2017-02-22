@@ -5,11 +5,13 @@
 <earthquake-list></earthquake-list>
 
 <div *ngIf="!searchShown">
-    <h3 class="button"  (click)="getMore()">Get More</h3>
+    <h3 class="button" (click)="getMore()">Get More</h3>
+    <h3 class="button" (click)="eqService.runScenario(eqService.selected.event_id)">Run Scenario</h3>
+    <h3 class="button" (click)="deleteScenario()">Delete Selected</h3>
 </div>
 <div *ngIf="searchShown">
-    <h3 class="button"  (click)="eqService.showScenarioSearch.next(true)">Search</h3>
-    <h3 class="button" (click)="eqService.downloadScenario(eqService.selected.event_id)">Download</h3>
+    <h3 class="button" (click)="eqService.showScenarioSearch.next(true)">Search</h3>
+    <h3 class="button" (click)="eqService.downloadScenario(eqService.selected.event_id)">Download Selected</h3>
     <h3 class="button" (click)="userScenarios()">Your Scenarios</h3>
 </div>
 

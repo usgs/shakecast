@@ -554,13 +554,15 @@ class Group(Base):
     
     @hybrid_method    
     def has_spec(self, not_type=''):
-        specs = [s.notification_type for s in self.specs]
-        return bool(not_type in specs)
+        specs = [s.notification_type.lower() for s in self.specs]
+        event_types = [s.event_type.lower() for s in self.specs]
+        return bool(not_type.lower() in specs + event_types)
         
     @has_spec.expression   
     def has_spec(cls, not_type=''):
-        specs = [s.notification_type for s in cls.specs]
-        if not_type in specs:
+        specs = [s.notification_type.lower() for s in cls.specs]
+        event_types = [s.event_type.lower() for s in cls.specs]
+        if not_type.lower() in specs + event_types:
             return 1 == 1
         else:
             return 0 == 1

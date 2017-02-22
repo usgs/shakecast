@@ -556,6 +556,24 @@ def scenario_download(event_id):
     
     return json.dumps({'success': True})
 
+@app.route('/api/scenario-delete/<event_id>', methods=['DELETE'])
+@admin_only
+@login_required
+def scenario_delete(event_id):
+    if event_id:
+        ui.send("{'scenario_delete: %s': {'func': f.delete_scenario, 'args_in': {'shakemap_id': r'%s'}, 'db_use': True, 'loop': False}}" % (event_id, event_id))
+    
+    return json.dumps({'success': True})
+
+@app.route('/api/scenario-run/<event_id>', methods=['POST'])
+@admin_only
+@login_required
+def scenario_run(event_id):
+    if event_id:
+        ui.send("{'scenario_run: %s': {'func': f.run_scenario, 'args_in': {'shakemap_id': r'%s'}, 'db_use': True, 'loop': False}}" % (event_id, event_id))
+    
+    return json.dumps({'success': True})
+
 @app.route('/api/software-update', methods=['GET','POST'])
 @admin_only
 @login_required

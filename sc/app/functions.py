@@ -181,10 +181,12 @@ def process_events(events=None, session=None, scenario=False):
             nots = (session.query(Notification)
                         .filter(Notification.notification_type == 'NEW_EVENT')
                         .filter(Notification.status == 'created')
+                        .filter(Notification.group_name == group.name)
                         .all())
             
             filter_nots = filter(lambda x: x.event is not None, nots)
-            new_event_notification(notifications=filter_nots)
+            new_event_notification(notifications=filter_nots,
+                                    scenario=scenario)
             processed_events = [n.event for n in filter_nots]
             for e in processed_events:
                 e.status = 'processed'
@@ -364,7 +366,8 @@ def process_shakemaps(shakemaps=None, session=None, scenario=False):
             # just computed
             for n in notifications:
                 inspection_notification(notification=n,
-                                        grid=grid)
+                                        grid=grid,
+                                        scenario=scenario)
         
         session.commit()
         
@@ -484,7 +487,10 @@ def new_event_notification(notifications = None,
                 
         msg['Subject'] = '{0} New Events -- Magnitudes: {1}'.format(len(events),
                                                                     str(mags).replace("'", ''))
-        
+    
+    if scenario is True:
+        msg['Subject'] = 'SCENARIO: ' + msg['Subject']
+
     msg['To'] = ', '.join(you)
     msg['From'] = me
     
@@ -493,7 +499,8 @@ def new_event_notification(notifications = None,
     notification.status = 'sent'
     
 def inspection_notification(notification=Notification(),
-                            grid=ShakeMapGrid()):
+                            grid=ShakeMapGrid(),
+                            scenario=False):
     '''
     Create local products and send inspection notification
     
@@ -546,6 +553,10 @@ def inspection_notification(notification=Notification(),
             you = [user.email for user in group.users]
             
             msg['Subject'] = '{0} {1}'.format('Inspection - ', shakemap.event.title)
+
+            if scenario is True:
+                msg['Subject'] = 'SCENARIO: ' + msg['Subject']
+
             msg['To'] = ', '.join(you)
             msg['From'] = me
             
@@ -555,7 +566,7 @@ def inspection_notification(notification=Notification(),
         except:
             notification.status = 'send failed'
 
-def download_scenario(shakemap_id = None):
+def download_scenario(shakemap_id=None):
     if shakemap_id is not None:
         pg = ProductGrabber()
         success = pg.get_scenario(shakemap_id=shakemap_id)
@@ -564,17 +575,33 @@ def download_scenario(shakemap_id = None):
             'message': 'Downloaded scenario: ' + shakemap_id,
             'log': 'Downloaded scenario: ' + shakemap_id}
 
-def run_scenario(eq_id='', region=''):
+def delete_scenario(shakemap_id=None):
+    session = Session()
+    scenario = session.query(ShakeMap).filter(ShakeMap.shakemap_id == shakemap_id).first()
+    event = session.query(Event).filter(Event.event_id == shakemap_id).first()
+    
+    if scenario is not None:
+        session.delete(scenario)
+    if event is not None:
+        session.delete(event)
+
+    session.commit()
+
+    Session.remove()
+
+    return {'status': 'Finished',
+            'message': 'Deleted scenario: ' + shakemap_id,
+            'log': 'Deleted scenario: ' + shakemap_id}
+
+def run_scenario(shakemap_id=None):
     '''
     Processes a shakemap as if it were new
     '''
     
     session = Session()
     # Check if we have the eq in db
-    full_id = '{0}{1}'.format(region, eq_id)
-    
-    event = session.query(Event).filter(Event.event_id == full_id).all()
-    shakemap = session.query(ShakeMap).filter(ShakeMap.shakemap_id == full_id).all()
+    event = session.query(Event).filter(Event.event_id == shakemap_id).all()
+    shakemap = session.query(ShakeMap).filter(ShakeMap.shakemap_id == shakemap_id).all()
     
     processed_event = False
     processed_shakemap = False
@@ -594,8 +621,10 @@ def run_scenario(eq_id='', region=''):
             processed_shakemap = True
         except:
             pass
-        
-    return processed_event, processed_shakemap
+    
+    return {'status': 'Finished',
+            'message': 'Event: %s, ShakeMap: %s' % (processed_event, processed_shakemap),
+            'log': 'Run scenario: ' + shakemap_id}
       
 def create_grid(shakemap=None):
     """
@@ -979,7 +1008,9 @@ def import_user_xml(xml_file=''):
     with open(xml_file, 'r') as xml_str:
         user_xml_dict = json.loads(json.dumps(xmltodict.parse(xml_str)))
         user_list = user_xml_dict['UserTable']['UserRow']
-    
+        if isinstance(user_list, list) is False:
+            user_list = [user_list]
+
     data = import_user_dicts(user_list)
     
     return data
