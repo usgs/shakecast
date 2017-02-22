@@ -8,6 +8,7 @@ import { Router } from '@angular/router';
 
 import { MapService } from '../../../shared/maps/map.service'
 import { NotificationService } from '../dashboard/notification-dash/notification.service.ts'
+import { NotificationsService } from 'angular2-notifications'
 import { FacilityService } from '../../../shakecast-admin/pages/facilities/facility.service.ts'
 
 export interface Earthquake {
@@ -26,15 +27,17 @@ export class EarthquakeService {
     public earthquakeData = new ReplaySubject(1);
     public dataLoading = new ReplaySubject(1);
     public plotting = new ReplaySubject(1);
+    public showScenarioSearch = new ReplaySubject(1);
     public filter = {};
     public configs: any = {clearOnPlot: 'all'};
-    public showScenarioSearch = new ReplaySubject(1);
+    public selected: Earthquake = null;
 
     constructor(private _http: Http,
                 private notService: NotificationService,
                 private mapService: MapService,
                 private facService: FacilityService,
-                private _router: Router) {}
+                private _router: Router,
+                private toastService: NotificationsService) {}
 
     getData(filter: any = {}) {
         this.dataLoading.next(true);
@@ -50,49 +53,26 @@ export class EarthquakeService {
 
     getDataFromWeb(filter: any = {}) {
         this.dataLoading.next(true);
-        let params = new URLSearchParams();
 
-        var query: string = 'https://earthquake.usgs.gov/fdsnws/event/1/query?format=geojson&'
+        var usgs: string = 'https://earthquake.usgs.gov/fdsnws/event/1/query'
+
+        filter['format'] = 'geojson'
 
         // get params from filter
-        if (filter['starttime']) {
-            query += 'starttime=' + filter['starttime']
-        } else {
-            query += 'starttime=2005-01-01'
+        if (!filter['starttime']) {
+            filter['starttime'] = '2005-01-01'
         }
 
-        if (filter['endtime']) {
-            query += '&endtime=' + filter['endtime']
+        if (!filter['minmagnitude']) {
+            filter['minmagnitude'] = '6'
         }
 
-        if (filter['minmagnitude']) {
-            query += '&minmagnitude=' + filter['minmagnitude']
-        } else {
-            query += '&minmagnitude=6'
+        let params = new URLSearchParams();
+        for (var search in filter) {
+            params.set(search, filter[search])
         }
-
-        if (filter['minlatitude']) {
-            query += '&minlatitude=' + filter['minlatitude']
-        }
-
-        if (filter['minlongitude']) {
-            query += '&minlongitude=' + filter['minlongitude']
-        }
-
-        if (filter['maxlatitude']) {
-            query += '&maxlatitude=' + filter['maxlatitude']
-        }
-
-        if (filter['maxlongitude']) {
-            query += '&maxlongitude=' + filter['maxlongitude']
-        }
-
-        if (filter['orderby']) {
-            query += '&orderby=' + filter['orderby']
-        }        
-
-        params.set(JSON.stringify(filter))
-        this._http.get(query)
+        
+        this._http.get(usgs, {search: params})
             .map((result: Response) => result.json())
             .subscribe((result: any) => {
                 // convert from geoJSON to sc conventions
@@ -102,25 +82,37 @@ export class EarthquakeService {
             });
     }
 
+    downloadScenario(scenario_id: string) {
+        this.dataLoading.next(true);
+        this._http.get('/api/scenario-download/' + scenario_id)
+            .map((result: Response) => result.json())
+            .subscribe((result: any) => {
+                this.toastService.success('Scenario: ' + scenario_id, 'Download starting...')
+                this.dataLoading.next(false);
+            });
+    }
+
     getFacilityData(facility: any) {
         this.dataLoading.next(true);
         this._http.get('/api/earthquake-data/facility/' + facility['shakecast_id'])
             .map((result: Response) => result.json())
             .subscribe((result: any) => {
-                this.earthquakeData.next(result.data);
+                this.notService
                 this.dataLoading.next(false);
             })
     }
     
     plotEq(eq: Earthquake) {
-        this.notService.getNotifications(eq);
-        this.plotting.next(eq);
+        if (eq) {
+            this.notService.getNotifications(eq);
+            this.plotting.next(eq);
+            this.mapService.plotEq(eq, this.configs['clearOnPlot']);
+        }
 
         if (this._router.url == '/shakecast/dashboard') {
             this.facService.getShakeMapData(eq);
         }
 
-        this.mapService.plotEq(eq, this.configs['clearOnPlot']);
     }
 
     geoJsonToSc(geoJson: any[]) {

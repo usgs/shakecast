@@ -38,8 +38,8 @@ export class ScenarioSearchComponent implements OnInit, OnDestroy{
     constructor(private eqService: EarthquakeService) {}
 
     ngOnInit() {
-        this.subscriptions.push(this.eqService.showScenarioSearch.subscribe((show: any) => {
-            this.show = true;
+        this.subscriptions.push(this.eqService.showScenarioSearch.subscribe((show: boolean) => {
+            this.show = show;
         }));
     }
 
@@ -49,10 +49,11 @@ export class ScenarioSearchComponent implements OnInit, OnDestroy{
 
     hide() {
         this.show = false;
+        //this.eqService.showScenarioSearch.next(false);
     }
 
     ngOnDestroy() {
-        this.endSubscriptions()
+        this.endSubscriptions();
     }
 
     endSubscriptions() {

@@ -554,7 +554,16 @@ def inspection_notification(notification=Notification(),
             notification.status = 'sent'
         except:
             notification.status = 'send failed'
-            
+
+def download_scenario(shakemap_id = None):
+    if shakemap_id is not None:
+        pg = ProductGrabber()
+        success = pg.get_scenario(shakemap_id=shakemap_id)
+
+    return {'status': 'Finished',
+            'message': 'Downloaded scenario: ' + shakemap_id,
+            'log': 'Downloaded scenario: ' + shakemap_id}
+
 def run_scenario(eq_id='', region=''):
     '''
     Processes a shakemap as if it were new

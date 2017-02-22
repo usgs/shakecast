@@ -96,7 +96,6 @@ def logout():
 def index():
     return render_template('index.html')
 
-import pdb
 @app.route('/api/earthquake-data')
 @login_required
 def get_eq_data():
@@ -547,6 +546,15 @@ def notification_config(notification_type, name):
 def template_names():
     temp_manager = TemplateManager()
     return json.dumps(temp_manager.get_template_names())
+
+@app.route('/api/scenario-download/<event_id>', methods=['GET'])
+@admin_only
+@login_required
+def scenario_download(event_id):
+    if event_id:
+        ui.send("{'scenario_download: %s': {'func': f.download_scenario, 'args_in': {'shakemap_id': r'%s'}, 'db_use': True, 'loop': False}}" % (event_id, event_id))
+    
+    return json.dumps({'success': True})
 
 @app.route('/api/software-update', methods=['GET','POST'])
 @admin_only

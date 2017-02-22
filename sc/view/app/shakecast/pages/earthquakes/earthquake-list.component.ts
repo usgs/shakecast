@@ -76,6 +76,7 @@ export class EarthquakeListComponent implements OnInit, OnDestroy {
         }
         eq['selected'] = true;
         this.selected = eq;
+        this.eqService.selected = eq;
     }
 
     ngOnDestroy() {
