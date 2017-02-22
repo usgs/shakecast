@@ -356,7 +356,6 @@ class TestFull(unittest.TestCase):
             pg.get_scenario(shakemap_id=sm.shakemap_id)
         else:
             print 'No ShakeMap to grab for Scenario Test'
-        
 
     def step14_NewUpdate(self):
         s = SoftwareUpdater()
@@ -389,6 +388,18 @@ class TestFull(unittest.TestCase):
 
     def step18_UpdateFunction(self):
         check_for_updates()
+
+        
+    def step19_deleteScenario(self):
+        session = Session()
+        sm = session.query(ShakeMap).first()
+
+        Session.remove()
+
+        if sm is not None:
+            delete_scenario(shakemap_id=sm.shakemap_id)
+        else:
+            print 'No ShakeMap to grab for Scenario Test'
 
     def step19_AlchemyEncoder(self):
         '''
