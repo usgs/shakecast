@@ -393,13 +393,22 @@ class TestFull(unittest.TestCase):
     def step19_deleteScenario(self):
         session = Session()
         sm = session.query(ShakeMap).first()
-
+        sm_id = sm.shakemap_id
         Session.remove()
 
         if sm is not None:
-            delete_scenario(shakemap_id=sm.shakemap_id)
+            delete_scenario(shakemap_id=sm_id)
+
+            session = Session()
+            e = session.query(Event).filter(Event.event_id == sm_id).first()
+            sm = session.query(ShakeMap).filter(ShakeMap.shakemap_id == sm_id).first()
+
+            self.assertIsNone(e)
+            self.assertIsNone(sm)
+
+            Session.remove()
         else:
-            print 'No ShakeMap to grab for Scenario Test'
+            print 'No ShakeMap to grab for delete scenario Test'
 
     def step19_AlchemyEncoder(self):
         '''
