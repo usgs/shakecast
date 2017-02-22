@@ -346,14 +346,12 @@ class TestFull(unittest.TestCase):
         Session.remove()
 
     def step13_getScenarioWeb(self):
-        pg = ProductGrabber()
         session = Session()
         sm = session.query(ShakeMap).first()
-
         Session.remove()
 
         if sm is not None:
-            pg.get_scenario(shakemap_id=sm.shakemap_id)
+            get_scenario(shakemap_id=sm.shakemap_id)
         else:
             print 'No ShakeMap to grab for Scenario Test'
 
@@ -389,7 +387,6 @@ class TestFull(unittest.TestCase):
     def step18_UpdateFunction(self):
         check_for_updates()
 
-        
     def step19_deleteScenario(self):
         session = Session()
         sm = session.query(ShakeMap).first()
