@@ -189,7 +189,10 @@ def process_events(events=None, session=None, scenario=False):
                                     scenario=scenario)
             processed_events = [n.event for n in filter_nots]
             for e in processed_events:
-                e.status = 'processed'
+                if scenario is True:
+                    e.status = 'scenario'
+                else:
+                    e.status = 'processed'
             session.commit()
     
 def process_shakemaps(shakemaps=None, session=None, scenario=False):
@@ -356,10 +359,16 @@ def process_shakemaps(shakemaps=None, session=None, scenario=False):
             if relationships:
                 engine.execute(rel_stmt, relationships)
             session.commit()
-                
-            shakemap.status = 'processed'
+
+            if scenario is True:
+                shakemap.status = 'scenario'
+            else:    
+                shakemap.status = 'processed'
         else:
-            shakemap.status = 'processed - no facs'
+            if scenario is True:
+                shakemap.status = 'scenario'
+            else:    
+                shakemap.status = 'processed - no facs'
         
         if notifications:
             # send inspection notifications for the shaking levels we

@@ -200,15 +200,33 @@ class TestFull(unittest.TestCase):
         gs.notification_type = 'NEW_EVENT'
         gs.minimum_magnitude = 3
         gs.notificaiton_format = 'EMAIL_HTML'
+        gs.event_type = 'ACTUAL'
+        group.specs.append(gs)
+
+        gs = Group_Specification()
+        gs.notification_type = 'NEW_EVENT'
+        gs.minimum_magnitude = 3
+        gs.notificaiton_format = 'EMAIL_HTML'
+        gs.event_type = 'SCENARIO'
         group.specs.append(gs)
         
         gs = Group_Specification()
         gs.notification_type = 'heartbeat'
+        gs.event_type = 'heartbeat'
         group.specs.append(gs)
         
         insp_prios = ['GREY', 'GREEN', 'YELLOW', 'ORANGE', 'RED']
         for insp_prio in insp_prios:
             gs = Group_Specification()
+            gs.event_type = 'ACTUAL'
+            gs.notification_type = 'DAMAGE'
+            gs.minimum_magnitude = 3
+            gs.notificaiton_format = 'EMAIL_HTML'
+            gs.inspection_priority = insp_prio
+            group.specs.append(gs)
+
+            gs = Group_Specification()
+            gs.event_type = 'SCENARIO'
             gs.notification_type = 'DAMAGE'
             gs.minimum_magnitude = 3
             gs.notificaiton_format = 'EMAIL_HTML'
@@ -323,7 +341,7 @@ class TestFull(unittest.TestCase):
         sms = session.query(ShakeMap).all()
         if len(sms) > 0:
             sm = sms[-1]
-            run_scenario(sm.shakemap_id[2:], sm.shakemap_id[:2])
+            run_scenario(sm.shakemap_id)
 
         Session.remove()
 
