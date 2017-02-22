@@ -1,0 +1,28 @@
+<div class="scenario-search" [@show]="show">
+    <h1>From the Web</h1>
+
+    <div class="field">
+        <p>Minimum Magnitude: </p><input [(ngModel)]="filter.minmagnitude"/>
+    </div>
+    <div class="field">
+        <p>Date Range: </p><p>{{ filter.startdate }}</p>
+    </div>
+    <div class="field">
+        <p>Minimum Latitude: </p><input [(ngModel)]="filter.minlatitude"/>
+    </div>
+    <div class="field">
+        <p>Maximum Latitude: </p><input [(ngModel)]="filter.maxlatitude"/>
+    </div>
+    <div class="field">
+        <p>Minimum Longitude: </p><input [(ngModel)]="filter.minlongitude"/>
+    </div>
+    <div class="field">
+        <p>Maximum Longitude: </p><input [(ngModel)]="filter.maxlongitude"/>
+    </div>
+
+    <h2 class="search button" (click)="eqService.getDataFromWeb(filter)">Search</h2>
+    <div class="hide-container">
+        <h2 class="hide button" (click)="hide()">Hide</h2>
+    </div>
+
+</div>

@@ -127,6 +127,11 @@ def get_eq_data():
             elif timeframe == 'year':
                 query = query.filter(Event.time > time.time() - 365*DAY)
 
+        if filter_.get('scenario', None) is True:
+            query = query.filter(Event.status == 'scenario')
+        else:
+            query = query.filter(Event.status != 'scenario')
+        
         if filter_.get('shakemap', False) is True:
             query = query.filter(Event.shakemaps)
 
@@ -144,7 +149,6 @@ def get_eq_data():
         
     eqs = (query.filter(Event.time < eq_time)
                 .filter(Event.event_id != 'heartbeat')
-                .filter(Event.status != 'scenario')
                 .order_by(Event.time.desc())
                 .limit(50)
                 .all())
@@ -542,6 +546,33 @@ def notification_config(notification_type, name):
 def template_names():
     temp_manager = TemplateManager()
     return json.dumps(temp_manager.get_template_names())
+
+@app.route('/api/scenario-download/<event_id>', methods=['GET'])
+@admin_only
+@login_required
+def scenario_download(event_id):
+    if event_id:
+        ui.send("{'scenario_download: %s': {'func': f.download_scenario, 'args_in': {'shakemap_id': r'%s'}, 'db_use': True, 'loop': False}}" % (event_id, event_id))
+    
+    return json.dumps({'success': True})
+
+@app.route('/api/scenario-delete/<event_id>', methods=['DELETE'])
+@admin_only
+@login_required
+def scenario_delete(event_id):
+    if event_id:
+        ui.send("{'scenario_delete: %s': {'func': f.delete_scenario, 'args_in': {'shakemap_id': r'%s'}, 'db_use': True, 'loop': False}}" % (event_id, event_id))
+    
+    return json.dumps({'success': True})
+
+@app.route('/api/scenario-run/<event_id>', methods=['POST'])
+@admin_only
+@login_required
+def scenario_run(event_id):
+    if event_id:
+        ui.send("{'scenario_run: %s': {'func': f.run_scenario, 'args_in': {'shakemap_id': r'%s'}, 'db_use': True, 'loop': False}}" % (event_id, event_id))
+    
+    return json.dumps({'success': True})
 
 @app.route('/api/software-update', methods=['GET','POST'])
 @admin_only
