@@ -63,8 +63,6 @@ export class EarthquakeListComponent implements OnInit, OnDestroy {
         if (this._router.url == '/shakecast/dashboard') {
             this.filter['timeframe'] = 'day';
         }
-
-        //this.eqService.getData(this.filter);
     }
 
     plotEq(eq: Earthquake) {
@@ -78,6 +76,7 @@ export class EarthquakeListComponent implements OnInit, OnDestroy {
         }
         eq['selected'] = true;
         this.selected = eq;
+        this.eqService.selected = eq;
     }
 
     ngOnDestroy() {

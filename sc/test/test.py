@@ -200,15 +200,33 @@ class TestFull(unittest.TestCase):
         gs.notification_type = 'NEW_EVENT'
         gs.minimum_magnitude = 3
         gs.notificaiton_format = 'EMAIL_HTML'
+        gs.event_type = 'ACTUAL'
+        group.specs.append(gs)
+
+        gs = Group_Specification()
+        gs.notification_type = 'NEW_EVENT'
+        gs.minimum_magnitude = 3
+        gs.notificaiton_format = 'EMAIL_HTML'
+        gs.event_type = 'SCENARIO'
         group.specs.append(gs)
         
         gs = Group_Specification()
         gs.notification_type = 'heartbeat'
+        gs.event_type = 'heartbeat'
         group.specs.append(gs)
         
         insp_prios = ['GREY', 'GREEN', 'YELLOW', 'ORANGE', 'RED']
         for insp_prio in insp_prios:
             gs = Group_Specification()
+            gs.event_type = 'ACTUAL'
+            gs.notification_type = 'DAMAGE'
+            gs.minimum_magnitude = 3
+            gs.notificaiton_format = 'EMAIL_HTML'
+            gs.inspection_priority = insp_prio
+            group.specs.append(gs)
+
+            gs = Group_Specification()
+            gs.event_type = 'SCENARIO'
             gs.notification_type = 'DAMAGE'
             gs.minimum_magnitude = 3
             gs.notificaiton_format = 'EMAIL_HTML'
@@ -323,22 +341,19 @@ class TestFull(unittest.TestCase):
         sms = session.query(ShakeMap).all()
         if len(sms) > 0:
             sm = sms[-1]
-            run_scenario(sm.shakemap_id[2:], sm.shakemap_id[:2])
+            run_scenario(sm.shakemap_id)
 
         Session.remove()
 
     def step13_getScenarioWeb(self):
-        pg = ProductGrabber()
         session = Session()
         sm = session.query(ShakeMap).first()
-
         Session.remove()
 
         if sm is not None:
-            pg.get_scenario(shakemap_id=sm.shakemap_id)
+            download_scenario(shakemap_id=sm.shakemap_id)
         else:
             print 'No ShakeMap to grab for Scenario Test'
-        
 
     def step14_NewUpdate(self):
         s = SoftwareUpdater()
@@ -371,6 +386,26 @@ class TestFull(unittest.TestCase):
 
     def step18_UpdateFunction(self):
         check_for_updates()
+
+    def step19_deleteScenario(self):
+        session = Session()
+        sm = session.query(ShakeMap).first()
+        sm_id = sm.shakemap_id
+        Session.remove()
+
+        if sm is not None:
+            delete_scenario(shakemap_id=sm_id)
+
+            session = Session()
+            e = session.query(Event).filter(Event.event_id == sm_id).first()
+            sm = session.query(ShakeMap).filter(ShakeMap.shakemap_id == sm_id).first()
+
+            self.assertIsNone(e)
+            self.assertIsNone(sm)
+
+            Session.remove()
+        else:
+            print 'No ShakeMap to grab for delete scenario Test'
 
     def step19_AlchemyEncoder(self):
         '''

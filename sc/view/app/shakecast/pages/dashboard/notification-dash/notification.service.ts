@@ -16,11 +16,13 @@ export class NotificationService {
     constructor(private _http: Http) {}
 
     getNotifications(eq: any) {
-        let params = new URLSearchParams();
-        this._http.get('/api/notifications/' + eq.event_id + '/')
-            .map((result: Response) => result.json())
-            .subscribe((result: any) => {
-                this.notifications.next(result);
-            });
+        if (eq) {
+            let params = new URLSearchParams();
+            this._http.get('/api/notifications/' + eq.event_id + '/')
+                .map((result: Response) => result.json())
+                .subscribe((result: any) => {
+                    this.notifications.next(result);
+                });
+        }
     }
 }

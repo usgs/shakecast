@@ -1,61 +1,64 @@
-.wrapper {
-	margin: auto;
-	width: 325px;
-    text-align: center
+.container {
+	width: 100%;
+	position: fixed;
+	bottom: 10px;
+	text-align: center;
+    -webkit-animation: fadeIn .5s; /* Safari 4.0 - 8.0 */
+    animation: fadeIn .5s;
+	animation-delay: .1s;
+	opacity: 0;
+	-webkit-animation-fill-mode:forwards; /*Chrome 16+, Safari 4+*/
+	-moz-animation-fill-mode:forwards; /*FF 5+*/
+	-o-animation-fill-mode:forwards; /*Not implemented yet*/
+	-ms-animation-fill-mode:forwards; /*IE 10+*/
+	animation-fill-mode:forwards; /*when the spec is finished*/
 }
 
-.cssload-loader {
-		width: 81px;
-		height: 81px;
-		border-radius: 50%;
-		margin: 5em;
-		display: inline-block;
-		position: relative;
-		vertical-align: middle;
-	background:rgb(86,171,227);
-}
-.cssload-loader,
-.cssload-loader:before,
-.cssload-loader:after {
-		animation: 1.6s infinite ease-in-out;
-		-o-animation: 1.6s infinite ease-in-out;
-		-ms-animation: 1.6s infinite ease-in-out;
-		-webkit-animation: 1.6s infinite ease-in-out;
-		-moz-animation: 1.6s infinite ease-in-out;
-}
-.cssload-loader:before,
-.cssload-loader:after {
-		width: 100%; 
-		height: 100%;
-		border-radius: 50%;
-		position: absolute;
-		top: 0;
-		left: 0;
+.div1, .div2, .div3 {
+    -webkit-animation: mymove 1s infinite; /* Safari 4.0 - 8.0 */
+    animation: mymove 1s infinite;
+    position :relative;
+    width: 15%;
+    height: 50px;
+    background: skyblue;
+	display: inline-block;
+    margin:20px;
 }
 
-.cssload-loader { animation-name: cssload-loader;
-		-o-animation-name: cssload-loader;
-		-ms-animation-name: cssload-loader;
-		-webkit-animation-name: cssload-loader;
-		-moz-animation-name: cssload-loader; }
-
-
-@keyframes cssload-loader {
-		from { transform: scale(0); opacity: 1; }
-		to	 { transform: scale(1); opacity: 0; }
+.div1 {
+    animation-delay: 0s
 }
 
-@-o-keyframes cssload-loader {
-		from { -o-transform: scale(0); opacity: 1; }
-		to	 { -o-transform: scale(1); opacity: 0; }
+.div2 {
+    animation-delay: .1s
 }
 
-@-webkit-keyframes cssload-loader {
-		from { -webkit-transform: scale(0); opacity: 1; }
-		to	 { -webkit-transform: scale(1); opacity: 0; }
+.div3 {
+    animation-delay: .2s
 }
 
-@-moz-keyframes cssload-loader {
-		from { -moz-transform: scale(0); opacity: 1; }
-		to	 { -moz-transform: scale(1); opacity: 0; }
+/* Safari 4.0 - 8.0 */
+@-webkit-keyframes mymove {
+    0%   {transform: translateX(0);}
+    50%  {transform: translateX(98%);}
+    100%  {transform: translateX(0);}
+}
+
+/* Standard syntax */
+@keyframes mymove {
+    0%   {transform: translateX(0);}
+    50%  {transform: translateX(25%);}
+    100%  {transform: translateX(0);}
+}
+
+/* Safari 4.0 - 8.0 */
+@-webkit-keyframes fadeIn {
+    0%   {opacity: 0;}
+	100%   {opacity: 1;}
+}
+
+/* Standard syntax */
+@keyframes fadeIn {
+    0%   {opacity: 0;}
+	100%   {opacity: 1;}
 }

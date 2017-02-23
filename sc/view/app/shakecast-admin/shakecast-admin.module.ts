@@ -27,10 +27,13 @@ import { UploadService } from './upload/upload.service';
 import { NotificationsComponent } from './pages/notifications/notifications.component';
 import { NotificationHTMLService } from './pages/notifications/notification.service';
 
-import { UpdateComponent } from './update/update.component'
-import { UpdateService } from './update/update.service'
+import { UpdateComponent } from './update/update.component';
+import { UpdateService } from './update/update.service';
 
-import { SharedModule } from '../shared/shared.module'
+import { ScenariosComponent } from './pages/scenarios/scenarios.component';
+import { ScenarioSearchComponent } from './pages/scenarios/scenario-search/scenario-search.component';
+
+import { SharedModule } from '../shared/shared.module';
 
 @NgModule({
   imports: [
@@ -52,7 +55,9 @@ import { SharedModule } from '../shared/shared.module'
     ConfigComponent,
     UploadComponent,
     NotificationsComponent,
-    UpdateComponent
+    UpdateComponent,
+    ScenariosComponent,
+    ScenarioSearchComponent
   ],
   providers: [
     ConfigService,
