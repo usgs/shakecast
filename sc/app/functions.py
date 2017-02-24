@@ -145,6 +145,10 @@ def process_events(events=None, session=None, scenario=False):
             groups_affected = (session.query(Group)
                                         .filter(Group.point_inside(event))
                                         .all())
+
+            filtered_groups = [g for g in groups_affected 
+                                    if group.has_spec(not_type='scenario') is False]
+
             all_groups_affected.update(groups_affected)
         else:
             all_groups = session.query(Group).all()
@@ -162,7 +166,8 @@ def process_events(events=None, session=None, scenario=False):
             # Check if the group gets NEW_EVENT messages
             if group.has_spec(not_type='NEW_EVENT'):
                 
-                # check new_event magnitude to make sure the group wants a notificaiton
+                # check new_event magnitude to make sure the group wants a 
+                # notificaiton
                 event_spec = [s for s in group.specs
                                     if s.notification_type == 'NEW_EVENT'][0]
                 if event_spec.minimum_magnitude > event.magnitude:
@@ -601,7 +606,7 @@ def delete_scenario(shakemap_id=None):
 
     Session.remove()
 
-    return {'status': 'Finished',
+    return {'status': 'finished',
             'message': 'Deleted scenario: ' + shakemap_id,
             'log': 'Deleted scenario: ' + shakemap_id}
 
@@ -617,25 +622,33 @@ def run_scenario(shakemap_id=None):
     
     processed_event = False
     processed_shakemap = False
+    message = 'Scenario run complete'
     if event:
         try:
             process_events(events=[event[0]],
                            session=session,
                            scenario=True)
             processed_event = True
-        except:
+        except Exception:
             pass
+
     if shakemap:
         try:
             process_shakemaps(shakemaps=[shakemap[0]],
                               session=session,
                               scenario=True)
             processed_shakemap = True
-        except:
+        except Exception:
             pass
     
-    return {'status': 'Finished',
-            'message': 'Event: %s, ShakeMap: %s' % (processed_event, processed_shakemap),
+    if processed_event is False or processed_shakemap is False:
+        message = 'Scenario run failed'
+    
+    return {'status': 'finished',
+            'message': {'from': 'scenario_run',
+                        'title': 'Scenario: {}'.format(shakemap_id),
+                        'message': message,
+                        'status': 'success'},
             'log': 'Run scenario: ' + shakemap_id}
       
 def create_grid(shakemap=None):

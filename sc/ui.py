@@ -1,6 +1,6 @@
 import socket
 import time
-import select
+import select as select_
 import sys
 from app.server import Server
 from app.newthread import New_Thread
@@ -118,21 +118,22 @@ class UI(object):
                 self.conns += [self.conn]
                 
                 sent = True
-            except:
+            except Exception:
                 sent = False
-                if self.stop_ui is False:
-                    print 'Failed to connect to server'
-                    self.start_server()
-                    
-                    time.sleep(2)
-                    print 'Resending message...'
-                else:
-                    print 'Closing UI...'
-                    
-                    # The server is down, so close messaging down
-                    # without an exit message
-                    self._get_message = False
-                    sent = True
+
+                #if self.stop_ui is False:
+                #    print 'Failed to connect to server'
+                #    self.start_server()
+                #    
+                #    time.sleep(2)
+                #    print 'Resending message...'
+                #else:
+                #    print 'Closing UI...'
+                #    
+                #    # The server is down, so close messaging down
+                #    # without an exit message
+                #    self._get_message = False
+                #    sent = True
             
         
         return sent
@@ -148,14 +149,36 @@ class UI(object):
         """
         Receive a message from the server
         """
-        data = ''
-        part = None
-        while part != '':
-            part = self.conn.recv(4096)
-            data += part
-            
-        print data
-        return data
+        messages = []
+        closed_conns = []
+
+        for conn in self.conns:
+            ready = select_.select([conn], [], [], .2)
+            if ready[0]:
+                message = ''
+                part = None
+                while part != '':
+                    part = conn.recv(4096)
+                    message += part
+                
+                conn.close()
+                closed_conns += [conn]
+                messages += [self.parse_message(message)]
+                print message
+        
+        # close finished connections
+        self.conns = [conn for conn in self.conns
+                                if conn not in closed_conns]
+        return messages
+
+    @staticmethod
+    def parse_message(message):
+        try:
+            parse_message = eval(message)
+        except Exception:
+            parse_message = message
+        
+        return parse_message
         
     def get_message_loop(self):
         """
