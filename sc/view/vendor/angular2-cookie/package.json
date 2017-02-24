@@ -1,0 +1,101 @@
+{
+  "_args": [
+    [
+      {
+        "raw": "angular2-cookie",
+        "scope": null,
+        "escapedName": "angular2-cookie",
+        "name": "angular2-cookie",
+        "rawSpec": "",
+        "spec": "latest",
+        "type": "tag"
+      },
+      "/Users/dslosky"
+    ]
+  ],
+  "_from": "angular2-cookie@latest",
+  "_id": "angular2-cookie@1.2.6",
+  "_inCache": true,
+  "_installable": true,
+  "_location": "/angular2-cookie",
+  "_nodeVersion": "6.9.1",
+  "_npmOperationalInternal": {
+    "host": "packages-18-east.internal.npmjs.com",
+    "tmp": "tmp/angular2-cookie-1.2.6.tgz_1482230692596_0.8844986711628735"
+  },
+  "_npmUser": {
+    "name": "sa.alemdar",
+    "email": "sa.alemdar@hotmail.com"
+  },
+  "_npmVersion": "3.10.8",
+  "_phantomChildren": {},
+  "_requested": {
+    "raw": "angular2-cookie",
+    "scope": null,
+    "escapedName": "angular2-cookie",
+    "name": "angular2-cookie",
+    "rawSpec": "",
+    "spec": "latest",
+    "type": "tag"
+  },
+  "_requiredBy": [
+    "#USER",
+    "/"
+  ],
+  "_resolved": "https://registry.npmjs.org/angular2-cookie/-/angular2-cookie-1.2.6.tgz",
+  "_shasum": "8fa845531e777adb042fe2f339c0040f6ddbf09d",
+  "_shrinkwrap": null,
+  "_spec": "angular2-cookie",
+  "_where": "/Users/dslosky",
+  "author": {
+    "name": "Samet Alemdar",
+    "email": "sa.alemdar@hotmail.com"
+  },
+  "bugs": {
+    "url": "https://github.com/salemdar/angular2-cookie/issues"
+  },
+  "dependencies": {},
+  "description": "Implementation of Angular 1.x $cookies service to Angular 2",
+  "devDependencies": {},
+  "directories": {},
+  "dist": {
+    "shasum": "8fa845531e777adb042fe2f339c0040f6ddbf09d",
+    "tarball": "https://registry.npmjs.org/angular2-cookie/-/angular2-cookie-1.2.6.tgz"
+  },
+  "engines": {
+    "node": ">=5.0.0"
+  },
+  "homepage": "https://github.com/salemdar/angular2-cookie#readme",
+  "keywords": [
+    "angular2",
+    "angular",
+    "ng2",
+    "cookie",
+    "cookies",
+    "angular2-cookie",
+    "angular2-cookies",
+    "ng2-cookies",
+    "ng2-cookie"
+  ],
+  "license": "MIT",
+  "main": "core.js",
+  "maintainers": [
+    {
+      "name": "sa.alemdar",
+      "email": "sa.alemdar@hotmail.com"
+    }
+  ],
+  "name": "angular2-cookie",
+  "optionalDependencies": {},
+  "peerDependencies": {
+    "@angular/common": "^2.0.0",
+    "@angular/core": "^2.0.0"
+  },
+  "readme": "ERROR: No README data found!",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/salemdar/angular2-cookie.git"
+  },
+  "scripts": {},
+  "version": "1.2.6"
+}
