@@ -123,14 +123,14 @@ class ProductGrabber(object):
                 event.event_id = eq_id
             else:
                 event.event_id = eq_id + '_scenario'
-            event.magnitude = eq['properties']['mag']
+                event.all_event_ids += event.event_id
             
             # use id and all ids to determine if the event is new and
             # query the old event if necessary
             old_shakemaps = []
             old_notifications = []
             if event.is_new() is False and scenario is False:
-                event.status = 'ignore'
+                event.status = 'processed'
                 ids = event.all_event_ids.strip(',').split(',')
                 old_events = [(session.query(Event)
                                 .filter(Event.event_id == each_id)
@@ -149,19 +149,19 @@ class ProductGrabber(object):
                             event.status = 'new'
                         session.delete(old_event)
             else:
-                # this is a new event, make a status to match
-                if scenario is False:
-                    event.status = 'new'
-                else:
-                    event.status = 'scenario'
+                event.status = 'new'
+
+            # this is a new event, make a status to match
+            if scenario is True:
+                event.status = 'scenario'
                         
             # Fill the rest of the event info
             event.directory_name = os.path.join(self.data_dir,
-                                                eq_id)
+                                                event.event_id)
             event.title = self.earthquakes[eq_id]['properties']['title']
             event.place = self.earthquakes[eq_id]['properties']['place']
             event.time = self.earthquakes[eq_id]['properties']['time']/1000.0
-            
+            event.magnitude = eq['properties']['mag']
             event_coords = self.earthquakes[eq_id]['geometry']['coordinates']
             event.lon = event_coords[0]
             event.lat = event_coords[1]

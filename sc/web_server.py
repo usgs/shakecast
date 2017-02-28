@@ -96,6 +96,29 @@ def logout():
 def index():
     return render_template('index.html')
 
+@app.route('/api/messages')
+@login_required
+def get_messages():
+    try:
+        messages = ui.get_message()
+    except Exception:
+        messages = []
+
+    if len(messages) > 0:
+        count = 0
+        for message in messages:
+            int_time = int(time.time() + count)
+            app.config['MESSAGES'][int_time] = message
+            count += 1
+
+    int_time = int(time.time())
+    # remove messages after 5 minutes
+    for mes_time in app.config['MESSAGES'].keys():
+        if int_time - mes_time > 300:
+            del app.config['MESSAGES'][mes_time]
+
+    return json.dumps(app.config['MESSAGES'])
+
 @app.route('/api/earthquake-data')
 @login_required
 def get_eq_data():
@@ -727,6 +750,7 @@ def page_not_found(error):
 ############################# Upload Setup ############################
 app.config['UPLOADED_XMLFILES_DEST'] = os.path.join(sc_dir(), 'tmp')
 app.config['EARTHQUAKES'] = os.path.join(sc_dir(), 'data')
+app.config['MESSAGES'] = {}
 xml_files = UploadSet('xmlfiles', ('xml',))
 configure_uploads(app, (xml_files,))
 

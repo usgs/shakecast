@@ -2,8 +2,8 @@ import { NgModule }       from '@angular/core';
 import { BrowserModule }  from '@angular/platform-browser';
 import { HttpModule, JsonpModule } from '@angular/http';
 import { SimpleNotificationsModule } from 'angular2-notifications';
-
-import { AppComponent }       from './app.component';
+import { CookieService } from 'angular2-cookie';
+import { AppComponent } from './app.component';
 import { routing,
         appRoutingProviders } from './app.routing';
 
@@ -32,6 +32,7 @@ import { UsersService } from './shakecast-admin/pages/users/users.service';
 import { TimeService } from './shakecast-admin/pages/config/time.service';
 
 import { StickToTopService } from './shared/directives/stick-to-top.service';
+import { MessagesService } from './shared/messages.service';
 
 @NgModule({
   imports: [
@@ -51,6 +52,7 @@ import { StickToTopService } from './shared/directives/stick-to-top.service';
     TitleComponent
   ],
   providers: [
+    CookieService,
     appRoutingProviders,
     UserService,
     EarthquakeService,
@@ -63,7 +65,8 @@ import { StickToTopService } from './shared/directives/stick-to-top.service';
     GroupService,
     UsersService,
     TimeService,
-    TitleService
+    TitleService,
+    MessagesService
   ],
   bootstrap: [ AppComponent ]
 })
