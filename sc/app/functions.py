@@ -9,6 +9,7 @@ from orm import *
 from objects import *
 from util import *
 import xmltodict
+import shutil
 
 modules_dir = os.path.join(sc_dir() + 'modules')
 if modules_dir not in sys.path:
@@ -149,7 +150,7 @@ def process_events(events=None, session=None, scenario=False):
             filtered_groups = [group for group in groups_affected 
                                     if group.has_spec(not_type='scenario') is False]
 
-            all_groups_affected.update(groups_affected)
+            all_groups_affected.update(filtered_groups)
         else:
             all_groups = session.query(Group).all()
             groups_affected = [group for group in all_groups
@@ -162,7 +163,7 @@ def process_events(events=None, session=None, scenario=False):
         else:
             event.status = 'processing_started'
         
-        for group in groups_affected:
+        for group in all_groups_affected:
             # Check if the group gets NEW_EVENT messages
             if group.has_spec(not_type='NEW_EVENT'):
                 
@@ -486,28 +487,32 @@ def new_event_notification(notifications = None,
     me = mailer.me
     you = [user.email for user in group.users]
     
-    if len(events) == 1:
-        msg['Subject'] = event.title
-    else:
-        mags = []
-        for e in events:
-            if e.event_id == 'heartbeat':
-                mags += ['None']
-            else:
-                mags += [e.magnitude]
-                
-        msg['Subject'] = '{0} New Events -- Magnitudes: {1}'.format(len(events),
-                                                                    str(mags).replace("'", ''))
-    
-    if scenario is True:
-        msg['Subject'] = 'SCENARIO: ' + msg['Subject']
+    if len(you) > 0:
+        if len(events) == 1:
+            msg['Subject'] = event.title
+        else:
+            mags = []
+            for e in events:
+                if e.event_id == 'heartbeat':
+                    mags += ['None']
+                else:
+                    mags += [e.magnitude]
+                    
+            msg['Subject'] = '{0} New Events -- Magnitudes: {1}'.format(len(events),
+                                                                        str(mags).replace("'", ''))
+        
+        if scenario is True:
+            msg['Subject'] = 'SCENARIO: ' + msg['Subject']
 
-    msg['To'] = ', '.join(you)
-    msg['From'] = me
-    
-    mailer.send(msg=msg, you=you)
-    
-    notification.status = 'sent'
+        msg['To'] = ', '.join(you)
+        msg['From'] = me
+        
+        mailer.send(msg=msg, you=you)
+        
+        notification.status = 'sent'
+        
+    else:
+        notification.status = 'not sent - no users'
     
 def inspection_notification(notification=Notification(),
                             grid=ShakeMapGrid(),
@@ -563,17 +568,21 @@ def inspection_notification(notification=Notification(),
             me = mailer.me
             you = [user.email for user in group.users]
             
-            msg['Subject'] = '{0} {1}'.format('Inspection - ', shakemap.event.title)
+            if len(you) > 0:
+                msg['Subject'] = '{0} {1}'.format('Inspection - ', shakemap.event.title)
 
-            if scenario is True:
-                msg['Subject'] = 'SCENARIO: ' + msg['Subject']
+                if scenario is True:
+                    msg['Subject'] = 'SCENARIO: ' + msg['Subject']
 
-            msg['To'] = ', '.join(you)
-            msg['From'] = me
-            
-            mailer.send(msg=msg, you=you)
-            
-            notification.status = 'sent'
+                msg['To'] = ', '.join(you)
+                msg['From'] = me
+                
+                mailer.send(msg=msg, you=you)
+                
+                notification.status = 'sent'
+
+            else:
+                notification.status = 'not sent - no users'
         except:
             notification.status = 'send failed'
 
@@ -581,12 +590,13 @@ def download_scenario(shakemap_id=None):
     if shakemap_id is not None:
         pg = ProductGrabber()
         success = pg.get_scenario(shakemap_id=shakemap_id)
-        status = 'failed'
-        message = 'Failed scenario download: ' + shakemap_id
 
         if success is True:
             status = 'finished'
             message = 'Downloaded scenario: ' + shakemap_id
+        else:
+            status = 'failed'
+            message = 'Failed scenario download: ' + shakemap_id
             
     return {'status': status,
             'message': message,
@@ -603,14 +613,30 @@ def delete_scenario(shakemap_id=None):
         session.delete(event)
 
     session.commit()
-
     Session.remove()
+
+    # remove files
+    remove_dir(Event.directory_name)
 
     return {'status': 'finished',
             'message': {'message': 'Successfully removed scenario: ' + shakemap_id, 
                         'title': 'Scenario Deleted',
                         'success': True},
             'log': 'Deleted scenario: ' + shakemap_id}
+
+def remove_dir(directory_name):
+    '''
+    Remove any directory given its path -- used when deleting earthquake
+    data and testing
+    '''
+
+    if os.path.exists(directory_name):
+        shutil.rmtree(directory_name)
+        success = True
+    else:
+        success = False
+    
+    return success
 
 def run_scenario(shakemap_id=None):
     '''
@@ -622,9 +648,6 @@ def run_scenario(shakemap_id=None):
     event = session.query(Event).filter(Event.event_id == shakemap_id).all()
     shakemap = session.query(ShakeMap).filter(ShakeMap.shakemap_id == shakemap_id).all()
     
-    processed_event = False
-    processed_shakemap = False
-    message = 'Scenario run complete'
     if event:
         try:
             process_events(events=[event[0]],
@@ -632,7 +655,10 @@ def run_scenario(shakemap_id=None):
                            scenario=True)
             processed_event = True
         except Exception:
-            pass
+            processed_event = False
+
+    else:
+        processed_event = False
 
     if shakemap:
         try:
@@ -641,16 +667,21 @@ def run_scenario(shakemap_id=None):
                               scenario=True)
             processed_shakemap = True
         except Exception:
-            pass
+            processed_shakemap = False
+    
+    else:
+        processed_shakemap = False
     
     if processed_event is False or processed_shakemap is False:
         message = 'Scenario run failed'
+    else:
+        message = 'Scenario run complete'
     
     return {'status': 'finished',
             'message': {'from': 'scenario_run',
                         'title': 'Scenario: {}'.format(shakemap_id),
                         'message': message,
-                        'success': True},
+                        'success': processed_event and processed_shakemap},
             'log': 'Run scenario: ' + shakemap_id}
       
 def create_grid(shakemap=None):
