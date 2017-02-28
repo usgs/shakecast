@@ -616,7 +616,7 @@ def delete_scenario(shakemap_id=None):
     Session.remove()
 
     # remove files
-    remove_dir(Event.directory_name)
+    remove_dir(event.directory_name)
 
     return {'status': 'finished',
             'message': {'message': 'Successfully removed scenario: ' + shakemap_id, 
