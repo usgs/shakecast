@@ -146,7 +146,7 @@ def process_events(events=None, session=None, scenario=False):
                                         .filter(Group.point_inside(event))
                                         .all())
 
-            filtered_groups = [g for g in groups_affected 
+            filtered_groups = [group for group in groups_affected 
                                     if group.has_spec(not_type='scenario') is False]
 
             all_groups_affected.update(groups_affected)
@@ -607,7 +607,9 @@ def delete_scenario(shakemap_id=None):
     Session.remove()
 
     return {'status': 'finished',
-            'message': 'Deleted scenario: ' + shakemap_id,
+            'message': {'message': 'Successfully removed scenario: ' + shakemap_id, 
+                        'title': 'Scenario Deleted',
+                        'success': True},
             'log': 'Deleted scenario: ' + shakemap_id}
 
 def run_scenario(shakemap_id=None):
@@ -648,7 +650,7 @@ def run_scenario(shakemap_id=None):
             'message': {'from': 'scenario_run',
                         'title': 'Scenario: {}'.format(shakemap_id),
                         'message': message,
-                        'status': 'success'},
+                        'success': True},
             'log': 'Run scenario: ' + shakemap_id}
       
 def create_grid(shakemap=None):
