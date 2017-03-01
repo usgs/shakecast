@@ -594,13 +594,18 @@ def download_scenario(shakemap_id=None):
         if success is True:
             status = 'finished'
             message = 'Downloaded scenario: ' + shakemap_id
+            success = True
         else:
             status = 'failed'
             message = 'Failed scenario download: ' + shakemap_id
+            success = False
             
     return {'status': status,
-            'message': message,
-            'log': message}
+            'message': {'from': 'scenario_download',
+                        'title': 'Scenario Download Finished',
+                        'message': message,
+                        'success': success},
+            'log': 'Download scenario: ' + shakemap_id + ', ' + status}
 
 def delete_scenario(shakemap_id=None):
     session = Session()
@@ -723,6 +728,7 @@ def import_facility_xml(xml_file=''):
     tree = ET.parse(xml_file)
     root = tree.getroot()
     facs = [child for child in root]
+    count_dict = {}
     for fac in facs:
         facility_id = ''
         facility_type = ''
@@ -895,15 +901,28 @@ def import_facility_xml(xml_file=''):
                 pass
             
         session.add(f)
+
+        if count_dict.get(f.facility_type, False) is False:
+            count_dict[f.facility_type] = 1
+        else:
+            count_dict[f.facility_type] += 1
+
     add_facs_to_groups(session=session)
     session.commit()
     
     Session.remove()
     
+    message = ''
+    for key, val in count_dict.iteritems():
+        message += '{}: {}\n'.format(key, val)
+
     log_message = ''
     status = 'finished'
     data = {'status': status,
-            'message': 'Imported Facilities',
+            'message': {'from': 'facility_import',
+                        'title': 'Imported Facilities',
+                        'message': message,
+                        'success': processed_event and processed_shakemap},
             'log': log_message}
     
     return data
