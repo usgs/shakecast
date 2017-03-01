@@ -176,63 +176,24 @@ class TestFull(unittest.TestCase):
     '''
     def step01_createUser(self):
         session = Session()
-        user = User()
-        user.username = 'test_user'
-        user.email = self.email
-        user.user_type = 'ADMIN'
-        user.group_string = 'GLOBAL'
-        session.add(user)
+        user1 = create_user('GLOBAL', self.email)
+        user2 = create_user('GLOBAL_SCENARIO', self.email)
+
+        session.add(user1)
+        session.add(user2)
+
         session.commit()
         Session.remove()
         
     def step02_createGroup(self):
         session = Session()
-        group = Group()
-        group.name = 'GLOBAL'
-        group.facility_type = 'All'
-        group.lon_min = -180
-        group.lon_max = 180
-        group.lat_min = -90
-        group.lat_max = 90
-        session.add(group)
         
-        gs = Group_Specification()
-        gs.notification_type = 'NEW_EVENT'
-        gs.minimum_magnitude = 3
-        gs.notificaiton_format = 'EMAIL_HTML'
-        gs.event_type = 'ACTUAL'
-        group.specs.append(gs)
+        global_group = create_group(name='GLOBAL')
+        scenario_group = create_group(name='GLOBAL_SCENARIO', event_type='SCENARIO')
 
-        gs = Group_Specification()
-        gs.notification_type = 'NEW_EVENT'
-        gs.minimum_magnitude = 3
-        gs.notificaiton_format = 'EMAIL_HTML'
-        gs.event_type = 'SCENARIO'
-        group.specs.append(gs)
-        
-        gs = Group_Specification()
-        gs.notification_type = 'heartbeat'
-        gs.event_type = 'heartbeat'
-        group.specs.append(gs)
-        
-        insp_prios = ['GREY', 'GREEN', 'YELLOW', 'ORANGE', 'RED']
-        for insp_prio in insp_prios:
-            gs = Group_Specification()
-            gs.event_type = 'ACTUAL'
-            gs.notification_type = 'DAMAGE'
-            gs.minimum_magnitude = 3
-            gs.notificaiton_format = 'EMAIL_HTML'
-            gs.inspection_priority = insp_prio
-            group.specs.append(gs)
+        session.add(global_group)
+        session.add(scenario_group)
 
-            gs = Group_Specification()
-            gs.event_type = 'SCENARIO'
-            gs.notification_type = 'DAMAGE'
-            gs.minimum_magnitude = 3
-            gs.notificaiton_format = 'EMAIL_HTML'
-            gs.inspection_priority = insp_prio
-            group.specs.append(gs)
-            
         session.commit()
         Session.remove()
         
@@ -387,6 +348,18 @@ class TestFull(unittest.TestCase):
     def step18_UpdateFunction(self):
         check_for_updates()
 
+
+    def step20_AlchemyEncoder(self):
+        '''
+        Runs through a default use case of the Alchemy Encoder
+        '''
+        session = Session()
+        events = session.query(Event).all()
+        events_json = json.dumps(events, cls=AlchemyEncoder)
+        Session.remove()
+        event_dict = json.loads(events_json)
+        self.assertTrue(len(event_dict) > 0)
+
     def step19_deleteScenario(self):
         session = Session()
         sm = session.query(ShakeMap).first()
@@ -407,16 +380,13 @@ class TestFull(unittest.TestCase):
         else:
             print 'No ShakeMap to grab for delete scenario Test'
 
-    def step19_AlchemyEncoder(self):
-        '''
-        Runs through a default use case of the Alchemy Encoder
-        '''
-        session = Session()
-        events = session.query(Event).all()
-        events_json = json.dumps(events, cls=AlchemyEncoder)
-        Session.remove()
-        event_dict = json.loads(events_json)
-        self.assertTrue(len(event_dict) > 0)
+    def step21_badScenario(self):
+        result = run_scenario('a_bad_Event_id')
+        self.assertFalse(result['message']['success'])
+
+    def step22_downloadBadScenario(self):
+        result = download_scenario('not_a_real_scenario')
+        self.assertEqual('failed', result['status'])
 
     def steps(self):
         '''
@@ -772,6 +742,48 @@ def create_fac(grid=None, fac_id='AUTO_GENERATED'):
     
     return facility
     
+def create_group(name=None, event_type='ACTUAL'):
+    group = Group()
+    group.name = name
+    group.facility_type = 'All'
+    group.lon_min = -180
+    group.lon_max = 180
+    group.lat_min = -90
+    group.lat_max = 90
+    
+    gs = Group_Specification()
+    gs.notification_type = 'NEW_EVENT'
+    gs.minimum_magnitude = 3
+    gs.notificaiton_format = 'EMAIL_HTML'
+    gs.event_type = event_type
+    group.specs.append(gs)
+    
+    gs = Group_Specification()
+    gs.notification_type = 'heartbeat'
+    gs.event_type = 'heartbeat'
+    group.specs.append(gs)
+    
+    insp_prios = ['GREY', 'GREEN', 'YELLOW', 'ORANGE', 'RED']
+    for insp_prio in insp_prios:
+        gs = Group_Specification()
+        gs.event_type = event_type
+        gs.notification_type = 'DAMAGE'
+        gs.minimum_magnitude = 3
+        gs.notificaiton_format = 'EMAIL_HTML'
+        gs.inspection_priority = insp_prio
+        group.specs.append(gs)
+
+    return group
+
+def create_user(group_str=None, email=None):
+    user = User()
+    user.username = 'test_user'
+    user.email = email
+    user.user_type = 'ADMIN'
+    user.group_string = group_str
+
+    return user
+
 if __name__ == '__main__':
     
     # If the user wants to make sure they can get emails, they should

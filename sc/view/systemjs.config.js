@@ -42,7 +42,7 @@
       'ts':                           'npm:plugin-typescript@4.0.10/lib/plugin.js',
       'typescript':                   'npm:typescript@1.9.0-dev.20160409/lib/typescript.js',
       'angular2-notifications':       'ven:angular2-notifications',
-      'ng2-file-upload':              'ven:ng2-file-upload',
+      'ng2-file-upload':              'ven:ng2-file-upload'
     },
     // packages tells the System loader how to load when no filename and/or no extension
     packages: {

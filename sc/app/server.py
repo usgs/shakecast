@@ -190,7 +190,7 @@ class Server(object):
         the task should be removed from the queue
         """
         if task.loop is False:
-            out_str = ''
+            out_str = 'TEST'
             server_log = ''
             if task.output['status'] == 'finished':
                 out_str = task.output['message']
@@ -214,14 +214,12 @@ class Server(object):
             self.log(message=task.output.get('log', ''),
                      which='server')
             
-            try:
-                conn = self.connections[task.id]    
-                conn.send(out_str)
+            if task.id in self.connections.keys():
+                conn = self.connections[task.id]
+                conn.send(str(out_str))
                 conn.close()
-                
-            except:
-                pass # There is not connection for this task
-                task.status = 'complete'
+
+            task.status = 'complete'
 
         else:
             task.status = 'stopped'

@@ -1,5 +1,6 @@
 import { Component,
-         OnInit } from '@angular/core';
+         OnInit,
+         OnDestroy } from '@angular/core';
 import { TitleService } from '../../../title/title.service';
 import { EarthquakeService } from './earthquake.service.ts';
 
@@ -9,7 +10,7 @@ import { EarthquakeService } from './earthquake.service.ts';
     styleUrls: ['app/shakecast/pages/earthquakes/earthquakes.component.css',
                   'app/shared/css/data-list.css']
 })
-export class EarthquakesComponent implements OnInit {
+export class EarthquakesComponent implements OnInit, OnDestroy {
     subscriptions: any[] = [];
 
     constructor(private titleService: TitleService,
@@ -21,5 +22,15 @@ export class EarthquakesComponent implements OnInit {
         this.subscriptions.push(this.eqService.earthquakeData.subscribe(eqs => {
             this.eqService.plotEq(eqs[0])
         }));
+    }
+
+    ngOnDestroy() {
+        this.endSubscriptions()
+    }
+
+    endSubscriptions() {
+        for (var sub in this.subscriptions) {
+            this.subscriptions[sub].unsubscribe()
+        }
     }
 }
