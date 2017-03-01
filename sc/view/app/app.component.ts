@@ -4,7 +4,8 @@ import { UserService } from './login/user.service';
 import { NotificationsService } from 'angular2-notifications';
 import { MessagesService } from './shared/messages.service';
 import { Observable } from 'rxjs/Observable';
-import { CookieService } from 'angular2-cookie';
+
+import { CookieService } from './shared/cookie.service';
 
 @Component({
   selector: 'my-app',
@@ -51,7 +52,7 @@ export class AppComponent implements OnInit, OnDestroy {
 
         this.subscriptions.push(this.messService.messages.subscribe((messages: any) => {
             var maxTime = 0;
-            var messageTime = parseInt(this.cookieService.get('messageTime'));
+            var messageTime = parseInt(this.cookieService.getCookie('messageTime'));
 
             if (isNaN(messageTime)) {
                 messageTime = 0;
@@ -59,7 +60,7 @@ export class AppComponent implements OnInit, OnDestroy {
 
             for (let messTime in messages) {
                 let numTime = parseInt(messTime);
-                if (numTime > this.messageTime) {
+                if (numTime > messageTime) {
                     // Print message
                     this.makeNotification(messages[messTime]);
                     if (numTime > maxTime) {
@@ -69,18 +70,17 @@ export class AppComponent implements OnInit, OnDestroy {
             }
 
             if (maxTime > 0) {
-                this.messageTime = maxTime;
-                this.cookieService.put('messageTime', maxTime.toString())
+                this.cookieService.setCookie('messageTime', maxTime.toString())
             }
         }));
     }
 
     makeNotification(message: any) {
         if (message['title'] && message['message']) {
-            if (message['status'] == 'success') {
+            if (message['success'] === true) {
                 this.notService.success(message['title'],
                                         message['message'], {timeOut: 0});
-            } else if (message['status'] == 'failed') {
+            } else if (message['success'] === false) {
                 this.notService.error(message['title'],
                                         message['message'], {timeOut: 0});
             } else {
