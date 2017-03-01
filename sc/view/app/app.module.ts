@@ -31,6 +31,7 @@ import { UsersService } from './shakecast-admin/pages/users/users.service';
 import { TimeService } from './shakecast-admin/pages/config/time.service';
 
 import { StickToTopService } from './shared/directives/stick-to-top.service';
+import { MessagingComponent } from './messaging/messaging.component';
 import { MessagesService } from './shared/messages.service';
 import { CookieService } from './shared/cookie.service';
 
@@ -49,7 +50,8 @@ import { CookieService } from './shared/cookie.service';
   declarations: [
     AppComponent,
     NavComponent,
-    TitleComponent
+    TitleComponent,
+    MessagingComponent
   ],
   providers: [
     appRoutingProviders,
