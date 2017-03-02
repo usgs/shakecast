@@ -611,17 +611,19 @@ def delete_scenario(shakemap_id=None):
     session = Session()
     scenario = session.query(ShakeMap).filter(ShakeMap.shakemap_id == shakemap_id).first()
     event = session.query(Event).filter(Event.event_id == shakemap_id).first()
-    
+
     if scenario is not None:
+        # remove files
+        remove_dir(scenario.directory_name)
         session.delete(scenario)
+
     if event is not None:
+        # remove files
+        remove_dir(event.directory_name)
         session.delete(event)
 
     session.commit()
     Session.remove()
-
-    # remove files
-    remove_dir(event.directory_name)
 
     return {'status': 'finished',
             'message': {'message': 'Successfully removed scenario: ' + shakemap_id, 
@@ -922,7 +924,7 @@ def import_facility_xml(xml_file=''):
             'message': {'from': 'facility_import',
                         'title': 'Imported Facilities',
                         'message': message,
-                        'success': processed_event and processed_shakemap},
+                        'success': True},
             'log': log_message}
     
     return data
