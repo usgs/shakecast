@@ -10,7 +10,6 @@ if path not in sys.path:
     sys.path += [path]
 from app.functions import *
 from app.task import Task
-import pdb
 
 class TestProductGrabber(unittest.TestCase):
     '''
@@ -362,7 +361,6 @@ class TestFull(unittest.TestCase):
         self.assertTrue(len(event_dict) > 0)
 
     def step19_deleteScenario(self):
-        pdb.set_trace()
         session = Session()
         sm = session.query(ShakeMap).first()
         sm_id = sm.shakemap_id
