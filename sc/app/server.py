@@ -190,7 +190,7 @@ class Server(object):
         the task should be removed from the queue
         """
         if task.loop is False:
-            out_str = 'TEST'
+            out_str = ''
             server_log = ''
             if task.output['status'] == 'finished':
                 out_str = task.output['message']
@@ -341,9 +341,22 @@ class Server(object):
                 task.id = int(time.time() * 1000000)
                 task.func = f.geo_json
                 task.loop = True
-                task.interval = 60
+                task.interval = 60 * 60 * 12
                 task.db_use = True
                 task.name = 'geo_json'
+            
+                self.queue += [task]
+                message += 'Started monitoring earthquake feed \n'
+
+            if 'fast_geo_json' not in task_names:
+                task = Task()
+                task.id = int(time.time() * 1000000)
+                task.func = f.geo_json
+                task.loop = True
+                task.interval = 60
+                task.db_use = True
+                task.name = 'fast_geo_json'
+                task.args_in = {'query_period': 'hour'}
             
                 self.queue += [task]
                 message += 'Started monitoring earthquake feed \n'

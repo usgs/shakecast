@@ -123,13 +123,13 @@ class ProductGrabber(object):
                 event.event_id = eq_id
             else:
                 event.event_id = eq_id + '_scenario'
-                event.all_event_ids += event.event_id
+                event.all_event_ids = event.event_id
             
             # use id and all ids to determine if the event is new and
             # query the old event if necessary
             old_shakemaps = []
             old_notifications = []
-            if event.is_new() is False and scenario is False:
+            if event.is_new() is False:
                 event.status = 'processed'
                 ids = event.all_event_ids.strip(',').split(',')
                 old_events = [(session.query(Event)
@@ -151,7 +151,7 @@ class ProductGrabber(object):
             else:
                 event.status = 'new'
 
-            # this is a new event, make a status to match
+            # over ride new status if scenario
             if scenario is True:
                 event.status = 'scenario'
                         
