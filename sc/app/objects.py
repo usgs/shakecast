@@ -123,7 +123,7 @@ class ProductGrabber(object):
                 event.event_id = eq_id
             else:
                 event.event_id = eq_id + '_scenario'
-                event.all_event_ids += event.event_id
+                event.all_event_ids = event.event_id
             
             # use id and all ids to determine if the event is new and
             # query the old event if necessary
