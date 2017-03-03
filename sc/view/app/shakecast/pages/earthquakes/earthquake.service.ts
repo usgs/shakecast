@@ -34,7 +34,7 @@ export class EarthquakeService {
 
     constructor(private _http: Http,
                 private notService: NotificationService,
-                private mapService: MapService,
+                public mapService: MapService,
                 private facService: FacilityService,
                 private _router: Router,
                 private toastService: NotificationsService) {}

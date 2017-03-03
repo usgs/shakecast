@@ -66,6 +66,7 @@ export class EarthquakeListComponent implements OnInit, OnDestroy {
     }
 
     plotEq(eq: Earthquake) {
+        this.eqService.mapService.clearMap();
         this.eqService.plotEq(eq)
         this.selectEq(eq);
     }

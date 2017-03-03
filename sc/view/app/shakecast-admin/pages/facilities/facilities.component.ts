@@ -1,5 +1,6 @@
 import { Component,
-          OnInit } from '@angular/core';
+         OnInit,
+         OnDestroy } from '@angular/core';
 
 import { FacilityListComponent } from './facility-list.component'
 import { FacilityService } from './facility.service'
@@ -11,7 +12,7 @@ import { TitleService } from '../../../title/title.service'
     styleUrls: ['app/shakecast-admin/pages/facilities/facilities.component.css',
                   'app/shared/css/data-list.css'], 
 })
-export class FacilitiesComponent implements OnInit{
+export class FacilitiesComponent implements OnInit, OnDestroy {
     constructor(public facService: FacilityService,
                 private titleService: TitleService,
                 private eqService: EarthquakeService) {}
@@ -19,5 +20,10 @@ export class FacilitiesComponent implements OnInit{
         this.titleService.title.next('Facilities')
         this.eqService.configs['clearOnPlot'] = 'events';
         this.facService.getData();
+    }
+
+    ngOnDestroy() {
+        this.facService.clearMap();
+        this.facService.facilityData.next([]);
     }
 }

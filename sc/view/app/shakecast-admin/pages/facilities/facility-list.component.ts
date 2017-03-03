@@ -54,9 +54,11 @@ export class FacilityListComponent implements OnInit, OnDestroy {
 
             if ((this.facilityData.length > 0) && (this._router.url === '/shakecast-admin/facilities')) {
                 this.facService.clearMap();
-                this.selectedFacs.push(this.facilityData[0]);
-                this.facilityData[0].selected = true;
-                this.plotFac(this.facilityData[0]);
+                if (!this.selectedFacs) {
+                    this.selectedFacs.push(this.facilityData[0]);
+                }
+                //this.facilityData[0].selected = true;
+                //this.plotFac(this.facilityData[0]);
             }
         }));
 
