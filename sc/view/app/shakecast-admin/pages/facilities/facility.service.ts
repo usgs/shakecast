@@ -51,9 +51,13 @@ export class FacilityService {
             .map((result: Response) => result.json())
             .subscribe((result: any) => {
                 this.facilityData.next(result.facilities);
-                this.shakingData.next(result.shaking);
-
+                this.shakingData.next(result.alert);
                 this.unselectAll();
+
+                if (result.facilities.length > 0) {
+                    this.mapService.plotFacs(result.facilities);
+                }
+                
                 this.loadingData.next(false);
             })
     }

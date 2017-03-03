@@ -116,7 +116,8 @@ export class EarthquakeService {
         this._http.get('/api/earthquake-data/facility/' + facility['shakecast_id'])
             .map((result: Response) => result.json())
             .subscribe((result: any) => {
-                this.notService
+                //this.notService
+                this.earthquakeData.next(result.data);
                 this.dataLoading.next(false);
             })
     }
@@ -126,12 +127,8 @@ export class EarthquakeService {
             this.notService.getNotifications(eq);
             this.plotting.next(eq);
             this.mapService.plotEq(eq, this.configs['clearOnPlot']);
-        }
-
-        if (this._router.url == '/shakecast/dashboard') {
             this.facService.getShakeMapData(eq);
         }
-
     }
 
     geoJsonToSc(geoJson: any[]) {
