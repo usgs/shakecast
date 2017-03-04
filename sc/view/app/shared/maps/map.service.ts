@@ -41,6 +41,25 @@ export class MapService {
         this.center.next(marker);
     }
 
+    plotFacs(facs: Facility[],
+             clear: boolean = true) {
+        var markers = Array(facs.length);
+        for (var fac_id in facs) {
+            var fac = facs[fac_id];
+            var marker = this.makeMarker(fac);
+            marker['type'] = 'facility';
+            marker['zoom'] = 8;
+            marker['draggable'] = false;
+
+            // adjust for facilities having only max/min lat/lon
+            marker.lat = (marker.lat_min + marker.lat_max) / 2;
+            marker.lon = (marker.lon_min + marker.lon_max) / 2;
+
+            markers[fac_id] = marker;
+        }
+        this.facMarkers.next(markers);
+    }
+
     plotGroup(group: Group,
               clear: boolean = false) {
         var groupPoly: any = this.makePoly(group);

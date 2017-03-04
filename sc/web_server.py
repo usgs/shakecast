@@ -196,10 +196,11 @@ def get_shaking_events(facility_id):
 
     eq_dicts = []
     for eq in eqs:
-        eq_dict = eq.__dict__.copy()
-        eq_dict['shakemaps'] = len(eq.shakemaps)
-        eq_dict.pop('_sa_instance_state', None)
-        eq_dicts += [eq_dict]
+        if eq is not None:
+            eq_dict = eq.__dict__.copy()
+            eq_dict['shakemaps'] = len(eq.shakemaps)
+            eq_dict.pop('_sa_instance_state', None)
+            eq_dicts += [eq_dict]
     
     Session.remove()
     return jsonify(success=True, data=eq_dicts)
