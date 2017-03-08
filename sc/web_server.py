@@ -575,8 +575,9 @@ def template_names():
 @admin_only
 @login_required
 def scenario_download(event_id):
+    scenario = json.loads(request.args.get('scenario', 'false'))
     if event_id:
-        ui.send("{'scenario_download: %s': {'func': f.download_scenario, 'args_in': {'shakemap_id': r'%s'}, 'db_use': True, 'loop': False}}" % (event_id, event_id))
+        ui.send("{'scenario_download: %s': {'func': f.download_scenario, 'args_in': {'shakemap_id': r'%s', 'scenario': %s}, 'db_use': True, 'loop': False}}" % (event_id, event_id, scenario))
     
     return json.dumps({'success': True})
 

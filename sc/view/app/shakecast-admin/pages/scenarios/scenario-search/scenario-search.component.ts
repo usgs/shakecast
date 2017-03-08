@@ -33,7 +33,8 @@ export class ScenarioSearchComponent implements OnInit, OnDestroy{
                           minlatitude: -90,
                           maxlatitude: 90,
                           minlongitude: -180,
-                          maxlongitude: 180}
+                          maxlongitude: 180,
+                          scenariosOnly: false}
 
     public lats: number[] = [];
     public lons: number[] = [];

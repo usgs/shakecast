@@ -586,10 +586,10 @@ def inspection_notification(notification=Notification(),
         except:
             notification.status = 'send failed'
 
-def download_scenario(shakemap_id=None):
+def download_scenario(shakemap_id=None, scenario=False):
     if shakemap_id is not None:
         pg = ProductGrabber()
-        success = pg.get_scenario(shakemap_id=shakemap_id)
+        success = pg.get_scenario(shakemap_id=shakemap_id, scenario=scenario)
 
         if success is True:
             status = 'finished'
