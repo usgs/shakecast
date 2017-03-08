@@ -28,7 +28,11 @@ export class MapComponent implements OnInit, OnDestroy {
     private groupLayers: any = L.featureGroup();
     private subscriptions: any = [];
     private map: any;
-
+    private epicIcon: any  = L.icon({iconUrl: 'images/epicenter.png',
+                                    iconSize:     [45, 45], // size of the icon
+                                    shadowSize:   [50, 64], // size of the shadow
+                                    popupAnchor:  [1, -25] // point from which the popup should open relative to the iconAnchor
+                             });
     constructor(private mapService: MapService,
                 private smService: ShakemapService,
                 private _router: Router) {}
@@ -126,7 +130,7 @@ export class MapComponent implements OnInit, OnDestroy {
     }
 
     createEventMarker(event: any) {
-        var marker: any = L.marker([event.lat, event.lon]);
+        var marker: any = L.marker([event.lat, event.lon], {icon: this.epicIcon});
 
         marker['popupContent'] = `<table class="my-table">    
                                 <tr>
@@ -315,7 +319,6 @@ export class MapComponent implements OnInit, OnDestroy {
     clearEventLayers() {
         if (this.eventLayer.hasLayer(this.eventMarker)) {
             this.eventLayer.removeLayer(this.eventMarker);
-            this.overlayLayer = L.marker();
         }
 
         if (this.eventLayer.hasLayer(this.overlayLayer)) {
