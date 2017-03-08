@@ -1130,7 +1130,10 @@ def import_user_dicts(users=None):
     log_message = ''
     status = 'finished'
     data = {'status': status,
-            'message': 'Imported users',
+            'message': {'from': 'import_user_dicts',
+                        'title': 'User Upload',
+                        'message': 'User update complete',
+                        'success': True},
             'log': log_message}
     
     return data

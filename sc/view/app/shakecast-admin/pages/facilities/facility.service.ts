@@ -40,6 +40,7 @@ export class FacilityService {
             .map((result: Response) => result.json())
             .subscribe((result: any) => {
                 this.selectedFacs = [];
+                this.shakingData.next(null);
                 this.facilityData.next(result.data);
                 this.loadingData.next(false);
             })

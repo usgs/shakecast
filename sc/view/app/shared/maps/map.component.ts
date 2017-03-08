@@ -3,6 +3,8 @@ import { Router } from '@angular/router'
 import { Marker } from './map.service';
 import { ShakemapService } from './shakemap.service'
 import { MapService } from './map.service'
+import { FacilityService } from '../../shakecast-admin/pages/facilities/facility.service';
+
 declare var L: any;
 declare var _: any;
 
@@ -33,8 +35,12 @@ export class MapComponent implements OnInit, OnDestroy {
                                     shadowSize:   [50, 64], // size of the shadow
                                     popupAnchor:  [1, -25] // point from which the popup should open relative to the iconAnchor
                              });
+    public shakingData: any = null
+    public totalShaking: number = 0;
+
     constructor(private mapService: MapService,
                 private smService: ShakemapService,
+                private facService: FacilityService,
                 private _router: Router) {}
 
     ngOnInit() {
@@ -81,7 +87,7 @@ export class MapComponent implements OnInit, OnDestroy {
             if (center['type'] === 'facility') {
                 this.map.setView([center.lat,center.lon]);
             } else {
-                this.map.setView([center.lat + .5,center.lon]);
+                this.map.setView([center.lat + .5,center.lon], 8);
             }
         }));
 
@@ -110,6 +116,21 @@ export class MapComponent implements OnInit, OnDestroy {
         // subscribe to clearing the map
         this.subscriptions.push(this.mapService.clearMapNotify.subscribe(notification => {
             this.clearLayers();
+        }));
+
+        // subscribe to facility data to create a total shaking div
+        this.subscriptions.push(this.facService.shakingData.subscribe((shaking: any) => {
+            this.shakingData = shaking;
+
+            if (shaking) {
+                this.totalShaking = shaking['grey'].length + 
+                                        shaking['green'].length + 
+                                        shaking['yellow'].length + 
+                                        shaking['orange'].length + 
+                                        shaking['red'].length;
+            } else {
+                this.totalShaking = 0;
+            }
         }));
     }
 
