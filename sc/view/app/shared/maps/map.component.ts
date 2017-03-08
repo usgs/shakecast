@@ -239,7 +239,7 @@ export class MapComponent implements OnInit, OnDestroy {
         var marker: any = L.marker([fac.lat, fac.lon]);
         var desc: string = ''
         if (fac.html) {
-            fac['popupContent'] = fac.html
+            marker['popupContent'] = fac.html
         } else {
             if (fac.description) {
                 desc = fac.description
@@ -248,9 +248,7 @@ export class MapComponent implements OnInit, OnDestroy {
             }
             marker['popupContent'] = `<table style="text-align:center;">
                                         <tr>
-                                            <th>` + 
-                                                fac.name + `
-                                            </th>
+                                            <th>` + fac.name + ` </th>
                                         </tr>
                                         <tr>
                                             <td style="font-style:italic;">` +
@@ -258,6 +256,33 @@ export class MapComponent implements OnInit, OnDestroy {
                                             </td>
                                         </tr>
                                     </table>`
+        }
+
+        if (fac['shaking']) {
+            marker['popupContent'] += `<table style="border-top:2px solid #444444;width:100%;">
+                                            <tr>
+                                                <table style="width:90%;margin-left:5%;border-bottom:2px solid #dedede;padding-bottom:0">
+                                                    <tr>
+                                                        <th style="text-align:center">Shaking Level</th>
+                                                    </tr>
+                                                </table>
+                                            </tr>
+                                            <tr>
+                                                <table style="width:80%;margin-left:10%;text-align:center;margin-top:3px;">
+                                                    <tr style="background: ` + fac['shaking']['alert_level'] + `">
+                                                        <th style="color:white;">` + fac['shaking']['alert_level'] + `</th>
+                                                    </tr>
+                                                </table>
+                                            </tr>
+                                            <tr>
+                                                <table style="width:100%;text-align:center;">
+                                                    <tr>
+                                                        <th style="text-align:right;width:50%">` + fac['shaking']['metric'] + `: </th>
+                                                        <td style="text-align:left;width:50%">` + fac['shaking'][fac['shaking']['metric'].toLowerCase()] + `</td>
+                                                    </tr>
+                                                </table>
+                                            </tr>
+                                        </table>`
         }
         return marker
     }
@@ -296,11 +321,6 @@ export class MapComponent implements OnInit, OnDestroy {
         if (this.eventLayer.hasLayer(this.overlayLayer)) {
             this.eventLayer.removeLayer(this.overlayLayer);
             this.overlayLayer = L.imageOverlay();
-        }
-
-        if (this.map.hasLayer(this.eventLayer)) {
-            this.map.removeLayer(this.eventLayer);
-            this.eventLayer = L.layerGroup();
         }
     }
 

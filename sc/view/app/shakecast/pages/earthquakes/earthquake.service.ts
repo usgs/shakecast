@@ -116,7 +116,6 @@ export class EarthquakeService {
         this._http.get('/api/earthquake-data/facility/' + facility['shakecast_id'])
             .map((result: Response) => result.json())
             .subscribe((result: any) => {
-                //this.notService
                 this.earthquakeData.next(result.data);
                 this.dataLoading.next(false);
             })

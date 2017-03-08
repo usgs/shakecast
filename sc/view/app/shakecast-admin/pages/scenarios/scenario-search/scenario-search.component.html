@@ -2,22 +2,37 @@
     <h1>From the Web</h1>
 
     <div class="field">
-        <p>Minimum Magnitude: </p><input [(ngModel)]="filter.minmagnitude"/>
+        <p>Minimum Magnitude: </p>
+        <select [(ngModel)]="filter.minmagnitude">
+            <option *ngFor="let mag of [3,4,5,6,7,8,9]" [value]="mag">{{ mag }}</option>
+        </select>
     </div>
     <div class="field">
         <p>Date Range: </p><p>{{ filter.startdate }}</p>
     </div>
     <div class="field">
-        <p>Minimum Latitude: </p><input [(ngModel)]="filter.minlatitude"/>
+        <p>Minimum Latitude: </p>
+        <select [(ngModel)]="filter.minlatitude">
+            <option *ngFor="let lat of lats" [value]="lat">{{ lat }}</option>
+        </select>
     </div>
     <div class="field">
-        <p>Maximum Latitude: </p><input [(ngModel)]="filter.maxlatitude"/>
+        <p>Maximum Latitude: </p>
+        <select [(ngModel)]="filter.maxlatitude">
+            <option *ngFor="let lat of lats" [value]="lat">{{ lat }}</option>
+        </select>
     </div>
     <div class="field">
-        <p>Minimum Longitude: </p><input [(ngModel)]="filter.minlongitude"/>
+        <p>Minimum Longitude: </p>
+        <select [(ngModel)]="filter.minlongitude">
+            <option *ngFor="let lon of lons" [value]="lon">{{ lon }}</option>
+        </select>
     </div>
     <div class="field">
-        <p>Maximum Longitude: </p><input [(ngModel)]="filter.maxlongitude"/>
+        <p>Maximum Longitude: </p>
+        <select [(ngModel)]="filter.maxlongitude">
+            <option *ngFor="let lon of lons" [value]="lon">{{ lon }}</option>
+        </select>
     </div>
 
     <h2 class="search button" (click)="eqService.getDataFromWeb(filter)">Search</h2>

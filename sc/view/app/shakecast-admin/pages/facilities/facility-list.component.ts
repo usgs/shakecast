@@ -57,8 +57,8 @@ export class FacilityListComponent implements OnInit, OnDestroy {
                 if (!this.selectedFacs) {
                     this.selectedFacs.push(this.facilityData[0]);
                 }
-                //this.facilityData[0].selected = true;
-                //this.plotFac(this.facilityData[0]);
+                this.facilityData[0].selected = true;
+                this.plotFac(this.facilityData[0]);
             }
         }));
 

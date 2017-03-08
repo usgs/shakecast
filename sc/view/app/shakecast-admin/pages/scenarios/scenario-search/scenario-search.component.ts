@@ -35,9 +35,21 @@ export class ScenarioSearchComponent implements OnInit, OnDestroy{
                           minlongitude: -180,
                           maxlongitude: 180}
 
+    public lats: number[] = [];
+    public lons: number[] = [];
+
     constructor(private eqService: EarthquakeService) {}
 
     ngOnInit() {
+
+        // generate lats and lons
+        for (var i = -180; i <= 180; i += 5) {
+            this.lons.push(i);
+            if ((i >= -90) && (i <=90)) {
+                this.lats.push(i);
+            }
+        }
+
         this.subscriptions.push(this.eqService.showScenarioSearch.subscribe((show: boolean) => {
             this.show = show;
         }));
