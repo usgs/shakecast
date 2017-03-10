@@ -288,14 +288,7 @@ export class MapComponent implements OnInit, OnDestroy {
                                             <tr>
                                                 <table style="width:90%;margin-left:5%;border-bottom:2px solid #dedede;padding-bottom:0">
                                                     <tr>
-                                                        <th style="text-align:center">Shaking Level</th>
-                                                    </tr>
-                                                </table>
-                                            </tr>
-                                            <tr>
-                                                <table style="width:80%;margin-left:10%;text-align:center;margin-top:3px;">
-                                                    <tr style="background: ` + fac['shaking']['alert_level'] + `">
-                                                        <th style="color:white;">` + fac['shaking']['alert_level'] + `</th>
+                                                        <th style="text-align:center">Alert Level</th>
                                                     </tr>
                                                 </table>
                                             </tr>
@@ -304,6 +297,13 @@ export class MapComponent implements OnInit, OnDestroy {
                                                     <tr>
                                                         <th style="text-align:right;width:50%">` + fac['shaking']['metric'] + `: </th>
                                                         <td style="text-align:left;width:50%">` + fac['shaking'][fac['shaking']['metric'].toLowerCase()] + `</td>
+                                                    </tr>
+                                                </table>
+                                            </tr>
+                                            <tr>
+                                                <table style="width:80%;margin-left:10%;text-align:center;margin-top:3px;">
+                                                    <tr style="background: ` + fac['shaking']['alert_level'] + `">
+                                                        <th style="color:white;">` + fac['shaking']['alert_level'] + `</th>
                                                     </tr>
                                                 </table>
                                             </tr>
