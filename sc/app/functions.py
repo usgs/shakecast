@@ -458,7 +458,7 @@ def new_event_notification(notifications = None,
     msg = MIMEMultipart()
     
     # attach html
-    msg_html = MIMEText(html, 'html')
+    msg_html = MIMEText(html.encode('utf-8'), 'html', 'utf-8')
     msg.attach(msg_html)
 
     # get and attach map
@@ -489,7 +489,7 @@ def new_event_notification(notifications = None,
     
     if len(you) > 0:
         if len(events) == 1:
-            msg['Subject'] = event.title
+            msg['Subject'] = event.title.encode('utf-8')
         else:
             mags = []
             for e in events:

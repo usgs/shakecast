@@ -16,6 +16,7 @@ from email.mime.text import MIMEText
 from email.MIMEImage import MIMEImage
 from email.MIMEMultipart import MIMEMultipart
 from util import *
+import types
 from orm import Session, Event, ShakeMap, Product, User, DeclarativeMeta
 modules_dir = os.path.join(sc_dir(), 'modules')
 if modules_dir not in sys.path:
@@ -1188,6 +1189,10 @@ class AlchemyEncoder(json.JSONEncoder):
             fields = {}
             for field in [x for x in dir(obj) if not x.startswith('_') and x != 'metadata']:
                 data = obj.__getattribute__(field)
+
+                if type(data) is types.MethodType:
+                    continue
+
                 try:
                     json.dumps(data) # this will fail on non-encodable values, like other classes
                     fields[field] = data
@@ -1196,6 +1201,8 @@ class AlchemyEncoder(json.JSONEncoder):
                         fields[field] = [str(d) for d in data]
                     except:
                         fields[field] = None
+                except UnicodeEncodeError:
+                    fields[field] = 'Non-encodable'
             # a json-encodable dict
             return fields
     
