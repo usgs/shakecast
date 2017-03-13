@@ -1190,7 +1190,7 @@ class AlchemyEncoder(json.JSONEncoder):
             for field in [x for x in dir(obj) if not x.startswith('_') and x != 'metadata']:
                 data = obj.__getattribute__(field)
 
-                if type(data) is types.MethodType:
+                if isinstance(data, types.MethodType):
                     continue
 
                 try:
