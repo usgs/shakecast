@@ -458,7 +458,7 @@ def new_event_notification(notifications = None,
     msg = MIMEMultipart()
     
     # attach html
-    msg_html = MIMEText(html, 'html')
+    msg_html = MIMEText(html.encode('utf-8'), 'html', 'utf-8')
     msg.attach(msg_html)
 
     # get and attach map
@@ -489,7 +489,7 @@ def new_event_notification(notifications = None,
     
     if len(you) > 0:
         if len(events) == 1:
-            msg['Subject'] = event.title
+            msg['Subject'] = event.title.encode('utf-8')
         else:
             mags = []
             for e in events:
@@ -586,10 +586,10 @@ def inspection_notification(notification=Notification(),
         except:
             notification.status = 'send failed'
 
-def download_scenario(shakemap_id=None):
+def download_scenario(shakemap_id=None, scenario=False):
     if shakemap_id is not None:
         pg = ProductGrabber()
-        success = pg.get_scenario(shakemap_id=shakemap_id)
+        success = pg.get_scenario(shakemap_id=shakemap_id, scenario=scenario)
 
         if success is True:
             status = 'finished'
@@ -1130,7 +1130,10 @@ def import_user_dicts(users=None):
     log_message = ''
     status = 'finished'
     data = {'status': status,
-            'message': 'Imported users',
+            'message': {'from': 'import_user_dicts',
+                        'title': 'User Upload',
+                        'message': 'User update complete',
+                        'success': True},
             'log': log_message}
     
     return data

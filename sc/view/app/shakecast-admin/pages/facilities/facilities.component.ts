@@ -18,6 +18,7 @@ export class FacilitiesComponent implements OnInit, OnDestroy {
                 private eqService: EarthquakeService) {}
     ngOnInit() {
         this.titleService.title.next('Facilities')
+        this.facService.clearMap()
         this.eqService.configs['clearOnPlot'] = 'events';
         this.facService.getData();
     }

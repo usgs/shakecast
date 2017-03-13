@@ -53,8 +53,16 @@ export class EarthquakeService {
 
     getDataFromWeb(filter: any = {}) {
         this.dataLoading.next(true);
+        var scenario = filter['scenariosOnly'];
 
-        var usgs: string = 'https://earthquake.usgs.gov/fdsnws/event/1/query'
+        var usgs: string;
+        if (scenario) {
+            usgs = 'https://earthquake.usgs.gov/fdsnws/scenario/1/query';
+        } else {
+            usgs = 'https://earthquake.usgs.gov/fdsnws/event/1/query';
+        }
+
+        delete filter['scenariosOnly'];
 
         filter['format'] = 'geojson'
 
@@ -77,14 +85,21 @@ export class EarthquakeService {
             .subscribe((result: any) => {
                 // convert from geoJSON to sc conventions
                 var data = this.geoJsonToSc(result['features']);
+
+                for (var eq in data) {
+                    data[eq]['scenario'] = scenario;
+                }
+
                 this.earthquakeData.next(data);
                 this.dataLoading.next(false);
             });
     }
 
-    downloadScenario(scenario_id: string) {
+    downloadScenario(scenario_id: string, scenario:boolean = false) {
         this.dataLoading.next(true);
-        this._http.get('/api/scenario-download/' + scenario_id)
+        let params = new URLSearchParams();
+        params.set('scenario', JSON.stringify(scenario))
+        this._http.get('/api/scenario-download/' + scenario_id, {search: params})
             .map((result: Response) => result.json())
             .subscribe((result: any) => {
                 this.toastService.success('Scenario: ' + scenario_id, 'Download starting...')
@@ -116,7 +131,6 @@ export class EarthquakeService {
         this._http.get('/api/earthquake-data/facility/' + facility['shakecast_id'])
             .map((result: Response) => result.json())
             .subscribe((result: any) => {
-                //this.notService
                 this.earthquakeData.next(result.data);
                 this.dataLoading.next(false);
             })

@@ -4,6 +4,7 @@ import 'rxjs/add/operator/map';
 import 'rxjs/add/operator/catch';
 import { Observable } from 'rxjs/Observable';
 import { ReplaySubject } from 'rxjs/ReplaySubject';
+import { NotificationsService } from 'angular2-notifications'
 
 import { MapService } from '../../../shared/maps/map.service'
 
@@ -22,7 +23,8 @@ export class UsersService {
     public filter = {};
 
     constructor(private _http: Http,
-                private mapService: MapService) {}
+                private mapService: MapService,
+                private notService: NotificationsService) {}
 
     getData(filter: any = {}) {
         this.loadingData.next(true)
@@ -47,6 +49,7 @@ export class UsersService {
 
     saveUsers(users: User[]) {
         let headers = new Headers();
+        this.notService.success('User Info', 'Saving your changes...');
         headers.append('Content-Type', 'application/json');
         this._http.post('/api/users', 
                         JSON.stringify({users: users}),

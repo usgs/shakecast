@@ -3,6 +3,8 @@ import { Router } from '@angular/router'
 import { Marker } from './map.service';
 import { ShakemapService } from './shakemap.service'
 import { MapService } from './map.service'
+import { FacilityService } from '../../shakecast-admin/pages/facilities/facility.service';
+
 declare var L: any;
 declare var _: any;
 
@@ -28,9 +30,17 @@ export class MapComponent implements OnInit, OnDestroy {
     private groupLayers: any = L.featureGroup();
     private subscriptions: any = [];
     private map: any;
+    private epicIcon: any  = L.icon({iconUrl: 'images/epicenter.png',
+                                    iconSize:     [45, 45], // size of the icon
+                                    shadowSize:   [50, 64], // size of the shadow
+                                    popupAnchor:  [1, -25] // point from which the popup should open relative to the iconAnchor
+                             });
+    public shakingData: any = null
+    public totalShaking: number = 0;
 
     constructor(private mapService: MapService,
                 private smService: ShakemapService,
+                private facService: FacilityService,
                 private _router: Router) {}
 
     ngOnInit() {
@@ -77,7 +87,7 @@ export class MapComponent implements OnInit, OnDestroy {
             if (center['type'] === 'facility') {
                 this.map.setView([center.lat,center.lon]);
             } else {
-                this.map.setView([center.lat + .5,center.lon]);
+                this.map.setView([center.lat + .5,center.lon], 8);
             }
         }));
 
@@ -107,6 +117,21 @@ export class MapComponent implements OnInit, OnDestroy {
         this.subscriptions.push(this.mapService.clearMapNotify.subscribe(notification => {
             this.clearLayers();
         }));
+
+        // subscribe to facility data to create a total shaking div
+        this.subscriptions.push(this.facService.shakingData.subscribe((shaking: any) => {
+            this.shakingData = shaking;
+
+            if (shaking) {
+                this.totalShaking = shaking['grey'].length + 
+                                        shaking['green'].length + 
+                                        shaking['yellow'].length + 
+                                        shaking['orange'].length + 
+                                        shaking['red'].length;
+            } else {
+                this.totalShaking = 0;
+            }
+        }));
     }
 
     //////////////////////////////////////////////////////////////
@@ -126,7 +151,7 @@ export class MapComponent implements OnInit, OnDestroy {
     }
 
     createEventMarker(event: any) {
-        var marker: any = L.marker([event.lat, event.lon]);
+        var marker: any = L.marker([event.lat, event.lon], {icon: this.epicIcon});
 
         marker['popupContent'] = `<table class="my-table">    
                                 <tr>
@@ -239,7 +264,7 @@ export class MapComponent implements OnInit, OnDestroy {
         var marker: any = L.marker([fac.lat, fac.lon]);
         var desc: string = ''
         if (fac.html) {
-            fac['popupContent'] = fac.html
+            marker['popupContent'] = fac.html
         } else {
             if (fac.description) {
                 desc = fac.description
@@ -248,9 +273,7 @@ export class MapComponent implements OnInit, OnDestroy {
             }
             marker['popupContent'] = `<table style="text-align:center;">
                                         <tr>
-                                            <th>` + 
-                                                fac.name + `
-                                            </th>
+                                            <th>` + fac.name + ` </th>
                                         </tr>
                                         <tr>
                                             <td style="font-style:italic;">` +
@@ -258,6 +281,33 @@ export class MapComponent implements OnInit, OnDestroy {
                                             </td>
                                         </tr>
                                     </table>`
+        }
+
+        if (fac['shaking']) {
+            marker['popupContent'] += `<table style="border-top:2px solid #444444;width:100%;">
+                                            <tr>
+                                                <table style="width:90%;margin-left:5%;border-bottom:2px solid #dedede;padding-bottom:0">
+                                                    <tr>
+                                                        <th style="text-align:center">Alert Level</th>
+                                                    </tr>
+                                                </table>
+                                            </tr>
+                                            <tr>
+                                                <table style="width:100%;text-align:center;">
+                                                    <tr>
+                                                        <th style="text-align:right;width:50%">` + fac['shaking']['metric'] + `: </th>
+                                                        <td style="text-align:left;width:50%">` + fac['shaking'][fac['shaking']['metric'].toLowerCase()] + `</td>
+                                                    </tr>
+                                                </table>
+                                            </tr>
+                                            <tr>
+                                                <table style="width:80%;margin-left:10%;text-align:center;margin-top:3px;">
+                                                    <tr style="background: ` + fac['shaking']['alert_level'] + `">
+                                                        <th style="color:white;">` + fac['shaking']['alert_level'] + `</th>
+                                                    </tr>
+                                                </table>
+                                            </tr>
+                                        </table>`
         }
         return marker
     }
@@ -290,17 +340,11 @@ export class MapComponent implements OnInit, OnDestroy {
     clearEventLayers() {
         if (this.eventLayer.hasLayer(this.eventMarker)) {
             this.eventLayer.removeLayer(this.eventMarker);
-            this.overlayLayer = L.marker();
         }
 
         if (this.eventLayer.hasLayer(this.overlayLayer)) {
             this.eventLayer.removeLayer(this.overlayLayer);
             this.overlayLayer = L.imageOverlay();
-        }
-
-        if (this.map.hasLayer(this.eventLayer)) {
-            this.map.removeLayer(this.eventLayer);
-            this.eventLayer = L.layerGroup();
         }
     }
 

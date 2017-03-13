@@ -218,6 +218,7 @@ class TestFull(unittest.TestCase):
     def step05_createFacility(self):
         session = Session()
         sms = session.query(ShakeMap).all()
+
         if sms:
             for sm in sms:
                 grid = create_grid(sm)
@@ -250,6 +251,9 @@ class TestFull(unittest.TestCase):
                     raise ValueError('Notification not sent... {}: {}, {}'.format(event.event_id,
                                                                                   notification.notification_type,
                                                                                   notification.status))
+
+        if event:
+            print event
                     
         Session.remove()
         
@@ -348,7 +352,6 @@ class TestFull(unittest.TestCase):
     def step18_UpdateFunction(self):
         check_for_updates()
 
-
     def step20_AlchemyEncoder(self):
         '''
         Runs through a default use case of the Alchemy Encoder
@@ -387,6 +390,9 @@ class TestFull(unittest.TestCase):
     def step22_downloadBadScenario(self):
         result = download_scenario('not_a_real_scenario')
         self.assertEqual('failed', result['status'])
+
+    def step23_downloadActualScenario(self):
+        download_scenario('bssc2014nsanandreassaosansap_m8p04_se', scenario=True)
 
     def steps(self):
         '''
