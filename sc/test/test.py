@@ -348,7 +348,6 @@ class TestFull(unittest.TestCase):
     def step18_UpdateFunction(self):
         check_for_updates()
 
-
     def step20_AlchemyEncoder(self):
         '''
         Runs through a default use case of the Alchemy Encoder
@@ -387,6 +386,9 @@ class TestFull(unittest.TestCase):
     def step22_downloadBadScenario(self):
         result = download_scenario('not_a_real_scenario')
         self.assertEqual('failed', result['status'])
+
+    def step23_downloadActualScenario(self):
+        result = download_scenario('bssc2014nsanandreassaosansap_m8p04_se', scenario=True)
 
     def steps(self):
         '''
