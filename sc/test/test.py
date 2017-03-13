@@ -11,6 +11,11 @@ if path not in sys.path:
 from app.functions import *
 from app.task import Task
 
+class TestORMReprs(unittest.TestCase):
+    e = Event()
+    print e
+
+
 class TestProductGrabber(unittest.TestCase):
     '''
     Test functions for the ProductGrabber class
@@ -388,7 +393,7 @@ class TestFull(unittest.TestCase):
         self.assertEqual('failed', result['status'])
 
     def step23_downloadActualScenario(self):
-        result = download_scenario('bssc2014nsanandreassaosansap_m8p04_se', scenario=True)
+        download_scenario('bssc2014nsanandreassaosansap_m8p04_se', scenario=True)
 
     def steps(self):
         '''
