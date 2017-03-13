@@ -11,11 +11,6 @@ if path not in sys.path:
 from app.functions import *
 from app.task import Task
 
-class TestORMReprs(unittest.TestCase):
-    e = Event()
-    print e
-
-
 class TestProductGrabber(unittest.TestCase):
     '''
     Test functions for the ProductGrabber class
@@ -223,6 +218,7 @@ class TestFull(unittest.TestCase):
     def step05_createFacility(self):
         session = Session()
         sms = session.query(ShakeMap).all()
+
         if sms:
             for sm in sms:
                 grid = create_grid(sm)
@@ -255,6 +251,9 @@ class TestFull(unittest.TestCase):
                     raise ValueError('Notification not sent... {}: {}, {}'.format(event.event_id,
                                                                                   notification.notification_type,
                                                                                   notification.status))
+
+        if event:
+            print event
                     
         Session.remove()
         
