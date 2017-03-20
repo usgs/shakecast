@@ -16,6 +16,7 @@ from email.mime.text import MIMEText
 from email.MIMEImage import MIMEImage
 from email.MIMEMultipart import MIMEMultipart
 from util import *
+import types
 from orm import Session, Event, ShakeMap, Product, User, DeclarativeMeta
 modules_dir = os.path.join(sc_dir(), 'modules')
 if modules_dir not in sys.path:
@@ -232,7 +233,8 @@ class ProductGrabber(object):
                 eq_info = eq
             
             # check if the event has a shakemap
-            if 'shakemap' not in eq_info['properties']['products'].keys():
+            if ('shakemap' not in eq_info['properties']['products'].keys() and
+                    'shakemap-scenario' not in eq_info['properties']['products'].keys()):
                 continue
             
             # pulls the first shakemap associated with the event
@@ -242,7 +244,13 @@ class ProductGrabber(object):
                 shakemap.shakemap_id = eq_id
             else:
                 shakemap.shakemap_id = eq_id + '_scenario'
-            shakemap.shakemap_version = eq_info['properties']['products']['shakemap'][0]['properties']['version']
+
+            if 'shakemap-scenario' in eq_info['properties']['products'].keys():
+                sm_str = 'shakemap-scenario'
+            else:
+                sm_str = 'shakemap'
+
+            shakemap.shakemap_version = eq_info['properties']['products'][sm_str][0]['properties']['version']
             
             # check if we already have the shakemap
             if shakemap.is_new() is False:
@@ -253,7 +261,7 @@ class ProductGrabber(object):
                     .first()
                 )
             
-            shakemap.json = eq_info['properties']['products']['shakemap'][0]
+            shakemap.json = eq_info['properties']['products'][sm_str][0]
             
             # check if the shakemap has required products. If it does,
             # it is not a new map, and can be skipped
@@ -373,14 +381,18 @@ class ProductGrabber(object):
             
         Session.remove()
         
-    def get_scenario(self, shakemap_id=''):
+    def get_scenario(self, shakemap_id='', scenario=False):
         '''
         Grab a shakemap from the USGS web and stick it in the db so
         it can be run as a scenario
         '''
         scenario_ready = True
         try:
-            self.json_feed_url = 'https://earthquake.usgs.gov/fdsnws/event/1/query?format=geojson&eventid={0}'.format(shakemap_id)
+            if scenario is True:
+                self.json_feed_url = 'https://earthquake.usgs.gov/fdsnws/scenario/1/query?format=geojson&eventid={0}'.format(shakemap_id)
+            else:
+                self.json_feed_url = 'https://earthquake.usgs.gov/fdsnws/event/1/query?format=geojson&eventid={0}'.format(shakemap_id)
+            
             self.get_json_feed(scenario=True)
             self.get_new_events(scenario=True)
             self.get_new_shakemaps(scenario=True)
@@ -1177,6 +1189,10 @@ class AlchemyEncoder(json.JSONEncoder):
             fields = {}
             for field in [x for x in dir(obj) if not x.startswith('_') and x != 'metadata']:
                 data = obj.__getattribute__(field)
+
+                if isinstance(data, types.MethodType):
+                    continue
+
                 try:
                     json.dumps(data) # this will fail on non-encodable values, like other classes
                     fields[field] = data
@@ -1185,6 +1201,8 @@ class AlchemyEncoder(json.JSONEncoder):
                         fields[field] = [str(d) for d in data]
                     except:
                         fields[field] = None
+                except UnicodeEncodeError:
+                    fields[field] = 'Non-encodable'
             # a json-encodable dict
             return fields
     

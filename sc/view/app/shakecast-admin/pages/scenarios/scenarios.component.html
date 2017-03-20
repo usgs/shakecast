@@ -11,7 +11,7 @@
 </div>
 <div *ngIf="searchShown">
     <h3 class="button" (click)="eqService.showScenarioSearch.next(true)">Search</h3>
-    <h3 class="button" (click)="eqService.downloadScenario(eqService.selected.event_id)">Download Selected</h3>
+    <h3 class="button" (click)="eqService.downloadScenario(eqService.selected.event_id, eqService.selected.scenario)">Download Selected</h3>
     <h3 class="button" (click)="userScenarios()">Your Scenarios</h3>
 </div>
 

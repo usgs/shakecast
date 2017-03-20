@@ -25,7 +25,7 @@
                 </tr>
             </table>
         </div>
-        <div *ngIf="_router.url != '/shakecast/dashboard'">
+        <div *ngIf="!facilityShaking">
             <div class="shaking-history-link"
                     (click)="showFragility(facility)"
                     [@shrinkBody]='showFragilityInfo'>
@@ -35,7 +35,7 @@
         </div>
 
         <div class="shaking-history" [@showFragility]="showFragilityInfo || _router.url == '/shakecast/dashboard'">
-            <div class="eq-list" *ngIf="_router.url != '/shakecast/dashboard'">
+            <div class="eq-list" *ngIf="_router.url != '/shakecast/dashboard' && !facilityShaking">
                 <earthquake-list></earthquake-list>
             </div>
             <div class="impact" *ngIf="facilityShaking">

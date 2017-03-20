@@ -67,12 +67,20 @@ export class FacilityInfoComponent implements OnInit, OnDestroy{
                 this.show = true;
                 this.facility = facility;
 
+                if (facility['shaking']) {
+                    this.facilityShaking = facility['shaking'];
+                    //this.showFragilityInfo = true;
+                } else {
+                    this.facilityShaking = null;
+                    //this.showFragilityInfo = false;
+                }
+/*
                 if (this._router.url == '/shakecast/dashboard') {
                     this.facilityShaking = facility['shaking'];
                 } else {
                     this.facilityShaking = null;
                 }
-
+*/
             } else {
                 this.show = false;
             }

@@ -21,7 +21,7 @@ export class MessagingComponent implements OnInit, OnDestroy {
 
     ngOnInit() {
         this.subscriptions.push(
-            Observable.interval(30000).subscribe(data => {
+            Observable.interval(10000).subscribe(data => {
                     this.messService.getMessages();
                 }
             )

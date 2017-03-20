@@ -207,17 +207,23 @@ class TestFull(unittest.TestCase):
         '''
         Test run of geo_json
         '''
-        data = geo_json()
+        data = geo_json('hour')
         self.assertEqual(data['error'], '')
-        
-        # check if there are shakemaps
-        shakemaps = session.query(ShakeMap).all()
-        if not shakemaps:
-            geo_json(query_period='week')
-        
+
+        # grab a scenario and save it as a shakemap incase no shakemaps
+        # are available
+        download_scenario('bssc2014nsanandreassaosansap_m8p04_se', scenario=True)
+        session = Session()
+        sm = session.query(ShakeMap).filter(ShakeMap.shakemap_id == 'bssc2014nsanandreassaosansap_m8p04_se_scenario').first()
+        sm.status = 'new'
+        session.commit()
+        Session.remove()
+
+
     def step05_createFacility(self):
         session = Session()
         sms = session.query(ShakeMap).all()
+
         if sms:
             for sm in sms:
                 grid = create_grid(sm)
@@ -225,8 +231,6 @@ class TestFull(unittest.TestCase):
                 f.name = 'TEST FAC'
                 session.add(f)
             session.commit()
-        else:
-            print '\nNo ShakeMaps to test facility processing'
     
     def step06_addFacsToGroups(self):
         session = Session()
@@ -242,7 +246,7 @@ class TestFull(unittest.TestCase):
         session = Session()
         events = session.query(Event).all()
         for event in events:
-            if event.status != 'processed':
+            if event.status != 'processed' and event.status != 'scenario':
                 raise ValueError('Event not processed... {}: {}'.format(event.event_id,
                                                                         event.status))
             for notification in event.notifications:
@@ -250,6 +254,9 @@ class TestFull(unittest.TestCase):
                     raise ValueError('Notification not sent... {}: {}, {}'.format(event.event_id,
                                                                                   notification.notification_type,
                                                                                   notification.status))
+
+        if event:
+            print event
                     
         Session.remove()
         
@@ -273,11 +280,6 @@ class TestFull(unittest.TestCase):
         '''
         data = geo_json()
         self.assertEqual(data['error'], '')
-        
-        # check if there are shakemaps
-        shakemaps = session.query(ShakeMap).all()
-        if not shakemaps:
-            geo_json(query_period='week')
 
     def step11_checkNew2(self):
         '''
@@ -308,13 +310,11 @@ class TestFull(unittest.TestCase):
 
     def step13_getScenarioWeb(self):
         session = Session()
-        sm = session.query(ShakeMap).first()
+        sm = session.query(ShakeMap).filter(ShakeMap.shakemap_id != 'bssc2014nsanandreassaosansap_m8p04_se_scenario').first()
         Session.remove()
 
         if sm is not None:
             download_scenario(shakemap_id=sm.shakemap_id)
-        else:
-            print 'No ShakeMap to grab for Scenario Test'
 
     def step14_NewUpdate(self):
         s = SoftwareUpdater()
@@ -348,7 +348,6 @@ class TestFull(unittest.TestCase):
     def step18_UpdateFunction(self):
         check_for_updates()
 
-
     def step20_AlchemyEncoder(self):
         '''
         Runs through a default use case of the Alchemy Encoder
@@ -377,8 +376,6 @@ class TestFull(unittest.TestCase):
             self.assertIsNone(sm)
 
             Session.remove()
-        else:
-            print 'No ShakeMap to grab for delete scenario Test'
 
     def step21_badScenario(self):
         result = run_scenario('a_bad_Event_id')
@@ -387,6 +384,9 @@ class TestFull(unittest.TestCase):
     def step22_downloadBadScenario(self):
         result = download_scenario('not_a_real_scenario')
         self.assertEqual('failed', result['status'])
+
+    def step23_downloadActualScenario(self):
+        download_scenario('bssc2014nsanandreassaosansap_m8p04_se', scenario=True)
 
     def steps(self):
         '''

@@ -3,6 +3,8 @@ import { Router } from '@angular/router'
 import { Marker } from './map.service';
 import { ShakemapService } from './shakemap.service'
 import { MapService } from './map.service'
+import { FacilityService } from '../../shakecast-admin/pages/facilities/facility.service';
+
 declare var L: any;
 declare var _: any;
 
@@ -28,9 +30,17 @@ export class MapComponent implements OnInit, OnDestroy {
     private groupLayers: any = L.featureGroup();
     private subscriptions: any = [];
     private map: any;
+    private epicIcon: any  = L.icon({iconUrl: 'images/epicenter.png',
+                                    iconSize:     [45, 45], // size of the icon
+                                    shadowSize:   [50, 64], // size of the shadow
+                                    popupAnchor:  [1, -25] // point from which the popup should open relative to the iconAnchor
+                             });
+    public shakingData: any = null
+    public totalShaking: number = 0;
 
     constructor(private mapService: MapService,
                 private smService: ShakemapService,
+                private facService: FacilityService,
                 private _router: Router) {}
 
     ngOnInit() {
@@ -77,14 +87,19 @@ export class MapComponent implements OnInit, OnDestroy {
             if (center['type'] === 'facility') {
                 this.map.setView([center.lat,center.lon]);
             } else {
-                this.map.setView([center.lat + .5,center.lon]);
+                this.map.setView([center.lat + .5,center.lon], 8);
             }
         }));
 
         // subscribe to facility markers
-        this.subscriptions.push(this.mapService.facMarkers.subscribe(markers => {
+        this.subscriptions.push(this.mapService.facMarkers.subscribe((markers: any[]) => {
+                var silent: boolean = (markers.length > 1)
                 for (var mark in markers) {
-                    this.plotFacMarker(markers[mark]);
+                    this.plotFacMarker(markers[mark], silent);
+                }
+
+                if (silent === false) {
+                    this.map.setView([markers[0].lat + .5, markers[0].lon]);
                 }
         }));
 
@@ -102,25 +117,41 @@ export class MapComponent implements OnInit, OnDestroy {
         this.subscriptions.push(this.mapService.clearMapNotify.subscribe(notification => {
             this.clearLayers();
         }));
+
+        // subscribe to facility data to create a total shaking div
+        this.subscriptions.push(this.facService.shakingData.subscribe((shaking: any) => {
+            this.shakingData = shaking;
+
+            if (shaking) {
+                this.totalShaking = shaking['grey'].length + 
+                                        shaking['green'].length + 
+                                        shaking['yellow'].length + 
+                                        shaking['orange'].length + 
+                                        shaking['red'].length;
+            } else {
+                this.totalShaking = 0;
+            }
+        }));
     }
 
     //////////////////////////////////////////////////////////////
     //////////////////// Earthquake Functions ////////////////////
     plotEventMarker(event: any) {
         // create event marker and plot it
-        this.eventMarker = this.createEventMarker(event)
+        this.eventMarker = this.createEventMarker(event);
 
         this.eventMarker.addTo(this.eventLayer);
-        this.eventLayer.addTo(this.map)
+        this.eventLayer.addTo(this.map);
+
         this.eventMarker.bindPopup(this.eventMarker.popupContent).openPopup();
-        
+
         this.eventMarkers.push(this.eventMarker)
         // plot shakemap if available
-        this.plotShakemap(event)
+        this.plotShakemap(event);
     }
 
     createEventMarker(event: any) {
-        var marker: any = L.marker([event.lat, event.lon]);
+        var marker: any = L.marker([event.lat, event.lon], {icon: this.epicIcon});
 
         marker['popupContent'] = `<table class="my-table">    
                                 <tr>
@@ -184,16 +215,30 @@ export class MapComponent implements OnInit, OnDestroy {
 
     //////////////////////////////////////////////////////////////
     ///////////////////// Facility Functions /////////////////////
-    plotFacMarker(fac: any) {
+    plotFacMarker(fac: any,
+                  silent: boolean = false) {
         // create event marker and plot it
         var marker: any = this.createFacMarker(fac);
         var existingMarker: any = this.facilityMarkers[fac.shakecast_id.toString()];
 
         // Check if the marker already exists
         if (_.isEqual(this.facMarker, marker)) {
-            this.facMarker.openPopup();
+            //this.facMarker.openPopup();
         } else if (existingMarker) {
-            existingMarker.openPopup();
+            if (this.facilityLayer.hasLayer(this.facMarker)) {
+                this.facilityLayer.removeLayer(this.facMarker);
+                this.facilityCluster.addLayer(this.facMarker);
+                this.facilityCluster.addTo(this.facilityLayer);
+                this.facilityLayer.addTo(this.map);
+            }
+
+            this.facMarker = existingMarker;
+            this.facilityCluster.removeLayer(this.facMarker);
+            this.facMarker.addTo(this.facilityLayer);
+            this.facilityLayer.addTo(this.map);
+            marker.bindPopup(marker.popupContent)
+            //marker.openPopup();
+
         } else {
             if (this.facilityLayer.hasLayer(this.facMarker)) {
                 this.facilityLayer.removeLayer(this.facMarker);
@@ -206,7 +251,12 @@ export class MapComponent implements OnInit, OnDestroy {
 
             this.facMarker.addTo(this.facilityLayer);
             this.facilityLayer.addTo(this.map);
-            marker.bindPopup(marker.popupContent).openPopup();
+            marker.bindPopup(marker.popupContent)
+            //marker.openPopup();
+        }
+
+        if (silent === false) {
+            this.facMarker.openPopup();
         }
     }
 
@@ -214,7 +264,7 @@ export class MapComponent implements OnInit, OnDestroy {
         var marker: any = L.marker([fac.lat, fac.lon]);
         var desc: string = ''
         if (fac.html) {
-            fac['popupContent'] = fac.html
+            marker['popupContent'] = fac.html
         } else {
             if (fac.description) {
                 desc = fac.description
@@ -223,9 +273,7 @@ export class MapComponent implements OnInit, OnDestroy {
             }
             marker['popupContent'] = `<table style="text-align:center;">
                                         <tr>
-                                            <th>` + 
-                                                fac.name + `
-                                            </th>
+                                            <th>` + fac.name + ` </th>
                                         </tr>
                                         <tr>
                                             <td style="font-style:italic;">` +
@@ -233,6 +281,33 @@ export class MapComponent implements OnInit, OnDestroy {
                                             </td>
                                         </tr>
                                     </table>`
+        }
+
+        if (fac['shaking']) {
+            marker['popupContent'] += `<table style="border-top:2px solid #444444;width:100%;">
+                                            <tr>
+                                                <table style="width:90%;margin-left:5%;border-bottom:2px solid #dedede;padding-bottom:0">
+                                                    <tr>
+                                                        <th style="text-align:center">Alert Level</th>
+                                                    </tr>
+                                                </table>
+                                            </tr>
+                                            <tr>
+                                                <table style="width:100%;text-align:center;">
+                                                    <tr>
+                                                        <th style="text-align:right;width:50%">` + fac['shaking']['metric'] + `: </th>
+                                                        <td style="text-align:left;width:50%">` + fac['shaking'][fac['shaking']['metric'].toLowerCase()] + `</td>
+                                                    </tr>
+                                                </table>
+                                            </tr>
+                                            <tr>
+                                                <table style="width:80%;margin-left:10%;text-align:center;margin-top:3px;">
+                                                    <tr style="background: ` + fac['shaking']['alert_level'] + `">
+                                                        <th style="color:white;">` + fac['shaking']['alert_level'] + `</th>
+                                                    </tr>
+                                                </table>
+                                            </tr>
+                                        </table>`
         }
         return marker
     }
@@ -265,17 +340,11 @@ export class MapComponent implements OnInit, OnDestroy {
     clearEventLayers() {
         if (this.eventLayer.hasLayer(this.eventMarker)) {
             this.eventLayer.removeLayer(this.eventMarker);
-            this.overlayLayer = L.marker();
         }
 
         if (this.eventLayer.hasLayer(this.overlayLayer)) {
             this.eventLayer.removeLayer(this.overlayLayer);
             this.overlayLayer = L.imageOverlay();
-        }
-
-        if (this.map.hasLayer(this.eventLayer)) {
-            this.map.removeLayer(this.eventLayer);
-            this.eventLayer = L.layerGroup();
         }
     }
 

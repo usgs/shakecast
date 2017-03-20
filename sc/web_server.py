@@ -196,10 +196,11 @@ def get_shaking_events(facility_id):
 
     eq_dicts = []
     for eq in eqs:
-        eq_dict = eq.__dict__.copy()
-        eq_dict['shakemaps'] = len(eq.shakemaps)
-        eq_dict.pop('_sa_instance_state', None)
-        eq_dicts += [eq_dict]
+        if eq is not None:
+            eq_dict = eq.__dict__.copy()
+            eq_dict['shakemaps'] = len(eq.shakemaps)
+            eq_dict.pop('_sa_instance_state', None)
+            eq_dicts += [eq_dict]
     
     Session.remove()
     return jsonify(success=True, data=eq_dicts)
@@ -574,8 +575,9 @@ def template_names():
 @admin_only
 @login_required
 def scenario_download(event_id):
+    scenario = json.loads(request.args.get('scenario', 'false'))
     if event_id:
-        ui.send("{'scenario_download: %s': {'func': f.download_scenario, 'args_in': {'shakemap_id': r'%s'}, 'db_use': True, 'loop': False}}" % (event_id, event_id))
+        ui.send("{'scenario_download: %s': {'func': f.download_scenario, 'args_in': {'shakemap_id': r'%s', 'scenario': %s}, 'db_use': True, 'loop': False}}" % (event_id, event_id, scenario))
     
     return json.dumps({'success': True})
 
