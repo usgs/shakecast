@@ -97,21 +97,25 @@
                 <table style="text-align:center;border: 2px solid #444444;border-collapse:collapse;padding:5px;margin-left:5%">
                     <tr style="border: 2px solid #444444;padding: 5px;">
                     {% for head in config.table_head %}
-                        <th style="border: 2px solid #444444;padding: 5px;">{{ head.val }}</th>
+                        {% if head.use == true %}
+                            <th style="border: 2px solid #444444;padding: 5px;">{{ head.val }}</th>
+                        {% endif %}
                     {% endfor %}
                     </tr>
                     
                     {% for fs in facility_shaking %}
                         <tr style="border: 2px solid #444444;padding: 5px;">
                         {% for head in config.table_head %}
-                            {% if head.name == 'name' or head.name == 'facility_id' or head.name == 'facility_type' %}
-                                <td style="border: 2px solid #444444;padding: 5px;">{{ fs.facility[head.name] }}</td>
-                            {% elif head.name == 'inspection_priority' %}
-                                <td style="border: 2px solid #444444;padding: 5px;background-color:{{ fs.alert_level }}">{{ fs.alert_level }}</td>
-                            {% elif head.name == 'shaking_value' %}
-                                <td style="border: 2px solid #444444;padding: 5px;">{{ fs[fs.metric.lower()] }}</td>
-                            {% else %}
-                                <td style="border: 2px solid #444444;padding: 5px;">{{ fs[head.name] }}</td>
+                            {% if head.use == true %}
+                                {% if head.name == 'name' or head.name == 'facility_id' or head.name == 'facility_type' %}
+                                    <td style="border: 2px solid #444444;padding: 5px;">{{ fs.facility[head.name] }}</td>
+                                {% elif head.name == 'inspection_priority' %}
+                                    <td style="border: 2px solid #444444;padding: 5px;background-color:{{ fs.alert_level }}">{{ fs.alert_level }}</td>
+                                {% elif head.name == 'shaking_value' %}
+                                    <td style="border: 2px solid #444444;padding: 5px;">{{ fs[fs.metric.lower()] }}</td>
+                                {% else %}
+                                    <td style="border: 2px solid #444444;padding: 5px;">{{ fs[head.name] }}</td>
+                                {% endif %}
                             {% endif %}
                         {% endfor %}
                         </tr>
