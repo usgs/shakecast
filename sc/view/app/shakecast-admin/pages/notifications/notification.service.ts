@@ -12,6 +12,7 @@ export class NotificationHTMLService {
     public notification = new ReplaySubject(1);
     public config = new ReplaySubject(1);
     public tempNames = new ReplaySubject(1);
+    public name = new ReplaySubject(1);
 
     constructor(private _http: Http,
                 private notService: NotificationsService) {}
@@ -25,6 +26,7 @@ export class NotificationHTMLService {
         this._http.get('/api/notification-html/' + notType + '/' + name,
                         {search: params})
             .subscribe((result: Response) => {
+                this.name.next(name)
                 this.notification.next(result._body);
                 this.loadingData.next(false)
             });
@@ -57,6 +59,8 @@ export class NotificationHTMLService {
             .subscribe((result: any) => {
                 if (result === true) {
                     this.notService.success('Template Created', 'Created ' + name + ' template')
+                    this.getNotification(name, 'new_event');
+                    this.getConfigs('new_event', name);
                 } else {
                     this.notService.success('Template Creation Failed', 'Check application permissions')
                 }

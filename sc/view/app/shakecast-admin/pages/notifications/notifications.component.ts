@@ -56,8 +56,12 @@ export class NotificationsComponent implements OnInit {
                 this.tempNames = names;
             })
         );
+        this.subscriptions.push(this.notHTMLService.name.subscribe((name: any) => {
+                this.name = name;
+            })
+        );
 
-        this.subscriptions.push(Observable.interval(3000).subscribe(x => {
+        this.subscriptions.push(Observable.interval(3000).subscribe((x: any) => {
             this.preview(this.name,
                          this.eventType,
                          this.config);
@@ -108,7 +112,7 @@ export class NotificationsComponent implements OnInit {
                 if (this.newName !== '') {
                     // remove unwanted characters
                     var cleanName = this.newName.replace(/[^a-zA-Z0-9]/g,'_');
-                    
+
                     this.notHTMLService.newTepmlate(cleanName);
                     this.enteringNew = false;
                     this.newName = '';
