@@ -51,6 +51,18 @@ export class NotificationHTMLService {
             });
     }
 
+    newTepmlate(name: string) {
+        this._http.get('/admin/new-template/' + name)
+            .map((result: Response) => result.json())
+            .subscribe((result: any) => {
+                if (result === true) {
+                    this.notService.success('Template Created', 'Created ' + name + ' template')
+                } else {
+                    this.notService.success('Template Creation Failed', 'Check application permissions')
+                }
+            });
+    }
+
     saveConfigs(name: string,
                 config: any) {
         let headers = new Headers();

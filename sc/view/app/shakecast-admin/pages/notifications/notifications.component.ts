@@ -30,6 +30,8 @@ export class NotificationsComponent implements OnInit {
     public oldConfig: any = {}
     public previewConfig: any = {}
     public eventType: string = 'new_event';
+    public enteringNew: boolean = false;
+    public newName: string = '';
 
     constructor(private titleService: TitleService,
                 private notHTMLService: NotificationHTMLService,
@@ -101,10 +103,24 @@ export class NotificationsComponent implements OnInit {
 
     @HostListener('window:keydown', ['$event'])
     keyboardInput(event: any) {
-        if (event.keyCode === 13) {
-            this.preview(this.name,
-                         this.eventType,
-                         this.config);
+        if (this.enteringNew === true) {
+            if (event.keyCode === 13) {
+                if (this.newName !== '') {
+                    // remove unwanted characters
+                    var cleanName = this.newName.replace(/[^a-zA-Z0-9]/g,'_');
+                    
+                    this.notHTMLService.newTepmlate(cleanName);
+                    this.enteringNew = false;
+                    this.newName = '';
+                    this.notHTMLService.getTemplateNames();
+                }
+            }
+        } else {
+            if (event.keyCode === 13) {
+                this.preview(this.name,
+                            this.eventType,
+                            this.config);
+            }
         }
     }
 }

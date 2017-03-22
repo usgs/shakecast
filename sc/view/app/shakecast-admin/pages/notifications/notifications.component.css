@@ -4,6 +4,16 @@
     display: flex;
 }
 
+.not-dropdown {
+    width: 200px;
+    margin-left: auto;
+    margin-right: auto;
+    position: relative;
+    height: 40px;
+    font-size: 20px;
+    text-align: center;
+}
+
 .column {
     display: inline-block;
     padding: 5px;
