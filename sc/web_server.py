@@ -704,6 +704,16 @@ def get_user_groups(user_id):
     Session.remove()    
     return groups_json
 
+@app.route('/admin/new-template/<name>')
+@admin_only
+@login_required
+def new_not_template(name):
+    tm = TemplateManager()
+    tm.create_new(name)
+
+    return json.dumps(True)
+
+
 @app.route('/admin/get/inventory')
 @admin_only
 @login_required

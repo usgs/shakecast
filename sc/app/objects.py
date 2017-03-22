@@ -893,7 +893,7 @@ class SC(object):
         return True
 
     def save_dict(self):
-        json_str = json.dumps(self.dict)
+        json_str = json.dumps(self.dict, indent=4)
         self.save(json_str)
     
     def save(self, json_str=None):
@@ -1024,7 +1024,7 @@ class TemplateManager(object):
                                     not_type,
                                     name + '.json')
             conf_str = open(conf_file, 'w')
-            conf_str.write(json.dumps(config))
+            conf_str.write(json.dumps(config, indent=4))
             conf_str.close()
             return config
         else:
@@ -1050,6 +1050,35 @@ class TemplateManager(object):
             return None
 
     @staticmethod
+    def get_template_string(not_type, name=None):
+        temp_name = 'default.html'
+        if name is not None:
+            temp_name = name + '.html'
+
+        temp_file = os.path.join(sc_dir(),
+                                    'templates',
+                                    not_type,
+                                    temp_name)
+        try:
+            temp = open(temp_file, 'r')
+            temp_str = temp.read()
+            temp.close()
+            return temp_str
+        except Exception:
+            return None
+
+    @staticmethod
+    def save_template(not_type, name, template_str):
+        temp_file = os.path.join(sc_dir(),
+                                'templates',
+                                not_type,
+                                name + '.html')
+        temp_file = open(temp_file, 'w')
+        temp_file.write(template_str)
+        temp_file.close()
+        return temp_file
+
+    @staticmethod
     def get_template_names():
         '''
         Get a list of the existing template names
@@ -1063,6 +1092,26 @@ class TemplateManager(object):
         just_names = [f.split('.')[0] for f in file_list if f[-5:] == '.json']
         return just_names
     
+    def create_new(self, name):
+        event_configs = self.get_configs('new_event', 'default')
+        event_temp = self.get_template_string('new_event', 'default')
+
+        insp_configs = self.get_configs('inspection', 'default')
+        insp_temp = self.get_template_string('inspection', 'default')
+
+        # save configs
+        event_configs_saved = self.save_configs('new_event', name, event_configs)
+        insp_configs_saved = self.save_configs('inspection', name, insp_configs)
+        
+        # save templates
+        event_template_saved = self.save_template('new_event', name, event_temp)
+        insp_template_saved = self.save_template('inspection', name, insp_temp)
+
+        return bool(None not in [event_configs_saved,
+                                    insp_configs_saved,
+                                    event_template_saved,
+                                    insp_template_saved])
+
 class URLOpener(object):
     """
     Either uses urllib2 standard opener to open a URL or returns an

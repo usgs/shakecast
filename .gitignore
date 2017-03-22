@@ -5,7 +5,12 @@ docs/
 modules/
 docs/
 pypy/
+templates/inspection/*
+templates/new_event/*
+!default.json
+!default.html
 .DS_Store
 *.pyc
 *~
 *.db
+conf/sc_back.json
