@@ -96,6 +96,9 @@ class TestTemplateManager(unittest.TestCase):
         temp = temp_manager.get_template('new_event', 'template_DOES_NOT_EXIST_!@#$')
         self.assertIsNone(temp)
 
+        temp = temp_manager.get_template_string('new_event', 'template_DOES_NOT_EXIST_!@#$')
+        self.assertIsNone(temp)
+
     def test_templateNames(self):
         temp_manager = TemplateManager()
         temp_names = temp_manager.get_template_names()
