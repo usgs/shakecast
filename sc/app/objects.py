@@ -1108,13 +1108,10 @@ class TemplateManager(object):
         event_template_saved = self.save_template('new_event', name, event_temp)
         insp_template_saved = self.save_template('inspection', name, insp_temp)
 
-        if None not in [event_configs_saved,
-                        insp_configs_saved,
-                        event_template_saved,
-                        insp_template_saved]:
-            return True
-        else:
-            return False
+        return bool(None not in [event_configs_saved,
+                                    insp_configs_saved,
+                                    event_template_saved,
+                                    insp_template_saved])
 
 class URLOpener(object):
     """

@@ -101,6 +101,12 @@ class TestTemplateManager(unittest.TestCase):
         temp_names = temp_manager.get_template_names()
         self.assertIn('default', temp_names)
 
+    def test_NewTemp(self):
+        temp_manager = TemplateManager()
+        result = temp_manager.create_new('default')
+
+        self.assertTrue(result)
+
 class TestURLOpener(unittest.TestCase):
     '''
     Test the URLOpener Object
