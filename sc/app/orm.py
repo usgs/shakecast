@@ -706,12 +706,13 @@ class Event(Base):
             result = engine.execute(stmt)
             events += [row for row in result]
         
-        if events:
-            return False
-        else:
-            return True
+        return bool(events)
         
     def timestamp(self):
+        """
+        Non-static timestamp that changes based on the user's defined
+        timezone
+        """
         from objects import Clock
         clock = Clock()
         return (clock.from_time(self.time)

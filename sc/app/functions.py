@@ -609,8 +609,11 @@ def download_scenario(shakemap_id=None, scenario=False):
 
 def delete_scenario(shakemap_id=None):
     session = Session()
-    scenario = session.query(ShakeMap).filter(ShakeMap.shakemap_id == shakemap_id).first()
-    event = session.query(Event).filter(Event.event_id == shakemap_id).first()
+    scenario = (session.query(ShakeMap).filter(ShakeMap.shakemap_id == shakemap_id)
+                                            .filter(ShakeMap.status == 'scenario')
+                                            .first())
+    event = (session.query(Event).filter(Event.event_id == shakemap_id)
+                                    .filter(Event.status == 'scenario').first())
 
     if scenario is not None:
         # remove files

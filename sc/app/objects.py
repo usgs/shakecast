@@ -1051,9 +1051,8 @@ class TemplateManager(object):
 
     @staticmethod
     def get_template_string(not_type, name=None):
-        if name is None:
-            temp_name = 'default.html'
-        else:
+        temp_name = 'default.html'
+        if name is not None:
             temp_name = name + '.html'
 
         temp_file = os.path.join(sc_dir(),
