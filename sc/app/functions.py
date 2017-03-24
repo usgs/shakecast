@@ -610,10 +610,8 @@ def download_scenario(shakemap_id=None, scenario=False):
 def delete_scenario(shakemap_id=None):
     session = Session()
     scenario = (session.query(ShakeMap).filter(ShakeMap.shakemap_id == shakemap_id)
-                                            .filter(ShakeMap.status == 'scenario')
                                             .first())
-    event = (session.query(Event).filter(Event.event_id == shakemap_id)
-                                    .filter(Event.status == 'scenario').first())
+    event = (session.query(Event).filter(Event.event_id == shakemap_id).first())
 
     if scenario is not None:
         # remove files
@@ -952,7 +950,8 @@ def import_group_xml(xml_file=''):
     tree = ET.parse(xml_file)
     root = tree.getroot()
     groups = [child for child in root]
-    
+    imported_groups = []
+
     for group in groups:
         name = ''
         facility_type = ''
@@ -965,7 +964,7 @@ def import_group_xml(xml_file=''):
         damage_level = ''
         template = ''
         poly = ''
-        
+
         for child in group:
             if child.tag == 'GROUP_NAME':
                 name = child.text
@@ -993,7 +992,8 @@ def import_group_xml(xml_file=''):
                 continue
         
             session.add(g)
-        
+
+        imported_groups += [group.name]
         g.facility_type = facility_type
         
         # split up the poly and save lat/lon min/max if the monitoring
@@ -1067,7 +1067,8 @@ def import_group_xml(xml_file=''):
     log_message = ''
     status = 'finished'
     data = {'status': status,
-            'message': 'Imported Groups',
+            'message': {'title': 'Group Upload',
+                        'message': imported_groups},
             'log': log_message}
     
     return data

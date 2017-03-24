@@ -25,6 +25,12 @@
         </div>
         <div *ngIf="facilityData.length == 0">
             <h1 class="data-list-no-data">No Facilities</h1>
+
+            <h2 *ngIf="_router.url === '/shakecast-admin/facilities'" 
+                class="data-list-no-data">
+                (Drag and drop XML files here to upload)
+            </h2>
+            
         </div>
     </div>
     <div *ngIf="loadingData">

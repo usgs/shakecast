@@ -7,7 +7,8 @@ import { NotificationService } from './notification.service'
 @Component({
   selector: 'notification-dash',
   templateUrl: 'app/shakecast/pages/dashboard/notification-dash/notification-dash.component.html',
-  styleUrls: ['app/shakecast/pages/dashboard/notification-dash/notification-dash.component.css']
+  styleUrls: ['app/shakecast/pages/dashboard/notification-dash/notification-dash.component.css',
+                'app/shared/css/data-list.css']
 })
 export class NotificationDashComponent implements OnInit, OnDestroy {
 

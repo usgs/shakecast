@@ -36,7 +36,13 @@
             </div>
         </div>
         <div *ngIf="dataList.length == 0">
-            <h1 class="no-data">No Users</h1>
+            
+            <h1 class="data-list-no-data">No Users</h1>
+            
+            <h2 class="data-list-no-data">
+                (Drag and drop XML files here to upload)
+            </h2>
+
         </div>
     </div>
     <div *ngIf="loadingData">

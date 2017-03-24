@@ -706,7 +706,7 @@ class Event(Base):
             result = engine.execute(stmt)
             events += [row for row in result]
         
-        return bool(events)
+        return not bool(events)
         
     def timestamp(self):
         """
