@@ -1,11 +1,13 @@
 import { Component,
          OnInit, 
-         OnDestroy,
-         trigger,
+         OnDestroy } from '@angular/core';
+
+import { trigger,
          state,
          style,
-         transition,
-         animate } from '@angular/core';
+         animate,
+         transition } from '@angular/animations';
+
 import { Router } from '@angular/router';
 import { FacilityService, Facility } from './facility.service';
 import { filter } from './facility-filter/facility-filter.component';
@@ -34,7 +36,9 @@ declare var _: any;
 })
 export class FacilityListComponent implements OnInit, OnDestroy {
     public loadingData: boolean = false
+    public shownFacilityData: any = [];
     public facilityData: any = [];
+    public lastShownFacIndex: number = 0;
     public selectedFacs: any = [];
     public filter: filter = {};
     public initPlot: boolean = false;
@@ -46,6 +50,9 @@ export class FacilityListComponent implements OnInit, OnDestroy {
         this.subscriptions.push(this.facService.facilityData.subscribe(facs => {
             this.facilityData = facs;
 
+            // only display the first 50 facs
+            this.shownFacilityData = this.facilityData.slice(0,50);
+            
             if (this.selectedFacs.length === 0) {
                 // add a facility if the array is empty
                 this.facService.selectedFacs = this.selectedFacs;

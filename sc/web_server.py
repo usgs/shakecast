@@ -392,33 +392,28 @@ def get_affected_facilities(shakemap_id):
                 .all())
     
     fac_dicts = []
+    alert = {'grey': 0,
+             'green': 0,
+             'yellow': 0,
+             'orange': 0,
+             'red': 0}
     if sms:
         sm = sms[0]
         fac_shaking = sm.facility_shaking
         
+        fac_dicts = [0] * len(sm.facility_shaking)
+        i = 0
         for s in fac_shaking:
             fac_dict = s.facility.__dict__.copy()
             s_dict = s.__dict__.copy()
             fac_dict.pop('_sa_instance_state', None)
             s_dict.pop('_sa_instance_state', None)
             fac_dict['shaking'] = s_dict
-            fac_dicts += [fac_dict]
-    alert = {'grey': 0,
-             'green': 0,
-             'yellow': 0,
-             'orange': 0,
-             'red': 0}
-    
-    alert['grey'] = [f for f in fac_dicts if
-                            f['shaking']['alert_level'] == 'grey']
-    alert['green'] = [f for f in fac_dicts if
-                            f['shaking']['alert_level'] == 'green']
-    alert['yellow'] = [f for f in fac_dicts if
-                            f['shaking']['alert_level'] == 'yellow']
-    alert['orange'] = [f for f in fac_dicts if
-                            f['shaking']['alert_level'] == 'orange']
-    alert['red'] = [f for f in fac_dicts if
-                            f['shaking']['alert_level'] == 'red']
+            fac_dicts[i] = fac_dict
+            i += 1
+            
+            # record number of facs at each alert level
+            alert[fac_dict['shaking']['alert_level']] += 1
     
     shaking_data = {'alert': alert, 'facilities': fac_dicts}
 

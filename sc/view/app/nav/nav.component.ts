@@ -2,12 +2,15 @@ import { Component,
          ElementRef, 
          Input, 
          Renderer, 
-         OnInit,  
-         trigger,
+         OnInit } from '@angular/core';
+
+
+import { trigger,
          state,
          style,
-         transition,
-         animate } from '@angular/core';
+         animate,
+         transition } from '@angular/animations';
+
 import { Router } from '@angular/router';
 
 import { Observable } from 'rxjs/Observable';

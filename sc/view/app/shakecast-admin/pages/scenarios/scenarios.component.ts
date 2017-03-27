@@ -47,6 +47,9 @@ export class ScenariosComponent implements OnInit, OnDestroy {
 
     ngOnDestroy() {
         this.endSubscriptions();
+
+        // clear map
+        this.eqService.clearData();
     }
 
     endSubscriptions() {

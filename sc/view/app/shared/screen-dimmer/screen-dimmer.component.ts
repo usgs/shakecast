@@ -1,11 +1,13 @@
 import { Component, 
          OnInit,
-         OnDestroy,
-         trigger,
+         OnDestroy } from '@angular/core';
+
+import { trigger,
          state,
          style,
-         transition,
-         animate } from '@angular/core';
+         animate,
+         transition } from '@angular/animations';
+
 import { ScreenDimmerService } from './screen-dimmer.service'
 
 @Component({

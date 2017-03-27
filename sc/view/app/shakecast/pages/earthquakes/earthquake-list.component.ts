@@ -1,11 +1,13 @@
 import { Component, 
          OnInit, 
-         OnDestroy,
-         trigger,
+         OnDestroy } from '@angular/core';
+
+import { trigger,
          state,
          style,
-         transition,
-         animate } from '@angular/core';
+         animate,
+         transition } from '@angular/animations';
+
 import { Router } from '@angular/router';
 import { EarthquakeService, Earthquake } from './earthquake.service';
 
@@ -52,7 +54,7 @@ export class EarthquakeListComponent implements OnInit, OnDestroy {
             this.earthquakeData = eqs
             if ((eqs.length > 0) && 
                     (this._router.url != '/shakecast-admin/facilities')) {
-                this.selectEq(eqs[0]);
+                //this.selectEq(eqs[0]);
             }
         }));
 
