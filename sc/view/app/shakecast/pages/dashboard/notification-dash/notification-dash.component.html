@@ -1,6 +1,4 @@
 <div *ngIf="notifications.length > 0">
-    
-    <h2>Notifications</h2>
     <h3>New Event:</h3>
     <div *ngFor="let not of notifications">
         <p *ngIf="not.notification_type == 'NEW_EVENT'">

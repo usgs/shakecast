@@ -411,7 +411,7 @@ def get_affected_facilities(shakemap_id):
             fac_dict['shaking'] = s_dict
             fac_dicts[i] = fac_dict
             i += 1
-            
+
             # record number of facs at each alert level
             alert[fac_dict['shaking']['alert_level']] += 1
     

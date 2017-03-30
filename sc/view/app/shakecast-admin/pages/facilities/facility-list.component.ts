@@ -1,6 +1,9 @@
 import { Component,
-         OnInit, 
+         OnInit,
+         ElementRef, 
          OnDestroy } from '@angular/core';
+
+import { Observable } from 'rxjs/Observable';
 
 import { trigger,
          state,
@@ -15,23 +18,21 @@ declare var _: any;
 
 @Component({
   selector: 'facility-list',
+  host: {'(window:scroll)': 'setScrollEvent($event)'},
   templateUrl: 'app/shakecast-admin/pages/facilities/facility-list.component.html',
   styleUrls: ['app/shakecast-admin/pages/facilities/facility-list.component.css',
                 'app/shared/css/data-list.css'],
   animations: [
       trigger('selected', [
-        state('true', style({transform: 'translateY(-10px)'})),
-        state('false', style({transform: 'translateY(0px)'})),
-          transition('true => false', animate('100ms ease-out')),
-          transition('false => true', animate('100ms ease-in'))
+        state('yes', style({transform: 'translateY(-10px)'})),
+        state('no', style({transform: 'translateY(0px)'})),
+          transition('* => *', animate('100ms ease-in-out'))
       ]),
       trigger('headerSelected', [
-        state('true', style({'background-color': '#7af'})),
-        state('false', style({'background-color': ''})),
-          transition('true => false', animate('100ms ease-out')),
-          transition('false => true', animate('100ms ease-in'))
+        state('yes', style({'background-color': '#7af'})),
+        state('no', style({'background-color': '*'})),
+          transition('* => *', animate('100ms ease-in-out'))
       ])
-
     ]
 })
 export class FacilityListComponent implements OnInit, OnDestroy {
@@ -42,8 +43,10 @@ export class FacilityListComponent implements OnInit, OnDestroy {
     public selectedFacs: any = [];
     public filter: filter = {};
     public initPlot: boolean = false;
+    private didScroll: boolean = false;
     private subscriptions: any[] = [];
     constructor(public facService: FacilityService,
+                private element: ElementRef,
                 private _router: Router) {}
 
     ngOnInit() {
@@ -52,7 +55,7 @@ export class FacilityListComponent implements OnInit, OnDestroy {
 
             // only display the first 50 facs
             this.shownFacilityData = this.facilityData.slice(0,50);
-            
+
             if (this.selectedFacs.length === 0) {
                 // add a facility if the array is empty
                 this.facService.selectedFacs = this.selectedFacs;
@@ -83,12 +86,34 @@ export class FacilityListComponent implements OnInit, OnDestroy {
         this.subscriptions.push(this.facService.loadingData.subscribe((loading: boolean) => {
             this.loadingData = loading
         }));
+
+        this.subscriptions.push(
+            Observable.interval(1000)
+                .subscribe((x: any) => {
+                    if(this.didScroll) {
+                        this.didScroll = false;
+                        this.checkScroll();
+                    }
+                }));
+
     }
     
-    clickFac(fac: Facility) {
-        fac.selected = !fac.selected;
+    checkScroll() {
+        console.log('check scroll position')
+    }
 
-        if (fac.selected) {
+    setScrollEvent(e: Event) {
+        this.didScroll = true;
+    }
+
+    clickFac(fac: Facility) {
+        if (fac.selected === 'yes') {
+            fac.selected = 'no'
+        } else {
+            fac.selected = 'yes'
+        }
+
+        if (fac.selected === 'yes') {
             // add it to the list
             this.selectedFacs.push(fac);
             this.plotFac(fac);
@@ -114,7 +139,7 @@ export class FacilityListComponent implements OnInit, OnDestroy {
         this.unselectAll();
         for (var facID in this.facilityData) {
             var fac: Facility = this.facilityData[facID];
-            fac.selected = true;
+            fac.selected = 'yes';
             this.selectedFacs.push(fac);
             this.plotFac(fac);
         }
@@ -123,7 +148,7 @@ export class FacilityListComponent implements OnInit, OnDestroy {
     unselectAll() {
         for (var facID in this.selectedFacs) {
             var fac: Facility = this.selectedFacs[facID];
-            fac.selected = false;
+            fac.selected = 'no';
             this.removeFac(fac);
         }
         this.selectedFacs = [];
@@ -136,6 +161,10 @@ export class FacilityListComponent implements OnInit, OnDestroy {
 
     plotFac(fac: Facility) {
         this.facService.plotFac(fac);
+    }
+
+    loadMore() {
+
     }
 
     ngOnDestroy() {

@@ -11,6 +11,8 @@ import { trigger,
          animate,
          transition } from '@angular/animations';
 
+import { navAnimation }   from '../shared/animations/animations';
+
 import { Router } from '@angular/router';
 
 import { Observable } from 'rxjs/Observable';
@@ -21,17 +23,10 @@ import { NotificationsService } from 'angular2-notifications'
   selector: 'navbar',
   templateUrl: 'app/nav/nav.component.html',
   styleUrls: ['app/nav/nav.component.css'],    
-  animations: [
-      trigger('scrollChange', [
-        state('false', style({top: 0})),
-        state('true', style({top: "-60px"})),
-          transition('true => false', animate('100ms ease-in')),
-          transition('false => true', animate('100ms ease-out'))
-      ])
-    ]
+  animations: [ navAnimation ]
 })
 export class NavComponent implements OnInit {
-    public scrollUp: boolean = false;
+    public scrollUp: string = 'down';
     public scrolled: number = document.querySelector('body').scrollTop;
     private ignoreTime: number = 0;
     private hovering: boolean = false;
@@ -49,16 +44,16 @@ export class NavComponent implements OnInit {
                         if (this.scrolled > (document.querySelector('body').scrollTop) || 
                             (document.querySelector('body').scrollTop===0)) {
                             // show the element
-                            if (this.scrollUp === true) {
+                            if (this.scrollUp === 'up') {
                                 console.log('scroll up');
-                                this.scrollUp = false;
+                                this.scrollUp = 'down';
                                 this.ignoreTime = 0;
                             }
                         } else if (this.scrolled < document.querySelector('body').scrollTop) {
                             // hide the element
-                            if (this.scrollUp === false) {
+                            if (this.scrollUp === 'down') {
                                 console.log('scroll down');
-                                this.scrollUp = true;
+                                this.scrollUp = 'up';
                             }
                         }
 
@@ -70,7 +65,7 @@ export class NavComponent implements OnInit {
                     // hide the header after 5 seconds of ignoreTime 
                     // unless at the top of the page
                     if ((this.ignoreTime > 5) && (document.querySelector('body').scrollTop!==0)) {
-                        this.scrollUp = true;
+                        this.scrollUp = 'up';
                     }
                 }
             });
@@ -79,7 +74,7 @@ export class NavComponent implements OnInit {
     setHover(boolIn: boolean) {
         this.hovering = boolIn
         if (this.hovering) {
-            this.scrollUp = false
+            this.scrollUp = 'down'
             this.ignoreTime = 0
         }
     }  

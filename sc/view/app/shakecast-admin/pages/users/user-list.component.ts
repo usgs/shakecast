@@ -15,7 +15,7 @@ declare var _: any;
 @Component({
     selector: 'user-list',
     templateUrl: 'app/shakecast-admin/pages/users/user-list.component.html',
-    styleUrls: ['app/shared/css/data-list.css'],
+    styleUrls: ['app/shared/css/data-list.css', 'app/shakecast-admin/pages/users/user-list.component.css'],
     animations: [
       trigger('selected', [
         state('true', style({transform: 'translateY(-10px)'})),

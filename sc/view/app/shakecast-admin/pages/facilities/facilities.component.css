@@ -8,3 +8,8 @@
     height: 500px;
     position: relative;
 }
+
+.fac-list {
+    height: 230px;
+    white-space: nowrap;
+}

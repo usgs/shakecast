@@ -8,13 +8,14 @@ import { ReplaySubject } from 'rxjs/ReplaySubject';
 import { MapService } from '../../../shared/maps/map.service'
 
 export interface Facility {
-    shakecast_id: string;
-    facility_id: string;
-    lat: number;
-    lon: number;
-    name: string;
-    description: string;
-    selected?:boolean
+    shakecast_id?: string;
+    facility_id?: string;
+    lat?: number;
+    lon?: number;
+    name?: string;
+    description?: string;
+    shakemap?: string;
+    selected?: string;
 }
 
 @Injectable()

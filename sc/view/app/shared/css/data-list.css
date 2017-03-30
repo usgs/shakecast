@@ -1,15 +1,12 @@
 .data-list-outer-container {
-    height: 230px;
+    height: 100%;
     width: 100%;
     position: relative;
     overflow: visible;
 }
 
 .data-list-inner-container {
-    height: 230px;
-    overflow-x: scroll;
-    overflow-y: hidden;
-    white-space: nowrap;
+    overflow: scroll;
 }
 
 .data-list {
@@ -19,6 +16,7 @@
 
 .data {
     margin-top: 20px;
+    background: #fff;
     width: 20%;
     min-width: 280px;
     display: inline-block;
@@ -31,7 +29,7 @@
     border-color:#aaaaaa;
     vertical-align: top;
     cursor: pointer;
-    transform: translateX(0);
+    transform: translateX(0), translateY(0);
     transition: transform .1s ease-in-out;
     box-shadow: 1px 1px 5px 1px rgba(0,0,0,0.3);
     -webkit-box-shadow: 1px 1px 5px 1px rgba(0,0,0,0.3);

@@ -22,6 +22,11 @@
                     </div>
                 </div>
             </div>
+            <div class="data load-more">
+                <div class="load-more-button" (click)="facService.getData(filter)">
+                    <h1>Load More</h1>
+                </div>
+            </div>
         </div>
         <div *ngIf="facilityData.length == 0">
             <h1 class="data-list-no-data">No Facilities</h1>

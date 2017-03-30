@@ -15,16 +15,15 @@ import { EarthquakeService, Earthquake } from '../../../../shakecast/pages/earth
     styleUrls: ['app/shakecast-admin/pages/scenarios/scenario-search/scenario-search.component.css'],  
     animations: [
       trigger('show', [
-        state('false', style({left: '100%'})),
-        state('true', style({left: '55%'})),
-          transition('true => false', animate('500ms ease-out')),
-          transition('false => true', animate('500ms ease-in'))
+        state('hide', style({left: '100%'})),
+        state('show', style({left: '55%'})),
+          transition('* => *', animate('500ms ease-in-out'))
       ])
     ]
 })
 export class ScenarioSearchComponent implements OnInit, OnDestroy{
     private subscriptions: any[] = [];
-    private show: boolean = false;
+    private show: string = 'hide';
     public facilityShaking: any = null;
     public showFragilityInfo: boolean = false;
     public filter: any = {starttime: '2005-01-01',
@@ -52,7 +51,11 @@ export class ScenarioSearchComponent implements OnInit, OnDestroy{
         }
 
         this.subscriptions.push(this.eqService.showScenarioSearch.subscribe((show: boolean) => {
-            this.show = show;
+            if (show === true) {
+                this.show = 'show'
+            } else {
+                this.show = 'hide'
+            }
         }));
     }
 
@@ -61,7 +64,7 @@ export class ScenarioSearchComponent implements OnInit, OnDestroy{
     }
 
     hide() {
-        this.show = false;
+        this.show = 'hide';
         //this.eqService.showScenarioSearch.next(false);
     }
 
