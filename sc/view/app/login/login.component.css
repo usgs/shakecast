@@ -1,8 +1,8 @@
 .login-title {
-    display: flex;
     align-items: center;
     padding: 10px;
-    padding-left:10%
+    text-align: center;
+    margin-top: 5%;
 }
 
 .login-title h1 {
@@ -43,7 +43,7 @@ input {
     margin-right: auto;
     display: flex;
     flex-direction: column;
-    margin-top: 10%;
+    margin-top: 2%;
     border-radius: 5px;
     box-shadow: 1px 1px 15px 1px #55aaee;
     -webkit-box-shadow: 1px 1px 15px 1px #55aaee;

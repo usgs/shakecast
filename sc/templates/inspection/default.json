@@ -1,28 +1,67 @@
 {
-    "type": "inspection",
-    "body_color": "#ffffff",
-    "admin_email": "sc.admin@gmail.com",
-    "table_head": [{"name": "name",
-                   "val": "Facility Name"},
-                   {"name": "inspection_priority",
-                   "val": "Inspection Priority"},
-                   {"name": "metric",
-                   "val": "Metric"},
-                   {"name": "shaking_value",
-                   "val": "Shaking Value"}],
     "section_head": {
-        "back_color": "#444444",
-        "font_color": "#ffffff"
-    },
-    "second_head": {
-        "border_color": "#444444",
-        "font_color": "#444444"
-    },
+        "font_color": "#ffffff", 
+        "back_color": "#444444"
+    }, 
     "footer": {
-        "header_color": "#444444",
-        "font_color": "#444444"
-    },
+        "font_color": "#444444", 
+        "header_color": "#444444"
+    }, 
+    "second_head": {
+        "font_color": "#444444", 
+        "border_color": "#444444"
+    }, 
     "table": {
         "border_color": "#444444"
-    }
+    }, 
+    "admin_email": "sc.admin@gmail.com", 
+    "type": "inspection", 
+    "body_color": "#ffffff", 
+    "table_head": [
+        {
+            "use": true, 
+            "name": "name", 
+            "val": "Facility Name"
+        }, 
+        {
+            "use": true, 
+            "name": "inspection_priority", 
+            "val": "Inspection Priority"
+        }, 
+        {
+            "use": false, 
+            "name": "mmi", 
+            "val": "MMI"
+        }, 
+        {
+            "use": false, 
+            "name": "pgv", 
+            "val": "PGV"
+        }, 
+        {
+            "use": false, 
+            "name": "psa03", 
+            "val": "PSA03"
+        }, 
+        {
+            "use": false, 
+            "name": "psa10", 
+            "val": "PSA10"
+        }, 
+        {
+            "use": false, 
+            "name": "psa30", 
+            "val": "PSA30"
+        }, 
+        {
+            "use": true, 
+            "name": "metric", 
+            "val": "Metric"
+        }, 
+        {
+            "use": true, 
+            "name": "shaking_value", 
+            "val": "Shaking Value"
+        }
+    ]
 }

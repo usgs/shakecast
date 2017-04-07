@@ -96,10 +96,19 @@ class TestTemplateManager(unittest.TestCase):
         temp = temp_manager.get_template('new_event', 'template_DOES_NOT_EXIST_!@#$')
         self.assertIsNone(temp)
 
+        temp = temp_manager.get_template_string('new_event', 'template_DOES_NOT_EXIST_!@#$')
+        self.assertIsNone(temp)
+
     def test_templateNames(self):
         temp_manager = TemplateManager()
         temp_names = temp_manager.get_template_names()
         self.assertIn('default', temp_names)
+
+    def test_NewTemp(self):
+        temp_manager = TemplateManager()
+        result = temp_manager.create_new('default')
+
+        self.assertTrue(result)
 
 class TestURLOpener(unittest.TestCase):
     '''
@@ -210,12 +219,21 @@ class TestFull(unittest.TestCase):
         data = geo_json('hour')
         self.assertEqual(data['error'], '')
 
-        # grab a scenario and save it as a shakemap incase no shakemaps
+        # grab a scenario and save it as a shakemap in case no shakemaps
         # are available
         download_scenario('bssc2014nsanandreassaosansap_m8p04_se', scenario=True)
+        # download a second time to hit more code
+        download_scenario('bssc2014nsanandreassaosansap_m8p04_se', scenario=True)
+
         session = Session()
         sm = session.query(ShakeMap).filter(ShakeMap.shakemap_id == 'bssc2014nsanandreassaosansap_m8p04_se_scenario').first()
         sm.status = 'new'
+        sm.shakemap_id = 'bssc2014nsanandreassaosansap'
+
+        e = session.query(Event).filter(Event.event_id == 'bssc2014nsanandreassaosansap_m8p04_se_scenario').first()
+        e.status = 'new'
+        e.event_id = 'bssc2014nsanandreassaosansap'
+
         session.commit()
         Session.remove()
 
@@ -278,7 +296,7 @@ class TestFull(unittest.TestCase):
         '''
         Second run of geo_json
         '''
-        data = geo_json()
+        data = geo_json('hour')
         self.assertEqual(data['error'], '')
 
     def step11_checkNew2(self):
@@ -369,8 +387,12 @@ class TestFull(unittest.TestCase):
             delete_scenario(shakemap_id=sm_id)
 
             session = Session()
-            e = session.query(Event).filter(Event.event_id == sm_id).first()
-            sm = session.query(ShakeMap).filter(ShakeMap.shakemap_id == sm_id).first()
+            e = (session.query(Event).filter(Event.event_id == sm_id)
+                                        .filter(Event.status == 'scenario')
+                                        .first())
+            sm = (session.query(ShakeMap).filter(ShakeMap.shakemap_id == sm_id)
+                                            .filter(ShakeMap.status == 'scenario')
+                                            .first())
 
             self.assertIsNone(e)
             self.assertIsNone(sm)

@@ -5,10 +5,19 @@
     <div class="conf-column column">
         <div class="conf-content-container">
             <div class="conf-content" stickToTop>
-                <h2>Select Notification</h2>
-                <select [(ngModel)]="name" (change)="getNotification(name, eventType)">
+                <select class="not-dropdown" [(ngModel)]="name" (change)="getNotification(name, eventType)">
                     <option *ngFor="let eachName of tempNames" [ngValue]="eachName">{{ eachName }}</option>
                 </select>
+                <h3 class="button" *ngIf="!enteringNew" (click)="enteringNew=true">Create a New Template</h3>
+                
+                <input class="template-name" 
+                    *ngIf="enteringNew" 
+                    [(ngModel)]="newName"
+                    placeholder="Give it a name, then hit enter">
+                <h3 class="button"
+                    *ngIf="enteringNew"
+                    (click)="enteringNew=False">Cancel</h3>
+
                 <div class="item">
                     <h3 class="conf event-type button" 
                             [ngClass]="{'selected': eventType=='new_event'}"
@@ -70,6 +79,17 @@
                     <p class="label">Second Header Font Color: </p>
                     <input class="conf" 
                             [(ngModel)]="config.second_head.font_color">
+                </div>
+                <div *ngIf="eventType=='inspection'">
+                    <h3>Inspection Table</h3>
+                        <div class="item"
+                            *ngFor="let field of config.table_head">
+                            
+                            <input type="checkbox" [(ngModel)]="field.use">
+                            <p>{{ field.val }}</p>
+
+                        </div>
+                </div>
 
                 <div class="control-buttons">
                     <h2 class="button" (click)="saveConfigs()">Save</h2>

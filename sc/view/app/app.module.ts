@@ -1,5 +1,6 @@
 import { NgModule }       from '@angular/core';
-import { BrowserModule }  from '@angular/platform-browser';
+import { BrowserModule } from '@angular/platform-browser';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { HttpModule, JsonpModule } from '@angular/http';
 import { SimpleNotificationsModule } from 'angular2-notifications';
 import { AppComponent } from './app.component';
@@ -21,7 +22,7 @@ import { TitleService } from './title/title.service';
 import { UserService } from './login/user.service';
 import { EarthquakeService } from './shakecast/pages/earthquakes/earthquake.service';
 import { FacilityService } from './shakecast-admin/pages/facilities/facility.service';
-import { NotificationService } from './shakecast/pages/dashboard/notification-dash/notification.service.ts';
+import { NotificationService } from './shakecast/pages/dashboard/notification-dash/notification.service';
 import { SharedModule } from './shared/shared.module';
 import { MapService } from './shared/maps/map.service';
 import { ShakemapService } from './shared/maps/shakemap.service';
@@ -38,6 +39,7 @@ import { CookieService } from './shared/cookie.service';
 @NgModule({
   imports: [
     BrowserModule,
+    BrowserAnimationsModule,
     SimpleNotificationsModule,
     routing,
     HttpModule,

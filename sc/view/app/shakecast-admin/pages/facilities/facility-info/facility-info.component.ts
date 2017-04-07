@@ -14,41 +14,7 @@ import { EarthquakeService, Earthquake } from '../../../../shakecast/pages/earth
 @Component({
     selector: 'facility-info',
     templateUrl: 'app/shakecast-admin/pages/facilities/facility-info/facility-info.component.html',
-    styleUrls: ['app/shakecast-admin/pages/facilities/facility-info/facility-info.component.css'],  
-    animations: [
-      trigger('show', [
-        state('false', style({left: '100%'})),
-        state('true', style({left: '55%'})),
-          transition('true => false', animate('500ms ease-out')),
-          transition('false => true', animate('500ms ease-in'))
-      ]),
-      trigger('shrinkDesc', [
-        state('true', style({opacity: 0,
-                                display: 'none'})),
-        state('false', style({opacity: 1,
-                                display: 'block'})),
-          transition('true => false', animate('500ms ease-in-out')),
-          transition('false => true', animate('500ms ease-in-out'))
-      ]),
-      trigger('shrinkBody', [
-        state('false', style({marginTop: '20%'})),
-        state('true', style({marginTop: '5px'})),
-          transition('true => false', animate('500ms ease-in-out')),
-          transition('false => true', animate('500ms ease-in-out'))
-      ]),
-      trigger('showFragility', [
-        state('true', style({top: 0})),
-        state('false', style({top: '100%'})),
-          transition('true => false', animate('500ms ease-in-out')),
-          transition('false => true', animate('500ms ease-in-out'))
-      ]),
-      trigger('enlargeInfo', [
-        state('true', style({height: '85%'})),
-        state('false', style({height: '70%'})),
-          transition('true => false', animate('500ms ease-in-out')),
-          transition('false => true', animate('500ms ease-in-out'))
-      ])
-    ]
+    styleUrls: ['app/shakecast-admin/pages/facilities/facility-info/facility-info.component.css']
 })
 export class FacilityInfoComponent implements OnInit, OnDestroy{
     private subscriptions: any[] = [];
@@ -63,24 +29,7 @@ export class FacilityInfoComponent implements OnInit, OnDestroy{
     ngOnInit() {
         this.subscriptions.push(this.facService.showInfo.subscribe((facility: Facility) => {
             if (facility) {
-                this.showFragilityInfo = false;
-                this.show = true;
-                this.facility = facility;
-
-                if (facility['shaking']) {
-                    this.facilityShaking = facility['shaking'];
-                    //this.showFragilityInfo = true;
-                } else {
-                    this.facilityShaking = null;
-                    //this.showFragilityInfo = false;
-                }
-/*
-                if (this._router.url == '/shakecast/dashboard') {
-                    this.facilityShaking = facility['shaking'];
-                } else {
-                    this.facilityShaking = null;
-                }
-*/
+                this.setFacility(facility)
             } else {
                 this.show = false;
             }
@@ -101,20 +50,13 @@ export class FacilityInfoComponent implements OnInit, OnDestroy{
         }));
     }
 
-    showFragility(fac: Facility) {
-        this.showFragilityInfo = !this.showFragilityInfo;
-
-        if (this.showFragilityInfo) {
-            this.eqService.getFacilityData(fac);
-        }
-    }
-
-    showInfo() {
-
+    setFacility(facility: Facility) {
+        this.facility = facility;
+        this.eqService.getFacilityData(facility);
     }
 
     hide() {
-        this.show = false;
+        this.facService.showInfo.next(null)
     }
 
     ngOnDestroy() {

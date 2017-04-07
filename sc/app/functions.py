@@ -326,7 +326,7 @@ def process_shakemaps(shakemaps=None, session=None, scenario=False):
                 
             # create a statement to insert fac_shaking_list into database
             stmt = (Facility_Shaking.__table__.insert()
-                        .values(grey=bindparam('grey'),
+                        .values(gray=bindparam('gray'),
                                 green=bindparam('green'),
                                 yellow=bindparam('yellow'),
                                 orange=bindparam('orange'),
@@ -399,7 +399,7 @@ def make_inspection_prios(facility=None,
     Returns:
         dict: A dictionary with all the parameters needed to make a Facility_Shaking entry in the database
         ::
-            fac_shaking = {'grey': PDF Value,
+            fac_shaking = {'gray': PDF Value,
                            'green': PDF Value,
                            'yellow': PDF Value,
                            'orange': PDF Value,
@@ -409,7 +409,7 @@ def make_inspection_prios(facility=None,
                            'shakemap_id': shakecast_id of the associated ShakeMap,
                            '_shakecast_id': ID for the Facility_Shaking entry that will be created,
                            'update': bool -- True if an ID already exists for this Facility_Shaking,
-                           'alert_level': string ('grey', 'green', 'yellow' ...),
+                           'alert_level': string ('gray', 'green', 'yellow' ...),
                            'weight': float that determines inspection priority,
                            'notifications': list of notifications associated with this shaking}
     '''
@@ -609,8 +609,9 @@ def download_scenario(shakemap_id=None, scenario=False):
 
 def delete_scenario(shakemap_id=None):
     session = Session()
-    scenario = session.query(ShakeMap).filter(ShakeMap.shakemap_id == shakemap_id).first()
-    event = session.query(Event).filter(Event.event_id == shakemap_id).first()
+    scenario = (session.query(ShakeMap).filter(ShakeMap.shakemap_id == shakemap_id)
+                                            .first())
+    event = (session.query(Event).filter(Event.event_id == shakemap_id).first())
 
     if scenario is not None:
         # remove files
@@ -743,9 +744,9 @@ def import_facility_xml(xml_file=''):
         geom_type = ''
         html = ''
         geom = ''
-        grey = -1
-        grey_beta = -1
-        grey_metric = ''
+        gray = -1
+        gray_beta = -1
+        gray_metric = ''
         green = -1
         green_beta = -1
         green_metric = ''
@@ -787,13 +788,13 @@ def import_facility_xml(xml_file=''):
             elif child.tag == 'FRAGILITY':
                 for child2 in child:
                     for child3 in child2:
-                        if child2.tag == 'GREY':
+                        if child2.tag == 'GREY' or child2.tag == 'GRAY':
                             if child3.tag == 'METRIC':
-                                grey_metric = child3.text
+                                gray_metric = child3.text
                             elif child3.tag == 'ALPHA':
-                                grey = float(child3.text)
+                                gray = float(child3.text)
                             elif child3.tag == 'BETA':
-                                grey_beta = float(child3.text)
+                                gray_beta = float(child3.text)
                         elif child2.tag == 'GREEN':
                             if child3.tag == 'METRIC':
                                 green_metric = child3.text
@@ -860,9 +861,9 @@ def import_facility_xml(xml_file=''):
         f.geom_type = geom_type
         f.html = html
         f.geom = geom
-        f.grey = grey
-        f.grey_beta = grey_beta
-        f.grey_metric = grey_metric
+        f.gray = gray
+        f.gray_beta = gray_beta
+        f.gray_metric = gray_metric
         f.green = green
         f.green_beta = green_beta
         f.green_metric = green_metric
@@ -949,7 +950,8 @@ def import_group_xml(xml_file=''):
     tree = ET.parse(xml_file)
     root = tree.getroot()
     groups = [child for child in root]
-    
+    imported_groups = []
+
     for group in groups:
         name = ''
         facility_type = ''
@@ -960,9 +962,9 @@ def import_group_xml(xml_file=''):
         notification_format = ''
         aggregate_name = 'Default'
         damage_level = ''
-        template = ''
+        template = None
         poly = ''
-        
+
         for child in group:
             if child.tag == 'GROUP_NAME':
                 name = child.text
@@ -990,7 +992,8 @@ def import_group_xml(xml_file=''):
                 continue
         
             session.add(g)
-        
+
+        imported_groups += [g.name]
         g.facility_type = facility_type
         
         # split up the poly and save lat/lon min/max if the monitoring
@@ -1024,6 +1027,8 @@ def import_group_xml(xml_file=''):
                         aggregate_name = child2.text
                     elif child2.tag == 'DAMAGE_LEVEL':
                         damage_level = child2.text
+                    elif child2.tag == 'MESSAGE_FORMAT':
+                        template = child2.text
             
                 # Check requirements for group specification
                 
@@ -1056,6 +1061,8 @@ def import_group_xml(xml_file=''):
                 spec.aggregate_group = aggregate_name
                 spec.event_type = event_type
     
+
+    g.template = template
     add_facs_to_groups(session=session)
     add_users_to_groups(session=session)
     session.commit()
@@ -1064,7 +1071,8 @@ def import_group_xml(xml_file=''):
     log_message = ''
     status = 'finished'
     data = {'status': status,
-            'message': 'Imported Groups',
+            'message': {'title': 'Group Upload',
+                        'message': imported_groups},
             'log': log_message}
     
     return data
