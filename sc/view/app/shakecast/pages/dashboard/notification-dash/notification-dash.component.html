@@ -1,16 +1,9 @@
 <div *ngIf="notifications.length > 0">
-    <h3>New Event:</h3>
-    <div *ngFor="let not of notifications">
-        <p *ngIf="not.notification_type == 'NEW_EVENT'">
-            {{ not.group_name}}
-        </p>
+    <div *ngIf="newEventGroups != ''">
+        <h3>New Event:</h3><p>{{ newEventGroups }}</p>
     </div>
-
-    <h3>Inspection:</h3>
-    <div *ngFor="let not of notifications">
-        <p *ngIf="not.notification_type != 'NEW_EVENT'">
-            {{ not.group_name}}
-        </p>
+    <div *ngIf="inspGroups != ''">
+        <h3>Inspection:</h3><p>{{ inspGroups }}</p>
     </div>
 </div>
 

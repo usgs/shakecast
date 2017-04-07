@@ -22,14 +22,11 @@ import { filter } from './earthquake-filter/earthquake-filter.component';
       trigger('selected', [
         state('true', style({transform: 'translateY(-10px)'})),
         state('false', style({transform: 'translateY(0px)'})),
-          transition('true => false', animate('100ms ease-out')),
-          transition('false => true', animate('100ms ease-in'))
+          transition('* => *', animate('200ms ease-out'))
       ]),
       trigger('headerSelected', [
         state('true', style({'background-color': '#7af'})),
-        state('false', style({'background-color': ''})),
-          transition('true => false', animate('100ms ease-out')),
-          transition('false => true', animate('100ms ease-in'))
+        state('false', style({'background-color': '*'}))
       ])
     ]
 })
@@ -54,7 +51,7 @@ export class EarthquakeListComponent implements OnInit, OnDestroy {
             this.earthquakeData = eqs
             if ((eqs.length > 0) && 
                     (this._router.url != '/shakecast-admin/facilities')) {
-                //this.selectEq(eqs[0]);
+                this.selectEq(eqs[0]);
             }
         }));
 
@@ -75,9 +72,9 @@ export class EarthquakeListComponent implements OnInit, OnDestroy {
 
     selectEq(eq: Earthquake) {
         if (this.selected) {
-            this.selected['selected'] = false;
+            this.selected['selected'] = 'false';
         }
-        eq['selected'] = true;
+        eq['selected'] = 'true';
         this.selected = eq;
         this.eqService.selected = eq;
     }

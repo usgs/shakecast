@@ -18,12 +18,11 @@
                                 <th>Location: </th><td><p>{{ (fac.lat_max + fac.lat_min) / 2 }}, {{ (fac.lon_max + fac.lon_min) / 2 }}</p></td>
                             </tr>
                         </table>
-                        <h3 class="button fac-info" (click)="facService.showFacInfo(fac, $event)">More Info</h3>
                     </div>
                 </div>
             </div>
             <div class="data load-more">
-                <div class="load-more-button" (click)="facService.getData(filter)">
+                <div class="load-more-button" (click)="loadMore()">
                     <h1>Load More</h1>
                 </div>
             </div>
@@ -42,6 +41,3 @@
         <p><loading></loading></p>
     </div>
 </div>
-
-
-<facility-info></facility-info>

@@ -65,9 +65,10 @@ export class NotificationsComponent implements OnInit {
             this.preview(this.name,
                          this.eventType,
                          this.config);
+                         
         }));
 
-        this.notHTMLService.getNotification(this.name, 'new_event');
+        this.notHTMLService.getNotification(this.name, this.eventType);
         this.notHTMLService.getConfigs('new_event', this.name);
         this.notHTMLService.getTemplateNames();
     }
@@ -111,7 +112,7 @@ export class NotificationsComponent implements OnInit {
             if (event.keyCode === 13) {
                 if (this.newName !== '') {
                     // remove unwanted characters
-                    var cleanName = this.newName.replace(/[^a-zA-Z0-9]/g,'_');
+                    var cleanName = this.newName.replace('/[^a-zA-Z0-9]/g','_');
 
                     this.notHTMLService.newTepmlate(cleanName);
                     this.enteringNew = false;

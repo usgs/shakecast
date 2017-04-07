@@ -80,14 +80,15 @@
                     <input class="conf" 
                             [(ngModel)]="config.second_head.font_color">
                 </div>
+                <div *ngIf="eventType=='inspection'">
+                    <h3>Inspection Table</h3>
+                        <div class="item"
+                            *ngFor="let field of config.table_head">
+                            
+                            <input type="checkbox" [(ngModel)]="field.use">
+                            <p>{{ field.val }}</p>
 
-                <h3>Inspection Table</h3>
-                <div class="item"
-                    *ngFor="let field of config.table_head">
-                    
-                    <input type="checkbox" [(ngModel)]="field.use">
-                    <p>{{ field.val }}</p>
-
+                        </div>
                 </div>
 
                 <div class="control-buttons">

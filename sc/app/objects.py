@@ -947,10 +947,21 @@ class NotificationBuilder(object):
     def build_new_event_html(events=None, notification=None, group=None, name=None, web=False, config=None):
         temp_manager = TemplateManager()
         if not config:
-            config = temp_manager.get_configs('new_event', name=name)
-
-        template = temp_manager.get_template('new_event', name=name)
+            if name is None and notification is not None:
+                config = temp_manager.get_configs('new_event', 
+                                                    name=notification.group.template)
+            else:
+                config = temp_manager.get_configs('new_event', 
+                                                    name=name)
         
+        if name is None and notification is not None:
+            template = temp_manager.get_template('new_event',
+                                                name=notification.group.template)
+        else:
+            template = temp_manager.get_template('new_event',
+                                                name=name)
+        
+
         return template.render(events=events,
                                group=group,
                                notification=notification,
@@ -967,7 +978,7 @@ class NotificationBuilder(object):
         template = temp_manager.get_template('inspection', name=name)
 
         facility_shaking = shakemap.facility_shaking
-        fac_details = {'all': 0, 'grey': 0, 'green': 0,
+        fac_details = {'all': 0, 'gray': 0, 'green': 0,
                        'yellow': 0, 'orange': 0, 'red': 0}
         
         for fs in facility_shaking:

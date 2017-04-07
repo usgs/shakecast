@@ -54,7 +54,7 @@ export class FacilityListComponent implements OnInit, OnDestroy {
             this.facilityData = facs;
 
             // only display the first 50 facs
-            this.shownFacilityData = this.facilityData.slice(0,50);
+            this.shownFacilityData = this.facilityData;
 
             if (this.selectedFacs.length === 0) {
                 // add a facility if the array is empty
@@ -67,9 +67,16 @@ export class FacilityListComponent implements OnInit, OnDestroy {
                 if (!this.selectedFacs) {
                     this.selectedFacs.push(this.facilityData[0]);
                 }
-                this.facilityData[0].selected = true;
+
+                this.facService.setFacInfo(this.facilityData[0]);
+                this.facilityData[0].selected = 'yes';
                 this.plotFac(this.facilityData[0]);
             }
+        }));
+
+        this.subscriptions.push(this.facService.facilityDataUpdate.subscribe((facs: any) => {
+            this.facilityData = this.facilityData.concat(facs);
+            this.shownFacilityData = this.facilityData;
         }));
 
         this.subscriptions.push(this.facService.selection.subscribe(select => {
@@ -86,15 +93,6 @@ export class FacilityListComponent implements OnInit, OnDestroy {
         this.subscriptions.push(this.facService.loadingData.subscribe((loading: boolean) => {
             this.loadingData = loading
         }));
-
-        this.subscriptions.push(
-            Observable.interval(1000)
-                .subscribe((x: any) => {
-                    if(this.didScroll) {
-                        this.didScroll = false;
-                        this.checkScroll();
-                    }
-                }));
 
     }
     
@@ -115,6 +113,7 @@ export class FacilityListComponent implements OnInit, OnDestroy {
 
         if (fac.selected === 'yes') {
             // add it to the list
+            this.facService.setFacInfo(fac);
             this.selectedFacs.push(fac);
             this.plotFac(fac);
         } else {
@@ -164,7 +163,8 @@ export class FacilityListComponent implements OnInit, OnDestroy {
     }
 
     loadMore() {
-
+        this.filter['count'] = this.facilityData.length;
+        this.facService.updateData(this.filter);
     }
 
     ngOnDestroy() {

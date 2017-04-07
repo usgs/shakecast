@@ -13,12 +13,31 @@ import { NotificationService } from './notification.service'
 export class NotificationDashComponent implements OnInit, OnDestroy {
 
     public notifications: any = [];
+    public newEventGroups: string = ''
+    public inspGroups: string = ''
     private subscriptions: any[] = [];
     constructor(private notService: NotificationService) {}
 
     ngOnInit() {
         this.subscriptions.push(this.notService.notifications.subscribe(nots => {
             this.notifications = nots;
+            this.inspGroups = '';
+            this.newEventGroups = '';
+            for (var not in nots) {
+                if (nots[not]['notification_type'] == 'NEW_EVENT') {
+                    if (this.newEventGroups === '') {
+                        this.newEventGroups += nots[not]['group_name']
+                    } else {
+                        this.newEventGroups += ',' + nots[not]['group_name']
+                    }
+                } else {
+                    if (this.inspGroups === '') {
+                        this.inspGroups += nots[not]['group_name']
+                    } else {
+                        this.inspGroups += ',' + nots[not]['group_name']
+                    }
+                }
+            }
         }));
     }
 

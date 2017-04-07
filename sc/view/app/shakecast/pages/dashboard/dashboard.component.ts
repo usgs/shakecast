@@ -11,7 +11,8 @@ import { showLeft, showRight, showBottom } from '../../../shared/animations/anim
 @Component({
     selector: 'dashboard',
     templateUrl: 'app/shakecast/pages/dashboard/dashboard.component.html',
-    styleUrls: ['app/shakecast/pages/dashboard/dashboard.component.css'],
+    styleUrls: ['app/shakecast/pages/dashboard/dashboard.component.css',
+                  'app/shared/css/panels.css'],
     animations: [ showLeft, showRight, showBottom ]
 })
 export class DashboardComponent implements OnInit, OnDestroy {

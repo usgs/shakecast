@@ -213,17 +213,19 @@ def get_fac_data():
     query = session.query(Facility)
 
     if filter_:
-        if filter_.get('group', None):
+        if filter_.get('group', None) is not None:
             query = query.filter(Facility.groups.any(Group.name.like(filter_['group'])))
-        if filter_.get('latMax', None):
+        if filter_.get('latMax', None) is not None:
             query = query.filter(Facility.lat_min < float(filter_['latMax']))
-        if filter_.get('latMin', None):
+        if filter_.get('latMin', None) is not None:
             query = query.filter(Facility.lat_max > float(filter_['latMin']))
-        if filter_.get('lonMax', None):
+        if filter_.get('lonMax', None) is not None:
             query = query.filter(Facility.lon_min < float(filter_['lonMax']))
-        if filter_.get('lonMin', None):
+        if filter_.get('lonMin', None) is not None:
             query = query.filter(Facility.lon_max > float(filter_['lonMin']))
-        if filter_.get('keywords', None):
+        if filter_.get('facility_type', None) is not None:
+            query = query.filter(Facility.facility_type.like(filter_['facility_type']))
+        if filter_.get('keywords', None) is not None:
 
             keys_raw = filter_['keywords'].lower().split(',')
             keys = [key.strip(' ') for key in keys_raw]
@@ -232,10 +234,17 @@ def get_fac_data():
                                             func.lower(Facility.name).contains(key),
                                             func.lower(Facility.description).contains(key)) for key in keys]
             query = query.filter(and_(*key_filter))
-            
-    facs = (query.limit(50)
-                 .all())
-    
+
+    if filter_.get('count', None) is None:
+        facs = query.limit(50).all()
+    else:
+        all_facs = query.all()
+
+        if len(all_facs) > filter_['count'] + 50:
+            facs = all_facs[filter_['count']:filter_['count'] + 50]
+        else:
+            facs = all_facs[filter_['count']:]
+
     dicts = []
     for fac in facs:
         dict_ = fac.__dict__.copy()
@@ -392,7 +401,7 @@ def get_affected_facilities(shakemap_id):
                 .all())
     
     fac_dicts = []
-    alert = {'grey': 0,
+    alert = {'gray': 0,
              'green': 0,
              'yellow': 0,
              'orange': 0,
