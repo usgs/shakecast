@@ -534,7 +534,8 @@ def inspection_notification(notification=Notification(),
         html = not_builder.build_insp_html(shakemap)
     
         notification.status = 'file success'
-    except Exception:
+    except Exception as e:
+        error = str(e)
         notification.status = 'file failed'
     
     # if the file was created successfully, try sending it
@@ -583,7 +584,8 @@ def inspection_notification(notification=Notification(),
 
             else:
                 notification.status = 'not sent - no users'
-        except:
+        except Exception as e:
+            error = str(e)
             notification.status = 'send failed'
 
 def download_scenario(shakemap_id=None, scenario=False):
@@ -1236,6 +1238,7 @@ def delete_inventory_by_id(inventory_type=None, ids=None):
 
 def check_for_updates():
     status = ''
+    error = ''
     update_required = None
     try:
         s = SoftwareUpdater()
@@ -1244,10 +1247,11 @@ def check_for_updates():
         if notify is True:
             s.notify_admin(update_info=update_info)
         status = 'finished'
-    except Exception:
+    except Exception as e:
+        error = str(e)
         status = 'failed'
 
-    return {'status': status, 'message': update_required}
+    return {'status': status, 'message': update_required, 'error': error}
 #######################################################################
 ########################## TEST FUNCTIONS #############################
 def task_test():

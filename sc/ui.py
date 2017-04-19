@@ -31,6 +31,7 @@ class UI(object):
         self.conns = []
         self._get_message = True
         self.print_queue = []
+        self.port = 1981
         
     def start(self):
         """
@@ -90,7 +91,7 @@ class UI(object):
                 #######################################################
                 ################### API Translation ###################
                 
-                if msg == 'shutdown':
+                if msg == 'shutdown' and self.port != 80 and self.port != 5000:
                     to_server = "{'shutdown': {'func': self.shutdown}}"
                 elif msg == 'info':
                     to_server = "{'info': {'func': self.info}}"
@@ -143,7 +144,7 @@ class UI(object):
         Attempt to connect to the server
         """
         self.conn = socket.socket()
-        self.conn.connect(('localhost', 1981))
+        self.conn.connect(('localhost', self.port))
         
     def get_message(self):
         """

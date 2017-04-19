@@ -184,7 +184,7 @@ class ProductGrabber(object):
             event_str += 'Event: %s\n' % event.event_id
         
         Session.remove()
-        print event_str
+        # print event_str
         return new_events, event_str
     
     @staticmethod
@@ -345,7 +345,7 @@ class ProductGrabber(object):
         
         self.log += shakemap_str
         Session.remove()
-        print shakemap_str
+        # print shakemap_str
         return new_shakemaps, shakemap_str
 
     def make_heartbeat(self):
@@ -1379,10 +1379,10 @@ class SoftwareUpdater(object):
             except Exception:
                 failed += [file_]
         # change software version
-        if len(success) > 0:
-            print 'SUCCESS: {}'.format(success)
-        if len(failed) > 0:    
-            print 'FAILED: {}'.format(failed)
+        # if len(success) > 0:
+        #     print 'SUCCESS: {}'.format(success)
+        # if len(failed) > 0:    
+        #     print 'FAILED: {}'.format(failed)
 
         
         sc.dict['Server']['update']['software_version'] = version
