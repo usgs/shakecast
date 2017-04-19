@@ -1,65 +1,34 @@
 .filter-form {
-    position: fixed;
-    bottom: -150px;
-    height: 150px;
-    width: 50%;
-    margin-left: 25%;
-    z-index: 2000;
-    background: #fff;
-    padding-left: 10px;
-    padding-right: 10px;
-    transition: bottom .5s ease-in-out;
+    padding: 10px;
 }
 
-.filter-form h2 {
+h2 {
+    text-align: left;
+    margin: 0 0 0 20px;
+    color: white;
+    padding: 5px;
+}
+
+.control {
+    padding: 20px 20px 0 20px;
     text-align: center;
-    border-bottom: 2px solid #444
 }
 
-.filter-button, .select-button {
-    width: 40.5%;
-    margin-left: .5%;
-    margin-bottom: 3px;
-    bottom: 0;
-    margin-top: 20px;
-    text-align: center;
-    position: relative;
-    background: #888888;
-    padding-top: 10px;
-    padding-bottom: 10px;
-    cursor: pointer;
-    float: left
+.buttons-container {
+    border: 2px solid white;
+    border-radius: 5px;
+    padding: 5px;
 }
 
-.select-button {
-    width: 19%;
-}
-
-.filter-button:hover, .select-button:hover {
-    background: #aaaaaa;
-}
-
-.filter-button h3, .select-button h3 {
-    width: 100%;
-    margin-bottom: 5px;
-    color: #fff;
-    margin-left: 0;
-    margin-right: 0;
-    margin-bottom: 0;
-    margin-top: 0px;
+.form-container {
     display: inline-block;
+    min-width: 300px;
+    text-align: center;
 }
 
-.filter-button h3:hover, .select-button h3:hover {
-    color: #7af;
-}
-
-.exit {
-    margin: 0;
-    padding-right: 2px;
-    padding-top: 4px;
-    display: block;
-    float: right;
-    font-weight: bolder;
-    cursor: pointer;
+.form-container input {
+    height: 20px;
+    border-radius: 5px;
+    font-weight: bold;
+    text-align: center;
 }

@@ -17,10 +17,9 @@ import { ScreenDimmerService } from '../../shared/screen-dimmer/screen-dimmer.se
     styleUrls: ['app/shakecast-admin/upload/upload.component.css'],  
     animations: [
       trigger('showUpload', [
-        state('false', style({top: '-800px'})),
-        state('true', style({top: '60px'})),
-          transition('true => false', animate('100ms ease-out')),
-          transition('false => true', animate('100ms ease-in'))
+        state('no', style({top: '-800px'})),
+        state('yes', style({top: '60px'})),
+          transition('* => *', animate('100ms ease-out'))
       ])
     ]
 })
@@ -28,7 +27,7 @@ export class UploadComponent implements OnInit, OnDestroy{
     public uploader:FileUploader = new FileUploader({url: '/admin/upload/'});
     public hasBaseDropZoneOver:boolean = false;
     public hasAnotherDropZoneOver:boolean = false;
-    public show: boolean = false
+    public show: string = 'no';
     private subscriptions: any = []
 
     constructor(private uploadService: UploadService,
@@ -53,12 +52,12 @@ export class UploadComponent implements OnInit, OnDestroy{
     }
 
     showUpload() {
-        this.show = true
+        this.show = 'yes'
         this.screenDimmer.dimScreen();
     }
 
     hideUpload() {
-        this.show = false
+        this.show = 'no'
         this.screenDimmer.undimScreen();
     }
 

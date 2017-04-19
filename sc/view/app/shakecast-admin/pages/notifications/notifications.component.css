@@ -19,6 +19,11 @@
     padding: 5px;
 }
 
+.not-column, .conf-column {
+    z-index: 2;
+    background: white;
+}
+
 .not-column {
     width: 55%
 }

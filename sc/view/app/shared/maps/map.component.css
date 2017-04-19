@@ -2,11 +2,17 @@
   height: 100%;
 }
 
+#shaking {    
+    position: fixed;
+    bottom: 100px;
+    z-index: 1000;
+    width: 100%;
+}
+
 .shaking-table {
   width: 90%;
   margin-left: 5%;
   position: relative;
-  transform: translateY(-140%);
   z-index: 1000;
 }
 

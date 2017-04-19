@@ -1,31 +1,51 @@
-<div class="outer-dash-container">
-    <div class="dash-container">
-        <div class="outer-map-eq-container">
-            <div class="map-eq-container">
-                <div class="map-container">
-                    <my-map class="map"></my-map>
-                </div>
-                <div class="eq-container">
-                    <h2>{{ earthquakeData.length }} Recent Earthquakes</h2>
-                    <earthquake-list></earthquake-list>
-                </div>
-            </div>
-        </div>
-        <div class="outer-fac-not-container">
-            <div class="fac-not-container">
-                <div class="fac-container">
-                    <div *ngIf="facilityData.length > 0">
-                        <h2>{{ facilityData.length }} Facilities Affected</h2>
-                    </div>
-                    <facility-list></facility-list>
-                </div>
-                <div class="not-container">
-                    <h2>Notifications</h2>
-                    <div class="not-dash">
-                        <notification-dash></notification-dash>
-                    </div>
-                </div>
-            </div>
+<div class="map-container">
+    <my-map class="map"></my-map>
+</div>
+
+<div class="right-panel" [@showRight]="showRight">
+    <div class="toggle">
+        <div class="toggle-click" (click)="toggleRight()">
+
         </div>
     </div>
+    <div class="panel-content">
+            <h2 class="panel-title">{{ earthquakeData.length }} Recent Earthquakes</h2>
+            
+            <div class="panel-scroll-container">
+                <div class="inner-shadow"></div>
+                <earthquake-list></earthquake-list>
+            </div>
+    </div>
+</div>
+
+<div class="left-panel" [@showLeft]="showLeft">
+    <div class="toggle">
+        <div class="toggle-click" (click)="toggleLeft()">
+        </div>
+    </div>
+    <div class="panel-content">
+        <h2 class="panel-title">Notifications: </h2>
+
+        <div class="not-container">
+            <div class="not-dash">
+                <notification-dash></notification-dash>
+            </div>
+        </div>
+        <div *ngIf="facilityData.length > 0">
+            <h2 class="panel-title">{{ facilityData.length }} Facilities Affected</h2>
+        </div>
+        <div class="panel-scroll-container">
+            <div class="inner-shadow"></div>
+            <facility-list></facility-list>
+        </div>
+    </div>
+</div>
+
+<div class="bottom-panel" [@showBottom]="showBottom">
+    <div class="toggle">
+        <div class="toggle-click" (click)="toggleBottom()" style="width:0">
+        </div>
+    </div>
+
+
 </div>

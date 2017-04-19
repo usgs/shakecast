@@ -8,19 +8,21 @@ import { ReplaySubject } from 'rxjs/ReplaySubject';
 import { MapService } from '../../../shared/maps/map.service'
 
 export interface Facility {
-    shakecast_id: string;
-    facility_id: string;
-    lat: number;
-    lon: number;
-    name: string;
-    description: string;
-    selected?:boolean
+    shakecast_id?: string;
+    facility_id?: string;
+    lat?: number;
+    lon?: number;
+    name?: string;
+    description?: string;
+    shakemap?: string;
+    selected?: string;
 }
 
 @Injectable()
 export class FacilityService {
     public loadingData = new ReplaySubject(1);
     public facilityData = new ReplaySubject(1);
+    public facilityDataUpdate = new ReplaySubject(1);
     public facilityInfo = new ReplaySubject(1);
     public facilityShaking = new ReplaySubject(1);
     public showInfo = new ReplaySubject(1);
@@ -43,6 +45,16 @@ export class FacilityService {
                 this.shakingData.next(null);
                 this.facilityData.next(result.data);
                 this.loadingData.next(false);
+            })
+    }
+
+    updateData(filter: any = {}) {
+        let params = new URLSearchParams();
+        params.set('filter', JSON.stringify(filter))
+        this._http.get('/api/facility-data', {search: params})
+            .map((result: Response) => result.json())
+            .subscribe((result: any) => {
+                this.facilityDataUpdate.next(result.data);
             })
     }
 
@@ -75,12 +87,8 @@ export class FacilityService {
             })
     }
 
-    showFacInfo(fac: Facility, e: Event) {
+    setFacInfo(fac: Facility) {
         this.showInfo.next(fac);
-        if (fac.selected) {
-            e.stopPropagation();
-            this.plotFac(fac)
-        }
     }
 
     hideFacInfo() {

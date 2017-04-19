@@ -50,17 +50,17 @@ class Facility(Base):
     lon_min = Column(Float)
     lon_max = Column(Float)
     model = Column(String(25))
-    grey = Column(Float)
+    gray = Column(Float)
     green = Column(Float)
     yellow = Column(Float)
     orange = Column(Float)
     red = Column(Float)
-    grey_beta = Column(Float)
+    gray_beta = Column(Float)
     green_beta = Column(Float)
     yellow_beta = Column(Float)
     orange_beta = Column(Float)
     red_beta = Column(Float)
-    grey_metric = Column(String(20))
+    gray_metric = Column(String(20))
     green_metric = Column(String(20))
     yellow_metric = Column(String(20))
     orange_metric = Column(String(20))
@@ -81,12 +81,12 @@ class Facility(Base):
                            lat_max=%s,
                            lon_min=%s,
                            lon_max=%s,
-                           grey=%s,
+                           gray=%s,
                            green=%s,
                            yellow=%s,
                            orange=%s,
                            red=%s,
-                           grey_beta=%s,
+                           gray_beta=%s,
                            green_beta=%s,
                            yellow_beta=%s,
                            orange_beta=%s,
@@ -100,12 +100,12 @@ class Facility(Base):
                                             self.lat_max,
                                             self.lon_min,
                                             self.lon_max,
-                                            self.grey,
+                                            self.gray,
                                             self.green,
                                             self.yellow,
                                             self.orange,
                                             self.red,
-                                            self.grey_beta,
+                                            self.gray_beta,
                                             self.green_beta,
                                             self.yellow_beta,
                                             self.orange_beta,
@@ -131,7 +131,7 @@ class Facility(Base):
         fac_shake_id = [row for row in result]
         
         
-        fac_shake = {'grey': 0,
+        fac_shake = {'gray': 0,
                      'green': 0,
                      'yellow': 0,
                      'orange': 0,
@@ -198,10 +198,10 @@ class Facility(Base):
                     fac_shake['alert_level'] = level['level']
                     fac_shake['weight'] = level['rank'] + (p / 100)
                     
-            fac_shake['grey'] = 100 - prob_sum
-            if fac_shake['grey'] > large_prob:
-                fac_shake['alert_level'] = 'grey'
-                fac_shake['weight'] = (fac_shake['grey'] / 100)
+            fac_shake['gray'] = 100 - prob_sum
+            if fac_shake['gray'] > large_prob:
+                fac_shake['alert_level'] = 'gray'
+                fac_shake['weight'] = (fac_shake['gray'] / 100)
                 
         fac_shake['facility_id'] = self.shakecast_id
         fac_shake['metric'] = self.metric
@@ -299,7 +299,7 @@ class Facility_Shaking(Base):
     metric = Column(String(20))
     alert_level = Column(String(20))
     weight = Column(Float)
-    grey = Column(Float)
+    gray = Column(Float)
     green = Column(Float)
     yellow = Column(Float)
     orange = Column(Float)
@@ -318,7 +318,7 @@ class Facility_Shaking(Base):
                                    metric=%s,
                                    alert_level=%s,
                                    weight=%s,
-                                   grey=%s,
+                                   gray=%s,
                                    green=%s,
                                    yellow=%s,
                                    orange=%s,
@@ -334,7 +334,7 @@ class Facility_Shaking(Base):
                                                    self.metric,
                                                    self.alert_level,
                                                    self.weight,
-                                                   self.grey,
+                                                   self.gray,
                                                    self.green,
                                                    self.yellow,
                                                    self.orange,
@@ -437,6 +437,7 @@ class Group(Base):
     lon_max = Column(Integer)
     lat_min = Column(Integer)
     lat_max = Column(Integer)
+    template = Column(String(255))
     
     facilities = relationship('Facility',
                               secondary='facility_group_connection',
@@ -577,7 +578,6 @@ class Group_Specification(Base):
     minimum_magnitude = Column(Integer)
     notification_format = Column(String(25))
     aggregate_name = Column(String(25))
-    template = Column(String(255))
     
     def __repr__(self):
         return '''Group_Specification(group_id=%s,
@@ -706,7 +706,7 @@ class Event(Base):
             result = engine.execute(stmt)
             events += [row for row in result]
         
-        return bool(events)
+        return not bool(events)
         
     def timestamp(self):
         """
@@ -741,6 +741,11 @@ class ShakeMap(Base):
     end_timestamp = Column(String(20))
     superceded_timestamp = Column(String(20))
     directory_name = Column(String(255))
+    gray = Column(Integer)
+    green = Column(Integer)
+    yellow = Column(Integer)
+    orage = Column(Integer)
+    red = Column(Integer)
     
     products = relationship('Product',
                             backref='shakemap',

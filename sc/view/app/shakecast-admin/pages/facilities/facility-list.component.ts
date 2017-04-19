@@ -1,11 +1,16 @@
 import { Component,
-         OnInit, 
-         OnDestroy,
-         trigger,
+         OnInit,
+         ElementRef, 
+         OnDestroy } from '@angular/core';
+
+import { Observable } from 'rxjs/Observable';
+
+import { trigger,
          state,
          style,
-         transition,
-         animate } from '@angular/core';
+         animate,
+         transition } from '@angular/animations';
+
 import { Router } from '@angular/router';
 import { FacilityService, Facility } from './facility.service';
 import { filter } from './facility-filter/facility-filter.component';
@@ -13,38 +18,43 @@ declare var _: any;
 
 @Component({
   selector: 'facility-list',
+  host: {'(window:scroll)': 'setScrollEvent($event)'},
   templateUrl: 'app/shakecast-admin/pages/facilities/facility-list.component.html',
   styleUrls: ['app/shakecast-admin/pages/facilities/facility-list.component.css',
                 'app/shared/css/data-list.css'],
   animations: [
       trigger('selected', [
-        state('true', style({transform: 'translateY(-10px)'})),
-        state('false', style({transform: 'translateY(0px)'})),
-          transition('true => false', animate('100ms ease-out')),
-          transition('false => true', animate('100ms ease-in'))
+        state('yes', style({transform: 'translateY(-10px)'})),
+        state('no', style({transform: 'translateY(0px)'})),
+          transition('* => *', animate('100ms ease-in-out'))
       ]),
       trigger('headerSelected', [
-        state('true', style({'background-color': '#7af'})),
-        state('false', style({'background-color': ''})),
-          transition('true => false', animate('100ms ease-out')),
-          transition('false => true', animate('100ms ease-in'))
+        state('yes', style({'background-color': '#7af'})),
+        state('no', style({'background-color': '*'})),
+          transition('* => *', animate('100ms ease-in-out'))
       ])
-
     ]
 })
 export class FacilityListComponent implements OnInit, OnDestroy {
     public loadingData: boolean = false
+    public shownFacilityData: any = [];
     public facilityData: any = [];
+    public lastShownFacIndex: number = 0;
     public selectedFacs: any = [];
     public filter: filter = {};
     public initPlot: boolean = false;
+    private didScroll: boolean = false;
     private subscriptions: any[] = [];
     constructor(public facService: FacilityService,
+                private element: ElementRef,
                 private _router: Router) {}
 
     ngOnInit() {
         this.subscriptions.push(this.facService.facilityData.subscribe(facs => {
             this.facilityData = facs;
+
+            // only display the first 50 facs
+            this.shownFacilityData = this.facilityData;
 
             if (this.selectedFacs.length === 0) {
                 // add a facility if the array is empty
@@ -57,9 +67,16 @@ export class FacilityListComponent implements OnInit, OnDestroy {
                 if (!this.selectedFacs) {
                     this.selectedFacs.push(this.facilityData[0]);
                 }
-                this.facilityData[0].selected = true;
+
+                this.facService.setFacInfo(this.facilityData[0]);
+                this.facilityData[0].selected = 'yes';
                 this.plotFac(this.facilityData[0]);
             }
+        }));
+
+        this.subscriptions.push(this.facService.facilityDataUpdate.subscribe((facs: any) => {
+            this.facilityData = this.facilityData.concat(facs);
+            this.shownFacilityData = this.facilityData;
         }));
 
         this.subscriptions.push(this.facService.selection.subscribe(select => {
@@ -76,13 +93,27 @@ export class FacilityListComponent implements OnInit, OnDestroy {
         this.subscriptions.push(this.facService.loadingData.subscribe((loading: boolean) => {
             this.loadingData = loading
         }));
+
     }
     
-    clickFac(fac: Facility) {
-        fac.selected = !fac.selected;
+    checkScroll() {
+        console.log('check scroll position')
+    }
 
-        if (fac.selected) {
+    setScrollEvent(e: Event) {
+        this.didScroll = true;
+    }
+
+    clickFac(fac: Facility) {
+        if (fac.selected === 'yes') {
+            fac.selected = 'no'
+        } else {
+            fac.selected = 'yes'
+        }
+
+        if (fac.selected === 'yes') {
             // add it to the list
+            this.facService.setFacInfo(fac);
             this.selectedFacs.push(fac);
             this.plotFac(fac);
         } else {
@@ -107,7 +138,7 @@ export class FacilityListComponent implements OnInit, OnDestroy {
         this.unselectAll();
         for (var facID in this.facilityData) {
             var fac: Facility = this.facilityData[facID];
-            fac.selected = true;
+            fac.selected = 'yes';
             this.selectedFacs.push(fac);
             this.plotFac(fac);
         }
@@ -116,7 +147,7 @@ export class FacilityListComponent implements OnInit, OnDestroy {
     unselectAll() {
         for (var facID in this.selectedFacs) {
             var fac: Facility = this.selectedFacs[facID];
-            fac.selected = false;
+            fac.selected = 'no';
             this.removeFac(fac);
         }
         this.selectedFacs = [];
@@ -129,6 +160,11 @@ export class FacilityListComponent implements OnInit, OnDestroy {
 
     plotFac(fac: Facility) {
         this.facService.plotFac(fac);
+    }
+
+    loadMore() {
+        this.filter['count'] = this.facilityData.length;
+        this.facService.updateData(this.filter);
     }
 
     ngOnDestroy() {

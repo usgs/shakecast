@@ -14,3 +14,7 @@
     position: relative;
     overflow: visible;
 }
+
+.eq-container {
+    white-space: nowrap;
+}

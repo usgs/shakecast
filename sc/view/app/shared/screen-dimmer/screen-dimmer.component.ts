@@ -1,11 +1,13 @@
 import { Component, 
          OnInit,
-         OnDestroy,
-         trigger,
+         OnDestroy } from '@angular/core';
+
+import { trigger,
          state,
          style,
-         transition,
-         animate } from '@angular/core';
+         animate,
+         transition } from '@angular/animations';
+
 import { ScreenDimmerService } from './screen-dimmer.service'
 
 @Component({
@@ -14,24 +16,23 @@ import { ScreenDimmerService } from './screen-dimmer.service'
     styleUrls: ['app/shared/screen-dimmer/screen-dimmer.component.css'],  
     animations: [
       trigger('dimmerOn', [
-        state('false', style({opacity: 0, zIndex: -1})),
-        state('true', style({opacity: .6, zIndex: 999})),
-          transition('true => false', animate('100ms ease-out')),
-          transition('false => true', animate('100ms ease-in'))
+        state('no', style({opacity: 0, zIndex: -1})),
+        state('yes', style({opacity: .6, zIndex: 999})),
+          transition('* => *', animate('100ms ease-out'))
       ])
     ]
 })
 export class ScreenDimmerComponent implements OnInit, OnDestroy {
     private subscriptions: any = []
-    public dimmerOn: boolean = false
+    public dimmerOn: string = 'no'
     constructor(private sdService: ScreenDimmerService) {}
 
     ngOnInit() {
         this.subscriptions.push(this.sdService.dim.subscribe(dim => {
             if (dim === true) {
-                this.dimmerOn = true
+                this.dimmerOn = 'yes'
             } else {
-                this.dimmerOn = false
+                this.dimmerOn = 'no'
             }
         }));
     }

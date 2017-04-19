@@ -51,6 +51,11 @@ export class EarthquakeService {
             });
     }
 
+    clearData() {
+        this.earthquakeData.next([])
+        this.mapService.clearMap();
+    }
+
     getDataFromWeb(filter: any = {}) {
         this.dataLoading.next(true);
         var scenario = filter['scenariosOnly'];

@@ -1,7 +1,8 @@
 .container {
-	width: 100%;
+	width: 30%;
+    margin-left: 69%;
 	position: fixed;
-	bottom: 10px;
+	bottom: 2px;
 	text-align: center;
     -webkit-animation: fadeIn .5s; /* Safari 4.0 - 8.0 */
     animation: fadeIn .5s;
@@ -15,14 +16,15 @@
 }
 
 .div1, .div2, .div3 {
-    -webkit-animation: mymove 1s infinite; /* Safari 4.0 - 8.0 */
-    animation: mymove 1s infinite;
-    position :relative;
-    width: 15%;
-    height: 50px;
-    background: skyblue;
+    -webkit-animation: mymove 3s infinite; /* Safari 4.0 - 8.0 */
+    animation: mymove 3s infinite;
+    position: relative;
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: #55aaee;
 	display: inline-block;
-    margin:20px;
+    left: 0;
 }
 
 .div1 {
@@ -30,25 +32,51 @@
 }
 
 .div2 {
-    animation-delay: .1s
+    animation-delay: .5s
 }
 
 .div3 {
-    animation-delay: .2s
+    animation-delay: 1s
 }
 
 /* Safari 4.0 - 8.0 */
 @-webkit-keyframes mymove {
-    0%   {transform: translateX(0);}
-    50%  {transform: translateX(98%);}
-    100%  {transform: translateX(0);}
+    0%   {
+        left: 0;
+        opacity: 0
+    }
+    10%   {
+        left: 10%;
+        opacity: 1;
+    }
+    90%   {
+        left: 90%;
+        opacity: 1;
+    }
+    100%  {
+        left: 100%;
+        opacity: 0;
+    }
 }
 
 /* Standard syntax */
 @keyframes mymove {
-    0%   {transform: translateX(0);}
-    50%  {transform: translateX(25%);}
-    100%  {transform: translateX(0);}
+    0%   {
+        left: 0;
+        opacity: 0
+    }
+    10%   {
+        left: 10%;
+        opacity: 1;
+    }
+    90%   {
+        left: 90%;
+        opacity: 1;
+    }
+    100%  {
+        left: 100%;
+        opacity: 0;
+    }
 }
 
 /* Safari 4.0 - 8.0 */

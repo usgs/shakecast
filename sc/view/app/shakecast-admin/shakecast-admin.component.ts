@@ -4,8 +4,8 @@ import { Component,
 import { UploadService } from './upload/upload.service'
 import { fadeAnimation }   from '../shared/animations/animations';
 @Component({
-  selector: 'shakecast-admin',
-  templateUrl: 'app/shakecast-admin/shakecast-admin.component.html',
+    selector: 'shakecast-admin',
+    templateUrl: 'app/shakecast-admin/shakecast-admin.component.html',
     animations: [ fadeAnimation ]
 })
 export class ShakeCastAdminComponent {

@@ -20,6 +20,7 @@ export class GroupService {
     public loadingData = new ReplaySubject(1);
     public groupData = new ReplaySubject(1);
     public selection = new ReplaySubject(1);
+    public dataList: any = [];
     public current_group: Group = null;
     public filter = {};
 
@@ -34,8 +35,15 @@ export class GroupService {
             .map((result: Response) => result.json())
             .subscribe((result: any) => {
                 this.groupData.next(result);
+                this.dataList = result;
                 this.current_group = result[0];
                 this.loadingData.next(false);
+
+                if (this.dataList.length > 0) {
+                    for (var group in this.dataList) {
+                        this.mapService.plotGroup(this.dataList[group])
+                    }
+                }
             })
     }
     

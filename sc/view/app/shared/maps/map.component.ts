@@ -123,11 +123,11 @@ export class MapComponent implements OnInit, OnDestroy {
             this.shakingData = shaking;
 
             if (shaking) {
-                this.totalShaking = shaking['grey'].length + 
-                                        shaking['green'].length + 
-                                        shaking['yellow'].length + 
-                                        shaking['orange'].length + 
-                                        shaking['red'].length;
+                this.totalShaking = shaking['gray'] + 
+                                        shaking['green'] + 
+                                        shaking['yellow'] + 
+                                        shaking['orange'] + 
+                                        shaking['red'];
             } else {
                 this.totalShaking = 0;
             }
@@ -204,7 +204,6 @@ export class MapComponent implements OnInit, OnDestroy {
                                 imageBounds, 
                                 {opacity: .6})
 
-                //this.overlayLayer = L.layerGroup([overlay]);
                 this.overlayLayer.addTo(this.eventLayer);
                 if (this.map.hasLayer(this.eventLayer)) {
                     this.eventLayer.addTo(this.map)
@@ -271,6 +270,48 @@ export class MapComponent implements OnInit, OnDestroy {
             } else {
                 desc = 'No Description'
             }
+
+            var colorTable = `
+            <table class="colors-table" style="width:100%;text-align:center">
+                <tr>
+                    <th>Fragility</th>
+                </tr>
+                <tr>
+                    <td>
+                    <table style="width:100%">
+                        <tr>
+                    `
+
+            if (fac['green'] > 0) {
+                colorTable += `<th style="background-color:green;padding:2px">
+                            ` + fac['metric']+ ': ' + fac['green'] + ` 
+                        </th>`
+            } 
+            
+            if (fac['yellow'] > 0) {
+                colorTable += `<th style="background-color:yellow;padding:2px">
+                            ` + fac['metric']+ ': ' + fac['yellow'] + ` 
+                        </th>`
+            } 
+            
+            if (fac['orange'] > 0) {
+                colorTable += `<th style="background-color:orange;padding:2px">
+                            ` + fac['metric']+ ': ' + fac['orange'] + ` 
+                        </th>`
+            } 
+            
+            if (fac['red'] > 0) {
+                colorTable += `<th style="background-color:red;padding:2px">
+                            ` + fac['metric']+ ': ' + fac['red'] + ` 
+                        </th>`
+            }
+
+            colorTable += `</td>
+                        </tr>
+                    </table>
+                </tr>
+            </table>`
+
             marker['popupContent'] = `<table style="text-align:center;">
                                         <tr>
                                             <th>` + fac.name + ` </th>
@@ -279,6 +320,13 @@ export class MapComponent implements OnInit, OnDestroy {
                                             <td style="font-style:italic;">` +
                                                 desc + `
                                             </td>
+                                        </tr>
+                                        <tr>
+                                            <table class="fragility-table">
+                                                <tr>
+                                                    ` + colorTable + `
+                                                </tr>
+                                            </table>
                                         </tr>
                                     </table>`
         }
@@ -294,16 +342,8 @@ export class MapComponent implements OnInit, OnDestroy {
                                             </tr>
                                             <tr>
                                                 <table style="width:100%;text-align:center;">
-                                                    <tr>
-                                                        <th style="text-align:right;width:50%">` + fac['shaking']['metric'] + `: </th>
-                                                        <td style="text-align:left;width:50%">` + fac['shaking'][fac['shaking']['metric'].toLowerCase()] + `</td>
-                                                    </tr>
-                                                </table>
-                                            </tr>
-                                            <tr>
-                                                <table style="width:80%;margin-left:10%;text-align:center;margin-top:3px;">
-                                                    <tr style="background: ` + fac['shaking']['alert_level'] + `">
-                                                        <th style="color:white;">` + fac['shaking']['alert_level'] + `</th>
+                                                    <tr style="background:` + fac['shaking']['alert_level'] + `">
+                                                        <th style="text-align:center;color:white">` + fac['shaking']['metric'] + `: ` + fac['shaking'][fac['shaking']['metric'].toLowerCase()] + `</th>
                                                     </tr>
                                                 </table>
                                             </tr>
@@ -331,7 +371,7 @@ export class MapComponent implements OnInit, OnDestroy {
 
     plotGroup(group: any) {
         var groupLayer: any = new L.GeoJSON(group);
-        
+        groupLayer.bindPopup(group['name'])
         this.groupLayers.addLayer(groupLayer);
         this.map.addLayer(this.groupLayers);
         this.map.fitBounds(this.groupLayers.getBounds());
@@ -376,6 +416,7 @@ export class MapComponent implements OnInit, OnDestroy {
 
         this.eventMarkers = [];
         this.facilityMarkers = [];
+        this.totalShaking = 0;
     }
 
     ngOnDestroy() {

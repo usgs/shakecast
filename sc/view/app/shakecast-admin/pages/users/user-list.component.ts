@@ -15,7 +15,7 @@ declare var _: any;
 @Component({
     selector: 'user-list',
     templateUrl: 'app/shakecast-admin/pages/users/user-list.component.html',
-    styleUrls: ['app/shared/css/data-list.css'],
+    styleUrls: ['app/shared/css/data-list.css', 'app/shakecast-admin/pages/users/user-list.component.css'],
     animations: [
       trigger('selected', [
         state('true', style({transform: 'translateY(-10px)'})),
@@ -48,11 +48,13 @@ export class UserListComponent implements OnInit, OnDestroy {
         this.subscriptions.push(this.userService.userData.subscribe(data => {
             this.dataList = data;
             for (var user in this.dataList) {
-                this.dataList[user].selected = false;
-                this.selected = this.dataList[0];
-                this.selected.selected = true;
-                this.oldData = JSON.parse(JSON.stringify(this.dataList));
+                this.dataList[user]['selected'] = false;
             }
+
+            this.selected = this.dataList[0];
+            this.selected['selected'] = true;
+            this.oldData = JSON.parse(JSON.stringify(this.dataList));
+            this.clickData(this.dataList[0]);
         }));
 
         this.subscriptions.push(this.userService.loadingData.subscribe(loading => {
@@ -72,7 +74,7 @@ export class UserListComponent implements OnInit, OnDestroy {
     }
 
     clickData(data: any) {
-        this.selected.selected = false;
+        this.selected['selected'] = false;
         data.selected = true;
         this.selected = data;
         this.userService.current_user = data;
@@ -81,11 +83,11 @@ export class UserListComponent implements OnInit, OnDestroy {
 
     editUser(user: User) {
         if (this.editing) {
-            this.editing.editing = false;
+            this.editing['editing'] = false;
         }
 
         this.editing = user;
-        this.editing.editing = true;
+        this.editing['editing'] = true;
     }
 
     saveUsers() {
@@ -95,7 +97,7 @@ export class UserListComponent implements OnInit, OnDestroy {
     @HostListener('window:keydown', ['$event'])
     keyboardInput(event: any) {
         if (event.keyCode === 13) {
-            this.editing.editing = false;
+            this.editing['editing'] = false;
         }
     }
 
