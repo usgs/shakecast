@@ -3,7 +3,6 @@ import win32service
 import win32event
 import servicemanager
 import socket
-import time
 import logging
 import os, sys
 import traceback
@@ -55,7 +54,8 @@ class ShakecastServer (win32serviceutil.ServiceFramework):
         )
         self.main()
 
-    def main(self):
+    @staticmethod
+    def main():
         logging.info(' ** Starting ShakeCast Server ** ')
         try:
             sc_server = Server()

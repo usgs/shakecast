@@ -529,6 +529,7 @@ def inspection_notification(notification=Notification(),
     '''
     shakemap = notification.shakemap
     group = notification.group
+    error = ''
     try:
         not_builder = NotificationBuilder()
         html = not_builder.build_insp_html(shakemap)
@@ -587,6 +588,9 @@ def inspection_notification(notification=Notification(),
         except Exception as e:
             error = str(e)
             notification.status = 'send failed'
+
+        return {'status': notification.status,
+                'error': error}
 
 def download_scenario(shakemap_id=None, scenario=False):
     if shakemap_id is not None:
