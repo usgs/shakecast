@@ -7,12 +7,7 @@ import time
 import logging
 import os, sys
 import traceback
-
-logging.basicConfig(
-    filename = 'c:\\Temp\\sc-service.log',
-    level = logging.DEBUG, 
-    format = '[ShakeCast] %(levelname)-7.7s %(message)s'
-)
+import urllib2
 
 path = os.path.dirname(os.path.abspath(__file__))
 path = path.split(os.sep)
@@ -24,12 +19,18 @@ app_dir = os.path.normpath(os.sep.join(path))
 if app_dir not in sys.path:
     sys.path += [app_dir]
 
-from app.server import Server
-from ui import UI
+path += ['logs', 'sc-web-server.log']
+logging.basicConfig(
+    filename = os.path.normpath(os.sep.join(path)),
+    level = logging.DEBUG, 
+    format = '[ShakeCast - Web] %(levelname)-7.7s %(message)s'
+)
+
+from web_server import app
 
 class ShakecastServer (win32serviceutil.ServiceFramework):
-    _svc_name_ = "sc_server"
-    _svc_display_name_ = "ShakeCast Server"
+    _svc_name_ = "sc_web_server"
+    _svc_display_name_ = "ShakeCast Web Server"
     
     def __init__(self,args):
         win32serviceutil.ServiceFramework.__init__(self,args)
@@ -40,11 +41,13 @@ class ShakecastServer (win32serviceutil.ServiceFramework):
     def SvcStop(self):
         self.ReportServiceStatus(win32service.SERVICE_STOP_PENDING)
         win32event.SetEvent(self.stop_event)
-        logging.info('Stopping ShakeCast Server...')
         self.stop_requested = True
 
-        ui = UI()
-        ui.send('shutdown')
+        # Send the http request to shutdown the server
+        try:
+            urllib2.urlopen('http://localhost:80/shutdown')
+        except Exception:
+            urllib2.urlopen('http://localhost:5000/shutdown')
 
     def SvcDoRun(self):
         servicemanager.LogMsg(
@@ -55,16 +58,9 @@ class ShakecastServer (win32serviceutil.ServiceFramework):
         self.main()
 
     def main(self):
-        logging.info(' ** Starting ShakeCast Server ** ')
+        logging.info(' ** Starting ShakeCast Web Server ** ')
         try:
-            sc_server = Server()
-
-            # start shakecast
-            sc_server.start_shakecast()
-            
-            while sc_server.stop_server is False:
-                sc_server.stop_loop = False
-                sc_server.loop()
+            app.run(host='0.0.0.0', port=80)
 
         except Exception as e:
             exc_tb = sys.exc_info()[2]
