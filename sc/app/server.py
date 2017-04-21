@@ -9,8 +9,10 @@ import functions as f
 from util import *
 import logging
 
+split_sc_dir = sc_dir().split(os.sep)
+log_path = split_sc_dir + ['logs', 'sc-service.log']
 logging.basicConfig(
-    filename = 'c:\\Temp\\sc-server.log',
+    filename = os.path.normpath(os.sep.join(log_path)),
     level = logging.DEBUG, 
     format = '[ShakeCast Server] %(levelname)-7.7s %(message)s'
 )
