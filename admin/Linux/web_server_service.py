@@ -3,8 +3,7 @@ import logging
 import os, sys
 import traceback
 import time
-from multiprocessing import Process
-
+import urllib2
 path = os.path.dirname(os.path.abspath(__file__))
 path = path.split(os.sep)
 del path[-1]
@@ -39,18 +38,16 @@ class ShakecastWebServer(object):
             urllib2.urlopen('http://localhost:5000/shutdown')
 
     def start(self):
-        p = Process(target=self.main)
-        p.daemon = True
-        p.start()
-        #time.sleep(3)
+        self.main()
 
     @staticmethod
     def main():
         logging.info(' ** Starting ShakeCast Web Server ** ')
         try:
-            app.run(host='0.0.0.0', port=80, processes=3)
+            app.run(host='0.0.0.0', port=80, threaded=True)
 
         except Exception as e:
+            logging.info('FAILED')
             exc_tb = sys.exc_info()[2]
             filename, line_num, func_name, text = traceback.extract_tb(exc_tb)[-1]
             logging.info('{}: {} - line: {}\nOriginated: {} {} {} {}'.format(type(e), 
@@ -62,6 +59,22 @@ class ShakecastWebServer(object):
                                                                              text))
         return
 
+def invalid():
+    print '''
+    Invalid Command:
+        start - Starts the ShakeCast Web Server
+        stop - Stops the ShakeCast Web Server
+    '''
+
 if __name__ == '__main__':
-    server = ShakecastWebServer()
-    server.start()
+    if len(sys.argv) > 1:
+        if sys.argv[1] == "start":
+            server = ShakecastWebServer()
+            server.start()
+        elif sys.argv[1] == "stop":
+            server = ShakecastWebServer()
+            server.stop()
+        else:
+            invalid()
+    else:
+        invalid()

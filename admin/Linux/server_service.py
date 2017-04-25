@@ -36,8 +36,7 @@ class ShakecastServer(object):
         ui.send('shutdown')
 
     def start(self):
-        server = Process(target=self.main)
-        server.start()
+        self.main()
 
     @staticmethod
     def main():
@@ -63,3 +62,23 @@ class ShakecastServer(object):
                                                                              func_name, 
                                                                              text))
         return
+
+def invalid():
+    print '''
+    Invalid Command:
+        start - Starts the ShakeCast Server
+        stop - Stops the ShakeCast Server
+    '''
+
+if __name__ == '__main__':
+    if len(sys.argv) > 1:
+        if sys.argv[1] == "start":
+            server = ShakecastServer()
+            server.start()
+        elif sys.argv[1] == "stop":
+            server = ShakecastServer()
+            server.stop()
+        else:
+            invalid()
+    else:
+        invalid()
