@@ -1,13 +1,17 @@
 import sys
 import os
 
+path = os.path.dirname(os.path.abspath(__file__))
+path = path.split(os.sep)
+path += ['admin', 'Linux']
+path = os.sep.join(path)
 def start():
-    os.system('python admin/Linux/web_server_service.py start &')
-    os.system('python admin/Linux/server_service.py start &')
+    os.system('python' + path + os.sep + 'web_server_service.py start &')
+    os.system('python' + path + os.sep + 'server_service.py start &')
 
 def stop():
-    os.system('python admin/Linux/web_server_service.py stop')
-    os.system('python admin/Linux/server_service.py stop')
+    os.system('python' + path + os.sep + 'web_server_service.py stop')
+    os.system('python' + path + os.sep + 'server_service.py stop')
 
 
 def invalid():
