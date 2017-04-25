@@ -6,12 +6,12 @@ path = path.split(os.sep)
 path += ['admin', 'Linux']
 path = os.sep.join(path)
 def start():
-    os.system('python' + path + os.sep + 'web_server_service.py start &')
-    os.system('python' + path + os.sep + 'server_service.py start &')
+    os.system('python ' + path + os.sep + 'web_server_service.py start &')
+    os.system('python ' + path + os.sep + 'server_service.py start &')
 
 def stop():
-    os.system('python' + path + os.sep + 'web_server_service.py stop')
-    os.system('python' + path + os.sep + 'server_service.py stop')
+    os.system('python ' + path + os.sep + 'web_server_service.py stop')
+    os.system('python ' + path + os.sep + 'server_service.py stop')
 
 
 def invalid():
