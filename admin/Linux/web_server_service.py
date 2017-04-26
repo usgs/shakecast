@@ -35,8 +35,11 @@ class ShakecastWebServer(object):
         try:
             urllib2.urlopen('http://localhost:80/shutdown')
         except Exception:
-            urllib2.urlopen('http://localhost:5000/shutdown')
-
+            try:
+                urllib2.urlopen('http://localhost:5000/shutdown')
+            except Exception:
+                pass
+        
     def start(self):
         self.main()
 

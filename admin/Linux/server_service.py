@@ -36,7 +36,11 @@ class ShakecastServer(object):
         ui.send('shutdown')
 
     def start(self):
-        self.main()
+        ui = UI()
+        if ui.server_check() is False:
+            self.main()
+        else:
+            logging.info('Startup Failed -- ShakeCast Server is already started')
 
     @staticmethod
     def main():
