@@ -1,11 +1,13 @@
 import sys
 import os
 
-path = os.path.dirname(os.path.abspath(__file__))
-path = path.split(os.sep)
+top_path = os.path.dirname(os.path.abspath(__file__))
+path = top_path.split(os.sep)
 path += ['admin', 'Linux']
+top_path = os.sep.join(top_path)
 path = os.sep.join(path)
 def start():
+    os.system('chmod 664 ' + top_path)
     os.system('python ' + path + os.sep + 'web_server_service.py start &')
     os.system('python ' + path + os.sep + 'server_service.py start &')
 
