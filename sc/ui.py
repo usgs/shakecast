@@ -223,28 +223,29 @@ class UI(object):
         """
         Check our connection to the Server
         """
-        print 'Checking for server... ',
+        #print 'Checking for server... ',
         try:
             self.connect_to_server()
-            print 'connected'
+            return True
+            #print 'connected'
         except:
-            print 'None available.'
-            self.start_server()
+            return False
+            #print 'None available.'
     
         
-    def start_server(self):
-        """
-        Starts a Server if there isn't one running
-        """
-        print 'Starting server...'
-        try:
-            sc_server = Server()
-            sc_server.silent = True
-            sc_server.ui_open = True
-            server_thread = New_Thread(func=sc_server.loop)
-            server_thread.start()
-        except:
-            print 'failed'
+    # def start_server(self):
+    #     """
+    #     Starts a Server if there isn't one running
+    #     """
+    #     print 'Starting server...'
+    #     try:
+    #         sc_server = Server()
+    #         sc_server.silent = True
+    #         sc_server.ui_open = True
+    #         server_thread = New_Thread(func=sc_server.loop)
+    #         server_thread.start()
+    #     except:
+    #         print 'failed'
         
         
 if __name__ == '__main__':
