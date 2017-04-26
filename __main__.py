@@ -4,7 +4,6 @@ import os
 top_path = os.path.dirname(os.path.abspath(__file__))
 path = top_path.split(os.sep)
 path += ['admin', 'Linux']
-top_path = os.sep.join(top_path)
 path = os.sep.join(path)
 def start():
     os.system('chmod 664 ' + top_path)
