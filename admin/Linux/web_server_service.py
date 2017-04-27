@@ -29,7 +29,8 @@ class ShakecastWebServer(object):
     def __init__(self):
         socket.setdefaulttimeout(60)
 
-    def stop(self):
+    @staticmethod
+    def stop():
         # Send the http request to shutdown the server
         try:
             urllib2.urlopen('http://localhost:80/shutdown')

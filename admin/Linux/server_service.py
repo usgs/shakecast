@@ -30,7 +30,8 @@ class ShakecastServer(object):
     def __init__(self):
         socket.setdefaulttimeout(60)
 
-    def stop(self):
+    @staticmethod
+    def stop():
         ui = UI()
         ui.send('shutdown')
 
