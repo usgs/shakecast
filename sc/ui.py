@@ -31,6 +31,7 @@ class UI(object):
         self.conns = []
         self._get_message = True
         self.print_queue = []
+        self.port = 1981
         
     def start(self):
         """
@@ -90,7 +91,7 @@ class UI(object):
                 #######################################################
                 ################### API Translation ###################
                 
-                if msg == 'shutdown':
+                if msg == 'shutdown' and self.port != 80 and self.port != 5000:
                     to_server = "{'shutdown': {'func': self.shutdown}}"
                 elif msg == 'info':
                     to_server = "{'info': {'func': self.info}}"
@@ -143,7 +144,7 @@ class UI(object):
         Attempt to connect to the server
         """
         self.conn = socket.socket()
-        self.conn.connect(('localhost', 1981))
+        self.conn.connect(('localhost', self.port))
         
     def get_message(self):
         """
@@ -222,28 +223,29 @@ class UI(object):
         """
         Check our connection to the Server
         """
-        print 'Checking for server... ',
+        #print 'Checking for server... ',
         try:
             self.connect_to_server()
-            print 'connected'
+            return True
+            #print 'connected'
         except:
-            print 'None available.'
-            self.start_server()
+            return False
+            #print 'None available.'
     
         
-    def start_server(self):
-        """
-        Starts a Server if there isn't one running
-        """
-        print 'Starting server...'
-        try:
-            sc_server = Server()
-            sc_server.silent = True
-            sc_server.ui_open = True
-            server_thread = New_Thread(func=sc_server.loop)
-            server_thread.start()
-        except:
-            print 'failed'
+    # def start_server(self):
+    #     """
+    #     Starts a Server if there isn't one running
+    #     """
+    #     print 'Starting server...'
+    #     try:
+    #         sc_server = Server()
+    #         sc_server.silent = True
+    #         sc_server.ui_open = True
+    #         server_thread = New_Thread(func=sc_server.loop)
+    #         server_thread.start()
+    #     except:
+    #         print 'failed'
         
         
 if __name__ == '__main__':

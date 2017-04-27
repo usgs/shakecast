@@ -759,6 +759,17 @@ def get_inventory():
     Session.remove()    
     return facilities_json
 
+def shutdown_server():
+    func = request.environ.get('werkzeug.server.shutdown')
+    if func is None:
+        raise RuntimeError('Not running with the Werkzeug Server')
+    func()
+
+@app.route('/shutdown')
+def shutdown():
+    shutdown_server()
+    return 'Server shutting down...'
+
 @app.errorhandler(404)
 def page_not_found(error):
     return render_template('index.html')
@@ -769,10 +780,9 @@ app.config['EARTHQUAKES'] = os.path.join(sc_dir(), 'data')
 app.config['MESSAGES'] = {}
 xml_files = UploadSet('xmlfiles', ('xml',))
 configure_uploads(app, (xml_files,))
-
+ui = UI()
 
 if __name__ == '__main__':
-    ui = UI()
     if len(sys.argv) > 1:
         if sys.argv[1] == '-d':
             # run in debug mode

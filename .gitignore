@@ -14,3 +14,4 @@ templates/new_event/*
 *~
 *.db
 conf/sc_back.json
+*.DS_Store

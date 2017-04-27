@@ -7,6 +7,15 @@ from newthread import New_Thread
 from task import Task
 import functions as f
 from util import *
+import logging
+
+split_sc_dir = sc_dir().split(os.sep)
+log_path = split_sc_dir + ['logs', 'sc-service.log']
+logging.basicConfig(
+    filename = os.path.normpath(os.sep.join(log_path)),
+    level = logging.DEBUG, 
+    format = '[ShakeCast Server] %(levelname)-7.7s %(message)s'
+)
 
 class Server(object):
     
@@ -67,6 +76,7 @@ class Server(object):
                 
             except:
                 self.make_print('failed')
+                logging.info('Failed to get port for server: {}'.format(self.port))
                 time.sleep(2)
                 
             attempts += 1
@@ -208,7 +218,7 @@ class Server(object):
                 server_log = 'Task: {} :: failed to run \n{}: {}'.format(task.name,
                                                                          type(task.error),
                                                                          task.error)
-                
+
             self.log(message=task.output.get('log', ''),
                      which='shakecast')
             self.log(message=task.output.get('log', ''),
@@ -223,6 +233,10 @@ class Server(object):
 
         else:
             task.status = 'stopped'
+
+        logging.info('{}: \n\tSTATUS: {} \n\tOUTPUT: {}'.format(task.name,
+                                                                task.status,
+                                                                task.output))
             
         if task.db_use is True:
             self.db_open = True
@@ -264,13 +278,13 @@ class Server(object):
         
         # print information to the terminal... we'll change change
         # this to print to a log most likely...
-        os.system('cls' if os.name == 'nt' else 'clear')
-        print 'ShakeCast Server \n'
-        print 'Looping: %s' % time.time()
+        #os.system('cls' if os.name == 'nt' else 'clear')
+        #print 'ShakeCast Server \n'
+        #print 'Looping: %s' % time.time()
         #print 'QUEUE: %s' % [str(task) for task in self.queue]
-        print 'QUEUE: %s' % self.queue
-        print 'Connections: %s' % self.connections
-        print '\n%s' % self.print_out
+        #print 'QUEUE: %s' % self.queue
+        #print 'Connections: %s' % self.connections
+        #print '\n%s' % self.print_out
         
     def make_print(self, add_str):
         """
@@ -278,10 +292,11 @@ class Server(object):
         loops at 15 lines for the print statement
         """
         
-        if len(self.print_out.splitlines()) < 15:
-            self.print_out += '\n' + add_str
-        else:
-            self.print_out = '\n' + add_str
+        # if len(self.print_out.splitlines()) < 15:
+        #     self.print_out += '\n' + add_str
+        # else:
+        #     self.print_out = '\n' + add_str
+        return
         
     def log(self, message='', which=''):
         """
@@ -332,6 +347,7 @@ class Server(object):
                 'message': msg}
     
     def start_shakecast(self):
+        logging.info('Starting ShakeCast Server... ')
         try:
             status = ''
             message = ''
@@ -438,19 +454,17 @@ class Server(object):
         Shuts down the server allowing currently running tasks to
         finish
         """
-        
         self.stop_server = True
         self.stop()
-        self.make_print('Shutting down server...')
+        logging.info('ShakeCast Server Stopped...')
         return {'status': 'finished',
                 'message': 'Stopping server...'}
             
 if __name__ == '__main__':
+    logging.info('start')
     sc_server = Server()
-
     # start shakecast
-    if len(sys.argv) > 1 and sys.argv[1] == 'start':
-        sc_server.start_shakecast()
+    sc_server.start_shakecast()
     
     while sc_server.stop_server is False:
         sc_server.stop_loop = False
