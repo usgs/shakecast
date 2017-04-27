@@ -2,7 +2,6 @@ import socket
 import logging
 import os, sys
 import traceback
-from multiprocessing import Process
 
 path = os.path.dirname(os.path.abspath(__file__))
 path = path.split(os.sep)

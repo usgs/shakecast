@@ -2,7 +2,6 @@ import socket
 import logging
 import os, sys
 import traceback
-import time
 import urllib2
 path = os.path.dirname(os.path.abspath(__file__))
 path = path.split(os.sep)
