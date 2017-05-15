@@ -224,7 +224,7 @@ class TestFull(unittest.TestCase):
         download_scenario('bssc2014nsanandreassaosansap_m8p04_se', scenario=True)
         # download a second time to hit more code
         download_scenario('bssc2014nsanandreassaosansap_m8p04_se', scenario=True)
-
+        
         session = Session()
         sm = session.query(ShakeMap).filter(ShakeMap.shakemap_id == 'bssc2014nsanandreassaosansap_m8p04_se_scenario').first()
         sm.status = 'new'
@@ -351,12 +351,12 @@ class TestFull(unittest.TestCase):
 
     def step15_CheckUpdate(self):
         s = SoftwareUpdater()
-        s.json_url = 'https://dslosky-usgs.github.io/shakecast/update_test.json'
+        s.json_url = 'https://raw.githubusercontent.com/usgs/shakecast/update-feed/update_test.json'
         s.check_update(testing=True)
     
     def step16_Update(self):
         s = SoftwareUpdater()
-        s.json_url = 'https://dslosky-usgs.github.io/shakecast/update_test.json'
+        s.json_url = 'https://raw.githubusercontent.com/usgs/shakecast/update-feed/update_test.json'
         s.update(testing=True)
 
     def step17_NotifyAdmin(self):
