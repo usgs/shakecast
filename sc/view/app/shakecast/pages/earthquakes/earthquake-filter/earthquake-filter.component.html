@@ -1,19 +1,39 @@
-<div class="filter-button"><h3 (click)="showFilter()">FILTER</h3></div>
+<div class="form-container">
+    <input type="checkbox" [(ngModel)]="filter.shakemap">
+    <label>Events with ShakeMaps</label>
+    <div *ngIf="filter?.shakemap">
+        <input type="checkbox" [(ngModel)]="filter.facilities">
+        <label>Events with affected facilities</label>
+    </div>
 
-<div class="filter-form" [@filterShown]="filterShown">
-    <p class="exit" (click)="cancel()">X</p>
-    <h2>Earthquake Filter</h2>
-    <input type="checkbox" (change)="filter.shakemap=!filter.shakemap" [(ngModel)]="filter.shakemap">Require Shakemap
+    <br>
+    <input type="radio" 
+            name="timeframe" 
+            [(ngModel)]="filter.timeframe" 
+            value="day">
+    <label>Day</label>
+    <input type="radio" 
+            name="timeframe" 
+            [(ngModel)]="filter.timeframe" 
+            value="week">
+    <label>Week</label>
+    <input type="radio" 
+            name="timeframe" 
+            [(ngModel)]="filter.timeframe" 
+            value="month">
+    <label>Month</label>
+    <input type="radio" 
+            name="timeframe" 
+            [(ngModel)]="filter.timeframe" 
+            value="all">
+    <label>All time</label>
 
-    <select *ngIf="filter.shakemap === true" [(ngModel)]="filter.facilities">
-        <option value="true">Affected Facilities</option>
-        <option value="false">All ShakeMaps</option>
-    </select>
-    
-    <input [(ngModel)]="filter.latMin" placeholder="Min Latitude">
-    <input [(ngModel)]="filter.latMax" placeholder="Max Latitude">
-    <input [(ngModel)]="filter.lonMin" placeholder="Min Longitude">
-    <input [(ngModel)]="filter.lonMax" placeholder="Max Longitude">
+    <div class="input-container">
+        <input [(ngModel)]="filter.latMin" placeholder="Min Latitude">
+        <input [(ngModel)]="filter.latMax" placeholder="Max Latitude">
+        <input [(ngModel)]="filter.lonMin" placeholder="Min Longitude">
+        <input [(ngModel)]="filter.lonMax" placeholder="Max Longitude">
+    </div>
 
-    <button (click)="search()">Search</button>
+    <h2 class="button" (click)="search()">Search</h2>
 </div>

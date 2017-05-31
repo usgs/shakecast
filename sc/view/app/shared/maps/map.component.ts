@@ -4,7 +4,7 @@ import { Marker } from './map.service';
 import { ShakemapService } from './shakemap.service'
 import { MapService } from './map.service'
 import { FacilityService } from '../../shakecast-admin/pages/facilities/facility.service';
-
+import { NotificationsService } from 'angular2-notifications';
 declare var L: any;
 declare var _: any;
 
@@ -41,6 +41,7 @@ export class MapComponent implements OnInit, OnDestroy {
     constructor(private mapService: MapService,
                 private smService: ShakemapService,
                 private facService: FacilityService,
+                private notService: NotificationsService,
                 private _router: Router) {}
 
     ngOnInit() {
@@ -199,14 +200,18 @@ export class MapComponent implements OnInit, OnDestroy {
                 var imageUrl = 'api/shakemaps/' + sm.shakemap_id + '/overlay';
                 var imageBounds = [[sm.lat_min, sm.lon_min], [sm.lat_max, sm.lon_max]];
 
-                
-                this.overlayLayer = L.imageOverlay(imageUrl, 
-                                imageBounds, 
-                                {opacity: .6})
-
-                this.overlayLayer.addTo(this.eventLayer);
-                if (this.map.hasLayer(this.eventLayer)) {
-                    this.eventLayer.addTo(this.map)
+                try {
+                    this.overlayLayer = L.imageOverlay(imageUrl, 
+                                    imageBounds, 
+                                    {opacity: .6})
+                                
+                    this.overlayLayer.addTo(this.eventLayer);
+                    if (this.map.hasLayer(this.eventLayer)) {
+                        this.eventLayer.addTo(this.map)
+                    }
+                }
+                catch(e) {
+                    this.notService.alert('Shakemap Error', 'Unable to retreive shakemap')
                 }
             }
         });
