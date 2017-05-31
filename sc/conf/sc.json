@@ -27,7 +27,7 @@
     }, 
     "Server": {
         "update": {
-            "json_url": "https://raw.github.com/shakecast/update-feed/update.json", 
+            "json_url": "https://raw.github.com/usgs/shakecast/update-feed/update.json", 
             "update_version": "1.0.3", 
             "software_version": "1.0.3", 
             "admin_notified": true

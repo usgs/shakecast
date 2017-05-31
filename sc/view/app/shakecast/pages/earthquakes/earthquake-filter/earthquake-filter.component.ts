@@ -22,13 +22,15 @@ import { NotificationsService } from 'angular2-notifications'
       ])
     ]
 })
-export class EarthquakeFilter {
+export class EarthquakeFilter implements OnInit {
     public filterShown = false;
 
     public filter: filter = {
         shakemap: true,
-        facilities: false
+        facilities: false,
+        timeframe: 'day'
     }
+
     public options = {
         timeOut: 0,
         lastOnBottom: true,
@@ -41,6 +43,10 @@ export class EarthquakeFilter {
     constructor(private eqService: EarthquakeService,
                 private sdService: ScreenDimmerService,
                 private notService: NotificationsService) {}
+
+    ngOnInit() {
+        this.search()
+    }
 
     search() {
         this.eqService.getData(this.filter);
@@ -70,4 +76,5 @@ export interface filter  {
     lonMax?: number;
     lonMin?: number;
     groupAffected?: string;
+    timeframe?: string;
 }

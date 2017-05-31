@@ -17,7 +17,7 @@ from email.MIMEImage import MIMEImage
 from email.MIMEMultipart import MIMEMultipart
 from util import *
 import types
-from orm import Session, Event, ShakeMap, Product, User, DeclarativeMeta
+from orm import Session, Event, ShakeMap, Product, User, DeclarativeMeta, Group
 modules_dir = os.path.join(sc_dir(), 'modules')
 if modules_dir not in sys.path:
     sys.path += [modules_dir]
@@ -168,6 +168,18 @@ class ProductGrabber(object):
             event.lat = event_coords[1]
             event.depth = event_coords[2]
             
+            keep_event = False
+            groups = session.query(Group).all()
+            if len(groups) > 0:
+                for group in groups:
+                    if group.point_inside(event):
+                        keep_event = True
+            else:
+                keep_event = True
+            
+            if keep_event is False:
+                continue
+
             if old_shakemaps:
                 event.shakemaps = old_shakemaps
             if old_notifications:
@@ -186,7 +198,7 @@ class ProductGrabber(object):
         Session.remove()
         # print event_str
         return new_events, event_str
-    
+
     @staticmethod
     def get_event_map(event):
         if not os.path.exists(event.directory_name):

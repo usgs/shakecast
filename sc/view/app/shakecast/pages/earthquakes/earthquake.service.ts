@@ -45,10 +45,15 @@ export class EarthquakeService {
         params.set('filter', JSON.stringify(filter))
         this._http.get('/api/earthquake-data', {search: params})
             .map((result: Response) => result.json())
-            .subscribe((result: any) => {
-                this.earthquakeData.next(result.data);
-                this.dataLoading.next(false);
-            });
+            .subscribe(
+                (result: any) => {
+                    this.earthquakeData.next(result.data);
+                    this.dataLoading.next(false);
+                },
+                (err: any) => {
+                    this.toastService.alert('Event Error', 'Unable to retreive some event information')
+                }
+            );
     }
 
     clearData() {
