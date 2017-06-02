@@ -8,6 +8,7 @@ import { Component,
          animate } from '@angular/core';
 
 import { GroupService, Group } from './group.service'
+declare var _: any;
 
 @Component({
     selector: 'group-list',
@@ -32,21 +33,47 @@ import { GroupService, Group } from './group.service'
 export class GroupListComponent implements OnInit, OnDestroy {
     public loadingData: boolean = false
     public groupData: any = [];
-    public filter: filter = {};
+    public userGroupData: any = [];
+    public noUserGroupData: any = [];
+    public filter: any = {};
     public selected: Group;
     private subscriptions: any[] = [];
-
+    private _this: any = this
+    
     constructor(private groupService: GroupService) {}
     ngOnInit() {
-        this.subscriptions.push(this.groupService.groupData.subscribe(data => {
+        this.subscriptions.push(this.groupService.groupData.subscribe((data: any) => {
             this.groupData = data;
             for (var group in this.groupData) {
                 this.groupData[group].selected = false;
                 this.selected = this.groupData[0];
-                this.selected.selected = true;
-                
-                this.groupService.clearMap();
+                this.selected['selected'] = true;
+            }
+            this.groupService.clearMap();
+
+            if (this.groupData.length > 0) {
                 this.groupService.plotGroup(this.groupData[0])
+            }
+        }));
+        this.subscriptions.push(this.groupService.userGroupData.subscribe((data: any) => {
+            this.userGroupData = data;
+            for (var group in this.userGroupData) {
+                this.userGroupData[group].selected = false;
+                this.selected = this.userGroupData[0];
+                this.selected['selected'] = true;
+
+            }
+            
+            // build non-user data
+            this.noUserGroupData = [];
+            for (var group in this.groupData) {
+                if (!_.findWhere(this.userGroupData, {'name': this.groupData[group]['name']})){
+                    this.noUserGroupData.push(this.groupData[group])
+                }
+            }
+            this.groupService.clearMap();
+            if (this.userGroupData.length > 0) {
+                this.groupService.plotGroup(this.userGroupData[0])
             }
         }));
 /*
@@ -61,7 +88,7 @@ export class GroupListComponent implements OnInit, OnDestroy {
             this.facService.selectedFacs = this.selectedFacs;
         }));
 */
-        this.subscriptions.push(this.groupService.loadingData.subscribe(loading => {
+        this.subscriptions.push(this.groupService.loadingData.subscribe((loading: any) => {
             this.loadingData = loading
         }));
 
@@ -69,8 +96,8 @@ export class GroupListComponent implements OnInit, OnDestroy {
     }
 
     clickGroup(group: Group) {
-        this.selected.selected = false;
-        group.selected = true;
+        this.selected['selected'] = false;
+        group['selected'] = true;
         this.selected = group;
         this.groupService.current_group = group;
         this.groupService.clearMap();

@@ -11,6 +11,8 @@ import { NotificationService } from '../dashboard/notification-dash/notification
 import { NotificationsService } from 'angular2-notifications'
 import { FacilityService } from '../../../shakecast-admin/pages/facilities/facility.service.ts'
 
+declare var _: any;
+
 export interface Earthquake {
     shakecast_id: string;
     event_id: string;
@@ -28,6 +30,7 @@ export class EarthquakeService {
     public dataLoading = new ReplaySubject(1);
     public plotting = new ReplaySubject(1);
     public showScenarioSearch = new ReplaySubject(1);
+    public current: any = []
     public filter = {};
     public configs: any = {clearOnPlot: 'all'};
     public selected: Earthquake = null;
@@ -40,6 +43,9 @@ export class EarthquakeService {
                 private toastService: NotificationsService) {}
 
     getData(filter: any = {}) {
+        if (this.filter) {
+            this.filter = filter
+        }
         this.dataLoading.next(true);
         let params = new URLSearchParams();
         params.set('filter', JSON.stringify(filter))
@@ -47,8 +53,15 @@ export class EarthquakeService {
             .map((result: Response) => result.json())
             .subscribe(
                 (result: any) => {
-                    this.earthquakeData.next(result.data);
-                    this.dataLoading.next(false);
+                    console.log('CURRENT: ')
+                    console.log(this.current)
+                    console.log('NEW: ')
+                    console.log(result.data)
+                    if (!_.isEqual(this.current, result.data)) {
+                        this.current = result.data
+                        this.earthquakeData.next(result.data);
+                        this.dataLoading.next(false);
+                    }
                 },
                 (err: any) => {
                     this.toastService.alert('Event Error', 'Unable to retreive some event information')

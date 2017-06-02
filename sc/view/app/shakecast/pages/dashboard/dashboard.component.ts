@@ -6,6 +6,7 @@ import { EarthquakeService } from '../earthquakes/earthquake.service'
 import { FacilityService } from '../../../shakecast-admin/pages/facilities/facility.service'
 import { TitleService } from '../../../title/title.service';
 
+import { Observable } from 'rxjs/Observable';
 import { showLeft, showRight, showBottom } from '../../../shared/animations/animations';
 
 @Component({
@@ -41,6 +42,11 @@ export class DashboardComponent implements OnInit, OnDestroy {
           this.facilityData = facs;
       }));
       this.eqService.getData({filter: {'timeframe': 'day'}});
+
+      Observable.interval(60000)
+        .subscribe((x: any) => {
+            this.eqService.getData(this.eqService.filter);
+        });
   }
 
   toggleLeft() {

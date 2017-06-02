@@ -1,20 +1,45 @@
 <div class="data-list-inner-container">
     <div *ngIf="!loadingData">
         <div *ngIf="groupData.length > 0">
-            <div class="eq" [@selected]="group.selected" *ngFor="let group of groupData" (click)="clickGroup(group)">
-                <div [@headerSelected]="group.selected" class="data-header">
-                    <h3>{{group.name}}</h3>
-                </div>
-                <div class="data-body">
-                    <div class="data-info-container">
-                        <table>
-                            <tr>
-                                <th>Facility Type:</th><td>{{ group.facility_type }}</td>
-                            </tr>
-                        </table>
+
+            <h3 class="title">Subscribed to:</h3>
+            <div *ngIf="userGroupData.length > 0">
+                <div class="data" [@selected]="group.selected" *ngFor="let group of userGroupData" (click)="clickGroup(group)">
+                    <div [@headerSelected]="group.selected" class="data-header">
+                        <h3>{{group.name}}</h3>
+                    </div>
+                    <div class="data-body">
+                        <div class="data-info-container">
+                            <table>
+                                <tr>
+                                    <th>Facility Type:</th><td>{{ group.facility_type }}</td>
+                                </tr>
+                            </table>
+                        </div>
                     </div>
                 </div>
             </div>
+            <div *ngIf="userGroupData.length === 0">
+                <h3 class="title">NONE</h3>
+            </div>
+
+            <div *ngIf="noUserGroupData.length > 0">
+                <h3 class="title">Not Subscribed to:</h3>
+                <div class="data" [@selected]="group.selected" *ngFor="let group of noUserGroupData" (click)="clickGroup(group)">
+                    <div [@headerSelected]="group.selected" class="data-header">
+                        <h3>{{group.name}}</h3>
+                    </div>
+                    <div class="data-body">
+                        <div class="data-info-container">
+                            <table>
+                                <tr>
+                                    <th>Facility Type:</th><td>{{ group.facility_type }}</td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            <div *ngIf="groupData.length > 0">
         </div>
         <div *ngIf="groupData.length == 0">
             <h1 class="data-list-no-data">No Groups</h1>
