@@ -6,8 +6,6 @@ summary: "Connecting the DOTs: Implementing ShakeCast across Multiple State Depa
 tags: [collaboration]
 ---
 
-## State Transportation Agencies Partner to Deploy and Enhance ShakeCast
-
 The California Department of Transportation (Caltrans) is organizing and leading the Transportation Pooled Fund (TPF) project, _"Connecting the DOTs: Implementing ShakeCast Across Multiple State Departments of Transportation for Rapid Post-Earthquake Response,"_ study number TPF-5(357).  Ten state Departments of Transportation (DOT) – CA, ID, MO, MS, OK, OR, SC, TX, UT, and WA – have committed funds totaling $450,000.   The project was approved through the Federal Highway Administration (FHWA) in January 2017, and work is anticipated to begin in July 2017.  Additional information can be found on the FHWA's TPF website:   [http://www.pooledfund.org/Details/Study/609](http://www.pooledfund.org/Details/Study/609)
 
 The goal of this TPF project is to bring ShakeCast to the partner state DOTs, while advancing transportation-focused aspects of the tool.  ShakeCast is a post-earthquake emergency alerting system, developed by the United States Geological Survey (USGS) and advanced over the years through subsequent work under Caltrans contracts.  This project will provide a mechanism to actively engage representatives from the state DOTs with common interests in implementing and expanding the application of ShakeCast technologies to improve emergency response capabilities following earthquakes.
