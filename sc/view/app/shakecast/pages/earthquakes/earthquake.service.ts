@@ -53,15 +53,26 @@ export class EarthquakeService {
             .map((result: Response) => result.json())
             .subscribe(
                 (result: any) => {
-                    console.log('CURRENT: ')
-                    console.log(this.current)
-                    console.log('NEW: ')
-                    console.log(result.data)
-                    if (!_.isEqual(this.current, result.data)) {
-                        this.current = result.data
-                        this.earthquakeData.next(result.data);
-                        this.dataLoading.next(false);
+                    // build event_id arrays
+                    var current_events = []
+                    var new_events = []
+                    for (let event_idx in this.current) {
+                        current_events.push(this.current[event_idx]['event_id'])
                     }
+                    for (let event_idx in result.data) {
+                        new_events.push(result.data[event_idx]['event_id'])
+                    }
+
+                    if (result.data.length > 0) {
+                        if (!_.isEqual(current_events, new_events)) {
+                            this.current = result.data
+                            this.earthquakeData.next(result.data);
+                        }
+                    } else {
+                        this.current = []
+                        this.earthquakeData.next([]);
+                    }
+                    this.dataLoading.next(false);
                 },
                 (err: any) => {
                     this.toastService.alert('Event Error', 'Unable to retreive some event information')

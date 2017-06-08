@@ -43,10 +43,10 @@ export class DashboardComponent implements OnInit, OnDestroy {
       }));
       this.eqService.getData({filter: {'timeframe': 'day'}});
 
-      Observable.interval(60000)
+      this.subscriptions.push(Observable.interval(60000)
         .subscribe((x: any) => {
             this.eqService.getData(this.eqService.filter);
-        });
+        }));
   }
 
   toggleLeft() {
