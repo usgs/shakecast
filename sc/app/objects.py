@@ -168,6 +168,8 @@ class ProductGrabber(object):
             event.lat = event_coords[1]
             event.depth = event_coords[2]
             
+            # determine whether or not an event should be kept
+            # based on group definitions
             keep_event = False
             groups = session.query(Group).all()
             if len(groups) > 0:
@@ -499,9 +501,6 @@ class ShakeMapGrid(object):
         else:
             self.xml_file = file_
         
-        if file_ == '':
-            return False
-        
         try:
             self.tree = ET.parse(file_)
             root = self.tree.getroot()
@@ -560,17 +559,20 @@ class ShakeMapGrid(object):
         Sorts the grid by a specified metric
         """
         Point.sort_by = metric
-        try:
-            self.grid = sorted(self.grid)
-            self.sorted_by = metric
-            return True
-        except:
-            return False
+        self.grid = sorted(self.grid)
+        self.sorted_by = metric
+        return True
     
-    def in_grid(self, lon_min=0, lon_max=0, lat_min=0, lat_max=0):
+    def in_grid(self, facility=None, lon_min=0, lon_max=0, lat_min=0, lat_max=0):
         """
         Check if a point is within the boundaries of the grid
         """
+        if facility is not None:
+            lon_min = facility.lon_min
+            lon_max = facility.lon_max
+            lat_min = facility.lat_min
+            lat_max = facility.lat_max
+
         return ((lon_min > self.lon_min and
                     lon_min < self.lon_max and
                     lat_min > self.lat_min and

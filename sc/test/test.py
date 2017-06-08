@@ -249,6 +249,8 @@ class TestFull(unittest.TestCase):
                 f.name = 'TEST FAC'
                 session.add(f)
             session.commit()
+
+        grid.in_grid(facility=f)
     
     def step06_addFacsToGroups(self):
         session = Session()
