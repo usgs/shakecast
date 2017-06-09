@@ -634,19 +634,6 @@ shaking_notification_connection = Table('shaking_notification_connection', Base.
            primary_key=True)
 )
 
-user_notification_connection = Table('user_notification_connection', Base.metadata,
-    Column('user',
-           Integer,
-           ForeignKey('user.shakecast_id',
-                      ondelete='cascade'),
-           primary_key=True),
-    Column('notification',
-           Integer,
-           ForeignKey('notification.shakecast_id',
-                      ondelete='cascade'),
-           primary_key=True)
-)
-
 #######################################################################
 ######################### Earthquake Tables ###########################
 
@@ -871,18 +858,6 @@ class Product(Base):
                                                      self.source,
                                                      self.update_username,
                                                      self.update_timestamp)
- 
-    
-class Plugins(Base):
-    """
-    Keeps track of the available plugins and whether or not the user
-    wants the ShakeCast system to utilize them
-    """
-    __tablename__ = 'sc'
-    shakecast_id = Column(Integer, primary_key=True)
-    plugin_name = Column(String(100))
-    use = Column(String(10))
-
 
 #######################################################################
 
