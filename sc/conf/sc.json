@@ -27,10 +27,10 @@
     }, 
     "Server": {
         "update": {
-            "json_url": "https://dslosky-usgs.github.io/shakecast/update.json", 
+            "json_url": "https://raw.github.com/usgs/shakecast/update-feed/update.json", 
             "update_version": "1.0.3", 
-            "admin_notified": true, 
-            "software_version": "1.0.3"
+            "software_version": "1.0.3", 
+            "admin_notified": true
         }, 
         "DNS": "https://localhost", 
         "name": "ShakeCast"
@@ -51,10 +51,10 @@
         ], 
         "new_eq_mag_cutoff": 3, 
         "keep_eq_for": 60, 
-        "check_new_int": 3, 
         "nighttime": 18, 
+        "check_new_int": 3, 
         "night_eq_mag_cutoff": 0, 
-        "geo_json_web": "http://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/1.0_{}.geojson", 
+        "geo_json_web": "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/1.0_{}.geojson", 
         "eq_req_products": [
             "grid.xml", 
             "stationlist.xml", 

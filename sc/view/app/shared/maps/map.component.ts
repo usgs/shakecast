@@ -4,7 +4,7 @@ import { Marker } from './map.service';
 import { ShakemapService } from './shakemap.service'
 import { MapService } from './map.service'
 import { FacilityService } from '../../shakecast-admin/pages/facilities/facility.service';
-
+import { NotificationsService } from 'angular2-notifications';
 declare var L: any;
 declare var _: any;
 
@@ -20,9 +20,9 @@ export class MapComponent implements OnInit, OnDestroy {
     public eventMarkers: any = [];
     public facilityMarkers: any = {};
     public center: any = {};
-    private markerLayer: any = L.layerGroup();
+    private markerLayer: any = L.featureGroup();
     private eventMarker: any = L.marker();
-    private eventLayer: any = L.layerGroup();
+    private eventLayer: any = L.featureGroup();
     private overlayLayer: any = L.layerGroup();
     private facilityCluster: any = L.markerClusterGroup();
     private facilityLayer: any = L.layerGroup();
@@ -41,6 +41,7 @@ export class MapComponent implements OnInit, OnDestroy {
     constructor(private mapService: MapService,
                 private smService: ShakemapService,
                 private facService: FacilityService,
+                private notService: NotificationsService,
                 private _router: Router) {}
 
     ngOnInit() {
@@ -52,11 +53,13 @@ export class MapComponent implements OnInit, OnDestroy {
             scrollWheelZoom: false
         }).setView([51.505, -0.09], 8);
 
-        L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
-            subdomains: ['a','b','c']
-        }).addTo(this.map);
-    
+        L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoiZHNsb3NreSIsImEiOiJjaXR1aHJnY3EwMDFoMnRxZWVtcm9laWJmIn0.1C3GE0kHPGOpbVV9kTxBlQ', {
+			maxZoom: 18,
+			attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, ' +
+				'<a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ' +
+				'Imagery � <a href="http://mapbox.com">Mapbox</a>',
+			id: 'mapbox.streets'
+		}).addTo(this.map);
 
         var layers: any  = {
             'Facility': this.facilityLayer,
@@ -199,14 +202,19 @@ export class MapComponent implements OnInit, OnDestroy {
                 var imageUrl = 'api/shakemaps/' + sm.shakemap_id + '/overlay';
                 var imageBounds = [[sm.lat_min, sm.lon_min], [sm.lat_max, sm.lon_max]];
 
-                
-                this.overlayLayer = L.imageOverlay(imageUrl, 
-                                imageBounds, 
-                                {opacity: .6})
-
-                this.overlayLayer.addTo(this.eventLayer);
-                if (this.map.hasLayer(this.eventLayer)) {
-                    this.eventLayer.addTo(this.map)
+                try {
+                    this.overlayLayer = L.imageOverlay(imageUrl, 
+                                    imageBounds, 
+                                    {opacity: .6})
+                                
+                    this.overlayLayer.addTo(this.eventLayer);
+                    if (this.map.hasLayer(this.eventLayer)) {
+                        this.eventLayer.addTo(this.map)
+                        this.map.fitBounds(this.eventLayer.getBounds())
+                    }
+                }
+                catch(e) {
+                    this.notService.alert('Shakemap Error', 'Unable to retreive shakemap')
                 }
             }
         });
@@ -396,7 +404,7 @@ export class MapComponent implements OnInit, OnDestroy {
 
         if (this.map.hasLayer(this.markerLayer)) {
             this.map.removeLayer(this.markerLayer);
-            this.markerLayer = L.layerGroup();
+            this.markerLayer = L.featureGroup();
         }
 
         if (this.facilityLayer.hasLayer(this.facilityCluster)) {

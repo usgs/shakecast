@@ -2,7 +2,7 @@ import { Component, ViewEncapsulation, OnInit, OnDestroy } from '@angular/core';
 import { NotificationsService } from 'angular2-notifications';
 import { MessagesService } from '../shared/messages.service';
 import { Observable } from 'rxjs/Observable';
-
+import { Router } from '@angular/router';
 import { CookieService } from '../shared/cookie.service';
 
 @Component({
@@ -16,13 +16,16 @@ export class MessagingComponent implements OnInit, OnDestroy {
 
     constructor(private notService: NotificationsService,
                 private messService: MessagesService,
-                private cookieService: CookieService
+                private cookieService: CookieService,
+                private _router: Router
                 ) {}
 
     ngOnInit() {
         this.subscriptions.push(
             Observable.interval(10000).subscribe(data => {
-                    this.messService.getMessages();
+                    if (this._router.url != '/login') {
+                        this.messService.getMessages();
+                    }
                 }
             )
         );

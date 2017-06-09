@@ -11,6 +11,8 @@ import { NotificationService } from '../dashboard/notification-dash/notification
 import { NotificationsService } from 'angular2-notifications'
 import { FacilityService } from '../../../shakecast-admin/pages/facilities/facility.service.ts'
 
+declare var _: any;
+
 export interface Earthquake {
     shakecast_id: string;
     event_id: string;
@@ -28,6 +30,7 @@ export class EarthquakeService {
     public dataLoading = new ReplaySubject(1);
     public plotting = new ReplaySubject(1);
     public showScenarioSearch = new ReplaySubject(1);
+    public current: any = []
     public filter = {};
     public configs: any = {clearOnPlot: 'all'};
     public selected: Earthquake = null;
@@ -40,15 +43,41 @@ export class EarthquakeService {
                 private toastService: NotificationsService) {}
 
     getData(filter: any = {}) {
+        if (this.filter) {
+            this.filter = filter
+        }
         this.dataLoading.next(true);
         let params = new URLSearchParams();
         params.set('filter', JSON.stringify(filter))
         this._http.get('/api/earthquake-data', {search: params})
             .map((result: Response) => result.json())
-            .subscribe((result: any) => {
-                this.earthquakeData.next(result.data);
-                this.dataLoading.next(false);
-            });
+            .subscribe(
+                (result: any) => {
+                    // build event_id arrays
+                    var current_events = []
+                    var new_events = []
+                    for (let event_idx in this.current) {
+                        current_events.push(this.current[event_idx]['event_id'])
+                    }
+                    for (let event_idx in result.data) {
+                        new_events.push(result.data[event_idx]['event_id'])
+                    }
+
+                    if (result.data.length > 0) {
+                        if (!_.isEqual(current_events, new_events)) {
+                            this.current = result.data
+                            this.earthquakeData.next(result.data);
+                        }
+                    } else {
+                        this.current = []
+                        this.earthquakeData.next([]);
+                    }
+                    this.dataLoading.next(false);
+                },
+                (err: any) => {
+                    this.toastService.alert('Event Error', 'Unable to retreive some event information')
+                }
+            );
     }
 
     clearData() {

@@ -2,6 +2,7 @@ data/
 tmp/
 logs/
 docs/
+update-feed/
 modules/
 docs/
 pypy/

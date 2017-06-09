@@ -1,5 +1,5 @@
 <div class="data-list-inner-container">
-    <div *ngIf="!dataLoading" class="data-list">
+    <div class="data-list">
         <div *ngIf="earthquakeData.length > 0">
             <div class="data" [@selected]="eq?.selected" *ngFor="let eq of earthquakeData" (click)="plotEq(eq)">
                 <div class="data-header" [@headerSelected]="eq.selected">

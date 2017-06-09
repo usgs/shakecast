@@ -1,9 +1,30 @@
 <div class="map-container">
-    <my-map class="map" stickToTop></my-map>
+    <my-map class="map"></my-map>
 </div>
 
-<div class="data-list-outer-container eq-container">
-    <earthquake-list></earthquake-list>
+<div class="right-panel" [@showRight]="showRight">
+    <div class="toggle">
+        <div class="toggle-click" (click)="toggleRight()">
+
+        </div>
+    </div>
+    <div class="panel-content">
+            <h2 class="panel-title">{{ earthquakeData.length }} Recent Earthquakes</h2>
+            
+            <div class="panel-scroll-container">
+                <div class="inner-shadow"></div>
+                <earthquake-list></earthquake-list>
+            </div>
+    </div>
 </div>
 
-<eq-filter class="eq-filter"></eq-filter>
+<div class="bottom-panel" [@showBottom]="showBottom">
+    <div class="toggle">
+        <div class="toggle-click" (click)="toggleBottom()" style="width:0">
+        </div>
+    </div>
+
+    <div class="content-container">
+        <eq-filter class="eq-filter"></eq-filter>
+    </div>
+</div>

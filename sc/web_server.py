@@ -34,7 +34,7 @@ app.config['SESSION_TYPE'] = 'filesystem'
 app.json_encoder = AlchemyEncoder
 login_manager = LoginManager()
 login_manager.init_app(app)
-login_manager.login_view = 'login'
+login_manager.login_view = 'index'
 
 # send Angular 2 files
 @app.route('/<path:filename>')
@@ -49,7 +49,7 @@ def load_user(user_id):
     Session.remove()
     return user
 
-@app.route('/api/login', methods=['GET','POST'])
+@app.route('/api/login', methods=['POST'])
 def login():
     if request.method == 'GET':
         return render_template('login.html')
