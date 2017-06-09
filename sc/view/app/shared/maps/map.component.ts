@@ -20,7 +20,7 @@ export class MapComponent implements OnInit, OnDestroy {
     public eventMarkers: any = [];
     public facilityMarkers: any = {};
     public center: any = {};
-    private markerLayer: any = L.layerGroup();
+    private markerLayer: any = L.featureGroup();
     private eventMarker: any = L.marker();
     private eventLayer: any = L.featureGroup();
     private overlayLayer: any = L.layerGroup();
@@ -404,7 +404,7 @@ export class MapComponent implements OnInit, OnDestroy {
 
         if (this.map.hasLayer(this.markerLayer)) {
             this.map.removeLayer(this.markerLayer);
-            this.markerLayer = L.layerGroup();
+            this.markerLayer = L.featureGroup();
         }
 
         if (this.facilityLayer.hasLayer(this.facilityCluster)) {
