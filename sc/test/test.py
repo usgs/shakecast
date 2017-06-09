@@ -31,6 +31,9 @@ class TestProductGrabber(unittest.TestCase):
         pg.get_json_feed()
         
         self.assertNotEqual(pg.json_feed, '')
+
+    def test_geoJSON(self):
+        result = geo_json('day')
         
 
 class TestMailer(unittest.TestCase):
@@ -193,8 +196,24 @@ class TestFull(unittest.TestCase):
 
         session.commit()
         Session.remove()
+
+    def step02_createSmallGroup(self):
+        session = Session()
         
-    def step02_createGroup(self):
+        small_group = create_group(name='small')
+        small_group.lat_min = -1
+        small_group.lat_min = 1
+        small_group.lat_min = -1
+        small_group.lat_min = 1
+
+        session.add(small_group)
+
+        session.commit()
+        Session.remove()
+
+        result = geo_json(day)
+
+    def step02_createSmallGroup(self):
         session = Session()
         
         global_group = create_group(name='GLOBAL')
