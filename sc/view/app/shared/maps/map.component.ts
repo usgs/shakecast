@@ -53,7 +53,7 @@ export class MapComponent implements OnInit, OnDestroy {
             scrollWheelZoom: false
         }).setView([51.505, -0.09], 8);
 
-        L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token=pk.eyJ1Ijoia3Vvd2FubGluIiwiYSI6ImNpdWhhd2FuYzAxMnUyb2wzYTU4NzNycGkifQ.9BJUDR37C1r6QgprU0pQrA', {
+        L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoiZHNsb3NreSIsImEiOiJjaXR1aHJnY3EwMDFoMnRxZWVtcm9laWJmIn0.1C3GE0kHPGOpbVV9kTxBlQ', {
 			maxZoom: 18,
 			attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, ' +
 				'<a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ' +
