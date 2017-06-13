@@ -389,7 +389,7 @@ class User(Base):
     full_name = Column(String(32))
     user_type = Column(String(10))
     group_string = Column(String())
-    
+
     groups = relationship('Group',
                           secondary='user_group_connection',
                           backref='users')
@@ -894,7 +894,7 @@ Session = scoped_session(session_maker)
 
 # create scadmin if there are no other users
 session = Session()
-us = session.query(User).all()
+us = session.query(User).filter(User.user_type.like('admin')).all()
 if not us:
     u = User()
     u.username = 'scadmin'
@@ -903,6 +903,5 @@ if not us:
     session.add(u)
     session.commit()
 Session.remove()
-
 
 from objects import *
