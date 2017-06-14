@@ -10,7 +10,7 @@ if modules_dir not in sys.path:
 app_dir = os.path.join(sc_dir(), 'app')
 if app_dir not in sys.path:
     sys.path += [app_dir]
-    
+
 from sqlalchemy import *
 from sqlalchemy.ext.declarative import *
 from sqlalchemy.ext.hybrid import hybrid_method
@@ -898,6 +898,23 @@ db_sql = metadata.create_all(engine)
 session_maker = sessionmaker(bind=engine)
 Session = scoped_session(session_maker)
 
+############# Check for required DB migrations #############
+def db_migration():
+    from objects import SC
+    from db_migrations import migrations
+    sc = SC()
+    for migration in migrations:
+        mig_version = int(migration.__name__.split('to')[1])
+        cur_version = sc.dict['Server']['update']['db_version']
+        if mig_version > cur_version:
+            # run the migration
+            migration(engine)
+            # update the configs
+            sc.dict['Server']['update']['db_version'] = mig_version
+    sc.save_dict()
+
+db_migration()
+
 # create scadmin if there are no other users
 session = Session()
 us = session.query(User).filter(User.user_type.like('admin')).all()
@@ -909,5 +926,3 @@ if not us:
     session.add(u)
     session.commit()
 Session.remove()
-
-from objects import *
