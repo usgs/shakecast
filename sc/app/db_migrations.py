@@ -1,5 +1,4 @@
-from orm import *
-
+from objects import SC
 ############### DB Migrations ################
 def migrate_1to2(engine):
     '''
@@ -9,23 +8,23 @@ def migrate_1to2(engine):
     updated = Column('updated', Integer)
     updated_by = Column('updated_by', String)
     
-    user_columns = [c for c in User.__table__.columns]
-    group_columns = [c for c in Group.__table__.columns]
-    facility_columns = [c for c in Facility.__table__.columns]
+    user_columns = [c.key for c in User.__table__.columns]
+    group_columns = [c.key for c in Group.__table__.columns]
+    facility_columns = [c.key for c in Facility.__table__.columns]
 
     if not 'updated' in user_columns:
         add_column(engine, 'user', updated)
-    if not 'updated_by' in u.__dict__.keys():
+    if not 'updated_by' in user_columns:
         add_column(engine, 'user', updated_by)
 
     if not 'updated' in group_columns:
         add_column(engine, 'group', updated)
-    if not 'updated_by' in g.__dict__.keys():
+    if not 'updated_by' in group_columns:
         add_column(engine, 'group', updated_by)
 
     if not 'updated' in facility_columns:
         add_column(engine, 'facility', updated)
-    if not 'updated_by' in f.__dict__.keys():
+    if not 'updated_by' in facility_columns:
         add_column(engine, 'facility', updated_by)
 
 def add_column(engine, table_name, column):

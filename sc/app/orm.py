@@ -66,8 +66,8 @@ class Facility(Base):
     orange_metric = Column(String(20))
     red_metric = Column(String(20))
     metric = Column(String(20))
-    updated = Column(Integer, default=0)
-    updated_by = Column(String, default='')
+    updated = Column(Integer)
+    updated_by = Column(String)
     
     shaking_history = relationship('Facility_Shaking',
                         backref='facility',
@@ -391,8 +391,8 @@ class User(Base):
     full_name = Column(String(32))
     user_type = Column(String(10))
     group_string = Column(String())
-    updated = Column(Integer, default=0)
-    updated_by = Column(String, default='')
+    updated = Column(Integer)
+    updated_by = Column(String)
 
     groups = relationship('Group',
                           secondary='user_group_connection',
@@ -442,8 +442,8 @@ class Group(Base):
     lat_min = Column(Integer)
     lat_max = Column(Integer)
     template = Column(String(255))
-    updated = Column(Integer, default=0)
-    updated_by = Column(String, default='')
+    updated = Column(Integer)
+    updated_by = Column(String)
     
     facilities = relationship('Facility',
                               secondary='facility_group_connection',
@@ -912,7 +912,6 @@ def db_migration():
             # update the configs
             sc.dict['Server']['update']['db_version'] = mig_version
     sc.save_dict()
-
 db_migration()
 
 # create scadmin if there are no other users
