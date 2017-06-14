@@ -1,4 +1,4 @@
-from objects import SC
+from orm import User, Group, Facility, Column, Integer, String
 ############### DB Migrations ################
 def migrate_1to2(engine):
     '''
