@@ -28,10 +28,10 @@
     "Server": {
         "update": {
             "json_url": "https://raw.github.com/usgs/shakecast/update-feed/update.json", 
+            "db_version": 2, 
             "update_version": "1.0.3", 
-            "admin_notified": true, 
-            "software_version": "1.0.3",
-            "db_version": 1
+            "software_version": "1.0.3", 
+            "admin_notified": true
         }, 
         "DNS": "https://localhost", 
         "name": "ShakeCast"
@@ -52,8 +52,8 @@
         ], 
         "new_eq_mag_cutoff": 3, 
         "keep_eq_for": 60, 
-        "check_new_int": 3, 
         "nighttime": 18, 
+        "check_new_int": 3, 
         "night_eq_mag_cutoff": 0, 
         "geo_json_web": "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/1.0_{}.geojson", 
         "eq_req_products": [
