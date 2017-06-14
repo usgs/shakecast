@@ -706,7 +706,7 @@ class Event(Base):
         Non-static timestamp that changes based on the user's defined
         timezone
         """
-        from objects import Clock
+        from util import Clock
         clock = Clock()
         return (clock.from_time(self.time)
                     .strftime('%Y-%m-%d %H:%M:%S'))
@@ -900,8 +900,8 @@ Session = scoped_session(session_maker)
 
 ############# Check for required DB migrations #############
 def db_migration():
-    from objects import SC
     from db_migrations import migrations
+    from util import SC
     sc = SC()
     for migration in migrations:
         mig_version = int(migration.__name__.split('to')[1])
@@ -925,3 +925,4 @@ if not us:
     session.add(u)
     session.commit()
 Session.remove()
+
