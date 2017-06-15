@@ -34,7 +34,7 @@ class TestProductGrabber(unittest.TestCase):
 
     def test_geoJSON(self):
         result = geo_json('day')
-        
+        self.assertEqual(result['error'], '')
 
 class TestMailer(unittest.TestCase):
     '''
@@ -211,9 +211,10 @@ class TestFull(unittest.TestCase):
         session.commit()
         Session.remove()
 
-        result = geo_json(day)
+        result = geo_json('day')
+        self.assertEqual(result['error'], '')
 
-    def step02_createSmallGroup(self):
+    def step02_createGroup(self):
         session = Session()
         
         global_group = create_group(name='GLOBAL')
