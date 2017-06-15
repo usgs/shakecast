@@ -2,6 +2,8 @@ import math
 import os
 import json
 import datetime
+import time
+from shutil import copyfile
 
 class SC(object):
     """

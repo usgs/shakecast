@@ -16,15 +16,13 @@ from email.mime.text import MIMEText
 from email.MIMEImage import MIMEImage
 from email.MIMEMultipart import MIMEMultipart
 from util import *
+from jinja2 import Template
+import socks
 import types
 from orm import Session, Event, ShakeMap, Product, User, DeclarativeMeta, Group, SC
 modules_dir = os.path.join(sc_dir(), 'modules')
 if modules_dir not in sys.path:
     sys.path += [modules_dir]
-
-from jinja2 import Template
-from shutil import copyfile
-import socks
 
 class ProductGrabber(object):
     
