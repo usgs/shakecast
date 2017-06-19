@@ -14,6 +14,8 @@
     "table": {
         "border_color": "#444444"
     }, 
+    "head_text": "ShakeCast Alert", 
+    "logo": "sc_logo.png", 
     "admin_email": "sc.admin@gmail.com", 
     "type": "inspection", 
     "body_color": "#ffffff", 

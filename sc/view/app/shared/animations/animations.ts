@@ -25,7 +25,7 @@ export const navAnimation: AnimationEntryMetadata =
             state('down', 
                   style({top: 0})),
             transition('* => *', [
-                  animate('250 ease-in-out')
+                  animate('250ms ease-in-out')
             ])
       ]);
 

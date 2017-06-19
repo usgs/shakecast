@@ -16,9 +16,9 @@ from functools import wraps
 import time
 import datetime
 from ast import literal_eval
+from app.objects import Clock, SC, NotificationBuilder, TemplateManager, SoftwareUpdater
 from app.orm import *
 from app.server import Server
-from app.objects import Clock, SC, NotificationBuilder, TemplateManager, SoftwareUpdater
 from app.functions import determine_xml
 from ui import UI
 
