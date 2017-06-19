@@ -202,19 +202,38 @@ class TestFull(unittest.TestCase):
         
         small_group = create_group(name='small')
         small_group.lat_min = -1
-        small_group.lat_min = 1
-        small_group.lat_min = -1
-        small_group.lat_min = 1
+        small_group.lat_max = 1
+        small_group.lon_min = -1
+        small_group.lon_max = 1
 
         session.add(small_group)
 
         session.commit()
         Session.remove()
 
-        result = geo_json('day')
+        result = geo_json('hour')
         self.assertEqual(result['error'], '')
 
-    def step02_createGroup(self):
+        # clean up events, shakemaps, notifications
+        session = Session()
+        es = session.query(Event).all()
+        for e in es:
+            session.delete(e)
+
+        sms = session.query(ShakeMap).all()
+        for sm in sms:
+            session.delete(sm)
+
+        ns = session.query(Notification).all()
+        for n in ns:
+            session.delete(n)
+
+        small_group = session.query(Group).filter(Group.name == 'small').first()
+        session.delete(small_group)
+        session.commit()
+        Session.remove()
+
+    def step03_createGroup(self):
         session = Session()
         
         global_group = create_group(name='GLOBAL')
@@ -226,13 +245,13 @@ class TestFull(unittest.TestCase):
         session.commit()
         Session.remove()
         
-    def step03_addUsersToGroups(self):
+    def step04_addUsersToGroups(self):
         session = Session()
         add_users_to_groups(session=session)
         session.commit()
         Session.remove()
         
-    def step04_geoJSON(self):
+    def step05_geoJSON(self):
         '''
         Test run of geo_json
         '''
@@ -258,7 +277,7 @@ class TestFull(unittest.TestCase):
         Session.remove()
 
 
-    def step05_createFacility(self):
+    def step06_createFacility(self):
         session = Session()
         sms = session.query(ShakeMap).all()
 
@@ -272,17 +291,17 @@ class TestFull(unittest.TestCase):
 
         grid.in_grid(facility=f)
     
-    def step06_addFacsToGroups(self):
+    def step07_addFacsToGroups(self):
         session = Session()
         add_facs_to_groups(session=session)
         session.commit()
         Session.remove()
         
-    def step07_checkNew(self):
+    def step08_checkNew(self):
         data = check_new()
         self.assertEqual(data['error'], '')
     
-    def step08_checkEvents(self):
+    def step09_checkEvents(self):
         session = Session()
         events = session.query(Event).all()
         for event in events:
@@ -300,7 +319,7 @@ class TestFull(unittest.TestCase):
                     
         Session.remove()
         
-    def step09_checkShakeMaps(self):
+    def step10_checkShakeMaps(self):
         session = Session()
         shakemaps = session.query(ShakeMap).all()
         for shakemap in shakemaps:
@@ -314,21 +333,21 @@ class TestFull(unittest.TestCase):
                                                                                   notification.status))
         Session.remove()
     
-    def step10_geoJSON2(self):
+    def step11_geoJSON2(self):
         '''
         Second run of geo_json
         '''
         data = geo_json('hour')
         self.assertEqual(data['error'], '')
 
-    def step11_checkNew2(self):
+    def step12_checkNew2(self):
         '''
         Check new a second time
         '''
         data = check_new()
         self.assertEqual(data['error'], '')
 
-    def step12_notificationAssoc(self):
+    def step13_notificationAssoc(self):
         '''
         Make sure events and notifications are linked
         '''
@@ -339,7 +358,7 @@ class TestFull(unittest.TestCase):
         self.assertEqual(len(bad_nots), 0)
         Session.remove()
 
-    def step12_scenarioInDB(self):
+    def step14_scenarioInDB(self):
         session = Session()
         sms = session.query(ShakeMap).all()
         if len(sms) > 0:
@@ -348,7 +367,7 @@ class TestFull(unittest.TestCase):
 
         Session.remove()
 
-    def step13_getScenarioWeb(self):
+    def step15_getScenarioWeb(self):
         session = Session()
         sm = session.query(ShakeMap).filter(ShakeMap.shakemap_id != 'bssc2014nsanandreassaosansap_m8p04_se_scenario').first()
         Session.remove()
@@ -356,7 +375,7 @@ class TestFull(unittest.TestCase):
         if sm is not None:
             download_scenario(shakemap_id=sm.shakemap_id)
 
-    def step14_NewUpdate(self):
+    def step16_NewUpdate(self):
         s = SoftwareUpdater()
         new = s.check_new_update('1.0.0', '1.0.1')
         self.assertFalse(new)
@@ -371,24 +390,24 @@ class TestFull(unittest.TestCase):
         new = s.check_new_update('1.1.1', '1.1.1')
         self.assertFalse(new)
 
-    def step15_CheckUpdate(self):
+    def step17_CheckUpdate(self):
         s = SoftwareUpdater()
         s.json_url = 'https://raw.githubusercontent.com/usgs/shakecast/update-feed/update_test.json'
         s.check_update(testing=True)
     
-    def step16_Update(self):
+    def step18_Update(self):
         s = SoftwareUpdater()
         s.json_url = 'https://raw.githubusercontent.com/usgs/shakecast/update-feed/update_test.json'
         s.update(testing=True)
 
-    def step17_NotifyAdmin(self):
+    def step19_NotifyAdmin(self):
         s = SoftwareUpdater()
         s.notify_admin()
 
-    def step18_UpdateFunction(self):
+    def step20_UpdateFunction(self):
         check_for_updates()
 
-    def step20_AlchemyEncoder(self):
+    def step21_AlchemyEncoder(self):
         '''
         Runs through a default use case of the Alchemy Encoder
         '''
@@ -399,7 +418,7 @@ class TestFull(unittest.TestCase):
         event_dict = json.loads(events_json)
         self.assertTrue(len(event_dict) > 0)
 
-    def step19_deleteScenario(self):
+    def step22_deleteScenario(self):
         session = Session()
         sm = session.query(ShakeMap).first()
         sm_id = sm.shakemap_id
@@ -421,15 +440,15 @@ class TestFull(unittest.TestCase):
 
             Session.remove()
 
-    def step21_badScenario(self):
+    def step23_badScenario(self):
         result = run_scenario('a_bad_Event_id')
         self.assertFalse(result['message']['success'])
 
-    def step22_downloadBadScenario(self):
+    def step24_downloadBadScenario(self):
         result = download_scenario('not_a_real_scenario')
         self.assertEqual('failed', result['status'])
 
-    def step23_downloadActualScenario(self):
+    def step25_downloadActualScenario(self):
         download_scenario('bssc2014nsanandreassaosansap_m8p04_se', scenario=True)
 
     def steps(self):
