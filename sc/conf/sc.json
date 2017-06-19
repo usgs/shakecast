@@ -17,17 +17,18 @@
         "default_template_pdf": "default_pdf.json"
     }, 
     "SMTP": {
-        "username": "testing.only.shakecast@gmail.com", 
+        "username": "", 
         "from": "", 
         "envelope_from": "", 
         "server": "smtp.gmail.com", 
         "security": "TLS", 
-        "password": "testingpass", 
+        "password": "", 
         "port": 587
     }, 
     "Server": {
         "update": {
             "json_url": "https://raw.github.com/usgs/shakecast/update-feed/update.json", 
+            "db_version": 1, 
             "update_version": "1.0.3", 
             "software_version": "1.0.3", 
             "admin_notified": true

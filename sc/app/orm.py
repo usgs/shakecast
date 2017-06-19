@@ -10,7 +10,7 @@ if modules_dir not in sys.path:
 app_dir = os.path.join(sc_dir(), 'app')
 if app_dir not in sys.path:
     sys.path += [app_dir]
-    
+
 from sqlalchemy import *
 from sqlalchemy.ext.declarative import *
 from sqlalchemy.ext.hybrid import hybrid_method
@@ -66,6 +66,8 @@ class Facility(Base):
     orange_metric = Column(String(20))
     red_metric = Column(String(20))
     metric = Column(String(20))
+    updated = Column(Integer)
+    updated_by = Column(String)
     
     shaking_history = relationship('Facility_Shaking',
                         backref='facility',
@@ -389,7 +391,9 @@ class User(Base):
     full_name = Column(String(32))
     user_type = Column(String(10))
     group_string = Column(String())
-    
+    updated = Column(Integer)
+    updated_by = Column(String)
+
     groups = relationship('Group',
                           secondary='user_group_connection',
                           backref='users')
@@ -438,6 +442,8 @@ class Group(Base):
     lat_min = Column(Integer)
     lat_max = Column(Integer)
     template = Column(String(255))
+    updated = Column(Integer)
+    updated_by = Column(String)
     
     facilities = relationship('Facility',
                               secondary='facility_group_connection',
@@ -634,19 +640,6 @@ shaking_notification_connection = Table('shaking_notification_connection', Base.
            primary_key=True)
 )
 
-user_notification_connection = Table('user_notification_connection', Base.metadata,
-    Column('user',
-           Integer,
-           ForeignKey('user.shakecast_id',
-                      ondelete='cascade'),
-           primary_key=True),
-    Column('notification',
-           Integer,
-           ForeignKey('notification.shakecast_id',
-                      ondelete='cascade'),
-           primary_key=True)
-)
-
 #######################################################################
 ######################### Earthquake Tables ###########################
 
@@ -713,7 +706,7 @@ class Event(Base):
         Non-static timestamp that changes based on the user's defined
         timezone
         """
-        from objects import Clock
+        from util import Clock
         clock = Clock()
         return (clock.from_time(self.time)
                     .strftime('%Y-%m-%d %H:%M:%S'))
@@ -871,18 +864,6 @@ class Product(Base):
                                                      self.source,
                                                      self.update_username,
                                                      self.update_timestamp)
- 
-    
-class Plugins(Base):
-    """
-    Keeps track of the available plugins and whether or not the user
-    wants the ShakeCast system to utilize them
-    """
-    __tablename__ = 'sc'
-    shakecast_id = Column(Integer, primary_key=True)
-    plugin_name = Column(String(100))
-    use = Column(String(10))
-
 
 #######################################################################
 
@@ -917,9 +898,25 @@ db_sql = metadata.create_all(engine)
 session_maker = sessionmaker(bind=engine)
 Session = scoped_session(session_maker)
 
+############# Check for required DB migrations #############
+def db_migration():
+    from db_migrations import migrations
+    from util import SC
+    sc = SC()
+    for migration in migrations:
+        mig_version = int(migration.__name__.split('to')[1])
+        cur_version = sc.dict['Server']['update']['db_version']
+        if mig_version > cur_version:
+            # run the migration
+            migration(engine)
+            # update the configs
+            sc.dict['Server']['update']['db_version'] = mig_version
+    sc.save_dict()
+db_migration()
+
 # create scadmin if there are no other users
 session = Session()
-us = session.query(User).all()
+us = session.query(User).filter(User.user_type.like('admin')).all()
 if not us:
     u = User()
     u.username = 'scadmin'
@@ -929,5 +926,3 @@ if not us:
     session.commit()
 Session.remove()
 
-
-from objects import *

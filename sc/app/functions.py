@@ -473,7 +473,10 @@ def new_event_notification(notifications = None,
         msg.attach(msg_gmap)
     
     # find the ShakeCast logo
-    logo_str = os.path.join(sc_dir(),'view','static','sc_logo.png')
+    temp_manager = TemplateManager()
+    configs = temp_manager.get_configs('new_event', 
+                                        name=notification.group.template)
+    logo_str = os.path.join(sc_dir(),'view','static',configs['logo'])
     
     # open logo and attach it to the message
     logo_file = open(logo_str, 'rb')
@@ -556,7 +559,10 @@ def inspection_notification(notification=Notification(),
             msg.attach(msg_shakemap)
             
             # find the ShakeCast logo
-            logo_str = os.path.join(sc_dir(),'view','static','sc_logo.png')
+            temp_manager = TemplateManager()
+            configs = temp_manager.get_configs('new_event', 
+                                        name=notification.group.template)
+            logo_str = os.path.join(sc_dir(),'view','static',configs['logo'])
             
             # open logo and attach it to the message
             logo_file = open(logo_str, 'rb')
