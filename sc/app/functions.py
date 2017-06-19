@@ -10,6 +10,7 @@ from objects import *
 from util import *
 import xmltodict
 import shutil
+import time
 
 modules_dir = os.path.join(sc_dir() + 'modules')
 if modules_dir not in sys.path:
@@ -723,7 +724,7 @@ def create_grid(shakemap=None):
 #######################################################################
 ######################## Import Inventory Data ########################
 
-def import_facility_xml(xml_file=''):
+def import_facility_xml(xml_file='', _user=None):
     '''
     Import an XML file created by the ShakeCast workbook; Facilities
     
@@ -889,7 +890,11 @@ def import_facility_xml(xml_file=''):
         f.red_beta = red_beta
         f.red_metric = red_metric
         f.metric = metric
-        
+
+        f.updated = time.time()
+        if _user is not None:
+            f.updated_by = _user.username
+
         if geom_type and geom:
             # manipulate geometry
             if geom_type == 'POINT':
@@ -942,7 +947,7 @@ def import_facility_xml(xml_file=''):
     
     return data
     
-def import_group_xml(xml_file=''):
+def import_group_xml(xml_file='', _user=None):
     '''
     Import an XML file created by the ShakeCast workbook; Groups
     
@@ -1007,7 +1012,10 @@ def import_group_xml(xml_file=''):
 
         imported_groups += [g.name]
         g.facility_type = facility_type
-        
+        g.updated = time.time()
+        if _user is not None:
+            g.updated_by = _user.username
+
         # split up the poly and save lat/lon min/max if the monitoring
         # region is being updated
         if split_poly:
@@ -1073,8 +1081,7 @@ def import_group_xml(xml_file=''):
                 spec.aggregate_group = aggregate_name
                 spec.event_type = event_type
     
-
-    g.template = template
+        g.template = template
     add_facs_to_groups(session=session)
     add_users_to_groups(session=session)
     session.commit()
@@ -1089,7 +1096,7 @@ def import_group_xml(xml_file=''):
     
     return data
 
-def import_user_xml(xml_file=''):
+def import_user_xml(xml_file='', _user=None):
     '''
     Import an XML file created by the ShakeCast workbook; Users
     
@@ -1110,11 +1117,11 @@ def import_user_xml(xml_file=''):
         if isinstance(user_list, list) is False:
             user_list = [user_list]
 
-    data = import_user_dicts(user_list)
+    data = import_user_dicts(user_list, _user)
     
     return data
 
-def import_user_dicts(users=None):
+def import_user_dicts(users=None, _user=None):
     session = Session()
     if users is not None:
         for user in users:
@@ -1136,7 +1143,11 @@ def import_user_dicts(users=None):
             u.user_type = user.get('USER_TYPE', user.get('user_type', ''))
             u.full_name = user.get('FULL_NAME', user.get('full_name', ''))
             u.phone_number = user.get('PHONE_NUMBER', user.get('group_string', ''))
-            
+                    
+            u.updated = time.time()
+            if _user is not None:
+                u.updated_by = _user.username
+
             password = user.get('PASSWORD', user.get('password', None))
             if password is not None:
                 u.password = generate_password_hash(password, method='pbkdf2:sha512')

@@ -531,19 +531,26 @@ class TestImport(unittest.TestCase):
         self.assertEqual(file_type, 'user')
         
     def step03_groupImport(self):
+        session = Session()
+        user = session.query(User).filter(User.username == 'Ex3').first()
         group_file = os.path.join(sc_dir(), 'test', 'test_groups.xml')
         file_type = determine_xml(group_file)
-        import_group_xml(group_file)
+        import_group_xml(group_file, user)
 
         self.assertEqual(file_type, 'group')
+
+        Session.remove()
         
     def step04_facImport(self):
+        session = Session()
+        user = session.query(User).filter(User.username == 'Ex3').first()
         fac_file = os.path.join(sc_dir(), 'test', 'test_facs.xml')
         file_type = determine_xml(fac_file)
-        import_facility_xml(fac_file)
+        import_facility_xml(fac_file, user)
 
         self.assertEqual(file_type, 'facility')
-    
+        Session.remove()
+
     def step05_checkUser(self):
         session = Session()
         users = session.query(User).all()
@@ -597,6 +604,8 @@ class TestImport(unittest.TestCase):
                     failed_str += '\nIncorrect number of users: {}, {}'.format(group.name,
                                                                                len(group.users))
                     failed = True
+
+            self.assertEqual('Ex3', group.updated_by)
         
         if failed is True:
             raise ValueError(failed_str)
@@ -624,7 +633,9 @@ class TestImport(unittest.TestCase):
                     failed_str += '\nIncorrect number of groups: {}, {}'.format(fac.facility_id,
                                                                                 len(facs))
                     failed = True
-                    
+          
+            self.assertEqual('Ex3', fac.updated_by)
+
         if failed is True:
             raise ValueError(failed_str)
                     
