@@ -23,9 +23,10 @@ from app.functions import determine_xml
 from ui import UI
 
 BASE_DIR = os.path.join(sc_dir(),'view')
+STATIC_DIR = os.path.join(sc_dir(),'view','static')
 app = Flask(__name__,
             template_folder=BASE_DIR,
-            static_folder=os.path.join(sc_dir(),'view','static'))
+            static_folder=STATIC_DIR)
 
 ################################ Login ################################
 
@@ -499,6 +500,13 @@ def get_notification(event_id):
     
     json_ = json.dumps(dicts, cls=AlchemyEncoder)
     Session.remove()    
+    return json_
+
+@app.route('/api/images/')
+@login_required
+def get_image_list():
+    dir_list = os.listdir(STATIC_DIR)
+    json_ = json.dumps(dir_list)
     return json_
 
 @app.route('/admin/api/configs', methods=['GET','POST'])

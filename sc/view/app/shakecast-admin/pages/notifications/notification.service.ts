@@ -12,6 +12,7 @@ export class NotificationHTMLService {
     public notification = new ReplaySubject(1);
     public config = new ReplaySubject(1);
     public tempNames = new ReplaySubject(1);
+    public imageNames = new ReplaySubject(1);
     public name = new ReplaySubject(1);
 
     constructor(private _http: Http,
@@ -53,7 +54,7 @@ export class NotificationHTMLService {
             });
     }
 
-    newTepmlate(name: string) {
+    newTemplate(name: string) {
         this._http.get('/admin/new-template/' + name)
             .map((result: Response) => result.json())
             .subscribe((result: any) => {
@@ -77,6 +78,15 @@ export class NotificationHTMLService {
         ).subscribe((result: any) => {
             this.notService.success('Success!', 'New Configurations Saved');
         });
+    }
+
+    getImageNames() {
+        this._http.get('/api/images/')
+            .map((result: Response) => result.json())
+            .subscribe((result: any) => {
+                this.imageNames.next(result)
+            });
+                
     }
 
 }
