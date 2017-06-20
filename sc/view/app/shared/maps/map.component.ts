@@ -30,7 +30,7 @@ export class MapComponent implements OnInit, OnDestroy {
     private groupLayers: any = L.featureGroup();
     private subscriptions: any = [];
     private map: any;
-    private epicIcon: any  = L.icon({iconUrl: 'images/epicenter.png',
+    private epicIcon: any  = L.icon({iconUrl: 'static/epicenter.png',
                                     iconSize:     [45, 45], // size of the icon
                                     shadowSize:   [50, 64], // size of the shadow
                                     popupAnchor:  [1, -25] // point from which the popup should open relative to the iconAnchor
