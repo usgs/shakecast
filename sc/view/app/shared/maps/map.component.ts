@@ -24,7 +24,9 @@ export class MapComponent implements OnInit, OnDestroy {
     private eventMarker: any = L.marker();
     private eventLayer: any = L.featureGroup();
     private overlayLayer: any = L.layerGroup();
-    private facilityCluster: any = L.markerClusterGroup();
+    private facilityCluster: any = L.markerClusterGroup({
+	                                iconCreateFunction: this.createFacCluster
+                                    });
     private facilityLayer: any = L.layerGroup();
     private facMarker: any = L.marker();
     private groupLayers: any = L.featureGroup();
@@ -357,6 +359,7 @@ export class MapComponent implements OnInit, OnDestroy {
                                             </tr>
                                         </table>`
         }
+        marker['facility'] = fac;
         return marker
     }
 
@@ -409,7 +412,9 @@ export class MapComponent implements OnInit, OnDestroy {
 
         if (this.facilityLayer.hasLayer(this.facilityCluster)) {
             this.facilityLayer.removeLayer(this.facilityCluster);
-            this.facilityCluster = L.markerClusterGroup();
+            this.facilityCluster = L.markerClusterGroup({
+	                                    iconCreateFunction: this.createFacCluster
+                                    });
         }
 
         if (this.facilityLayer.hasLayer(this.facMarker)) {
@@ -425,6 +430,44 @@ export class MapComponent implements OnInit, OnDestroy {
         this.eventMarkers = [];
         this.facilityMarkers = [];
         this.totalShaking = 0;
+    }
+
+    createFacCluster(cluster: any) {
+        var childCount = cluster.getChildCount();
+        var facs = cluster.getAllChildMarkers();
+
+        var c = ' marker-cluster-';
+        if (childCount < 10) {
+            c += 'small';
+        } else if (childCount < 100) {
+            c += 'medium';
+        } else {
+            c += 'large';
+        }
+
+        var shaking_c = ''
+        if (facs[0]['facility']['shaking']) {
+            var shaking = 'gray'
+            for (var fac_id in facs) {
+                if ((!_.contains(['green', 'yellow', 'orange', 'red'], shaking)) &&
+                        (_.contains(['green', 'yellow', 'orange', 'red'], facs[fac_id]['facility']['shaking']['alert_level']))) {
+                    shaking = facs[fac_id]['facility']['shaking']['alert_level']
+                } else if ((!_.contains(['yellow', 'orange', 'red'], shaking)) &&
+                        (_.contains(['yellow', 'orange', 'red'], facs[fac_id]['facility']['shaking']['alert_level']))) {
+                    shaking = facs[fac_id]['facility']['shaking']['alert_level']
+                } else if ((!_.contains(['orange', 'red'], shaking)) &&
+                        (_.contains(['orange', 'red'], facs[fac_id]['facility']['shaking']['alert_level']))) {
+                    shaking = facs[fac_id]['facility']['shaking']['alert_level']
+                } else if ((!_.contains(['red'], shaking)) &&
+                        (_.contains(['red'], facs[fac_id]['facility']['shaking']['alert_level']))) {
+                    shaking = facs[fac_id]['facility']['shaking']['alert_level']
+                }
+            }
+
+            shaking_c = 'marker-cluster-' + shaking
+        }
+
+		return new L.DivIcon({ html: '<div><span>' + childCount + '</span></div>', className: 'marker-cluster' + c + ' ' + shaking_c, iconSize: new L.Point(40, 40) });
     }
 
     ngOnDestroy() {
