@@ -817,18 +817,26 @@ class TemplateManager(object):
             temp_name = 'default.json'
         else:
             temp_name = name.lower() + '.json'
-
-        try:
             conf_file = os.path.join(sc_dir(),
                                     'templates',
                                     not_type,
                                     temp_name)
+
+        try:
+            # try to find the template
             conf_str = open(conf_file, 'r')
-            config = json.loads(conf_str.read())
-            conf_str.close()
-            return config
         except Exception:
-            return None
+            # just get the default template if the supplied one doesn't
+            # exist
+            conf_file = os.path.join(sc_dir(),
+                                    'templates',
+                                    not_type,
+                                    'default.json')
+            conf_str = open(conf_file, 'r')
+
+        config = json.loads(conf_str.read())
+        conf_str.close()
+        return config
 
     @staticmethod
     def save_configs(not_type, name, config):
@@ -850,18 +858,23 @@ class TemplateManager(object):
             temp_name = 'default.html'
         else:
             temp_name = name + '.html'
+            temp_file = os.path.join(sc_dir(),
+                                        'templates',
+                                        not_type,
+                                        temp_name)
 
-        temp_file = os.path.join(sc_dir(),
-                                    'templates',
-                                    not_type,
-                                    temp_name)
         try:
             temp_str = open(temp_file, 'r')
-            template = Template(temp_str.read())
-            temp_str.close()
-            return template
         except Exception:
-            return None
+            temp_file = os.path.join(sc_dir(),
+                                        'templates',
+                                        not_type,
+                                        'default.html')
+            temp_str = open(temp_file, 'r')
+        
+        template = Template(temp_str.read())
+        temp_str.close()
+        return template
 
     @staticmethod
     def get_template_string(not_type, name=None):
