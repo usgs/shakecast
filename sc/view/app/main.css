@@ -121,43 +121,43 @@ html, body
 }
 
 .marker-cluster-gray {
-    background: rgba(100,100,100,.6)
+    background: rgba(100,100,100,.7)
 }
 
 .marker-cluster-gray div {
-    background: rgba(100,100,100,.6)
+    background: rgba(100,100,100,.9)
 }
 
 .marker-cluster-green {
-    background: rgba(0,255,0,.6)
+    background: rgba(0,250,0,.7)
 }
 
 .marker-cluster-green div {
-    background: rgba(0,255,0,.6)
+    background: rgba(0,250,0,.9)
 }
 
 .marker-cluster-yellow {
-    background: rgba(255,255,0,.9)
+    background: rgba(250,200,0,.7)
 }
 
 .marker-cluster-yellow div {
-    background: rgba(255,255,0,.9)
+    background: rgba(250,200,0,.9)
 }
 
 .marker-cluster-orange {
-    background: rgba(255,140,0,.8)
+    background: rgba(255,140,0,.7)
 }
 
 .marker-cluster-orange div {
-    background: rgba(255,140,0,.8)
+    background: rgba(255,140,0,.9)
 }
 
 .marker-cluster-red {
-    background: rgba(255,0,0,.6)
+    background: rgba(255,0,0,.7)
 }
 
 .marker-cluster-red div {
-    background: rgba(255,0,0,.6)
+    background: rgba(255,0,0,.9)
 }
 
 .marker-cluster span {
