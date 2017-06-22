@@ -10,7 +10,7 @@ if modules_dir not in sys.path:
 
 from flask import Flask, render_template, url_for, request, session, flash, redirect, send_file, send_from_directory, Response, jsonify
 from flask_login import LoginManager, login_user, logout_user, current_user, login_required
-from flask_uploads import UploadSet, configure_uploads
+from flask_uploads import UploadSet, configure_uploads, IMAGES
 from werkzeug.security import generate_password_hash, check_password_hash
 from functools import wraps
 import time
@@ -23,9 +23,10 @@ from app.functions import determine_xml
 from ui import UI
 
 BASE_DIR = os.path.join(sc_dir(),'view')
+STATIC_DIR = os.path.join(sc_dir(),'view','static')
 app = Flask(__name__,
             template_folder=BASE_DIR,
-            static_folder=os.path.join(sc_dir(),'view','static'))
+            static_folder=STATIC_DIR)
 
 ################################ Login ################################
 
@@ -501,6 +502,13 @@ def get_notification(event_id):
     Session.remove()    
     return json_
 
+@app.route('/api/images/')
+@login_required
+def get_image_list():
+    dir_list = os.listdir(STATIC_DIR)
+    json_ = json.dumps(dir_list)
+    return json_
+
 @app.route('/admin/api/configs', methods=['GET','POST'])
 @login_required
 def get_settings():
@@ -622,24 +630,32 @@ def software_update():
 def upload():
     if request.method == 'GET':
         return render_template('admin/upload.html')
-    
-    file_name = str(int(time.time())) + request.files['file'].filename
-    xml_files.save(request.files['file'], name=file_name)
-    xml_file = os.path.join(app.config['UPLOADED_XMLFILES_DEST'],
-                            file_name)
-    # validate XML and determine which import function should be used
-    xml_file_type = determine_xml(xml_file)
-    
-    # these import functions need to be submitted to the server instead
-    # of run directly
-    import_data = {}
-    func_name = ''
 
-    func_name = 'import_' + xml_file_type + '_xml'
-    if xml_file_type is not None:
-        ui.send("{'%s': {'func': f.%s, 'args_in': {'xml_file': r'%s'}, 'db_use': True, 'loop': False}}" % (func_name, 
-                                                                                                         func_name, 
-                                                                                                         xml_file))
+    import pdb
+    pdb.set_trace()
+    file_type = get_file_type(request.files['file'].filename)
+    if file_type is 'xml':
+        file_name = str(int(time.time())) + request.files['file'].filename
+        xml_files.save(request.files['file'], name=file_name)
+        xml_file = os.path.join(app.config['UPLOADED_XMLFILES_DEST'],
+                                file_name)
+        # validate XML and determine which import function should be used
+        xml_file_type = determine_xml(xml_file)
+        
+        # these import functions need to be submitted to the server instead
+        # of run directly
+        import_data = {}
+        func_name = ''
+
+        func_name = 'import_' + xml_file_type + '_xml'
+        if xml_file_type is not None:
+            ui.send("{'%s': {'func': f.%s, 'args_in': {'xml_file': r'%s'}, 'db_use': True, 'loop': False}}" % (func_name, 
+                                                                                                                func_name, 
+                                                                                                                xml_file))
+        
+    elif file_type == 'image':
+        image_files.save(request.files['file'])
+
     return 'file uploaded'
 
 @app.route('/admin/notification', methods=['GET','POST'])
@@ -776,11 +792,20 @@ def page_not_found(error):
 
 ############################# Upload Setup ############################
 app.config['UPLOADED_XMLFILES_DEST'] = os.path.join(sc_dir(), 'tmp')
+app.config['UPLOADED_IMAGEFILES_DEST'] = os.path.join(sc_dir(), STATIC_DIR)
 app.config['EARTHQUAKES'] = os.path.join(sc_dir(), 'data')
 app.config['MESSAGES'] = {}
 xml_files = UploadSet('xmlfiles', ('xml',))
-configure_uploads(app, (xml_files,))
+image_files = UploadSet('imagefiles', IMAGES, default_dest=app.config['UPLOADED_IMAGEFILES_DEST'])
+configure_uploads(app, (xml_files,image_files))
 ui = UI()
+
+def get_file_type(file_name):
+    ext = file_name.split('.')[-1]
+    if ext in ['jpg', 'jpeg', 'png', 'bmp']:
+        return 'image'
+    elif ext in ['xml']:
+        return 'xml'
 
 if __name__ == '__main__':
     if len(sys.argv) > 1:

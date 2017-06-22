@@ -85,8 +85,11 @@ class TestTemplateManager(unittest.TestCase):
     def test_badNotificationConfigs(self):
         temp_manager = TemplateManager()
         bad_configs = temp_manager.get_configs('new_event', 'template_DOES_NOT_EXIST_!@#$')
-        self.assertIsNone(bad_configs)
-        bad_configs = temp_manager.save_configs('new_event', 'template_DOES_NOT_EXIST_!@#$', bad_configs)
+        default = temp_manager.get_configs('new_event', 'default')
+
+        self.assertEqual(bad_configs, default)
+
+        bad_configs = temp_manager.save_configs('new_event', 'template_DOES_NOT_EXIST_!@#$', None)
         self.assertIsNone(bad_configs)
 
     def test_getTemplate(self):
@@ -97,7 +100,7 @@ class TestTemplateManager(unittest.TestCase):
     def test_badTemplate(self):
         temp_manager = TemplateManager()
         temp = temp_manager.get_template('new_event', 'template_DOES_NOT_EXIST_!@#$')
-        self.assertIsNone(temp)
+        self.assertIsNotNone(temp)
 
         temp = temp_manager.get_template_string('new_event', 'template_DOES_NOT_EXIST_!@#$')
         self.assertIsNone(temp)

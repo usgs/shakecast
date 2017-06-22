@@ -44,32 +44,63 @@
 
 .right-panel .toggle-click {
     transform: translateY(-50%) translateX(-50%) rotate(-135deg);
-    border-top: 50px solid rgba(50,50,50,.6);
-    border-right: 50px solid rgba(50,50,50,.6);
-    border-bottom: 50px solid transparent;
-    border-left: 50px solid transparent;
+    border-top: 25px solid rgba(50,50,50,.6);
+    border-right: 25px solid rgba(50,50,50,.6);
+    border-bottom: 25px solid transparent;
+    border-left: 25px solid transparent;
 }
 
 .left-panel .toggle-click {
     transform: translateY(-50%) translateX(-50%) rotate(45deg);
-    border-top: 50px solid rgba(50,50,50,.6);
-    border-right: 50px solid rgba(50,50,50,.6);
-    border-bottom: 50px solid transparent;
-    border-left: 50px solid transparent;
+    border-top: 25px solid rgba(50,50,50,.6);
+    border-right: 25px solid rgba(50,50,50,.6);
+    border-bottom: 25px solid transparent;
+    border-left: 25px solid transparent;
 }
 
 .bottom-panel .toggle-click {
     left: 50%;
     transform: translateX(-50%) translateY(-50%) rotate(-45deg);
-    border-top: 50px solid rgba(50,50,50,.6);
-    border-right: 50px solid rgba(50,50,50,.6);    
-    border-bottom: 50px solid transparent;
-    border-left: 50px solid transparent;
+    border-top: 25px solid rgba(50,50,50,.6);
+    border-right: 25px solid rgba(50,50,50,.6);    
+    border-bottom: 25px solid transparent;
+    border-left: 25px solid transparent;
+}
+
+.right-panel .toggle-click .arrow-icon {
+    position: absolute;
+    transform: translateY(-100%) translateX(15%)  rotate(135deg);
+}
+
+.left-panel .toggle-click .arrow-icon {
+    position: absolute;
+    transform: translateY(-100%) translateX(30%) rotate(-45deg);
+}
+
+.bottom-panel .toggle-click .arrow-icon {
+    position: absolute;
+    transform: translateY(-100%) translateX(10%)  rotate(45deg);
+}
+
+.arrow-icon:before {
+    content:'';
+    height: 100%;
+    display: inline-block;
+    vertical-align: middle;
+}
+
+.arrow-icon span {
+    display:inline-block;
+    vertical-align: middle;
+}
+
+.fa {
+    color:white;
 }
 
 .toggle-click:hover {
-    border-top: 50px solid rgba(80,150,255,.7) !important;
-    border-right: 50px solid rgba(80,150,255,.7) !important;
+    border-top: 25px solid rgba(80,150,255,.7) !important;
+    border-right: 25px solid rgba(80,150,255,.7) !important;
 }
 
 
