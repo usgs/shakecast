@@ -41,11 +41,11 @@ export class MapComponent implements OnInit, OnDestroy {
                              });
     public shakingData: any = null
     public totalShaking: number = 0;
-    public greyIcon: any = L.MakiMarkers.icon({color: "#555555", size: "m"});
+    public greyIcon: any = L.MakiMarkers.icon({color: "#808080", size: "m"});
     public greenIcon: any = L.MakiMarkers.icon({color: "#008000", size: "m"});
     public yellowIcon: any = L.MakiMarkers.icon({color: "#FFD700", size: "m"});
     public orangeIcon: any = L.MakiMarkers.icon({color: "#FFA500", size: "m"});
-    public redIcon: any = L.MakiMarkers.icon({color: "#555555", size: "m"});
+    public redIcon: any = L.MakiMarkers.icon({color: "#FF0000", size: "m"});
 
     constructor(private mapService: MapService,
                 private smService: ShakemapService,
@@ -324,7 +324,7 @@ export class MapComponent implements OnInit, OnDestroy {
             } 
             
             if (fac['yellow'] > 0) {
-                colorTable += `<th style="background-color:yellow;padding:2px">
+                colorTable += `<th style="background-color:gold;padding:2px">
                             ` + fac['metric']+ ': ' + fac['yellow'] + ` 
                         </th>`
             } 
@@ -367,6 +367,10 @@ export class MapComponent implements OnInit, OnDestroy {
         }
 
         if (fac['shaking']) {
+            var shakingColor = fac['shaking']['alert_level']
+            if (shakingColor == 'yellow') {
+                shakingColor = 'gold'
+            }
             marker['popupContent'] += `<table style="border-top:2px solid #444444;width:100%;">
                                             <tr>
                                                 <table style="width:90%;margin-left:5%;border-bottom:2px solid #dedede;padding-bottom:0">
@@ -377,7 +381,7 @@ export class MapComponent implements OnInit, OnDestroy {
                                             </tr>
                                             <tr>
                                                 <table style="width:100%;text-align:center;">
-                                                    <tr style="background:` + fac['shaking']['alert_level'] + `">
+                                                    <tr style="background:` + shakingColor + `">
                                                         <th style="text-align:center;color:white">` + fac['shaking']['metric'] + `: ` + fac['shaking'][fac['shaking']['metric'].toLowerCase()] + `</th>
                                                     </tr>
                                                 </table>
