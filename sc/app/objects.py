@@ -1101,18 +1101,18 @@ class SoftwareUpdater(object):
     @staticmethod
     def check_new_update(new, existing):
         new_split = new.split('.')
+        if 'b' in new_split[-1]:
+            new_split = new_split[:-1] + new_split[-1].split('b')
+
         existing_split = existing.split('.')
+        if 'b' in existing_split[-1]:
+            existing_split = existing_split[:-1] + existing_split[-1].split('b')
 
-        for i in range(3):
-            new_split[i] = int(new_split[i])
-            existing_split[i] = int(existing_split[i])
+        for idx in range(len(existing_split)):
+            if int(new_split[idx]) > int(existing_split[idx]):
+                return True        
+        return False
 
-        return ((new_split[0] > existing_split[0]) or 
-                    (new_split[0] == existing_split[0] and 
-                        new_split[1] > existing_split[1]) or
-                    (new_split[0] == existing_split[0] and 
-                        new_split[1] == existing_split[1] and
-                        new_split[2] > existing_split[2]))
 
     def notify_admin(self, update_info=None, testing=False):
         # notify admin
@@ -1156,12 +1156,6 @@ class SoftwareUpdater(object):
                 success += [file_]
             except Exception:
                 failed += [file_]
-        # change software version
-        # if len(success) > 0:
-        #     print 'SUCCESS: {}'.format(success)
-        # if len(failed) > 0:    
-        #     print 'FAILED: {}'.format(failed)
-
         
         sc.dict['Server']['update']['software_version'] = version
         if testing is not True:

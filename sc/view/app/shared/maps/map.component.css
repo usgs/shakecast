@@ -4,7 +4,7 @@
 
 #shaking {    
     position: fixed;
-    bottom: 100px;
+    bottom: 50px;
     z-index: 1000;
     width: 100%;
 }
