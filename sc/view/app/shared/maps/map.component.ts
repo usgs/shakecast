@@ -6,6 +6,8 @@ import { MapService } from './map.service'
 import { FacilityService } from '../../shakecast-admin/pages/facilities/facility.service';
 import { NotificationsService } from 'angular2-notifications';
 declare var L: any;
+L.MakiMarkers.accessToken = 'pk.eyJ1IjoiZHNsb3NreSIsImEiOiJjaXR1aHJnY3EwMDFoMnRxZWVtcm9laWJmIn0.1C3GE0kHPGOpbVV9kTxBlQ'
+
 declare var _: any;
 
 @Component({
@@ -39,6 +41,11 @@ export class MapComponent implements OnInit, OnDestroy {
                              });
     public shakingData: any = null
     public totalShaking: number = 0;
+    public greyIcon: any = L.MakiMarkers.icon({color: "#555555", size: "m"});
+    public greenIcon: any = L.MakiMarkers.icon({color: "#008000", size: "m"});
+    public yellowIcon: any = L.MakiMarkers.icon({color: "#FFD700", size: "m"});
+    public orangeIcon: any = L.MakiMarkers.icon({color: "#FFA500", size: "m"});
+    public redIcon: any = L.MakiMarkers.icon({color: "#555555", size: "m"});
 
     constructor(private mapService: MapService,
                 private smService: ShakemapService,
@@ -270,7 +277,25 @@ export class MapComponent implements OnInit, OnDestroy {
     }
 
     createFacMarker(fac: any) {
-        var marker: any = L.marker([fac.lat, fac.lon]);
+        if (fac['shaking']) {
+            if (fac['shaking']['alert_level'] == 'gray') {
+                var marker: any = L.marker([fac.lat, fac.lon], {icon: this.greyIcon});
+            } else if (fac['shaking']['alert_level'] == 'gray') {
+                var marker: any = L.marker([fac.lat, fac.lon], {icon: this.greyIcon});
+            } else if (fac['shaking']['alert_level'] == 'green') {
+                var marker: any = L.marker([fac.lat, fac.lon], {icon: this.greenIcon});
+            } else if (fac['shaking']['alert_level'] == 'yellow') {
+                var marker: any = L.marker([fac.lat, fac.lon], {icon: this.yellowIcon});
+            } else if (fac['shaking']['alert_level'] == 'orange') {
+                var marker: any = L.marker([fac.lat, fac.lon], {icon: this.orangeIcon});
+            } else if (fac['shaking']['alert_level'] == 'red') {
+                var marker: any = L.marker([fac.lat, fac.lon], {icon: this.redIcon});
+            }
+
+        } else {
+            var marker: any = L.marker([fac.lat, fac.lon]);
+        }
+
         var desc: string = ''
         if (fac.html) {
             marker['popupContent'] = fac.html
