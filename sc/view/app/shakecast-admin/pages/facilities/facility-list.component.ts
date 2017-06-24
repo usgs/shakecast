@@ -30,8 +30,7 @@ declare var _: any;
       ]),
       trigger('headerSelected', [
         state('yes', style({'background-color': '#7af'})),
-        state('no', style({'background-color': '*'})),
-          transition('* => *', animate('100ms ease-in-out'))
+        state('no', style({'background-color': '*'}))
       ])
     ]
 })

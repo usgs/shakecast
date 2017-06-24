@@ -13,14 +13,14 @@
                         <td>
                             <div style="width: 80px">                                
                                 {% if web is sameas false %}
-                                    <img style="border-radius:50%" src="cid:sc_logo{{ shakemap.shakecast_id }}">
+                                    <img style="border-radius:50%;max-height:100%;max-width:100%;" src="cid:sc_logo{{ shakemap.shakecast_id }}">
                                 {% else %}
-                                    <img style="border-radius:50%" src="/static/{{ config.logo }}">
+                                    <img style="border-radius:50%;max-height:100%;max-width:100%;" src="/static/{{ config.logo }}">
                                 {% endif %}
                             </div>
                         </td>
                         <td>
-                            <h1 style="color:#444444;font-size:50px;font-family:Arial;margin:0px">ShakeCast Alert</h1>
+                            <h1 style="color:#444444;font-size:50px;font-family:Arial;margin:0px">{{ config.head_text }}</h1>
                         </td>
                     </tr>
                 </table>

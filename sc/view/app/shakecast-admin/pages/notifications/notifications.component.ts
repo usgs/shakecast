@@ -32,6 +32,7 @@ export class NotificationsComponent implements OnInit {
     public eventType: string = 'new_event';
     public enteringNew: boolean = false;
     public newName: string = '';
+    public imageNames: string[] = []
 
     constructor(private titleService: TitleService,
                 private notHTMLService: NotificationHTMLService,
@@ -68,9 +69,14 @@ export class NotificationsComponent implements OnInit {
                          
         }));
 
+        this.subscriptions.push(this.notHTMLService.imageNames.subscribe((names: string[]) => {
+            this.imageNames = names           
+        }));
+
         this.notHTMLService.getNotification(this.name, this.eventType);
         this.notHTMLService.getConfigs('new_event', this.name);
         this.notHTMLService.getTemplateNames();
+        this.notHTMLService.getImageNames();
     }
 
     getNotification(name: string,
@@ -114,7 +120,7 @@ export class NotificationsComponent implements OnInit {
                     // remove unwanted characters
                     var cleanName = this.newName.replace('/[^a-zA-Z0-9]/g','_');
 
-                    this.notHTMLService.newTepmlate(cleanName);
+                    this.notHTMLService.newTemplate(cleanName);
                     this.enteringNew = false;
                     this.newName = '';
                     this.notHTMLService.getTemplateNames();

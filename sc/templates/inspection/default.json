@@ -7,15 +7,15 @@
         "font_color": "#444444", 
         "header_color": "#444444"
     }, 
+    "table": {
+        "border_color": "#444444"
+    }, 
     "second_head": {
         "font_color": "#444444", 
         "border_color": "#444444"
     }, 
-    "table": {
-        "border_color": "#444444"
-    }, 
-    "head_text": "ShakeCast Alert", 
     "logo": "sc_logo.png", 
+    "head_text": "ShakeCast Alert", 
     "admin_email": "sc.admin@gmail.com", 
     "type": "inspection", 
     "body_color": "#ffffff", 

@@ -115,3 +115,52 @@ html, body
 .the-view {
     min-height: 100vh;
 }
+
+.shaking-table:hover th {
+  opacity: 1;
+}
+
+.marker-cluster-gray {
+    background: rgba(100,100,100,.7)
+}
+
+.marker-cluster-gray div {
+    background: rgba(100,100,100,.9)
+}
+
+.marker-cluster-green {
+    background: rgba(0,125,0,.7)
+}
+
+.marker-cluster-green div {
+    background: rgba(0,125,0,.9)
+}
+
+.marker-cluster-yellow {
+    background: rgba(255,215,0,.7)
+}
+
+.marker-cluster-yellow div {
+    background: rgba(255,215,0,.9)
+}
+
+.marker-cluster-orange {
+    background: rgba(255,165,0,.7)
+}
+
+.marker-cluster-orange div {
+    background: rgba(255,165,0,.9)
+}
+
+.marker-cluster-red {
+    background: rgba(255,0,0,.7)
+}
+
+.marker-cluster-red div {
+    background: rgba(255,0,0,.9)
+}
+
+.marker-cluster span {
+    color: white;
+    font-weight: bold;
+}
