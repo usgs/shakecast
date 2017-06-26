@@ -39,7 +39,6 @@ class Server(object):
         self.stop_loop = False
         self.stop_server = False
         self.socket = socket.socket()
-        self.port = 1981
         self.sleep = .2
         self.connections = {}
         self.queue = []
@@ -56,6 +55,8 @@ class Server(object):
                                         'logs',
                                         'shakecast.log')
         
+        sc = SC()
+        self.port = sc.dict['port']
         self.socket_setup()
         
     def socket_setup(self):
