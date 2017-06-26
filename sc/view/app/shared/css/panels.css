@@ -79,7 +79,7 @@
 
 .bottom-panel .toggle-click .arrow-icon {
     position: absolute;
-    transform: translateY(-100%) translateX(10%)  rotate(45deg);
+    transform: translateY(-100%) rotate(45deg);
 }
 
 .arrow-icon:before {
