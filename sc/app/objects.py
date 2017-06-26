@@ -1108,7 +1108,12 @@ class SoftwareUpdater(object):
         if 'b' in existing_split[-1]:
             existing_split = existing_split[:-1] + existing_split[-1].split('b')
 
-        for idx in range(len(existing_split)):
+        if len(existing_split) > len(new_split):
+            range_ = len(new_split)
+        else:
+            range_ = len(existing_split)
+
+        for idx in range(range_):
             if int(new_split[idx]) > int(existing_split[idx]):
                 return True        
         return False
