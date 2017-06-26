@@ -67,5 +67,6 @@
         "archive_mag": 5, 
         "geo_json_int": 60
     }, 
-    "timezone": 0
+    "timezone": 0, 
+    "port": 1981
 }

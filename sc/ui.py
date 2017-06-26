@@ -4,6 +4,7 @@ import select as select_
 import sys
 from app.server import Server
 from app.newthread import New_Thread
+from app.util import SC
 
 class UI(object):
     """
@@ -33,6 +34,8 @@ class UI(object):
         self.print_queue = []
         self.port = 1981
         
+        sc = SC()
+        self.port = sc.dict['port']
     def start(self):
         """
         Starts the CLI loop
