@@ -121,19 +121,19 @@ html, body
 }
 
 .marker-cluster-gray {
-    background: rgba(100,100,100,.7)
+    background: rgba(127,127,127,.7)
 }
 
 .marker-cluster-gray div {
-    background: rgba(100,100,100,.9)
+    background: rgba(127,127,127,.9)
 }
 
 .marker-cluster-green {
-    background: rgba(0,125,0,.7)
+    background: rgba(0,127,0,.7)
 }
 
 .marker-cluster-green div {
-    background: rgba(0,125,0,.9)
+    background: rgba(0,127,0,.9)
 }
 
 .marker-cluster-yellow {
