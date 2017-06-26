@@ -27,10 +27,10 @@
     }, 
     "Server": {
         "update": {
-            "json_url": "https://raw.github.com/usgs/shakecast/update-feed/update.json", 
+            "json_url": "https://raw.githubusercontent.com/usgs/shakecast/master/update.json", 
             "db_version": 1, 
-            "update_version": "1.0.3", 
-            "software_version": "1.0.3", 
+            "update_version": "4.0.0b5", 
+            "software_version": "4.0.0b5", 
             "admin_notified": true
         }, 
         "DNS": "https://localhost", 

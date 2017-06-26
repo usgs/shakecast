@@ -1,0 +1,30 @@
+{
+    "updates": [
+        {"version": "4.0.0b5",
+        "info": "Update 1",
+        "files": [
+            {"url": "https://raw.githubusercontent.com/dslosky-usgs/shakecast/master/sc/app/functions.py",
+             "path": "sc/app/functions.py"},
+            {"url": "https://raw.githubusercontent.com/dslosky-usgs/shakecast/master/sc/app/orm.py",
+             "path": "sc/app/orm.py"},
+            {"url": "https://raw.githubusercontent.com/dslosky-usgs/shakecast/master/sc/app/newthread.py",
+             "path": "sc/app/newthread.py"},
+            {"url": "https://raw.githubusercontent.com/dslosky-usgs/shakecast/master/sc/app/objects.py",
+             "path": "sc/app/objects.py"},
+            {"url": "https://raw.githubusercontent.com/dslosky-usgs/shakecast/master/sc/app/sc_config.py",
+             "path": "sc/app/sc_config.py"},
+            {"url": "https://raw.githubusercontent.com/dslosky-usgs/shakecast/master/sc/app/server.py",
+             "path": "sc/app/server.py"},
+            {"url": "https://raw.githubusercontent.com/dslosky-usgs/shakecast/master/sc/app/task.py",
+             "path": "sc/app/task.py"},
+            {"url": "https://raw.githubusercontent.com/dslosky-usgs/shakecast/master/sc/app/util.py",
+             "path": "sc/app/util.py"},
+            {"url": "https://raw.githubusercontent.com/dslosky-usgs/shakecast/master/sc/app/db_migrations.py",
+             "path": "sc/app/db_migrations.py"},
+            {"url": "https://raw.githubusercontent.com/dslosky-usgs/shakecast/master/sc/ui.py",
+             "path": "sc/ui.py"},
+            {"url": "https://raw.githubusercontent.com/dslosky-usgs/shakecast/master/sc/web_server.py",
+             "path": "sc/web_server.py"}
+        ]}
+    ]
+}
