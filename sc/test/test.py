@@ -241,9 +241,11 @@ class TestFull(unittest.TestCase):
         
         global_group = create_group(name='GLOBAL')
         scenario_group = create_group(name='GLOBAL_SCENARIO', event_type='SCENARIO')
-
+        high_prio = create_group(name='HIGH_INSP',
+                                    insp_prios=['RED'])
         session.add(global_group)
         session.add(scenario_group)
+        session.add(high_prio)
 
         session.commit()
         Session.remove()
@@ -312,7 +314,9 @@ class TestFull(unittest.TestCase):
                 raise ValueError('Event not processed... {}: {}'.format(event.event_id,
                                                                         event.status))
             for notification in event.notifications:
-                if notification.status != 'sent' and notification.status != 'aggregated':
+                if (notification.status != 'sent' and 
+                    notification.status != 'aggregated' and
+                    notification.group.name != 'HIGH_INSP'):
                     raise ValueError('Notification not sent... {}: {}, {}'.format(event.event_id,
                                                                                   notification.notification_type,
                                                                                   notification.status))
@@ -330,7 +334,9 @@ class TestFull(unittest.TestCase):
                 raise ValueError('ShakeMap not processed... {}: {}'.format(shakemap.shakemap_id,
                                                                            shakemap.status))
             for notification in shakemap.notifications:
-                if notification.status != 'sent' and notification.status != 'aggregated':
+                if (notification.status != 'sent' and 
+                    notification.status != 'aggregated' and
+                    notification.group.name != 'HIGH_INSP'):
                     raise ValueError('Notification not sent... {}: {}, {}'.format(shakemap.shakemap_id,
                                                                                   notification.notification_type,
                                                                                   notification.status))
@@ -449,6 +455,23 @@ class TestFull(unittest.TestCase):
 
     def step25_downloadActualScenario(self):
         download_scenario('bssc2014nsanandreassaosansap_m8p04_se', scenario=True)
+
+    def step26_groupInspLevel(self):
+        session = Session()
+        g = session.query(Group).first()
+        self.assertEqual(g.has_alert_level('GREY'), True)
+        self.assertEqual(g.has_alert_level('grey'), True)
+        self.assertEqual(g.has_alert_level('GRAY'), True)
+        self.assertEqual(g.has_alert_level('gray'), True)
+        self.assertEqual(g.has_alert_level('GREEN'), True)
+        self.assertEqual(g.has_alert_level('green'), True)
+        self.assertEqual(g.has_alert_level('YELLOW'), True)
+        self.assertEqual(g.has_alert_level('yellow'), True)
+        self.assertEqual(g.has_alert_level('ORANGE'), True)
+        self.assertEqual(g.has_alert_level('orange'), True)
+        self.assertEqual(g.has_alert_level('RED'), True)
+        self.assertEqual(g.has_alert_level('red'), True)
+        self.assertEqual(g.has_alert_level('does_not_exist'), False)
 
     def steps(self):
         '''
@@ -815,7 +838,13 @@ def create_fac(grid=None, fac_id='AUTO_GENERATED'):
     
     return facility
     
-def create_group(name=None, event_type='ACTUAL'):
+def create_group(name=None, 
+                    event_type='ACTUAL', 
+                    insp_prios=['GREY', 
+                                'GREEN', 
+                                'YELLOW', 
+                                'ORANGE', 
+                                'RED']):
     group = Group()
     group.name = name
     group.facility_type = 'All'
@@ -836,7 +865,6 @@ def create_group(name=None, event_type='ACTUAL'):
     gs.event_type = 'heartbeat'
     group.specs.append(gs)
     
-    insp_prios = ['GREY', 'GREEN', 'YELLOW', 'ORANGE', 'RED']
     for insp_prio in insp_prios:
         gs = Group_Specification()
         gs.event_type = event_type

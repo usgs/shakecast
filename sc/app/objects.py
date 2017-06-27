@@ -781,6 +781,10 @@ class NotificationBuilder(object):
         template = temp_manager.get_template('inspection', name=name)
 
         facility_shaking = shakemap.facility_shaking
+        if len(facility_shaking) > 0:
+            facility_shaking.sort(key=lambda x: x.weight,
+                                        reverse=True)
+
         fac_details = {'all': 0, 'gray': 0, 'green': 0,
                        'yellow': 0, 'orange': 0, 'red': 0}
         
