@@ -12,3 +12,7 @@
 .not-container {
     padding: 10px;
 }
+
+.content-container {
+    text-align: center;
+}
