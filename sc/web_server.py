@@ -631,8 +631,6 @@ def upload():
     if request.method == 'GET':
         return render_template('admin/upload.html')
 
-    import pdb
-    pdb.set_trace()
     file_type = get_file_type(request.files['file'].filename)
     if file_type is 'xml':
         file_name = str(int(time.time())) + request.files['file'].filename

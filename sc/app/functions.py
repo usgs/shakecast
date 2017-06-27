@@ -11,6 +11,7 @@ from util import *
 import xmltodict
 import shutil
 import time
+from math import floor
 
 modules_dir = os.path.join(sc_dir() + 'modules')
 if modules_dir not in sys.path:
@@ -534,17 +535,15 @@ def inspection_notification(notification=Notification(),
     shakemap = notification.shakemap
     group = notification.group
     error = ''
-    try:
-        not_builder = NotificationBuilder()
-        html = not_builder.build_insp_html(shakemap)
-    
-        notification.status = 'file success'
-    except Exception as e:
-        error = str(e)
-        notification.status = 'file failed'
-    
-    # if the file was created successfully, try sending it
-    if notification.status != 'file failed':
+
+    not_builder = NotificationBuilder()
+    html = not_builder.build_insp_html(shakemap)
+
+    insp_val = max(fs.weight for fs in shakemap.facility_shaking)
+    alert_levels = ['gray', 'green', 'yellow', 'orange', 'red']
+    alert_level = alert_levels[int(floor(insp_val))]
+
+    if group.has_alert_level(alert_level):
         try:
             #initiate message
             msg = MIMEMultipart()
@@ -595,9 +594,12 @@ def inspection_notification(notification=Notification(),
         except Exception as e:
             error = str(e)
             notification.status = 'send failed'
+            
+    else:
+        notification.status = 'not sent: low insp'
 
-        return {'status': notification.status,
-                'error': error}
+    return {'status': notification.status,
+            'error': error}
 
 def download_scenario(shakemap_id=None, scenario=False):
     if shakemap_id is not None:

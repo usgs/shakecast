@@ -573,7 +573,18 @@ class Group(Base):
             return 1 == 1
         else:
             return 0 == 1
-        
+
+    def has_alert_level(self, level):
+        levels = [s.inspection_priority.lower() for s in self.specs if 
+                                s.notification_type == 'DAMAGE']
+
+        # need to match grey and gray... we use gray in pyCast, but
+        # workbook and V3 use grey
+        if 'grey' in levels and level.lower() == 'gray':
+            return True
+
+        return level.lower() in levels
+
 class Group_Specification(Base):
     __tablename__ = 'group_specification'
     shakecast_id = Column(Integer, primary_key=True)
@@ -591,14 +602,12 @@ class Group_Specification(Base):
                                       inspection_priority=%s,
                                       minimum_magnitude=%s,
                                       notification_format=%s,
-                                      aggregate_name=%s,
-                                      template=%s)''' % (self.group_id,
+                                      aggregate_name=%s)''' % (self.group_id,
                                                          self.notification_type,
                                                          self.inspection_priority,
                                                          self.minimum_magnitude,
                                                          self.notification_format,
-                                                         self.aggregate_name,
-                                                         self.template)
+                                                         self.aggregate_name)
     
 
 # Connection tables
