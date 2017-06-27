@@ -394,6 +394,16 @@ class TestFull(unittest.TestCase):
         self.assertTrue(new)
         new = s.check_new_update('1.1.1', '1.1.1')
         self.assertFalse(new)
+        new = s.check_new_update('1.1.1b2', '1.1.1b1')
+        self.assertTrue(new)
+        new = s.check_new_update('1.1.1b2', '1.1.1b2')
+        self.assertFalse(new)
+        new = s.check_new_update('1.1.2b0', '1.1.1b2')
+        self.assertTrue(new)
+        new = s.check_new_update('1.1.2b2', '1.1.1b2')
+        self.assertTrue(new)
+        new = s.check_new_update('1.1.2b3', '1.1.1b2')
+        self.assertTrue(new)
 
     def step17_CheckUpdate(self):
         s = SoftwareUpdater()
