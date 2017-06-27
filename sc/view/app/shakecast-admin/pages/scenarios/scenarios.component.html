@@ -5,7 +5,8 @@
 <div class="right-panel" [@showRight]="showRight">
     <div class="toggle">
         <div class="toggle-click" (click)="toggleRight()">
-            <span class="arrow-icon"><i class="fa fa-chevron-left"></i></span>
+            <span class="arrow-icon" [hidden]="showRight=='shown'"><i class="fa fa-chevron-left"></i></span>
+            <span class="arrow-icon" [hidden]="showRight=='hidden'"><i class="fa fa-chevron-right"></i></span>
         </div>
     </div>
     <div class="panel-content">
@@ -30,7 +31,8 @@
 <div class="bottom-panel" [@showBottom]="showBottom">
     <div class="toggle">
         <div class="toggle-click" (click)="toggleBottom()" style="width:0">
-            <span class="arrow-icon"><i class="fa fa-chevron-up"></i></span>
+            <span class="arrow-icon" [hidden]="showBottom=='shown'"><i class="fa fa-chevron-up"></i></span>
+            <span class="arrow-icon" [hidden]="showBottom=='hidden'"><i class="fa fa-chevron-down"></i></span>
         </div>
     </div>
     <div class="control">

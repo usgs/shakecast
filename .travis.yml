@@ -1,0 +1,10 @@
+language: python
+python:
+  - "2.7"
+
+install: 
+  - pip install -r requirements.txt
+  - python sc/app/sc_config.py --smtpu testing.only.shakecast@gmail.com --smtpp testingpass
+
+script:
+  - python sc/test/test.py dslosky@usgs.gov

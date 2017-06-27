@@ -293,7 +293,7 @@ export class MapComponent implements OnInit, OnDestroy {
             }
 
         } else {
-            var marker: any = L.marker([fac.lat, fac.lon]);
+            var marker: any = L.marker([fac.lat, fac.lon], {icon: this.greyIcon});
         }
 
         var desc: string = ''
@@ -474,29 +474,31 @@ export class MapComponent implements OnInit, OnDestroy {
             c += 'large';
         }
 
-        var shaking_c = ''
+        var color_c = ''
         if (facs[0]['facility']['shaking']) {
-            var shaking = 'gray'
+            var shaking = 'gray';
             for (var fac_id in facs) {
                 if ((!_.contains(['green', 'yellow', 'orange', 'red'], shaking)) &&
                         (_.contains(['green', 'yellow', 'orange', 'red'], facs[fac_id]['facility']['shaking']['alert_level']))) {
-                    shaking = facs[fac_id]['facility']['shaking']['alert_level']
+                    shaking = facs[fac_id]['facility']['shaking']['alert_level'];
                 } else if ((!_.contains(['yellow', 'orange', 'red'], shaking)) &&
                         (_.contains(['yellow', 'orange', 'red'], facs[fac_id]['facility']['shaking']['alert_level']))) {
-                    shaking = facs[fac_id]['facility']['shaking']['alert_level']
+                    shaking = facs[fac_id]['facility']['shaking']['alert_level'];
                 } else if ((!_.contains(['orange', 'red'], shaking)) &&
                         (_.contains(['orange', 'red'], facs[fac_id]['facility']['shaking']['alert_level']))) {
-                    shaking = facs[fac_id]['facility']['shaking']['alert_level']
+                    shaking = facs[fac_id]['facility']['shaking']['alert_level'];
                 } else if ((!_.contains(['red'], shaking)) &&
                         (_.contains(['red'], facs[fac_id]['facility']['shaking']['alert_level']))) {
-                    shaking = facs[fac_id]['facility']['shaking']['alert_level']
+                    shaking = facs[fac_id]['facility']['shaking']['alert_level'];
                 }
             }
 
-            shaking_c = 'marker-cluster-' + shaking
+            color_c = 'marker-cluster-' + shaking;
+        } else {
+            color_c = 'marker-cluster-green';
         }
 
-		return new L.DivIcon({ html: '<div><span>' + childCount + '</span></div>', className: 'marker-cluster' + c + ' ' + shaking_c, iconSize: new L.Point(40, 40) });
+		return new L.DivIcon({ html: '<div><span>' + childCount + '</span></div>', className: 'marker-cluster' + c + ' ' + color_c, iconSize: new L.Point(40, 40) });
     }
 
     ngOnDestroy() {
