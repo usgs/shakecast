@@ -923,11 +923,10 @@ def db_migration(engine):
 
     session_maker = sessionmaker(bind=engine)
     Session = scoped_session(session_maker)
-
+    
+    sc.save_dict()
     return engine, Session
 
-        
-    sc.save_dict()
 engine, Session = db_migration(engine)
 
 # create scadmin if there are no other users
