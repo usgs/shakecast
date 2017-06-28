@@ -918,17 +918,18 @@ def db_migration(engine):
         new_engine = None
         if mig_version > cur_version:
             # run the migration
-            new_engine = migration(engine)
+            engine = migration(engine)
             # update the configs
             sc.dict['Server']['update']['db_version'] = mig_version
 
-        if new_engine is not None:
-            engine = new_engine
-            session_maker = sessionmaker(bind=engine)
-            Session = scoped_session(session_maker)
+    session_maker = sessionmaker(bind=engine)
+    Session = scoped_session(session_maker)
 
+    return engine, Session
+
+        
     sc.save_dict()
-db_migration(engine)
+engine, Session = db_migration(engine)
 
 # create scadmin if there are no other users
 session = Session()
