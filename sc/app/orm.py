@@ -908,7 +908,7 @@ session_maker = sessionmaker(bind=engine)
 Session = scoped_session(session_maker)
 
 ############# Check for required DB migrations #############
-def db_migration():
+def db_migration(engine):
     from db_migrations import migrations
     from util import SC
     sc = SC()
@@ -917,11 +917,18 @@ def db_migration():
         cur_version = sc.dict['Server']['update']['db_version']
         if mig_version > cur_version:
             # run the migration
-            migration(engine)
+            engine = migration(engine)
             # update the configs
             sc.dict['Server']['update']['db_version'] = mig_version
+
+    session_maker = sessionmaker(bind=engine)
+    Session = scoped_session(session_maker)
+
+    return engine, Session
+
+        
     sc.save_dict()
-db_migration()
+engine, Session = db_migration(engine)
 
 # create scadmin if there are no other users
 session = Session()
