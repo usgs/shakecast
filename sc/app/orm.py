@@ -915,7 +915,6 @@ def db_migration(engine):
     for migration in migrations:
         mig_version = int(migration.__name__.split('to')[1])
         cur_version = sc.dict['Server']['update']['db_version']
-        new_engine = None
         if mig_version > cur_version:
             # run the migration
             engine = migration(engine)
