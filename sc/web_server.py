@@ -303,6 +303,7 @@ def get_groups():
     for group in groups:
         group_dict = group.__dict__.copy()
         group_dict.pop('_sa_instance_state', None)
+        group_dict['info'] = json.loads(get_group_info(group.shakecast_id))
         group_dicts += [group_dict]
         
     group_json = json.dumps(group_dicts, cls=AlchemyEncoder)
@@ -668,35 +669,22 @@ def notification():
 def admin_eqs():
     return render_template('admin/earthquakes.html')
 
-@app.route('/admin/get/groups/<group_id>/specs')
+@app.route('/admin/api/groups/<group_id>/info')
 @admin_only
 @login_required
-def get_group_specs(group_id):
+def get_group_info(group_id):
     session = Session()
     group = (session.query(Group)
                 .filter(Group.shakecast_id == group_id)
                 .first())
-    
-    group_specs = {'inspection': [],
-                   'new_event': [],
-                   'heartbeat': [],
-                   'scenario_inspection': [],
-                   'scenario_new_event': []}
+
     if group is not None:
-        for spec in group.specs:
-            if spec.notification_type is not None and spec.event_type is not None:
-                spec_dict = spec.__dict__.copy()
-                spec_dict.pop('_sa_instance_state', None)
-                if spec.notification_type.lower() == 'damage' and spec.event_type.lower() == 'actual':
-                    group_specs['inspection'] += [spec_dict]
-                elif spec.notification_type.lower() == 'new_event' and spec.event_type.lower() == 'actual':
-                    group_specs['new_event'] += [spec_dict]
-                elif spec.notification_type.lower() == 'damage' and spec.event_type.lower() =='scenario':
-                    group_specs['scenario_inspection'] += [spec_dict]
-                elif spec.notification_type.lower() == 'new_event' and spec.event_type.lower() =='scenario':
-                    group_specs['scenario_new_event'] += [spec_dict]
-                elif spec.notification_type.lower() == 'heartbeat':
-                    group_specs['heartbeat'] += [spec_dict]
+        group_specs = {'inspection': group.get_alert_levels(),
+                    'new_event': group.get_min_mag(),
+                    'heartbeat': group.has_spec('heartbeat'),
+                    'scenario': group.has_spec('scenario'),
+                    'facilities': facility_info(group.name),
+                    'users': group.users}
     
     specs_json = json.dumps(group_specs, cls=AlchemyEncoder)
     
@@ -787,6 +775,19 @@ def shutdown():
 @app.errorhandler(404)
 def page_not_found(error):
     return render_template('index.html')
+
+def facility_info(group_name=''):
+    session = Session()
+    f_types = session.query(Facility.facility_type).distinct().all()
+
+    f_dict = {}
+    for f_type in f_types:
+        query = session.query(Facility)
+        query = query.filter(Facility.groups.any(Group.name == group_name))
+        query = query.filter(Facility.facility_type == f_type[0])
+        f_dict[f_type[0]] = query.count()
+
+    return f_dict
 
 ############################# Upload Setup ############################
 app.config['UPLOADED_XMLFILES_DEST'] = os.path.join(sc_dir(), 'tmp')

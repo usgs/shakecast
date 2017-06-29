@@ -585,6 +585,29 @@ class Group(Base):
 
         return level.lower() in levels
 
+    def get_alert_levels(self):
+        levels = [s.inspection_priority.lower() for s in self.specs if 
+                                s.notification_type == 'DAMAGE']
+
+        return levels
+
+    def check_min_mag(self, mag=10):
+        min_mags = [s.minimum_magnitude for s in self.specs 
+                    if s.notification_type.lower() == 'new_event']
+        for min_mag in min_mags:
+            if mag > min_mag:
+                return True
+        return False
+
+    def get_min_mag(self):
+        mags = [s.minimum_magnitude for s in self.specs 
+                    if s.notification_type.lower() == 'new_event']
+        if len(mags) == 0:
+            return 0
+        else:
+            return min(mags)
+
+
 class Group_Specification(Base):
     __tablename__ = 'group_specification'
     shakecast_id = Column(Integer, primary_key=True)
@@ -902,11 +925,6 @@ if testing is True:
 # create database schema that doesn't exist
 db_sql = metadata.create_all(engine)
 
-# In SQLalchemy we always work with RELATED objects
-# all the objects we're working with are stored in a session
-session_maker = sessionmaker(bind=engine)
-Session = scoped_session(session_maker)
-
 ############# Check for required DB migrations #############
 def db_migration(engine):
     from db_migrations import migrations
@@ -923,7 +941,7 @@ def db_migration(engine):
 
     session_maker = sessionmaker(bind=engine)
     Session = scoped_session(session_maker)
-    
+
     sc.save_dict()
     return engine, Session
 
