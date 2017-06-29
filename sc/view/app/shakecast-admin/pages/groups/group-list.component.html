@@ -12,7 +12,33 @@
                         <div class="data-info-container">
                             <table>
                                 <tr>
-                                    <th>Facility Type:</th><td>{{ group.facility_type }}</td>
+                                    <table>
+                                        <th>Facility Type:</th><td>{{ group.facility_type }}</td>
+                                    </table>
+                                </tr>
+                                <tr>
+                                    <table>
+                                        <th>Geometry: </th><td>{{ group.lat_min }}, {{ group.lon_min }}<br>
+                                                                {{ group.lat_min}}, {{ group.lon_max }}<br>
+                                                            {{ group.lat_max }}, {{ group.lon_max }}<br>
+                                                            {{ group.lat_max }}, {{ group.lon_min }}<br>
+                                                            {{ group.lat_min }}, {{ group.lon_min }}  
+                                        </td>
+                                    </table>
+                                </tr>
+                                <tr>
+                                    <table>
+                                        <th>
+                                            Users: 
+                                        </th>
+                                        <td>
+                                            <select>
+                                                <option *ngFor="let user of group['info']['users']">
+                                                    {{ user.username }}
+                                                </option>
+                                            </select>
+                                        </td>
+                                    </table>
                                 </tr>
                             </table>
                         </div>
@@ -33,7 +59,33 @@
                         <div class="data-info-container">
                             <table>
                                 <tr>
-                                    <th>Facility Type:</th><td>{{ group.facility_type }}</td>
+                                    <table>
+                                        <th>Facility Type:</th><td>{{ group.facility_type }}</td>
+                                    </table>
+                                </tr>
+                                <tr>
+                                    <table>
+                                        <th>Geometry: </th><td>{{ group.lat_min }}, {{ group.lon_min }}<br>
+                                                                {{ group.lat_min}}, {{ group.lon_max }}<br>
+                                                            {{ group.lat_max }}, {{ group.lon_max }}<br>
+                                                            {{ group.lat_max }}, {{ group.lon_min }}<br>
+                                                            {{ group.lat_min }}, {{ group.lon_min }}  
+                                        </td>
+                                    </table>
+                                </tr>
+                                <tr>
+                                    <table>
+                                        <th>
+                                            Users: 
+                                        </th>
+                                        <td>
+                                            <select>
+                                                <option *ngFor="let user of group['info']['users']">
+                                                    {{ user.username }}
+                                                </option>
+                                            </select>
+                                        </td>
+                                    </table>
                                 </tr>
                             </table>
                         </div>
