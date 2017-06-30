@@ -743,199 +743,120 @@ def import_facility_xml(xml_file='', _user=None):
                     'log': message to be added to ShakeCast log
                            and should contain info on error}
     '''
+    xml_list = []
+    with open(xml_file, 'r') as xml_str:
+        xml_dict = json.loads(json.dumps(xmltodict.parse(xml_str)))
+        xml_list = xml_dict['FacilityTable']['FacilityRow']
+        if isinstance(xml_list, list) is False:
+            xml_list = [xml_list]
+    
+    data = import_facility_dicts(facs=xml_list, _user=_user)
+    
+    return data
+
+def import_facility_dicts(facs=None, _user=None):
     session = Session()
-    
-    tree = ET.parse(xml_file)
-    root = tree.getroot()
-    facs = [child for child in root]
-    count_dict = {}
-    for fac in facs:
-        facility_id = ''
-        facility_type = ''
-        component = ''
-        component_class = ''
-        name = ''
-        description = ''
-        short_name = ''
-        model = ''
-        geom_type = ''
-        html = ''
-        geom = ''
-        gray = -1
-        gray_beta = -1
-        gray_metric = ''
-        green = -1
-        green_beta = -1
-        green_metric = ''
-        yellow = -1
-        yellow_beta = -1
-        yellow_metric = ''
-        orange = -1
-        orange_beta = -1
-        orange_metric = ''
-        red = -1
-        red_beta = -1
-        red_metric = ''
-        
-        for child in fac:
-            if child.tag == 'EXTERNAL_FACILITY_ID':
-                facility_id = child.text
-            elif child.tag == 'FACILITY_TYPE':
-                facility_type = child.text
-            elif child.tag == 'COMPONENT_CLASS':
-                component_class = child.text
-            elif child.tag == 'COMPONENT':
-                component = child.text
-            elif child.tag == 'FACILITY_NAME':
-                name = child.text
-            elif child.tag == 'DESCRIPTION':
-                description = child.text
-            elif child.tag == 'SHORT_NAME':
-                pass
-            elif child.tag == 'FACILITY_MODEL':
-                model = child.text
-            elif child.tag == 'FEATURE':
-                for child2 in child:
-                    if child2.tag == 'GEOM_TYPE':
-                        geom_type = child2.text
-                    elif child2.tag == 'DESCRIPTION':
-                        html = child2.text
-                    elif child2.tag == 'GEOM':
-                        geom = child2.text
-            elif child.tag == 'FRAGILITY':
-                for child2 in child:
-                    for child3 in child2:
-                        if child2.tag == 'GREY' or child2.tag == 'GRAY':
-                            if child3.tag == 'METRIC':
-                                gray_metric = child3.text
-                            elif child3.tag == 'ALPHA':
-                                gray = float(child3.text)
-                            elif child3.tag == 'BETA':
-                                gray_beta = float(child3.text)
-                        elif child2.tag == 'GREEN':
-                            if child3.tag == 'METRIC':
-                                green_metric = child3.text
-                            elif child3.tag == 'ALPHA':
-                                green = float(child3.text)
-                            elif child3.tag == 'BETA':
-                                green_beta = float(child3.text)
-                        elif child2.tag == 'YELLOW':
-                            if child3.tag == 'METRIC':
-                                yellow_metric = child3.text
-                            elif child3.tag == 'ALPHA':
-                                yellow = float(child3.text)
-                            elif child3.tag == 'BETA':
-                                yellow_beta = float(child3.text)
-                        elif child2.tag == 'ORANGE':
-                            if child3.tag == 'METRIC':
-                                orange_metric = child3.text
-                            elif child3.tag == 'ALPHA':
-                                orange = float(child3.text)
-                            elif child3.tag == 'BETA':
-                                orange_beta = float(child3.text)
-                        elif child2.tag == 'RED':
-                            if child3.tag == 'METRIC':
-                                red_metric = child3.text
-                                
-                                # temporarily add metric
-                                metric = child3.text
-    
-                            elif child3.tag == 'ALPHA':
-                                red = float(child3.text)
-                            elif child3.tag == 'BETA':
-                                red_beta = float(child3.text)
-        
-        # check for an existing facility with this ID
-        existing = (session.query(Facility)
-                            .filter(Facility.facility_id == facility_id)
-                            .filter(Facility.component == component)
-                            .filter(Facility.component_class == component_class)
+    if facs is not None:
+        count_dict = {}
+        for fac in facs:
+            
+            # data validation
+            if fac.get('EXTERNAL_FACILITY_ID', None) is None:
+                continue
+
+            existing = (session.query(Facility)
+                            .filter(Facility.facility_id == fac['EXTERNAL_FACILITY_ID'])
+                            .filter(Facility.component == fac['COMPONENT'])
+                            .filter(Facility.component_class == fac['COMPONENT_CLASS'])
                             .all())
-        if existing:
-            for f in existing:
-                session.delete(f)
-            
-        # determine if we can add to session or not
-        if not facility_id:
-            # don't add to session and add to error message
-            continue
-        if not component:
-            component = 'system'
-        if not component_class:
-            component_class = 'system'
-        
-        # Create facility
-        f = Facility()
-        
-        f.facility_id = facility_id
-        f.facility_type = facility_type
-        f.component = component
-        f.component_class = component_class
-        f.name = name
-        f.description = description
-        f.short_name = short_name
-        f.model = model
-        f.geom_type = geom_type
-        f.html = html
-        f.geom = geom
-        f.gray = gray
-        f.gray_beta = gray_beta
-        f.gray_metric = gray_metric
-        f.green = green
-        f.green_beta = green_beta
-        f.green_metric = green_metric
-        f.yellow = yellow
-        f.yellow_beta = yellow_beta
-        f.yellow_metric = yellow_metric
-        f.orange = orange
-        f.orange_beta = orange_beta
-        f.orange_metric = orange_metric
-        f.red = red
-        f.red_beta = red_beta
-        f.red_metric = red_metric
-        f.metric = metric
+            if existing:
+                for f in existing:
+                    session.delete(f)
 
-        f.updated = time.time()
-        if _user is not None:
-            f.updated_by = _user.username
+            f = Facility()
+            f.facility_id = fac.get('EXTERNAL_FACILITY_ID', None)
+            f.facility_type = fac.get('FACILITY_TYPE', None)
+            f.component = fac.get('COMPONENT', 'SYSTEM')
+            f.component_class = fac.get('COMPONENT_CLASS', 'SYSTEM')
+            f.name = fac.get('FACILITY_NAME', None)
+            f.description = fac.get('DESCRIPTION', None)
+            f.short_name = fac.get('SHORT_NAME', None)
+            f.model = fac.get('FACILITY_MODEL', None)
 
-        if geom_type and geom:
-            # manipulate geometry
-            if geom_type == 'POINT':
-                point = geom.split(',')
-                lon = float(point[0])
-                lat = float(point[1])
-                
-                f.lon_min = lon - .01
-                f.lon_max = lon + .01
-                f.lat_min = lat - .01
-                f.lat_max = lat + .01
-                
-            elif geom_type == 'POLYGON':
-                points = [p.split(',') for p in geom.split(';')]
-                lons = [pnt[0] for pnt in points]
-                lats = [pnt[1] for pnt in points]
-                
-                f.lon_min = min(lons)
-                f.lon_max = max(lons)
-                f.lat_min = min(lats)
-                f.lat_max = max(lats)
-                
-            elif geom_type == 'POLYLINE':
-                pass
-            
-        session.add(f)
+            if fac.get('FEATURE', None) is not None:
+                f.geom_type = fac['FEATURE'].get('GEOM_TYPE', None)
+                f.html = fac['FEATURE'].get('DESCRIPTION', None)
+                f.geom = fac['FEATURE'].get('GEOM', None)
 
-        if count_dict.get(f.facility_type, False) is False:
-            count_dict[f.facility_type] = 1
-        else:
-            count_dict[f.facility_type] += 1
+            if fac.get('FRAGILITY', None) is not None:
+                gray = 'GRAY'
+                if fac['FRAGILITY'].get('GRAY', None) is None:
+                    gray = 'GREY'
 
-    add_facs_to_groups(session=session)
-    session.commit()
-    
+                if fac['FRAGILITY'].get(gray, None) is not None:
+                    f.gray = fac['FRAGILITY'][gray].get('ALPHA', None)
+                    f.gray_beta = fac['FRAGILITY'][gray].get('BETA', None)
+                    f.gray_metric = fac['FRAGILITY'][gray].get('METRIC', None)
+                if fac['FRAGILITY'].get('GREEN', None) is not None:
+                    f.green = fac['FRAGILITY']['GREEN'].get('ALPHA', None)
+                    f.green_beta = fac['FRAGILITY']['GREEN'].get('BETA', None)
+                    f.green_metric = fac['FRAGILITY']['GREEN'].get('METRIC', None)
+                if fac['FRAGILITY'].get('YELLOW', None) is not None:
+                    f.yellow = fac['FRAGILITY']['YELLOW'].get('ALPHA', None)
+                    f.yellow_beta = fac['FRAGILITY']['YELLOW'].get('BETA', None)
+                    f.yellow_metric = fac['FRAGILITY']['YELLOW'].get('METRIC', None)
+                if fac['FRAGILITY'].get('ORANGE', None) is not None:
+                    f.orange = fac['FRAGILITY']['ORANGE'].get('ALPHA', None)
+                    f.orange_beta = fac['FRAGILITY']['ORANGE'].get('BETA', None)
+                    f.orange_metric = fac['FRAGILITY']['ORANGE'].get('METRIC', None)
+                if fac['FRAGILITY'].get('RED', None) is not None:
+                    f.red = fac['FRAGILITY']['RED'].get('ALPHA', None)
+                    f.red_beta = fac['FRAGILITY']['RED'].get('BETA', None)
+                    f.red_metric = fac['FRAGILITY']['RED'].get('METRIC', None)
+                    f.metric = fac['FRAGILITY']['RED'].get('METRIC', None)
+
+            f.updated = time.time()
+            if _user is not None:
+                f.updated_by = _user.username
+
+            if f.geom_type and f.geom:
+                # manipulate geometry
+                if f.geom_type == 'POINT':
+                    point = f.geom.split(',')
+                    lon = float(point[0])
+                    lat = float(point[1])
+                    
+                    f.lon_min = lon - .01
+                    f.lon_max = lon + .01
+                    f.lat_min = lat - .01
+                    f.lat_max = lat + .01
+                    
+                elif f.geom_type == 'POLYGON':
+                    points = [p.split(',') for p in f.geom.split(';')]
+                    lons = [pnt[0] for pnt in points]
+                    lats = [pnt[1] for pnt in points]
+                    
+                    f.lon_min = min(lons)
+                    f.lon_max = max(lons)
+                    f.lat_min = min(lats)
+                    f.lat_max = max(lats)
+                    
+                elif geom_type == 'POLYLINE':
+                    pass
+                
+                session.add(f)
+
+                if count_dict.get(f.facility_type, False) is False:
+                    count_dict[f.facility_type] = 1
+                else:
+                    count_dict[f.facility_type] += 1
+
+        session.commit()
+        add_facs_to_groups(session=session)
+        session.commit()
+
     Session.remove()
-    
+
     message = ''
     for key, val in count_dict.iteritems():
         message += '{}: {}\n'.format(key, val)
@@ -950,7 +871,7 @@ def import_facility_xml(xml_file='', _user=None):
             'log': log_message}
     
     return data
-    
+
 def import_group_xml(xml_file='', _user=None):
     '''
     Import an XML file created by the ShakeCast workbook; Groups
@@ -1184,6 +1105,8 @@ def determine_xml(xml_file=''):
         xml_type = 'group'
     elif 'UserTable' in str(root):
         xml_type = 'user'
+    elif 'Inventory' in str(root):
+        xml_type = 'master'
     else:
         xml_type = 'unknown'
         
