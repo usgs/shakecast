@@ -235,11 +235,13 @@ def process_shakemaps(shakemaps=None, session=None, scenario=False):
                                     .filter(Group.in_grid(grid))
                                     .all())
             groups_affected = [group for group in in_region
-                                    if group.has_spec(not_type='scenario')]
+                                    if group.has_spec('scenario')]
         else:
-            groups_affected = (session.query(Group)
+            in_region = (session.query(Group)
                                         .filter(Group.in_grid(grid))
                                         .all())
+            groups_affected = [group for group in in_region
+                                    if not group.has_spec('scenario')]
         
         if not groups_affected:
             shakemap.status = 'no groups'

@@ -105,6 +105,7 @@ export class MapService {
 
         poly.type = 'Feature'
         poly['name'] = notPoly.name
+        poly['info'] = notPoly.info
         poly['popupContent'] = notPoly.name
         poly.geometry['type'] = 'Polygon'
         poly.geometry['coordinates'] = [[[notPoly.lon_min, notPoly.lat_min],

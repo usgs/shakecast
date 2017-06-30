@@ -411,10 +411,76 @@ export class MapComponent implements OnInit, OnDestroy {
 
     plotGroup(group: any) {
         var groupLayer: any = new L.GeoJSON(group);
-        groupLayer.bindPopup(group['name'])
+        var popupStr: string = ''
+        popupStr += `
+            <table "colors-table" style="">
+                <tr>
+                    <th><h1 style="text-align:center"> ` + group['name'] + `</h1></th>
+                </tr>
+                <tr>
+                    <th>
+                        <h3 style="margin:0;border-bottom:2px #444444 solid">Facilities: </h3>
+                    </th>
+                </tr>
+                <tr>
+                    <td>
+                        <table>`
+
+        for (var fac_type in group['info']['facilities']) {
+            if (group['info']['facilities'].hasOwnProperty(fac_type)) {
+                popupStr += `
+                                <tr>
+                                    <th>` + fac_type + `: </th>
+                                    <td>` + group['info']['facilities'][fac_type] + `</td>
+                                </tr>`
+            }
+        }
+
+        popupStr += `</table>
+                    </td>
+                </tr>
+                <tr>
+                    <th><h3 style="margin:0;border-bottom:2px #444444 solid">Notification Preferences: </h3></th>
+                </tr>
+            `
+        if (group['info']['new_event'] > 0) {
+            popupStr += `
+                <tr>
+                    <td>
+                        <table>
+                            <th>New Events with Minimum Magnitude: </th>
+                            <td>` + group['info']['new_event'] + `</td>
+                        </table>
+                    </td>
+                </tr>
+            `
+        }
+
+        if (group['info']['inspection'].length > 0) {
+            popupStr += `
+                <tr>
+                    <th style="text-align:center">Facility Alert Levels</th>
+                </tr>
+                <tr>
+                    <td>
+                        <table style="width:90%;text-align:center;margin-left:5%">
+            `
+
+            for (var i in group['info']['inspection']) {
+                popupStr += '<th style="color:white;padding:3px;border-radius:5px;background:' + 
+                                group['info']['inspection'][i] + 
+                                '">' + group['info']['inspection'][i] + '</th>';
+            }
+
+            popupStr += '</tr></td></table>'
+        }
+
+        popupStr += '</table>'
+        groupLayer.bindPopup(popupStr);
         this.groupLayers.addLayer(groupLayer);
         this.map.addLayer(this.groupLayers);
         this.map.fitBounds(this.groupLayers.getBounds());
+        groupLayer.openPopup()
     }
 
     clearEventLayers() {

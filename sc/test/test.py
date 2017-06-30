@@ -626,17 +626,25 @@ class TestImport(unittest.TestCase):
                 if len(group.users) != 1:
                     failed_str += '\nIncorrect number of users: {}, {}'.format(group.name, len(group.users))
                     failed = True
+                min_mag = group.get_min_mag()
+                self.assertTrue(min_mag > 0)
+                self.assertTrue(group.check_min_mag(10))
+
             elif group.name == 'CAL_BRIDGES':
                 if len(group.users) != 2:
                     failed_str += '\nIncorrect number of users: {}, {}'.format(group.name,
                                                                                len(group.users))
                     failed = True
+
+                self.assertTrue(group.has_alert_level('green'))
+                self.assertTrue('green' in group.get_alert_levels())
             elif group.name == 'CAL_BRIDGES_SCENARIO':
                 if len(group.users) != 1:
                     failed_str += '\nIncorrect number of users: {}, {}'.format(group.name,
                                                                                len(group.users))
                     failed = True
-
+                self.assertTrue(group.has_spec('scenario'))
+            
             self.assertEqual('Ex3', group.updated_by)
         
         if failed is True:
