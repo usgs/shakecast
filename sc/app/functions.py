@@ -748,12 +748,16 @@ def import_master_xml(xml_file='', _user=None):
     group_data = import_group_dicts(groups=group_list, _user=_user)
     user_data = import_user_dicts(users=user_list, _user=_user)
 
+    message = '{}\n{}\n{}'.format(fac_data['message']['message'],
+                                    group_data['message']['message'],
+                                    user_data['message']['message'])
+
     log_message = ''
     status = 'finished'
     data = {'status': status,
             'message': {'from': 'master_import',
                         'title': 'Imported Master XML',
-                        'message': '',
+                        'message': message,
                         'success': True},
             'log': log_message}
     return data
@@ -899,7 +903,6 @@ def import_facility_dicts(facs=None, _user=None):
                         'message': message,
                         'success': True},
             'log': log_message}
-    
     return data
 
 def import_group_xml(xml_file='', _user=None):
@@ -926,7 +929,6 @@ def import_group_xml(xml_file='', _user=None):
             xml_list = [xml_list]
     
     data = import_group_dicts(groups=xml_list, _user=_user)
-    
     return data
 
 def import_group_dicts(groups=None, _user=None):
@@ -1027,7 +1029,7 @@ def import_group_dicts(groups=None, _user=None):
             'message': {'title': 'Group Upload',
                         'message': imported_groups},
             'log': log_message}
-
+    return data
 
 def import_user_xml(xml_file='', _user=None):
     '''
