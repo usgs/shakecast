@@ -728,6 +728,36 @@ def create_grid(shakemap=None):
 #######################################################################
 ######################## Import Inventory Data ########################
 
+def import_master_xml(xml_file='', _user=None):
+    fac_list = []
+    group_list = []
+    user_list = []
+    with open(xml_file, 'r') as xml_str:
+        xml_dict = json.loads(json.dumps(xmltodict.parse(xml_str)))
+        fac_list = xml_dict['Inventory']['FacilityTable']['FacilityRow']
+        group_list = xml_dict['Inventory']['GroupTable']['GroupRow']
+        user_list = xml_dict['Inventory']['UserTable']['UserRow']
+        if isinstance(fac_list, list) is False:
+            fac_list = [fac_list]
+        if isinstance(group_list, list) is False:
+            group_list = [group_list]
+        if isinstance(user_list, list) is False:
+            group_list = [group_list]
+    
+    fac_data = import_facility_dicts(facs=fac_list, _user=_user)
+    group_data = import_group_dicts(groups=group_list, _user=_user)
+    user_data = import_user_dicts(users=user_list, _user=_user)
+
+    log_message = ''
+    status = 'finished'
+    data = {'status': status,
+            'message': {'from': 'master_import',
+                        'title': 'Imported Master XML',
+                        'message': '',
+                        'success': True},
+            'log': log_message}
+    return data
+
 def import_facility_xml(xml_file='', _user=None):
     '''
     Import an XML file created by the ShakeCast workbook; Facilities
