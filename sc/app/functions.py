@@ -887,104 +887,218 @@ def import_group_xml(xml_file='', _user=None):
                     'log': message to be added to ShakeCast log
                            and should contain info on error}
     '''
-    session = Session()
+
+    xml_list = []
+    with open(xml_file, 'r') as xml_str:
+        xml_dict = json.loads(json.dumps(xmltodict.parse(xml_str)))
+        xml_list = xml_dict['GroupTable']['GroupRow']
+        if isinstance(xml_list, list) is False:
+            xml_list = [xml_list]
     
-    tree = ET.parse(xml_file)
-    root = tree.getroot()
-    groups = [child for child in root]
-    imported_groups = []
+    data = import_group_dicts(groups=xml_list, _user=_user)
+    
+    return data
 
-    for group in groups:
-        name = ''
-        facility_type = ''
-        notification_type = ''
-        inspection_priority = ''
-        minimum_magnitude = 0
-        event_type = ''
-        notification_format = ''
-        aggregate_name = 'Default'
-        damage_level = ''
-        template = None
-        poly = ''
+    # session = Session()
+    
+    # tree = ET.parse(xml_file)
+    # root = tree.getroot()
+    # groups = [child for child in root]
+    # imported_groups = []
 
-        for child in group:
-            if child.tag == 'GROUP_NAME':
-                name = child.text
-            elif child.tag == 'FACILITY_TYPE':
-                facility_type = child.text
-            elif child.tag == 'POLY':
-                poly = child.text
+    # for group in groups:
+    #     name = ''
+    #     facility_type = ''
+    #     notification_type = ''
+    #     inspection_priority = ''
+    #     minimum_magnitude = 0
+    #     event_type = ''
+    #     notification_format = ''
+    #     aggregate_name = 'Default'
+    #     damage_level = ''
+    #     template = None
+    #     poly = ''
+
+    #     for child in group:
+    #         if child.tag == 'GROUP_NAME':
+    #             name = child.text
+    #         elif child.tag == 'FACILITY_TYPE':
+    #             facility_type = child.text
+    #         elif child.tag == 'POLY':
+    #             poly = child.text
         
-        # split up the monitoring region
-        split_poly = re.split('\s|;|,', poly)
-        split_poly = filter(None, split_poly)
+    #     # split up the monitoring region
+    #     split_poly = re.split('\s|;|,', poly)
+    #     split_poly = filter(None, split_poly)
         
-        # try to get the group
-        g = session.query(Group).filter(Group.name == name).all()
-        if g:
-            g = g[0]
-        else:
-            g = Group()
-            g.name = name
+    #     # try to get the group
+    #     g = session.query(Group).filter(Group.name == name).all()
+    #     if g:
+    #         g = g[0]
+    #     else:
+    #         g = Group()
+    #         g.name = name
             
-            # check requirements for group and exit if not met
-            if (name == '' or
-                    len(split_poly) % 2 != 0 or
-                    len(split_poly) < 6):
-                continue
+    #         # check requirements for group and exit if not met
+    #         if (name == '' or
+    #                 len(split_poly) % 2 != 0 or
+    #                 len(split_poly) < 6):
+    #             continue
         
-            session.add(g)
+    #         session.add(g)
 
-        imported_groups += [g.name]
-        g.facility_type = facility_type
-        g.updated = time.time()
-        if _user is not None:
-            g.updated_by = _user.username
+    #     imported_groups += [g.name]
+    #     g.facility_type = facility_type
+    #     g.updated = time.time()
+    #     if _user is not None:
+    #         g.updated_by = _user.username
 
-        # split up the poly and save lat/lon min/max if the monitoring
-        # region is being updated
-        if split_poly:
-            lats = []
-            lons = []
-            for num, lat_lon in enumerate(split_poly):
-                if num % 2 == 0:
-                    lats += [float(lat_lon)]
-                else:
-                    lons += [float(lat_lon)]
+    #     # split up the poly and save lat/lon min/max if the monitoring
+    #     # region is being updated
+    #     if split_poly:
+    #         lats = []
+    #         lons = []
+    #         for num, lat_lon in enumerate(split_poly):
+    #             if num % 2 == 0:
+    #                 lats += [float(lat_lon)]
+    #             else:
+    #                 lons += [float(lat_lon)]
                     
-            g.lat_min = min(lats)
-            g.lat_max = max(lats)
-            g.lon_min = min(lons)
-            g.lon_max = max(lons)
+    #         g.lat_min = min(lats)
+    #         g.lat_max = max(lats)
+    #         g.lon_min = min(lons)
+    #         g.lon_max = max(lons)
         
-        for child in group:
-            if child.tag == 'NOTIFICATION':
-                for child2 in child:
-                    if child2.tag == 'NOTIFICATION_TYPE':
-                        notification_type = child2.text
-                    elif child2.tag == 'LIMIT_VALUE':
-                        minimum_magnitude = child2.text
-                    elif child2.tag == 'EVENT_TYPE':
-                        event_type = child2.text
-                    elif child2.tag == 'DELIVERY_METHOD':
-                        notification_format = child2.text
-                    elif child2.tag == 'AGGREGATE_GROUP':
-                        aggregate_name = child2.text
-                    elif child2.tag == 'DAMAGE_LEVEL':
-                        damage_level = child2.text
-                    elif child2.tag == 'MESSAGE_FORMAT':
-                        template = child2.text
+    #     for child in group:
+    #         if child.tag == 'NOTIFICATION':
+    #             for child2 in child:
+    #                 if child2.tag == 'NOTIFICATION_TYPE':
+    #                     notification_type = child2.text
+    #                 elif child2.tag == 'LIMIT_VALUE':
+    #                     minimum_magnitude = child2.text
+    #                 elif child2.tag == 'EVENT_TYPE':
+    #                     event_type = child2.text
+    #                 elif child2.tag == 'DELIVERY_METHOD':
+    #                     notification_format = child2.text
+    #                 elif child2.tag == 'AGGREGATE_GROUP':
+    #                     aggregate_name = child2.text
+    #                 elif child2.tag == 'DAMAGE_LEVEL':
+    #                     damage_level = child2.text
+    #                 elif child2.tag == 'MESSAGE_FORMAT':
+    #                     template = child2.text
             
-                # Check requirements for group specification
+    #             # Check requirements for group specification
                 
-                # look for existing spec
-                if notification_type == 'NEW_EVENT':
+    #             # look for existing spec
+    #             if notification_type == 'NEW_EVENT':
+    #                 spec = (session.query(Group_Specification)
+    #                             .filter(Group_Specification.notification_type == notification_type)
+    #                             .filter(Group_Specification.group == g)).all()
+    #             else:
+    #                 spec = (session.query(Group_Specification)
+    #                             .filter(Group_Specification.notification_type == notification_type)
+    #                             .filter(Group_Specification.inspection_priority == damage_level)
+    #                             .filter(Group_Specification.group == g)).all()
+    #             if spec:
+    #                 spec = spec[0]
+
+    #             else:
+    #                 spec = Group_Specification()
+    #                 spec.notification_type = notification_type
+    #                 if damage_level:
+    #                     spec.damage_level= damage_level
+                        
+    #                 g.specs += [spec]
+                
+    #             if damage_level:
+    #                 spec.inspection_priority = damage_level
+                         
+    #             spec.minimum_magnitude = minimum_magnitude
+    #             spec.notification_format = notification_format
+    #             spec.aggregate_group = aggregate_name
+    #             spec.event_type = event_type
+    
+    #     g.template = template
+    # add_facs_to_groups(session=session)
+    # add_users_to_groups(session=session)
+    # session.commit()
+    # Session.remove()
+    
+    # log_message = ''
+    # status = 'finished'
+    # data = {'status': status,
+    #         'message': {'title': 'Group Upload',
+    #                     'message': imported_groups},
+    #         'log': log_message}
+    
+    return data
+
+def import_group_dicts(groups=None, _user=None):
+    session = Session()
+    imported_groups = []
+    if groups is not None:
+        for group in groups:
+            name = group.get('GROUP_NAME', None)
+            poly = group.get('POLY', None)
+
+            if poly is not None:
+                # split up the monitoring region
+                split_poly = re.split('\s|;|,', poly)
+                split_poly = filter(None, split_poly)
+
+            # try to get the group if it exists
+            gs = session.query(Group).filter(Group.name == name).all()
+            if gs:
+                g = gs[0]
+            else:
+                g = Group()
+                g.name = name
+                
+                # check requirements for group and exit if not met
+                if (name == '' or
+                        len(split_poly) % 2 != 0 or
+                        len(split_poly) < 6):
+                    continue
+            
+                session.add(g)
+
+            g.facility_type = group.get('FACILITY_TYPE', None)
+            g.template = group.get('TEMPLATE', 'DEFAULT')
+            g.updated = time.time()
+            if _user is not None:
+                g.updated_by = _user.username
+
+            if g.name not in imported_groups:
+                imported_groups += [g.name]
+
+            if split_poly:
+                lats = []
+                lons = []
+                for num, lat_lon in enumerate(split_poly):
+                    if num % 2 == 0:
+                        lats += [float(lat_lon)]
+                    else:
+                        lons += [float(lat_lon)]
+                        
+                g.lat_min = min(lats)
+                g.lat_max = max(lats)
+                g.lon_min = min(lons)
+                g.lon_max = max(lons)
+            
+            session.add(g)
+            if group.get('NOTIFICATION', None) is not None:
+                notification_type = group['NOTIFICATION'].get('NOTIFICATION_TYPE', None)
+                damage_level = group['NOTIFICATION'].get('DAMAGE_LEVEL', None)
+
+                # look for existing specs
+                if group['NOTIFICATION']['NOTIFICATION_TYPE'] == 'NEW_EVENT':
                     spec = (session.query(Group_Specification)
-                                .filter(Group_Specification.notification_type == notification_type)
+                                .filter(Group_Specification.notification_type == 'NEW_EVENT')
                                 .filter(Group_Specification.group == g)).all()
                 else:
+                    damage_level = group['NOTIFICATION'].get('DAMAGE_LEVEL', None)
                     spec = (session.query(Group_Specification)
-                                .filter(Group_Specification.notification_type == notification_type)
+                                .filter(Group_Specification.notification_type == 'DAMAGE')
                                 .filter(Group_Specification.inspection_priority == damage_level)
                                 .filter(Group_Specification.group == g)).all()
                 if spec:
@@ -998,28 +1112,26 @@ def import_group_xml(xml_file='', _user=None):
                         
                     g.specs += [spec]
                 
-                if damage_level:
+                if damage_level is not None:
                     spec.inspection_priority = damage_level
-                         
-                spec.minimum_magnitude = minimum_magnitude
-                spec.notification_format = notification_format
-                spec.aggregate_group = aggregate_name
-                spec.event_type = event_type
+                            
+                spec.minimum_magnitude = group['NOTIFICATION'].get('LIMIT_VALUE', None)
+                spec.notification_format = group['NOTIFICATION'].get('MESSAGE_FORMAT', None)
+                spec.aggregate_group = group['NOTIFICATION'].get('AGGREGATE_GROUP', None)
+                spec.event_type = group['NOTIFICATION'].get('EVENT_TYPE', None)
     
-        g.template = template
     add_facs_to_groups(session=session)
     add_users_to_groups(session=session)
     session.commit()
     Session.remove()
-    
+
     log_message = ''
     status = 'finished'
     data = {'status': status,
             'message': {'title': 'Group Upload',
                         'message': imported_groups},
             'log': log_message}
-    
-    return data
+
 
 def import_user_xml(xml_file='', _user=None):
     '''
