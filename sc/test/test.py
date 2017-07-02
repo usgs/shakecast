@@ -693,6 +693,13 @@ class TestImport(unittest.TestCase):
     def step11_removeData(self):
         self.step01_clearData()
 
+    def step12_masterImport(self):
+        file_ = os.path.join(sc_dir(), 'test', 'test_master.xml')
+        file_type = determine_xml(file_)
+        import_master_xml(file_)
+
+        self.assertEqual(file_type, 'master')
+
     def steps(self):
         '''
         Generates the step methods from their parent object

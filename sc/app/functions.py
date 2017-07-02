@@ -728,6 +728,40 @@ def create_grid(shakemap=None):
 #######################################################################
 ######################## Import Inventory Data ########################
 
+def import_master_xml(xml_file='', _user=None):
+    fac_list = []
+    group_list = []
+    user_list = []
+    with open(xml_file, 'r') as xml_str:
+        xml_dict = json.loads(json.dumps(xmltodict.parse(xml_str)))
+        fac_list = xml_dict['Inventory']['FacilityTable']['FacilityRow']
+        group_list = xml_dict['Inventory']['GroupTable']['GroupRow']
+        user_list = xml_dict['Inventory']['UserTable']['UserRow']
+        if isinstance(fac_list, list) is False:
+            fac_list = [fac_list]
+        if isinstance(group_list, list) is False:
+            group_list = [group_list]
+        if isinstance(user_list, list) is False:
+            group_list = [group_list]
+    
+    fac_data = import_facility_dicts(facs=fac_list, _user=_user)
+    group_data = import_group_dicts(groups=group_list, _user=_user)
+    user_data = import_user_dicts(users=user_list, _user=_user)
+
+    message = '{}\n{}\n{}'.format(fac_data['message']['message'],
+                                    group_data['message']['message'],
+                                    user_data['message']['message'])
+
+    log_message = ''
+    status = 'finished'
+    data = {'status': status,
+            'message': {'from': 'master_import',
+                        'title': 'Imported Master XML',
+                        'message': message,
+                        'success': True},
+            'log': log_message}
+    return data
+
 def import_facility_xml(xml_file='', _user=None):
     '''
     Import an XML file created by the ShakeCast workbook; Facilities
@@ -743,199 +777,120 @@ def import_facility_xml(xml_file='', _user=None):
                     'log': message to be added to ShakeCast log
                            and should contain info on error}
     '''
+    xml_list = []
+    with open(xml_file, 'r') as xml_str:
+        xml_dict = json.loads(json.dumps(xmltodict.parse(xml_str)))
+        xml_list = xml_dict['FacilityTable']['FacilityRow']
+        if isinstance(xml_list, list) is False:
+            xml_list = [xml_list]
+    
+    data = import_facility_dicts(facs=xml_list, _user=_user)
+    
+    return data
+
+def import_facility_dicts(facs=None, _user=None):
     session = Session()
-    
-    tree = ET.parse(xml_file)
-    root = tree.getroot()
-    facs = [child for child in root]
-    count_dict = {}
-    for fac in facs:
-        facility_id = ''
-        facility_type = ''
-        component = ''
-        component_class = ''
-        name = ''
-        description = ''
-        short_name = ''
-        model = ''
-        geom_type = ''
-        html = ''
-        geom = ''
-        gray = -1
-        gray_beta = -1
-        gray_metric = ''
-        green = -1
-        green_beta = -1
-        green_metric = ''
-        yellow = -1
-        yellow_beta = -1
-        yellow_metric = ''
-        orange = -1
-        orange_beta = -1
-        orange_metric = ''
-        red = -1
-        red_beta = -1
-        red_metric = ''
-        
-        for child in fac:
-            if child.tag == 'EXTERNAL_FACILITY_ID':
-                facility_id = child.text
-            elif child.tag == 'FACILITY_TYPE':
-                facility_type = child.text
-            elif child.tag == 'COMPONENT_CLASS':
-                component_class = child.text
-            elif child.tag == 'COMPONENT':
-                component = child.text
-            elif child.tag == 'FACILITY_NAME':
-                name = child.text
-            elif child.tag == 'DESCRIPTION':
-                description = child.text
-            elif child.tag == 'SHORT_NAME':
-                pass
-            elif child.tag == 'FACILITY_MODEL':
-                model = child.text
-            elif child.tag == 'FEATURE':
-                for child2 in child:
-                    if child2.tag == 'GEOM_TYPE':
-                        geom_type = child2.text
-                    elif child2.tag == 'DESCRIPTION':
-                        html = child2.text
-                    elif child2.tag == 'GEOM':
-                        geom = child2.text
-            elif child.tag == 'FRAGILITY':
-                for child2 in child:
-                    for child3 in child2:
-                        if child2.tag == 'GREY' or child2.tag == 'GRAY':
-                            if child3.tag == 'METRIC':
-                                gray_metric = child3.text
-                            elif child3.tag == 'ALPHA':
-                                gray = float(child3.text)
-                            elif child3.tag == 'BETA':
-                                gray_beta = float(child3.text)
-                        elif child2.tag == 'GREEN':
-                            if child3.tag == 'METRIC':
-                                green_metric = child3.text
-                            elif child3.tag == 'ALPHA':
-                                green = float(child3.text)
-                            elif child3.tag == 'BETA':
-                                green_beta = float(child3.text)
-                        elif child2.tag == 'YELLOW':
-                            if child3.tag == 'METRIC':
-                                yellow_metric = child3.text
-                            elif child3.tag == 'ALPHA':
-                                yellow = float(child3.text)
-                            elif child3.tag == 'BETA':
-                                yellow_beta = float(child3.text)
-                        elif child2.tag == 'ORANGE':
-                            if child3.tag == 'METRIC':
-                                orange_metric = child3.text
-                            elif child3.tag == 'ALPHA':
-                                orange = float(child3.text)
-                            elif child3.tag == 'BETA':
-                                orange_beta = float(child3.text)
-                        elif child2.tag == 'RED':
-                            if child3.tag == 'METRIC':
-                                red_metric = child3.text
-                                
-                                # temporarily add metric
-                                metric = child3.text
-    
-                            elif child3.tag == 'ALPHA':
-                                red = float(child3.text)
-                            elif child3.tag == 'BETA':
-                                red_beta = float(child3.text)
-        
-        # check for an existing facility with this ID
-        existing = (session.query(Facility)
-                            .filter(Facility.facility_id == facility_id)
-                            .filter(Facility.component == component)
-                            .filter(Facility.component_class == component_class)
+    if facs is not None:
+        count_dict = {}
+        for fac in facs:
+            
+            # data validation
+            if fac.get('EXTERNAL_FACILITY_ID', None) is None:
+                continue
+
+            existing = (session.query(Facility)
+                            .filter(Facility.facility_id == fac['EXTERNAL_FACILITY_ID'])
+                            .filter(Facility.component == fac['COMPONENT'])
+                            .filter(Facility.component_class == fac['COMPONENT_CLASS'])
                             .all())
-        if existing:
-            for f in existing:
-                session.delete(f)
-            
-        # determine if we can add to session or not
-        if not facility_id:
-            # don't add to session and add to error message
-            continue
-        if not component:
-            component = 'system'
-        if not component_class:
-            component_class = 'system'
-        
-        # Create facility
-        f = Facility()
-        
-        f.facility_id = facility_id
-        f.facility_type = facility_type
-        f.component = component
-        f.component_class = component_class
-        f.name = name
-        f.description = description
-        f.short_name = short_name
-        f.model = model
-        f.geom_type = geom_type
-        f.html = html
-        f.geom = geom
-        f.gray = gray
-        f.gray_beta = gray_beta
-        f.gray_metric = gray_metric
-        f.green = green
-        f.green_beta = green_beta
-        f.green_metric = green_metric
-        f.yellow = yellow
-        f.yellow_beta = yellow_beta
-        f.yellow_metric = yellow_metric
-        f.orange = orange
-        f.orange_beta = orange_beta
-        f.orange_metric = orange_metric
-        f.red = red
-        f.red_beta = red_beta
-        f.red_metric = red_metric
-        f.metric = metric
+            if existing:
+                for f in existing:
+                    session.delete(f)
 
-        f.updated = time.time()
-        if _user is not None:
-            f.updated_by = _user.username
+            f = Facility()
+            f.facility_id = fac.get('EXTERNAL_FACILITY_ID', None)
+            f.facility_type = fac.get('FACILITY_TYPE', None)
+            f.component = fac.get('COMPONENT', 'SYSTEM')
+            f.component_class = fac.get('COMPONENT_CLASS', 'SYSTEM')
+            f.name = fac.get('FACILITY_NAME', None)
+            f.description = fac.get('DESCRIPTION', None)
+            f.short_name = fac.get('SHORT_NAME', None)
+            f.model = fac.get('FACILITY_MODEL', None)
 
-        if geom_type and geom:
-            # manipulate geometry
-            if geom_type == 'POINT':
-                point = geom.split(',')
-                lon = float(point[0])
-                lat = float(point[1])
-                
-                f.lon_min = lon - .01
-                f.lon_max = lon + .01
-                f.lat_min = lat - .01
-                f.lat_max = lat + .01
-                
-            elif geom_type == 'POLYGON':
-                points = [p.split(',') for p in geom.split(';')]
-                lons = [pnt[0] for pnt in points]
-                lats = [pnt[1] for pnt in points]
-                
-                f.lon_min = min(lons)
-                f.lon_max = max(lons)
-                f.lat_min = min(lats)
-                f.lat_max = max(lats)
-                
-            elif geom_type == 'POLYLINE':
-                pass
-            
-        session.add(f)
+            if fac.get('FEATURE', None) is not None:
+                f.geom_type = fac['FEATURE'].get('GEOM_TYPE', None)
+                f.html = fac['FEATURE'].get('DESCRIPTION', None)
+                f.geom = fac['FEATURE'].get('GEOM', None)
 
-        if count_dict.get(f.facility_type, False) is False:
-            count_dict[f.facility_type] = 1
-        else:
-            count_dict[f.facility_type] += 1
+            if fac.get('FRAGILITY', None) is not None:
+                gray = 'GRAY'
+                if fac['FRAGILITY'].get('GRAY', None) is None:
+                    gray = 'GREY'
 
-    add_facs_to_groups(session=session)
-    session.commit()
-    
+                if fac['FRAGILITY'].get(gray, None) is not None:
+                    f.gray = fac['FRAGILITY'][gray].get('ALPHA', None)
+                    f.gray_beta = fac['FRAGILITY'][gray].get('BETA', None)
+                    f.gray_metric = fac['FRAGILITY'][gray].get('METRIC', None)
+                if fac['FRAGILITY'].get('GREEN', None) is not None:
+                    f.green = fac['FRAGILITY']['GREEN'].get('ALPHA', None)
+                    f.green_beta = fac['FRAGILITY']['GREEN'].get('BETA', None)
+                    f.green_metric = fac['FRAGILITY']['GREEN'].get('METRIC', None)
+                if fac['FRAGILITY'].get('YELLOW', None) is not None:
+                    f.yellow = fac['FRAGILITY']['YELLOW'].get('ALPHA', None)
+                    f.yellow_beta = fac['FRAGILITY']['YELLOW'].get('BETA', None)
+                    f.yellow_metric = fac['FRAGILITY']['YELLOW'].get('METRIC', None)
+                if fac['FRAGILITY'].get('ORANGE', None) is not None:
+                    f.orange = fac['FRAGILITY']['ORANGE'].get('ALPHA', None)
+                    f.orange_beta = fac['FRAGILITY']['ORANGE'].get('BETA', None)
+                    f.orange_metric = fac['FRAGILITY']['ORANGE'].get('METRIC', None)
+                if fac['FRAGILITY'].get('RED', None) is not None:
+                    f.red = fac['FRAGILITY']['RED'].get('ALPHA', None)
+                    f.red_beta = fac['FRAGILITY']['RED'].get('BETA', None)
+                    f.red_metric = fac['FRAGILITY']['RED'].get('METRIC', None)
+                    f.metric = fac['FRAGILITY']['RED'].get('METRIC', None)
+
+            f.updated = time.time()
+            if _user is not None:
+                f.updated_by = _user.username
+
+            if f.geom_type and f.geom:
+                # manipulate geometry
+                if f.geom_type == 'POINT':
+                    point = f.geom.split(',')
+                    lon = float(point[0])
+                    lat = float(point[1])
+                    
+                    f.lon_min = lon - .01
+                    f.lon_max = lon + .01
+                    f.lat_min = lat - .01
+                    f.lat_max = lat + .01
+                    
+                elif f.geom_type == 'POLYGON':
+                    points = [p.split(',') for p in f.geom.split(';')]
+                    lons = [pnt[0] for pnt in points]
+                    lats = [pnt[1] for pnt in points]
+                    
+                    f.lon_min = min(lons)
+                    f.lon_max = max(lons)
+                    f.lat_min = min(lats)
+                    f.lat_max = max(lats)
+                    
+                elif geom_type == 'POLYLINE':
+                    pass
+                
+                session.add(f)
+
+                if count_dict.get(f.facility_type, False) is False:
+                    count_dict[f.facility_type] = 1
+                else:
+                    count_dict[f.facility_type] += 1
+
+        session.commit()
+        add_facs_to_groups(session=session)
+        session.commit()
+
     Session.remove()
-    
+
     message = ''
     for key, val in count_dict.iteritems():
         message += '{}: {}\n'.format(key, val)
@@ -948,9 +903,8 @@ def import_facility_xml(xml_file='', _user=None):
                         'message': message,
                         'success': True},
             'log': log_message}
-    
     return data
-    
+
 def import_group_xml(xml_file='', _user=None):
     '''
     Import an XML file created by the ShakeCast workbook; Groups
@@ -966,104 +920,83 @@ def import_group_xml(xml_file='', _user=None):
                     'log': message to be added to ShakeCast log
                            and should contain info on error}
     '''
-    session = Session()
+
+    xml_list = []
+    with open(xml_file, 'r') as xml_str:
+        xml_dict = json.loads(json.dumps(xmltodict.parse(xml_str)))
+        xml_list = xml_dict['GroupTable']['GroupRow']
+        if isinstance(xml_list, list) is False:
+            xml_list = [xml_list]
     
-    tree = ET.parse(xml_file)
-    root = tree.getroot()
-    groups = [child for child in root]
+    data = import_group_dicts(groups=xml_list, _user=_user)
+    return data
+
+def import_group_dicts(groups=None, _user=None):
+    session = Session()
     imported_groups = []
+    if groups is not None:
+        for group in groups:
+            name = group.get('GROUP_NAME', None)
+            poly = group.get('POLY', None)
 
-    for group in groups:
-        name = ''
-        facility_type = ''
-        notification_type = ''
-        inspection_priority = ''
-        minimum_magnitude = 0
-        event_type = ''
-        notification_format = ''
-        aggregate_name = 'Default'
-        damage_level = ''
-        template = None
-        poly = ''
+            if poly is not None:
+                # split up the monitoring region
+                split_poly = re.split('\s|;|,', poly)
+                split_poly = filter(None, split_poly)
 
-        for child in group:
-            if child.tag == 'GROUP_NAME':
-                name = child.text
-            elif child.tag == 'FACILITY_TYPE':
-                facility_type = child.text
-            elif child.tag == 'POLY':
-                poly = child.text
-        
-        # split up the monitoring region
-        split_poly = re.split('\s|;|,', poly)
-        split_poly = filter(None, split_poly)
-        
-        # try to get the group
-        g = session.query(Group).filter(Group.name == name).all()
-        if g:
-            g = g[0]
-        else:
-            g = Group()
-            g.name = name
-            
-            # check requirements for group and exit if not met
-            if (name == '' or
-                    len(split_poly) % 2 != 0 or
-                    len(split_poly) < 6):
-                continue
-        
-            session.add(g)
-
-        imported_groups += [g.name]
-        g.facility_type = facility_type
-        g.updated = time.time()
-        if _user is not None:
-            g.updated_by = _user.username
-
-        # split up the poly and save lat/lon min/max if the monitoring
-        # region is being updated
-        if split_poly:
-            lats = []
-            lons = []
-            for num, lat_lon in enumerate(split_poly):
-                if num % 2 == 0:
-                    lats += [float(lat_lon)]
-                else:
-                    lons += [float(lat_lon)]
-                    
-            g.lat_min = min(lats)
-            g.lat_max = max(lats)
-            g.lon_min = min(lons)
-            g.lon_max = max(lons)
-        
-        for child in group:
-            if child.tag == 'NOTIFICATION':
-                for child2 in child:
-                    if child2.tag == 'NOTIFICATION_TYPE':
-                        notification_type = child2.text
-                    elif child2.tag == 'LIMIT_VALUE':
-                        minimum_magnitude = child2.text
-                    elif child2.tag == 'EVENT_TYPE':
-                        event_type = child2.text
-                    elif child2.tag == 'DELIVERY_METHOD':
-                        notification_format = child2.text
-                    elif child2.tag == 'AGGREGATE_GROUP':
-                        aggregate_name = child2.text
-                    elif child2.tag == 'DAMAGE_LEVEL':
-                        damage_level = child2.text
-                    elif child2.tag == 'MESSAGE_FORMAT':
-                        template = child2.text
-            
-                # Check requirements for group specification
+            # try to get the group if it exists
+            gs = session.query(Group).filter(Group.name == name).all()
+            if gs:
+                g = gs[0]
+            else:
+                g = Group()
+                g.name = name
                 
-                # look for existing spec
-                if notification_type == 'NEW_EVENT':
+                # check requirements for group and exit if not met
+                if (name == '' or
+                        len(split_poly) % 2 != 0 or
+                        len(split_poly) < 6):
+                    continue
+            
+                session.add(g)
+
+            g.facility_type = group.get('FACILITY_TYPE', None)
+            g.template = group.get('TEMPLATE', 'DEFAULT')
+            g.updated = time.time()
+            if _user is not None:
+                g.updated_by = _user.username
+
+            if g.name not in imported_groups:
+                imported_groups += [g.name]
+
+            if split_poly:
+                lats = []
+                lons = []
+                for num, lat_lon in enumerate(split_poly):
+                    if num % 2 == 0:
+                        lats += [float(lat_lon)]
+                    else:
+                        lons += [float(lat_lon)]
+                        
+                g.lat_min = min(lats)
+                g.lat_max = max(lats)
+                g.lon_min = min(lons)
+                g.lon_max = max(lons)
+            
+            session.add(g)
+            if group.get('NOTIFICATION', None) is not None:
+                notification_type = group['NOTIFICATION'].get('NOTIFICATION_TYPE', None)
+                damage_level = group['NOTIFICATION'].get('DAMAGE_LEVEL', None)
+
+                # look for existing specs
+                if group['NOTIFICATION']['NOTIFICATION_TYPE'] == 'NEW_EVENT':
                     spec = (session.query(Group_Specification)
-                                .filter(Group_Specification.notification_type == notification_type)
+                                .filter(Group_Specification.notification_type == 'NEW_EVENT')
                                 .filter(Group_Specification.group == g)).all()
                 else:
+                    damage_level = group['NOTIFICATION'].get('DAMAGE_LEVEL', None)
                     spec = (session.query(Group_Specification)
-                                .filter(Group_Specification.notification_type == notification_type)
+                                .filter(Group_Specification.notification_type == 'DAMAGE')
                                 .filter(Group_Specification.inspection_priority == damage_level)
                                 .filter(Group_Specification.group == g)).all()
                 if spec:
@@ -1077,27 +1010,25 @@ def import_group_xml(xml_file='', _user=None):
                         
                     g.specs += [spec]
                 
-                if damage_level:
+                if damage_level is not None:
                     spec.inspection_priority = damage_level
-                         
-                spec.minimum_magnitude = minimum_magnitude
-                spec.notification_format = notification_format
-                spec.aggregate_group = aggregate_name
-                spec.event_type = event_type
+                            
+                spec.minimum_magnitude = group['NOTIFICATION'].get('LIMIT_VALUE', None)
+                spec.notification_format = group['NOTIFICATION'].get('MESSAGE_FORMAT', None)
+                spec.aggregate_group = group['NOTIFICATION'].get('AGGREGATE_GROUP', None)
+                spec.event_type = group['NOTIFICATION'].get('EVENT_TYPE', None)
     
-        g.template = template
     add_facs_to_groups(session=session)
     add_users_to_groups(session=session)
     session.commit()
     Session.remove()
-    
+
     log_message = ''
     status = 'finished'
     data = {'status': status,
             'message': {'title': 'Group Upload',
                         'message': imported_groups},
             'log': log_message}
-    
     return data
 
 def import_user_xml(xml_file='', _user=None):
@@ -1184,6 +1115,8 @@ def determine_xml(xml_file=''):
         xml_type = 'group'
     elif 'UserTable' in str(root):
         xml_type = 'user'
+    elif 'Inventory' in str(root):
+        xml_type = 'master'
     else:
         xml_type = 'unknown'
         
