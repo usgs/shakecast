@@ -1,9 +1,9 @@
 .update-container {
     width: 100%;
     bottom: 0;
-    display: fixed;
+    position: fixed;
     background: #ff6161;
-    z-index: 1;
+    z-index: 3;
 }
 
 .update-container h3 {
