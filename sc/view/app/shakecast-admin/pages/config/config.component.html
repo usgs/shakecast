@@ -52,8 +52,8 @@
                     <th>ShakeCast Time: </th>
                     <td>{{ offsetTime | date:'dd-M-yyyy H:mm'}}</td>
                     <table class="spin-table">
-                        <tr class="button spin" (click)="hourUp()"><th>&#9650;</th></tr>
-                        <tr class="button spin" (click)="hourDown()"><th>&#x25bc;</th></tr>
+                        <tr class="button spin" (click)="hourUp()"><th><i class="fa fa-chevron-up"></i></th></tr>
+                        <tr class="button spin" (click)="hourDown()"><th><i class="fa fa-chevron-down"></i></th></tr>
                     </table>
                 </tr>
                 <tr>
@@ -61,9 +61,9 @@
                     <td>{{ configs.Services.nighttime }}:00</td>
                     <table class="spin-table">
                         <tr class="button spin" 
-                            (click)="nighttimeUp()"><th>&#9650;</th></tr>
+                            (click)="nighttimeUp()"><th><i class="fa fa-chevron-up"></i></th></tr>
                         <tr class="button spin" 
-                            (click)="nighttimeDown()"><th>&#x25bc;</th></tr>
+                            (click)="nighttimeDown()"><th><i class="fa fa-chevron-down"></i></th></tr>
                     </table>
                 </tr>
                 <tr>
@@ -71,9 +71,9 @@
                     <td>{{ configs.Services.morning }}:00</td>
                     <table class="spin-table">
                         <tr class="button spin" 
-                            (click)="morningUp()"><th>&#9650;</th></tr>
+                            (click)="morningUp()"><th><i class="fa fa-chevron-up"></i></th></tr>
                         <tr class="button spin" 
-                            (click)="morningDown()"><th>&#x25bc;</th></tr>
+                            (click)="morningDown()"><th><i class="fa fa-chevron-down"></i></th></tr>
                     </table>
                 </tr>
                 <tr>
@@ -81,9 +81,9 @@
                     <td>{{ configs.Services.night_eq_mag_cutoff }}</td>
                     <table class="spin-table">
                         <tr class="button spin" 
-                            (click)="configs.Services.night_eq_mag_cutoff = configs.Services.night_eq_mag_cutoff + 1"><th>&#9650;</th></tr>
+                            (click)="configs.Services.night_eq_mag_cutoff = configs.Services.night_eq_mag_cutoff + 1"><th><i class="fa fa-chevron-up"></i></th></tr>
                         <tr class="button spin" 
-                            (click)="configs.Services.night_eq_mag_cutoff = configs.Services.night_eq_mag_cutoff - 1"><th>&#x25bc;</th></tr>
+                            (click)="configs.Services.night_eq_mag_cutoff = configs.Services.night_eq_mag_cutoff - 1"><th><i class="fa fa-chevron-down"></i></th></tr>
                     </table>
                 <tr>
                 
