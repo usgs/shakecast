@@ -426,7 +426,7 @@ def get_affected_facilities(shakemap_id):
             # record number of facs at each alert level
             alert[fac_dict['shaking']['alert_level']] += 1
     
-    shaking_data = {'alert': alert, 'facilities': fac_dicts}
+    shaking_data = {'alert': alert, 'facilities': fac_dicts, 'types': {}}
 
     shaking_json = json.dumps(shaking_data, cls=AlchemyEncoder)
     
@@ -517,10 +517,9 @@ def get_settings():
     if request.method == 'POST':
         configs = request.json.get('configs', '')
         if configs:
-            sc.json = json.dumps(configs)
+            sc.json = json.dumps(configs, indent=4)
             if sc.validate() is True:
                 sc.save()
-
     return sc.json
 
 ############################ Admin Pages ##############################
@@ -683,7 +682,7 @@ def get_group_info(group_id):
                     'new_event': group.get_min_mag(),
                     'heartbeat': group.has_spec('heartbeat'),
                     'scenario': group.has_spec('scenario'),
-                    'facilities': facility_info(group.name),
+                    'facilities': get_facility_info(group_name=group.name),
                     'users': group.users}
     
     specs_json = json.dumps(group_specs, cls=AlchemyEncoder)
@@ -776,16 +775,29 @@ def shutdown():
 def page_not_found(error):
     return render_template('index.html')
 
-def facility_info(group_name=''):
+def get_facility_info(group_name='', shakemap_id=''):
+    '''
+    Get facility overview (Facilities per facility type) for a 
+    specific group or shakemap or both or none
+    '''
     session = Session()
     f_types = session.query(Facility.facility_type).distinct().all()
 
     f_dict = {}
     for f_type in f_types:
+
         query = session.query(Facility)
-        query = query.filter(Facility.groups.any(Group.name == group_name))
+        if group_name:
+            query = query.filter(Facility.groups.any(Group.name == group_name))
+        if shakemap_id:
+            query = (query.filter(Facility.shaking_history
+                                    .any(Facility_Shaking.shakemap
+                                            .has(shakemap_id=shakemap_id))))
+
         query = query.filter(Facility.facility_type == f_type[0])
-        f_dict[f_type[0]] = query.count()
+        count = query.count()
+        if count > 0:
+            f_dict[f_type[0]] = count
 
     return f_dict
 
@@ -810,6 +822,6 @@ if __name__ == '__main__':
     if len(sys.argv) > 1:
         if sys.argv[1] == '-d':
             # run in debug mode
-            app.run(host='0.0.0.0', port=5000, debug=True)
+            app.run(host='0.0.0.0', port=5000, debug=True, threaded=True)
     else:
-        app.run(host='0.0.0.0', port=80)
+        app.run(host='0.0.0.0', port=80, threaded=True)

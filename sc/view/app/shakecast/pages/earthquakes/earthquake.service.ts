@@ -64,7 +64,7 @@ export class EarthquakeService {
                     }
 
                     if (result.data.length > 0) {
-                        if (!_.isEqual(current_events, new_events)) {
+                        if ((!_.isEqual(current_events, new_events)) || (this._router.url != '/shakecast/dashboard')) {
                             this.current = result.data
                             this.earthquakeData.next(result.data);
                         }

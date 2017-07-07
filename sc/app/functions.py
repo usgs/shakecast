@@ -541,9 +541,11 @@ def inspection_notification(notification=Notification(),
     not_builder = NotificationBuilder()
     html = not_builder.build_insp_html(shakemap)
 
-    insp_val = max(fs.weight for fs in shakemap.facility_shaking)
-    alert_levels = ['gray', 'green', 'yellow', 'orange', 'red']
-    alert_level = alert_levels[int(floor(insp_val))]
+    alert_level = 'none'
+    if len(shakemap.facility_shaking) > 0:
+        insp_val = max(fs.weight for fs in shakemap.facility_shaking)
+        alert_levels = ['gray', 'green', 'yellow', 'orange', 'red']
+        alert_level = alert_levels[int(floor(insp_val))]
 
     if group.has_alert_level(alert_level):
         try:
@@ -604,19 +606,23 @@ def inspection_notification(notification=Notification(),
             'error': error}
 
 def download_scenario(shakemap_id=None, scenario=False):
-    if shakemap_id is not None:
-        pg = ProductGrabber()
-        success = pg.get_scenario(shakemap_id=shakemap_id, scenario=scenario)
-
-        if success is True:
-            status = 'finished'
-            message = 'Downloaded scenario: ' + shakemap_id
-            success = True
-        else:
-            status = 'failed'
-            message = 'Failed scenario download: ' + shakemap_id
-            success = False
-            
+    message = ''
+    success = False
+    try:
+        if shakemap_id is not None:
+            pg = ProductGrabber()
+            success = pg.get_scenario(shakemap_id=shakemap_id, scenario=scenario)
+            if success is True:
+                status = 'finished'
+                message = 'Downloaded scenario: ' + shakemap_id
+                success = True
+            else:
+                status = 'failed'
+                message = 'Failed scenario download: ' + shakemap_id
+                success = False
+    except Exception as e:
+        message = str(e)
+        
     return {'status': status,
             'message': {'from': 'scenario_download',
                         'title': 'Scenario Download Finished',
@@ -1135,9 +1141,11 @@ def add_facs_to_groups(session=None):
     
     groups = session.query(Group).all()
     for group in groups:
-        group.facilities = (session.query(Facility)
-                                .filter(Facility.in_grid(group))
-                                .all())
+        query = session.query(Facility).filter(Facility.in_grid(group))
+        if group.facility_type.lower() != 'all':
+            query = query.filter(Facility.facility_type.like(group.facility_type))
+
+        group.facilities = query.all()
             
 def add_users_to_groups(session=None):
     '''
