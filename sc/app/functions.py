@@ -622,7 +622,7 @@ def download_scenario(shakemap_id=None, scenario=False):
                 success = False
     except Exception as e:
         message = str(e)
-        
+
     return {'status': status,
             'message': {'from': 'scenario_download',
                         'title': 'Scenario Download Finished',
@@ -1200,6 +1200,33 @@ def delete_inventory_by_id(inventory_type=None, ids=None):
         Session.remove()
 
     return {'status': 'finished', 'message': deleted}
+
+
+def get_facility_info(group_name='', shakemap_id=''):
+    '''
+    Get facility overview (Facilities per facility type) for a 
+    specific group or shakemap or both or none
+    '''
+    session = Session()
+    f_types = session.query(Facility.facility_type).distinct().all()
+
+    f_dict = {}
+    for f_type in f_types:
+
+        query = session.query(Facility)
+        if group_name:
+            query = query.filter(Facility.groups.any(Group.name == group_name))
+        if shakemap_id:
+            query = (query.filter(Facility.shaking_history
+                                    .any(Facility_Shaking.shakemap
+                                            .has(shakemap_id=shakemap_id))))
+
+        query = query.filter(Facility.facility_type == f_type[0])
+        count = query.count()
+        if count > 0:
+            f_dict[f_type[0]] = count
+
+    return f_dict
 
 
 def check_for_updates():

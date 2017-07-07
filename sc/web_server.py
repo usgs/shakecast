@@ -19,7 +19,7 @@ from ast import literal_eval
 from app.objects import Clock, SC, NotificationBuilder, TemplateManager, SoftwareUpdater
 from app.orm import *
 from app.server import Server
-from app.functions import determine_xml
+from app.functions import determine_xml, get_facility_info
 from ui import UI
 
 BASE_DIR = os.path.join(sc_dir(),'view')
@@ -775,31 +775,6 @@ def shutdown():
 def page_not_found(error):
     return render_template('index.html')
 
-def get_facility_info(group_name='', shakemap_id=''):
-    '''
-    Get facility overview (Facilities per facility type) for a 
-    specific group or shakemap or both or none
-    '''
-    session = Session()
-    f_types = session.query(Facility.facility_type).distinct().all()
-
-    f_dict = {}
-    for f_type in f_types:
-
-        query = session.query(Facility)
-        if group_name:
-            query = query.filter(Facility.groups.any(Group.name == group_name))
-        if shakemap_id:
-            query = (query.filter(Facility.shaking_history
-                                    .any(Facility_Shaking.shakemap
-                                            .has(shakemap_id=shakemap_id))))
-
-        query = query.filter(Facility.facility_type == f_type[0])
-        count = query.count()
-        if count > 0:
-            f_dict[f_type[0]] = count
-
-    return f_dict
 
 ############################# Upload Setup ############################
 app.config['UPLOADED_XMLFILES_DEST'] = os.path.join(sc_dir(), 'tmp')
