@@ -77,7 +77,6 @@ def login():
 
 @app.route('/logged_in')
 def logged_in():
-    
     try:
         is_admin = current_user.is_admin()
     except Exception:
@@ -647,9 +646,10 @@ def upload():
 
         func_name = 'import_' + xml_file_type + '_xml'
         if xml_file_type is not None:
-            ui.send("{'%s': {'func': f.%s, 'args_in': {'xml_file': r'%s'}, 'db_use': True, 'loop': False}}" % (func_name, 
+            ui.send("{'%s': {'func': f.%s, 'args_in': {'xml_file': r'%s', '_user': %s}, 'db_use': True, 'loop': False}}" % (func_name, 
                                                                                                                 func_name, 
-                                                                                                                xml_file))
+                                                                                                                xml_file,
+                                                                                                                current_user.shakecast_id))
         
     elif file_type == 'image':
         image_files.save(request.files['file'])
@@ -681,7 +681,7 @@ def get_group_info(group_id):
         group_specs = {'inspection': group.get_alert_levels(),
                     'new_event': group.get_min_mag(),
                     'heartbeat': group.has_spec('heartbeat'),
-                    'scenario': group.has_spec('scenario'),
+                    'scenario': group.get_scenario_alert_levels(),
                     'facilities': get_facility_info(group_name=group.name),
                     'users': group.users}
     

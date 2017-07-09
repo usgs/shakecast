@@ -796,6 +796,10 @@ def import_facility_xml(xml_file='', _user=None):
 
 def import_facility_dicts(facs=None, _user=None):
     session = Session()
+    
+    if isinstance(_user, int):
+        _user = session.query(User).filter(User.shakecast_id == _user).first()
+    
     if facs is not None:
         count_dict = {}
         for fac in facs:
@@ -939,6 +943,10 @@ def import_group_xml(xml_file='', _user=None):
 
 def import_group_dicts(groups=None, _user=None):
     session = Session()
+    
+    if isinstance(_user, int):
+        _user = session.query(User).filter(User.shakecast_id == _user).first()
+    
     imported_groups = []
     if groups is not None:
         for group in groups:
@@ -1034,7 +1042,8 @@ def import_group_dicts(groups=None, _user=None):
     data = {'status': status,
             'message': {'title': 'Group Upload',
                         'message': imported_groups},
-            'log': log_message}
+            'log': log_message,
+            'success': True}
     return data
 
 def import_user_xml(xml_file='', _user=None):
@@ -1064,6 +1073,10 @@ def import_user_xml(xml_file='', _user=None):
 
 def import_user_dicts(users=None, _user=None):
     session = Session()
+    
+    if isinstance(_user, int):
+        _user = session.query(User).filter(User.shakecast_id == _user).fist()
+    
     if users is not None:
         for user in users:
             username = user.get('USERNAME', user.get('username', ''))

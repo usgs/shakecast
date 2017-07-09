@@ -465,13 +465,44 @@ export class MapComponent implements OnInit, OnDestroy {
                 </tr>
                 <tr>
                     <td>
-                        <table style="width:90%;text-align:center">
+                        <table style="width:100%;text-align:center">
             `
 
             for (var i in group['info']['inspection']) {
+
+                var color = group['info']['inspection'][i]
+                if (color == 'yellow') {
+                    color = 'gold'
+                }
+
                 popupStr += '<th style="color:white;padding:3px;border-radius:5px;background:' + 
-                                group['info']['inspection'][i] + 
+                                color + 
                                 '">' + group['info']['inspection'][i] + '</th>';
+            }
+
+            popupStr += '</tr></td></table>'
+        }
+
+        if (group['info']['scenario'].length > 0) {
+            popupStr += `
+                <tr>
+                    <th style="text-align:center">Scenario Alert Levels</th>
+                </tr>
+                <tr>
+                    <td>
+                        <table style="width:100%;text-align:center">
+            `
+
+            for (var i in group['info']['scenario']) {
+
+                var color = group['info']['scenario'][i]
+                if (color == 'yellow') {
+                    color = 'gold'
+                }
+
+                popupStr += '<th style="color:white;padding:3px;border-radius:5px;background:' + 
+                                color + 
+                                '">' + group['info']['scenario'][i] + '</th>';
             }
 
             popupStr += '</tr></td></table>'
