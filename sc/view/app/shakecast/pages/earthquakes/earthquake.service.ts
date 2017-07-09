@@ -24,6 +24,17 @@ export interface Earthquake {
     shakemaps: number;
 }
 
+export interface filter  {
+    shakemap?: boolean;
+    facilities?: boolean;
+    latMax?:  number;
+    latMin?: number;
+    lonMax?: number;
+    lonMin?: number;
+    groupAffected?: string;
+    timeframe?: string;
+}
+
 @Injectable()
 export class EarthquakeService {
     public earthquakeData = new ReplaySubject(1);
@@ -31,7 +42,13 @@ export class EarthquakeService {
     public plotting = new ReplaySubject(1);
     public showScenarioSearch = new ReplaySubject(1);
     public current: any = []
-    public filter = {};
+    
+    public filter: filter = {
+        shakemap: true,
+        facilities: false,
+        timeframe: 'week'
+    }
+
     public configs: any = {clearOnPlot: 'all'};
     public selected: Earthquake = null;
 
@@ -81,7 +98,6 @@ export class EarthquakeService {
     }
 
     clearData() {
-        this.earthquakeData.next([])
         this.mapService.clearMap();
     }
 
@@ -172,16 +188,24 @@ export class EarthquakeService {
     
     plotEq(eq: Earthquake) {
         if (eq) {
+            // get relevant notification info... this should really be up to the page...
             this.notService.getNotifications(eq);
-            this.plotting.next(eq);
+            //this.plotting.next(eq);
+
+            // plots the eq with the relevant config to clear all data or notification
+            // this could probably be done better...
             this.mapService.plotEq(eq, this.configs['clearOnPlot']);
+
+            // get relevant facility info and plot it
             this.facService.getShakeMapData(eq);
         }
     }
 
     geoJsonToSc(geoJson: any[]) {
-        // just add the fields we would expect from the shakecast 
-        // database
+        /* 
+        Change field names from geoJson events to what we would
+        Expect from the ShakeCast database 
+        */
 
         for (var eq_id in geoJson) {
             var eq = geoJson[eq_id]

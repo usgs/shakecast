@@ -115,14 +115,14 @@ export class MapComponent implements OnInit, OnDestroy {
                 }
         }));
 
-        // subscribe to group poly
-        this.subscriptions.push(this.mapService.groupPoly.subscribe(groupPoly => {
-                this.plotGroup(groupPoly);
-        }));
-
         // subscribe to REMOVING facility markers
         this.subscriptions.push(this.mapService.removeFacMarkers.subscribe(fac => {
             this.removeFacMarker(fac);
+        }));
+
+        // subscribe to group poly
+        this.subscriptions.push(this.mapService.groupPoly.subscribe(groupPoly => {
+                this.plotGroup(groupPoly);
         }));
 
         // subscribe to clearing the map
@@ -465,7 +465,7 @@ export class MapComponent implements OnInit, OnDestroy {
                 </tr>
                 <tr>
                     <td>
-                        <table style="width:90%;text-align:center;margin-left:5%">
+                        <table style="width:90%;text-align:center">
             `
 
             for (var i in group['info']['inspection']) {
