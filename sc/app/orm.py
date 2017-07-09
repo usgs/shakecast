@@ -591,6 +591,12 @@ class Group(Base):
 
         return levels
 
+    def get_scenario_alert_levels(self):
+        levels = [s.inspection_priority.lower() for s in self.specs if 
+                                s.notification_type == 'DAMAGE' and s.event_type == 'SCENARIO']
+
+        return levels
+
     def check_min_mag(self, mag=10):
         min_mags = [s.minimum_magnitude for s in self.specs 
                     if s.notification_type.lower() == 'new_event']

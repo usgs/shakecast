@@ -45,7 +45,6 @@ import { SharedModule } from '../shared/shared.module';
   ],
   declarations: [
     ShakeCastAdminComponent,
-    DashboardComponent,
     FacilitiesComponent,
     FacilityFilter,
     GroupsComponent,

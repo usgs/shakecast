@@ -118,7 +118,7 @@ export class NotificationsComponent implements OnInit {
             if (event.keyCode === 13) {
                 if (this.newName !== '') {
                     // remove unwanted characters
-                    var cleanName = this.newName.replace('/[^a-zA-Z0-9]/g','_');
+                    var cleanName = this.newName.replace(/[^\w]/gi, '');
 
                     this.notHTMLService.newTemplate(cleanName);
                     this.enteringNew = false;

@@ -1,13 +1,40 @@
 .settings {
-    margin-left: 5px;
+    position: relative;
+    z-index: 2;
+    background: #fff;
 }
 
-.settings-entries {
-    margin-left: 15px;
+.section {
+    border-bottom: 20px dashed #efefef;
+    padding: 10px;
+    margin: 10px;
 }
 
-.button {
-    cursor: pointer;
+.item {
+    display: inline-block;
+    margin: 5px;
+    border: 2px solid #55aaee;
+    border-radius: 5px;
+    padding: 10px;
+    box-shadow: 1px 1px 5px 1px rgba(0,0,0,0.3);
+    -webkit-box-shadow: 1px 1px 5px 1px rgba(0,0,0,0.3);
+    -moz-box-shadow: 1px 1px 5px 1px rgba(0,0,0,0.3);
+}
+
+.item p {
+    display: inline-block;
+}
+
+.item label {
+    font-weight: bold
+}
+
+.item input {
+    font-size: 15px;
+}
+
+th {
+    text-align: right;
 }
 
 .spin-table td, .spin-table tr {
@@ -18,4 +45,8 @@
     display: inline-block;
     margin-left: 10px;
     margin-right: 10px;
+}
+
+.button:hover .fa {
+    color:white;
 }

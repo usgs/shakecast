@@ -29,52 +29,59 @@ export class DashboardComponent implements OnInit, OnDestroy {
                 private facService: FacilityService,
                 private titleService: TitleService) {}
   
-  ngOnInit() {
-      this.titleService.title.next('Dashboard')
-      this.subscriptions.push(this.eqService.earthquakeData.subscribe((eqs: any[]) => {
-          this.earthquakeData = eqs;
-          if (eqs.length > 0) {
-            this.eqService.plotEq(eqs[0])
-          }
-      }));
-      
-      this.subscriptions.push(this.facService.facilityData.subscribe(facs => {
-          this.facilityData = facs;
-      }));
-      this.eqService.getData({filter: {'timeframe': 'day'}});
-
-      this.subscriptions.push(Observable.interval(60000)
-        .subscribe((x: any) => {
-            this.eqService.getData(this.eqService.filter);
+    ngOnInit() {
+        this.titleService.title.next('Dashboard')
+        this.subscriptions.push(this.eqService.earthquakeData.subscribe((eqs: any[]) => {
+            this.earthquakeData = eqs;
+            if (eqs.length > 0) {
+                this.eqService.plotEq(eqs[0])
+            } else {
+                this.eqService.clearData();
+            }
         }));
+        
+        this.subscriptions.push(this.facService.facilityData.subscribe(facs => {
+            this.facilityData = facs;
+        }));
+
+        this.subscriptions.push(Observable.interval(60000)
+            .subscribe((x: any) => {
+                this.eqService.getData(this.eqService.filter);
+            }));
+
+        this.eqService.filter['timeframe'] = 'day'
+        this.eqService.filter['shakemap'] = true
+        this.eqService.filter['scenario'] = false
+        this.eqService.getData(this.eqService.filter);
   }
 
-  toggleLeft() {
-      if (this.showLeft == 'hidden') {
-          this.showLeft = 'shown';
-      } else {
-          this.showLeft = 'hidden'
-      }
-  }
+    toggleLeft() {
+        if (this.showLeft == 'hidden') {
+            this.showLeft = 'shown';
+        } else {
+            this.showLeft = 'hidden'
+        }
+    }
 
-  toggleRight() {
-      if (this.showRight == 'hidden') {
-          this.showRight = 'shown';
-      } else {
-          this.showRight = 'hidden'
-      }
-  }
+    toggleRight() {
+        if (this.showRight == 'hidden') {
+            this.showRight = 'shown';
+        } else {
+            this.showRight = 'hidden'
+        }
+    }
 
-  toggleBottom() {
-      if (this.showBottom == 'hidden') {
-          this.showBottom = 'shown';
-      } else {
-          this.showBottom = 'hidden'
-      }
-  }
+    toggleBottom() {
+        if (this.showBottom == 'hidden') {
+            this.showBottom = 'shown';
+        } else {
+            this.showBottom = 'hidden'
+        }
+    }
   
-  ngOnDestroy() {
+    ngOnDestroy() {
         this.endSubscriptions()
+        this.eqService.current = []
     }
 
     endSubscriptions() {

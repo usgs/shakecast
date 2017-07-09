@@ -49,11 +49,6 @@ export class GroupListComponent implements OnInit, OnDestroy {
                 this.selected = this.groupData[0];
                 this.selected['selected'] = true;
             }
-            this.groupService.clearMap();
-
-            if (this.groupData.length > 0) {
-                this.groupService.plotGroup(this.groupData[0])
-            }
         }));
         this.subscriptions.push(this.groupService.userGroupData.subscribe((data: any) => {
             this.userGroupData = data;

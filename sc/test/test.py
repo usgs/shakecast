@@ -700,6 +700,10 @@ class TestImport(unittest.TestCase):
 
         self.assertEqual(file_type, 'master')
 
+    def step13_facilityInfo(self):
+        info = get_facility_info(group_name='bad_group', shakemap_id='no_shakemap')
+        self.assertEqual({}, info)
+        
     def steps(self):
         '''
         Generates the step methods from their parent object

@@ -46,7 +46,6 @@ export class EarthquakeListComponent implements OnInit, OnDestroy {
                 private _router: Router) {}
 
     ngOnInit() {
-        //this.getEqs()
         this.subscriptions.push(this.eqService.earthquakeData.subscribe(eqs => {
             this.earthquakeData = eqs
             if ((eqs.length > 0) && 
@@ -58,10 +57,6 @@ export class EarthquakeListComponent implements OnInit, OnDestroy {
         this.subscriptions.push(this.eqService.dataLoading.subscribe((loading: boolean) => {
             this.dataLoading = loading
         }));
-
-        if (this._router.url == '/shakecast/dashboard') {
-            this.filter['timeframe'] = 'day';
-        }
     }
 
     plotEq(eq: Earthquake) {

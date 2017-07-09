@@ -1,70 +1,106 @@
 <div class="settings">
-    <div class="server">
-        <label for="server-name">Server Name: </label><input id="server-name" 
-                                                                placeholder="ShakeCast" 
-                                                                [(ngModel)]="configs.Server.name">
-    </div>
-    <div class="timezone">
-        <h3 class="settings-header">ShakeCast Clock</h3>
-        <div class="settings-entries">
-            <table>
-                <tr>
-                    <th>UTC time</th>
-                    <td>{{ utcTime | date:'dd-M-yyyy H:mm'}}</td>
-                </tr>
-                <tr>
-                    <th>ShakeCast Time</th>
-                    <td>{{ offsetTime | date:'dd-M-yyyy H:mm'}}</td>
-                    <table class="spin-table">
-                        <tr class="button spin" (click)="hourUp()"><th>&#9650;</th></tr>
-                        <tr class="button spin" (click)="hourDown()"><th>&#x25bc;</th></tr>
-                    </table>
-                </tr>
-                <tr>
-                    <th>Nighttime</th>
-                    <td>{{ configs.Services.nighttime }}:00</td>
-                    <table class="spin-table">
-                        <tr class="button spin" 
-                            (click)="nighttimeUp()"><th>&#9650;</th></tr>
-                        <tr class="button spin" 
-                            (click)="nighttimeDown()"><th>&#x25bc;</th></tr>
-                    </table>
-                </tr>
-                <tr>
-                    <th>Morning</th>
-                    <td>{{ configs.Services.morning }}:00</td>
-                    <table class="spin-table">
-                        <tr class="button spin" 
-                            (click)="morningUp()"><th>&#9650;</th></tr>
-                        <tr class="button spin" 
-                            (click)="morningDown()"><th>&#x25bc;</th></tr>
-                    </table>
-                </tr>
-            </table>
+    <div class="section">
+        <h1 class="header">
+            Server Settings
+        </h1>
+        <div class="item">
+            <label for="server-name">Rename your Server: </label>
+            <input id="server-name" 
+                            placeholder="ShakeCast" 
+                            [(ngModel)]="configs.Server.name">
         </div>
-    </div>
 
-    <div class="smtp">
-        <h3 class="settings-header">SMTP Server</h3>
-        <div class="settings-entries">
-            <input placeholder="Username" type="text" [(ngModel)]="configs.SMTP.username">
-            <input placeholder="Password" type="password" [(ngModel)]="configs.SMTP.password">
-            <input placeholder="Server" type="text" [(ngModel)]="configs.SMTP.server">
+        <div class="item">
+            <label for="networks">Networks to ignore: </label>
+            <input id="networks" [(ngModel)]="configs.Services.ignore_nets">
         </div>
-    </div>
 
-    <div class="Proxy">
-        <h3 class="settings-header">Proxy Setup</h3>
-        <div class="settings-entries">
-            <label for="proxy">Use a proxy: </label><input type="checkbox" 
-                                                            id="proxy" 
-                                                            [(ngModel)]="configs.Proxy.use">
+        <div class="item">
+            <label for="proxy">Use a proxy: </label>
+            <input type="checkbox" 
+                        id="proxy" 
+                        [(ngModel)]="configs.Proxy.use">
 
             <div *ngIf="configs.Proxy.use">
                 <input placeholder="Username" type="text" [(ngModel)]="configs.Proxy.username">
                 <input placeholder="Password" type="password" [(ngModel)]="configs.Proxy.password">
+                <input placeholder="Port" type="text" [(ngModel)]="configs.Proxy.port">
                 <input placeholder="Server" type="text" [(ngModel)]="configs.Proxy.server">
             </div>
+        </div>
+
+        <div class="item">
+            <label for="version">Software Version: </label><p>{{ configs?.Server?.update?.software_version }}</p>
+            <div *ngIf="configs?.Server?.update?.software_version != configs?.Server?.update?.update_version">
+                <p>Please update ShakeCast</p><h3 class="button" (click)="updateService.updateShakecast()">Update</h3>
+            </div>
+            <div *ngIf="configs?.Server?.update?.software_version == configs?.Server?.update?.update_version">
+                <p>No software updates required</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="section">
+        <h1 class="header">Clock Settings</h1>
+        <div class="item">
+            <table>
+                <tr>
+                    <th>UTC time: </th>
+                    <td>{{ utcTime | date:'dd-M-yyyy H:mm'}}</td>
+                </tr>
+                <tr>
+                    <th>ShakeCast Time: </th>
+                    <td>{{ offsetTime | date:'dd-M-yyyy H:mm'}}</td>
+                    <table class="spin-table">
+                        <tr class="button spin" (click)="hourUp()"><th><i class="fa fa-chevron-up"></i></th></tr>
+                        <tr class="button spin" (click)="hourDown()"><th><i class="fa fa-chevron-down"></i></th></tr>
+                    </table>
+                </tr>
+                <tr>
+                    <th>Nighttime: </th>
+                    <td>{{ configs.Services.nighttime }}:00</td>
+                    <table class="spin-table">
+                        <tr class="button spin" 
+                            (click)="nighttimeUp()"><th><i class="fa fa-chevron-up"></i></th></tr>
+                        <tr class="button spin" 
+                            (click)="nighttimeDown()"><th><i class="fa fa-chevron-down"></i></th></tr>
+                    </table>
+                </tr>
+                <tr>
+                    <th>Morning: </th>
+                    <td>{{ configs.Services.morning }}:00</td>
+                    <table class="spin-table">
+                        <tr class="button spin" 
+                            (click)="morningUp()"><th><i class="fa fa-chevron-up"></i></th></tr>
+                        <tr class="button spin" 
+                            (click)="morningDown()"><th><i class="fa fa-chevron-down"></i></th></tr>
+                    </table>
+                </tr>
+                <tr>
+                    <th>Nighttime Min Magnitude: </th>
+                    <td>{{ configs.Services.night_eq_mag_cutoff }}</td>
+                    <table class="spin-table">
+                        <tr class="button spin" 
+                            (click)="configs.Services.night_eq_mag_cutoff = configs.Services.night_eq_mag_cutoff + 1"><th><i class="fa fa-chevron-up"></i></th></tr>
+                        <tr class="button spin" 
+                            (click)="configs.Services.night_eq_mag_cutoff = configs.Services.night_eq_mag_cutoff - 1"><th><i class="fa fa-chevron-down"></i></th></tr>
+                    </table>
+                <tr>
+                
+            </table>
+        </div>
+    </div>
+
+    <div class="section">
+        <h1 class="header">
+            SMTP
+        </h1>
+        <div class="item">
+            <input placeholder="Username" type="text" [(ngModel)]="configs.SMTP.username">
+            <input placeholder="Password" type="password" [(ngModel)]="configs.SMTP.password">
+            <input placeholder="Security" type="text" [(ngModel)]="configs.SMTP.security">
+            <input placeholder="Port" type="text" [(ngModel)]="configs.SMTP.port">
+            <input placeholder="Server" type="text" [(ngModel)]="configs.SMTP.server">
         </div>
     </div>
 </div>

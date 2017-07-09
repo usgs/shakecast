@@ -541,9 +541,11 @@ def inspection_notification(notification=Notification(),
     not_builder = NotificationBuilder()
     html = not_builder.build_insp_html(shakemap)
 
-    insp_val = max(fs.weight for fs in shakemap.facility_shaking)
-    alert_levels = ['gray', 'green', 'yellow', 'orange', 'red']
-    alert_level = alert_levels[int(floor(insp_val))]
+    alert_level = 'none'
+    if len(shakemap.facility_shaking) > 0:
+        insp_val = max(fs.weight for fs in shakemap.facility_shaking)
+        alert_levels = ['gray', 'green', 'yellow', 'orange', 'red']
+        alert_level = alert_levels[int(floor(insp_val))]
 
     if group.has_alert_level(alert_level):
         try:
@@ -604,19 +606,23 @@ def inspection_notification(notification=Notification(),
             'error': error}
 
 def download_scenario(shakemap_id=None, scenario=False):
-    if shakemap_id is not None:
-        pg = ProductGrabber()
-        success = pg.get_scenario(shakemap_id=shakemap_id, scenario=scenario)
+    message = ''
+    success = False
+    try:
+        if shakemap_id is not None:
+            pg = ProductGrabber()
+            success = pg.get_scenario(shakemap_id=shakemap_id, scenario=scenario)
+            if success is True:
+                status = 'finished'
+                message = 'Downloaded scenario: ' + shakemap_id
+                success = True
+            else:
+                status = 'failed'
+                message = 'Failed scenario download: ' + shakemap_id
+                success = False
+    except Exception as e:
+        message = str(e)
 
-        if success is True:
-            status = 'finished'
-            message = 'Downloaded scenario: ' + shakemap_id
-            success = True
-        else:
-            status = 'failed'
-            message = 'Failed scenario download: ' + shakemap_id
-            success = False
-            
     return {'status': status,
             'message': {'from': 'scenario_download',
                         'title': 'Scenario Download Finished',
@@ -790,6 +796,10 @@ def import_facility_xml(xml_file='', _user=None):
 
 def import_facility_dicts(facs=None, _user=None):
     session = Session()
+    
+    if isinstance(_user, int):
+        _user = session.query(User).filter(User.shakecast_id == _user).first()
+    
     if facs is not None:
         count_dict = {}
         for fac in facs:
@@ -933,6 +943,10 @@ def import_group_xml(xml_file='', _user=None):
 
 def import_group_dicts(groups=None, _user=None):
     session = Session()
+    
+    if isinstance(_user, int):
+        _user = session.query(User).filter(User.shakecast_id == _user).first()
+    
     imported_groups = []
     if groups is not None:
         for group in groups:
@@ -1028,7 +1042,8 @@ def import_group_dicts(groups=None, _user=None):
     data = {'status': status,
             'message': {'title': 'Group Upload',
                         'message': imported_groups},
-            'log': log_message}
+            'log': log_message,
+            'success': True}
     return data
 
 def import_user_xml(xml_file='', _user=None):
@@ -1058,6 +1073,10 @@ def import_user_xml(xml_file='', _user=None):
 
 def import_user_dicts(users=None, _user=None):
     session = Session()
+    
+    if isinstance(_user, int):
+        _user = session.query(User).filter(User.shakecast_id == _user).fist()
+    
     if users is not None:
         for user in users:
             username = user.get('USERNAME', user.get('username', ''))
@@ -1135,9 +1154,11 @@ def add_facs_to_groups(session=None):
     
     groups = session.query(Group).all()
     for group in groups:
-        group.facilities = (session.query(Facility)
-                                .filter(Facility.in_grid(group))
-                                .all())
+        query = session.query(Facility).filter(Facility.in_grid(group))
+        if group.facility_type.lower() != 'all':
+            query = query.filter(Facility.facility_type.like(group.facility_type))
+
+        group.facilities = query.all()
             
 def add_users_to_groups(session=None):
     '''
@@ -1192,6 +1213,33 @@ def delete_inventory_by_id(inventory_type=None, ids=None):
         Session.remove()
 
     return {'status': 'finished', 'message': deleted}
+
+
+def get_facility_info(group_name='', shakemap_id=''):
+    '''
+    Get facility overview (Facilities per facility type) for a 
+    specific group or shakemap or both or none
+    '''
+    session = Session()
+    f_types = session.query(Facility.facility_type).distinct().all()
+
+    f_dict = {}
+    for f_type in f_types:
+
+        query = session.query(Facility)
+        if group_name:
+            query = query.filter(Facility.groups.any(Group.name == group_name))
+        if shakemap_id:
+            query = (query.filter(Facility.shaking_history
+                                    .any(Facility_Shaking.shakemap
+                                            .has(shakemap_id=shakemap_id))))
+
+        query = query.filter(Facility.facility_type == f_type[0])
+        count = query.count()
+        if count > 0:
+            f_dict[f_type[0]] = count
+
+    return f_dict
 
 
 def check_for_updates():

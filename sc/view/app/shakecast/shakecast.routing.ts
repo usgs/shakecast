@@ -19,10 +19,6 @@ const appRoutes: Routes = [
                 component: DashboardComponent
             },
             {
-                path: 'earthquakes',
-                component: EarthquakesComponent
-            },
-            {
                 path: '',
                 redirectTo: 'dashboard',
                 pathMatch: 'full'

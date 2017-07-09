@@ -19,7 +19,7 @@ from ast import literal_eval
 from app.objects import Clock, SC, NotificationBuilder, TemplateManager, SoftwareUpdater
 from app.orm import *
 from app.server import Server
-from app.functions import determine_xml
+from app.functions import determine_xml, get_facility_info
 from ui import UI
 
 BASE_DIR = os.path.join(sc_dir(),'view')
@@ -77,7 +77,6 @@ def login():
 
 @app.route('/logged_in')
 def logged_in():
-    
     try:
         is_admin = current_user.is_admin()
     except Exception:
@@ -426,7 +425,7 @@ def get_affected_facilities(shakemap_id):
             # record number of facs at each alert level
             alert[fac_dict['shaking']['alert_level']] += 1
     
-    shaking_data = {'alert': alert, 'facilities': fac_dicts}
+    shaking_data = {'alert': alert, 'facilities': fac_dicts, 'types': {}}
 
     shaking_json = json.dumps(shaking_data, cls=AlchemyEncoder)
     
@@ -517,10 +516,9 @@ def get_settings():
     if request.method == 'POST':
         configs = request.json.get('configs', '')
         if configs:
-            sc.json = json.dumps(configs)
+            sc.json = json.dumps(configs, indent=4)
             if sc.validate() is True:
                 sc.save()
-
     return sc.json
 
 ############################ Admin Pages ##############################
@@ -648,9 +646,10 @@ def upload():
 
         func_name = 'import_' + xml_file_type + '_xml'
         if xml_file_type is not None:
-            ui.send("{'%s': {'func': f.%s, 'args_in': {'xml_file': r'%s'}, 'db_use': True, 'loop': False}}" % (func_name, 
+            ui.send("{'%s': {'func': f.%s, 'args_in': {'xml_file': r'%s', '_user': %s}, 'db_use': True, 'loop': False}}" % (func_name, 
                                                                                                                 func_name, 
-                                                                                                                xml_file))
+                                                                                                                xml_file,
+                                                                                                                current_user.shakecast_id))
         
     elif file_type == 'image':
         image_files.save(request.files['file'])
@@ -682,8 +681,8 @@ def get_group_info(group_id):
         group_specs = {'inspection': group.get_alert_levels(),
                     'new_event': group.get_min_mag(),
                     'heartbeat': group.has_spec('heartbeat'),
-                    'scenario': group.has_spec('scenario'),
-                    'facilities': facility_info(group.name),
+                    'scenario': group.get_scenario_alert_levels(),
+                    'facilities': get_facility_info(group_name=group.name),
                     'users': group.users}
     
     specs_json = json.dumps(group_specs, cls=AlchemyEncoder)
@@ -776,18 +775,6 @@ def shutdown():
 def page_not_found(error):
     return render_template('index.html')
 
-def facility_info(group_name=''):
-    session = Session()
-    f_types = session.query(Facility.facility_type).distinct().all()
-
-    f_dict = {}
-    for f_type in f_types:
-        query = session.query(Facility)
-        query = query.filter(Facility.groups.any(Group.name == group_name))
-        query = query.filter(Facility.facility_type == f_type[0])
-        f_dict[f_type[0]] = query.count()
-
-    return f_dict
 
 ############################# Upload Setup ############################
 app.config['UPLOADED_XMLFILES_DEST'] = os.path.join(sc_dir(), 'tmp')
@@ -810,6 +797,6 @@ if __name__ == '__main__':
     if len(sys.argv) > 1:
         if sys.argv[1] == '-d':
             # run in debug mode
-            app.run(host='0.0.0.0', port=5000, debug=True)
+            app.run(host='0.0.0.0', port=5000, debug=True, threaded=True)
     else:
-        app.run(host='0.0.0.0', port=80)
+        app.run(host='0.0.0.0', port=80, threaded=True)
