@@ -637,7 +637,7 @@ class TestImport(unittest.TestCase):
                 self.assertTrue(group.has_spec('scenario'))
                 self.assertTrue('green' in group.get_scenario_alert_levels())
 
-            self.assertEqual('Ex3', group.updated_by)
+            self.assertEqual('Ex1', group.updated_by)
         
         if failed is True:
             raise ValueError(failed_str)
@@ -666,7 +666,7 @@ class TestImport(unittest.TestCase):
                                                                                 len(facs))
                     failed = True
           
-            self.assertEqual('Ex3', fac.updated_by)
+            self.assertEqual('Ex1', fac.updated_by)
 
         if failed is True:
             raise ValueError(failed_str)
