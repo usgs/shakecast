@@ -748,7 +748,7 @@ def import_master_xml(xml_file='', _user=None):
         if isinstance(group_list, list) is False:
             group_list = [group_list]
         if isinstance(user_list, list) is False:
-            group_list = [group_list]
+            user_list = [user_list]
     
     fac_data = import_facility_dicts(facs=fac_list, _user=_user)
     group_data = import_group_dicts(groups=group_list, _user=_user)
