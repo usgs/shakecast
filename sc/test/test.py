@@ -563,25 +563,16 @@ class TestImport(unittest.TestCase):
         self.assertEqual(file_type, 'user')
         
     def step03_groupImport(self):
-        session = Session()
-        user = session.query(User).filter(User.username == 'Ex3').first()
         group_file = os.path.join(sc_dir(), 'test', 'test_groups.xml')
         file_type = determine_xml(group_file)
-        import_group_xml(group_file, user)
-
+        import_group_xml(group_file, 1)
         self.assertEqual(file_type, 'group')
-
-        Session.remove()
         
     def step04_facImport(self):
-        session = Session()
-        user = session.query(User).filter(User.username == 'Ex3').first()
         fac_file = os.path.join(sc_dir(), 'test', 'test_facs.xml')
         file_type = determine_xml(fac_file)
-        import_facility_xml(fac_file, user)
-
+        import_facility_xml(fac_file, 1)
         self.assertEqual(file_type, 'facility')
-        Session.remove()
 
     def step05_checkUser(self):
         session = Session()
@@ -644,8 +635,9 @@ class TestImport(unittest.TestCase):
                                                                                len(group.users))
                     failed = True
                 self.assertTrue(group.has_spec('scenario'))
-            
-            self.assertEqual('Ex3', group.updated_by)
+                self.assertTrue('green' in group.get_scenario_alert_levels())
+
+            self.assertEqual('Ex1', group.updated_by)
         
         if failed is True:
             raise ValueError(failed_str)
@@ -674,7 +666,7 @@ class TestImport(unittest.TestCase):
                                                                                 len(facs))
                     failed = True
           
-            self.assertEqual('Ex3', fac.updated_by)
+            self.assertEqual('Ex1', fac.updated_by)
 
         if failed is True:
             raise ValueError(failed_str)
@@ -700,6 +692,10 @@ class TestImport(unittest.TestCase):
 
         self.assertEqual(file_type, 'master')
 
+    def step13_facilityInfo(self):
+        info = get_facility_info(group_name='bad_group', shakemap_id='no_shakemap')
+        self.assertEqual({}, info)
+        
     def steps(self):
         '''
         Generates the step methods from their parent object

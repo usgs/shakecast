@@ -4,6 +4,7 @@ import 'rxjs/add/operator/map';
 import 'rxjs/add/operator/catch';
 import { Observable } from 'rxjs/Observable';
 import { ReplaySubject } from 'rxjs/ReplaySubject';
+import { Router } from '@angular/router';
 
 import { MapService } from '../../../shared/maps/map.service'
 
@@ -32,7 +33,8 @@ export class FacilityService {
     public filter = {};
 
     constructor(private _http: Http,
-                private mapService: MapService) {}
+                private mapService: MapService,
+                private _router: Router) {}
 
     getData(filter: any = {}) {
         this.loadingData.next(true)
@@ -59,13 +61,19 @@ export class FacilityService {
     }
 
     getShakeMapData(event: any) {
+        /* get list of facilities affected by a specific event */
+
         this.loadingData.next(true)
         this._http.get('/api/shakemaps/' + event.event_id + '/facilities')
             .map((result: Response) => result.json())
             .subscribe((result: any) => {
-                this.facilityData.next(result.facilities);
+
+                if (this._router.url == '/shakecast/dashboard') {
+                    this.facilityData.next(result.facilities);
+                }
+
                 this.shakingData.next(result.alert);
-                this.unselectAll();
+                //this.unselectAll();
 
                 if (result.facilities.length > 0) {
                     this.mapService.plotFacs(result.facilities);
@@ -76,6 +84,8 @@ export class FacilityService {
     }
 
     getFacilityShaking(facility: any, event: any) {
+        /* Get shaking history for a specific event and facility */
+
         this.loadingData.next(true)
         this._http.get('/api/facility-shaking/' + facility['shakecast_id'] + '/' + event['event_id'])
             .map((result: Response) => result.json())

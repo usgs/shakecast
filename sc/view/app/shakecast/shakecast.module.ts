@@ -29,7 +29,6 @@ import { SharedModule } from '../shared/shared.module'
     ShakeCastComponent,
     DashboardComponent,
     NotificationDashComponent,
-    EarthquakesComponent,
     EarthquakeFilter
   ],
   providers: [

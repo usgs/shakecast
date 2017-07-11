@@ -1,9 +1,11 @@
 import { Component,
          OnInit,
-         OnDestroy } from '@angular/core';
+         OnDestroy,
+         HostListener } from '@angular/core';
 import { Observable } from 'rxjs/Observable';
 
 import { TitleService } from '../../../title/title.service';
+import { UpdateService } from '../../update/update.service';
 import { ConfigService } from './config.service';
 import { TimeService } from './time.service';
 import { NotificationsService } from 'angular2-notifications';
@@ -20,11 +22,14 @@ export class ConfigComponent implements OnInit, OnDestroy {
     public configs: any = {"Logging": {"log_file": "", "log_level": "", "log_rotate": 0}, "DBConnection": {"username": "", "retry_count": 0, "password": "", "type": "sqlite", "retry_interval": 0}, "Notification": {"default_template_new_event": "", "default_template_inspection": "", "default_template_pdf": ""}, "SMTP": {"username": "", "from": "", "envelope_from": "", "server": "", "security": "", "password": "", "port": 0}, "Server": {"software_version": "", "name": "", "DNS": ""}, "gmap_key": "", "Proxy": {"username": "", "use": false, "password": "", "port": 0, "server": ""}, "Services": {"use_geo_json": true, "ignore_nets": [], "new_eq_mag_cutoff": 0, "keep_eq_for": 0, "nighttime": 0, "check_new_int": 0, "night_eq_mag_cutoff": 0, "geo_json_web": "", "eq_req_products": [], "morning": 0, "archive_mag": 0, "geo_json_int": 0}, "timezone": 0}
     public utcTime: any = null;
     public offsetTime: any = null;
+    public enteringNet: boolean = false;
+    public newNet: string = ''
 
     constructor(private confService: ConfigService,
                 public timeService: TimeService,
                 private notService: NotificationsService,
-                private titleService: TitleService) {}
+                private titleService: TitleService,
+                public updateServer: UpdateService) {}
 
     ngOnInit() {
         this.titleService.title.next('Settings');
@@ -34,7 +39,7 @@ export class ConfigComponent implements OnInit, OnDestroy {
 
             this.offsetTime = this.timeService.getOffsetTime(configs.timezone)
 
-            this.subscriptions.push(Observable.interval(50)
+            this.subscriptions.push(Observable.interval(500)
                 .subscribe(x => {   
                     this.utcTime = this.timeService.getUTCTime();
                     this.offsetTime = this.timeService.getOffsetTime(configs.timezone)
@@ -86,6 +91,20 @@ export class ConfigComponent implements OnInit, OnDestroy {
 
     setTime() {
 
+    }
+
+
+    @HostListener('window:keydown', ['$event'])
+    keyboardInput(event: any) {
+        if (this.enteringNet === true) {
+            if (event.keyCode === 13) {
+                if (this.newNet !== '') {
+                    this.configs.Services.ignore_nets.push(this.newNet)
+                    this.newNet = ''
+                    this.enteringNet = false
+                }
+            }
+        }
     }
 
     ngOnDestroy() {}

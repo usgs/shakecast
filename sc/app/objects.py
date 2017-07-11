@@ -40,7 +40,7 @@ class ProductGrabber(object):
         self.req_products = req_products
         self.server_address = ''
         self.json_feed_url = sc.geo_json_web
-        self.ignore_nets = sc.ignore_nets
+        self.ignore_nets = sc.ignore_nets.split(',')
         self.json_feed = ''
         self.earthquakes = {}
         self.data_dir = ''

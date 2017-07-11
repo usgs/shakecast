@@ -29,7 +29,7 @@ export class MapComponent implements OnInit, OnDestroy {
     private facilityCluster: any = L.markerClusterGroup({
 	                                iconCreateFunction: this.createFacCluster
                                     });
-    private facilityLayer: any = L.layerGroup();
+    private facilityLayer: any = L.featureGroup();
     private facMarker: any = L.marker();
     private groupLayers: any = L.featureGroup();
     private subscriptions: any = [];
@@ -115,14 +115,14 @@ export class MapComponent implements OnInit, OnDestroy {
                 }
         }));
 
-        // subscribe to group poly
-        this.subscriptions.push(this.mapService.groupPoly.subscribe(groupPoly => {
-                this.plotGroup(groupPoly);
-        }));
-
         // subscribe to REMOVING facility markers
         this.subscriptions.push(this.mapService.removeFacMarkers.subscribe(fac => {
             this.removeFacMarker(fac);
+        }));
+
+        // subscribe to group poly
+        this.subscriptions.push(this.mapService.groupPoly.subscribe(groupPoly => {
+                this.plotGroup(groupPoly);
         }));
 
         // subscribe to clearing the map
@@ -212,10 +212,12 @@ export class MapComponent implements OnInit, OnDestroy {
                 var imageBounds = [[sm.lat_min, sm.lon_min], [sm.lat_max, sm.lon_max]];
 
                 try {
+                    if (this.eventLayer.hasLayer(this.overlayLayer)) {
+                        this.eventLayer.removeLayer(this.overlayLayer);
+                    }
                     this.overlayLayer = L.imageOverlay(imageUrl, 
                                     imageBounds, 
                                     {opacity: .6})
-                                
                     this.overlayLayer.addTo(this.eventLayer);
                     if (this.map.hasLayer(this.eventLayer)) {
                         this.eventLayer.addTo(this.map)
@@ -318,25 +320,25 @@ export class MapComponent implements OnInit, OnDestroy {
                     `
 
             if (fac['green'] > 0) {
-                colorTable += `<th style="background-color:green;padding:2px">
+                colorTable += `<th style="background-color:green;padding:2px;color:white">
                             ` + fac['metric']+ ': ' + fac['green'] + ` 
                         </th>`
             } 
             
             if (fac['yellow'] > 0) {
-                colorTable += `<th style="background-color:gold;padding:2px">
+                colorTable += `<th style="background-color:gold;padding:2px;color:white">
                             ` + fac['metric']+ ': ' + fac['yellow'] + ` 
                         </th>`
             } 
             
             if (fac['orange'] > 0) {
-                colorTable += `<th style="background-color:orange;padding:2px">
+                colorTable += `<th style="background-color:orange;padding:2px;color:white">
                             ` + fac['metric']+ ': ' + fac['orange'] + ` 
                         </th>`
             } 
             
             if (fac['red'] > 0) {
-                colorTable += `<th style="background-color:red;padding:2px">
+                colorTable += `<th style="background-color:red;padding:2px;color:white">
                             ` + fac['metric']+ ': ' + fac['red'] + ` 
                         </th>`
             }
@@ -463,13 +465,44 @@ export class MapComponent implements OnInit, OnDestroy {
                 </tr>
                 <tr>
                     <td>
-                        <table style="width:90%;text-align:center;margin-left:5%">
+                        <table style="width:100%;text-align:center">
             `
 
             for (var i in group['info']['inspection']) {
+
+                var color = group['info']['inspection'][i]
+                if (color == 'yellow') {
+                    color = 'gold'
+                }
+
                 popupStr += '<th style="color:white;padding:3px;border-radius:5px;background:' + 
-                                group['info']['inspection'][i] + 
+                                color + 
                                 '">' + group['info']['inspection'][i] + '</th>';
+            }
+
+            popupStr += '</tr></td></table>'
+        }
+
+        if (group['info']['scenario'].length > 0) {
+            popupStr += `
+                <tr>
+                    <th style="text-align:center">Scenario Alert Levels</th>
+                </tr>
+                <tr>
+                    <td>
+                        <table style="width:100%;text-align:center">
+            `
+
+            for (var i in group['info']['scenario']) {
+
+                var color = group['info']['scenario'][i]
+                if (color == 'yellow') {
+                    color = 'gold'
+                }
+
+                popupStr += '<th style="color:white;padding:3px;border-radius:5px;background:' + 
+                                color + 
+                                '">' + group['info']['scenario'][i] + '</th>';
             }
 
             popupStr += '</tr></td></table>'

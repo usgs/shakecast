@@ -21,10 +21,6 @@ const appRoutes: Routes = [
         canActivate: [LoginGuard, AdminGuard],
         children: [
             {
-                path: 'dashboard',
-                component: DashboardComponent
-            },
-            {
                 path: 'facilities',
                 component: FacilitiesComponent
             },
