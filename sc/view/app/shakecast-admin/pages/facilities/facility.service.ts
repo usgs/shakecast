@@ -4,6 +4,7 @@ import 'rxjs/add/operator/map';
 import 'rxjs/add/operator/catch';
 import { Observable } from 'rxjs/Observable';
 import { ReplaySubject } from 'rxjs/ReplaySubject';
+import { Router } from '@angular/router';
 
 import { MapService } from '../../../shared/maps/map.service'
 
@@ -32,7 +33,8 @@ export class FacilityService {
     public filter = {};
 
     constructor(private _http: Http,
-                private mapService: MapService) {}
+                private mapService: MapService,
+                private _router: Router) {}
 
     getData(filter: any = {}) {
         this.loadingData.next(true)
@@ -65,7 +67,11 @@ export class FacilityService {
         this._http.get('/api/shakemaps/' + event.event_id + '/facilities')
             .map((result: Response) => result.json())
             .subscribe((result: any) => {
-                //this.facilityData.next(result.facilities);
+
+                if (this._router.url == '/shakecast/dashboard') {
+                    this.facilityData.next(result.facilities);
+                }
+
                 this.shakingData.next(result.alert);
                 //this.unselectAll();
 
