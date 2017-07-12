@@ -31,6 +31,7 @@ export class FacilitiesComponent implements OnInit, OnDestroy {
         this.facService.clearMap()
         this.eqService.configs['clearOnPlot'] = 'events';
         this.facService.getData();
+        this.toggleRight();
     }
 
     toggleLeft() {

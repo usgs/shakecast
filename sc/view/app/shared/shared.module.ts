@@ -25,6 +25,8 @@ import { StickToTopDirective } from './directives/stick-to-top.directive';
 import { ScreenDimmerComponent } from './screen-dimmer/screen-dimmer.component';
 // loading
 import { LoadingComponent } from './loading/loading.component';
+// in-app documentation
+import { InfoComponent } from './info/info.component';
 
 @NgModule({
   imports: [
@@ -39,7 +41,8 @@ import { LoadingComponent } from './loading/loading.component';
                  FacilityInfoComponent,
                  FileSelectDirective,
                  FileDropDirective,
-                 LoadingComponent],
+                 LoadingComponent,
+                 InfoComponent],
   providers: [
   ],
   exports: [MapComponent,
@@ -53,6 +56,7 @@ import { LoadingComponent } from './loading/loading.component';
             ScreenDimmerComponent,
             FileSelectDirective,
             FileDropDirective,
-            LoadingComponent]
+            LoadingComponent,
+            InfoComponent]
 })
 export class SharedModule { }

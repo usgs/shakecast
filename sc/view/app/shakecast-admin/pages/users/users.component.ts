@@ -22,7 +22,7 @@ export class UsersComponent {
     private subscriptions: any[] = [];
     public groupData: any = []
     public showLeft: string = 'shown';
-    public showRight: string = 'hidden';
+    public showRight: string = 'shown';
     public showBottom: string = 'hidden';
 
     constructor(private groupService: GroupService,

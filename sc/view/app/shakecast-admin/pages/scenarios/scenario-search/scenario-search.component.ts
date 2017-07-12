@@ -27,7 +27,8 @@ export class ScenarioSearchComponent implements OnInit, OnDestroy{
     public facilityShaking: any = null;
     public showFragilityInfo: boolean = false;
     public filter: any = {starttime: '2005-01-01',
-                          endtime: null,
+                          endtime: '2008-01-01',
+                          eventid: null,
                           minmagnitude: 6,
                           minlatitude: -90,
                           maxlatitude: 90,
