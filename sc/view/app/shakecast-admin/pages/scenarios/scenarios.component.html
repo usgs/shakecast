@@ -21,7 +21,6 @@
 <div class="left-panel" [@showLeft]="showLeft">
     
     <div class="panel-content">
-            <h2 class="panel-title">Search</h2>
             <div class="panel-scroll-container">
                 <scenario-search></scenario-search>
             </div>
@@ -38,14 +37,15 @@
     <div class="control">
         <div *ngIf="!searchShown">
             <h3 class="button" (click)="getMore()">Download More from the Web</h3>
+            <!--
             <h3 class="button" (click)="getMore()">Search your Earthquake Database</h3>
+            -->
             <h3 class="button" (click)="eqService.runScenario(eqService.selected.event_id)">Run Scenario</h3>
             <h3 class="button" (click)="deleteScenario()">Delete Selected</h3>
         </div>
         <div *ngIf="searchShown">
-            <h3 class="button" (click)="eqService.showScenarioSearch.next(true)">Search</h3>
             <h3 class="button" (click)="eqService.downloadScenario(eqService.selected.event_id, eqService.selected.scenario)">Download Selected</h3>
-            <h3 class="button" (click)="userScenarios()">View Your Scenarios</h3>
+            <h3 class="button" (click)="userScenarios()">Back</h3>
         </div>
     </div>
 

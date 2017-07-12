@@ -14,7 +14,8 @@
 .info-container {
     position: absolute;
     display: inline-block;
-    width: 300px;
+    max-width: 300px;
+    min-width: 200px;
 }
 
 .info {    
@@ -29,6 +30,7 @@
 
 .info p {
     font-size: 14px;
+    font-weight: bold;
     text-align: center;
 }
 
