@@ -73,7 +73,14 @@
 
 .triangle-right.top:after {
     left: 92%;
+    margin-left: 1px;
     border-width: 15px 10px 0 0;
+}
+
+.triangle-right.top:before {
+    left: 92%;
+    top: -18px;
+    border-width: 17px 12px 0 0;
 }
 
 .triangle-left.top:after, .triangle-right.top:after {
