@@ -164,3 +164,7 @@ html, body
     color: white;
     font-weight: bold;
 }
+
+p a {
+    color: #55aaee
+}

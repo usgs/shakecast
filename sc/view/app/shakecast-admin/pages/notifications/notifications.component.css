@@ -26,10 +26,13 @@
 .not-column, .conf-column {
     z-index: 2;
     background: white;
+    margin: 5px;
+    border-radius: 10px;
 }
 
 .not-column {
-    width: 55%
+    width: 55%;
+    border: 2px solid #55aaee;
 }
 
 .conf-column {

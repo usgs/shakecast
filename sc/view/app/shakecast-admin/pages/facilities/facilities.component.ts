@@ -1,6 +1,6 @@
 import { Component,
          OnInit,
-         OnDestroy } from '@angular/core';
+         OnDestroy, AfterViewInit } from '@angular/core';
 
 import { FacilityListComponent } from './facility-list.component'
 import { FacilityService, Facility } from './facility.service'
@@ -17,21 +17,34 @@ import { showLeft, showRight, showBottom } from '../../../shared/animations/anim
                   'app/shared/css/panels.css'],
     animations: [ showLeft, showRight, showBottom ]
 })
-export class FacilitiesComponent implements OnInit, OnDestroy {
+export class FacilitiesComponent implements OnInit, OnDestroy, AfterViewInit {
     private subscriptions: any = [];
     public showBottom: string = 'hidden';
     public showLeft: string = 'hidden';
     public showRight: string = 'hidden';
+    public facList: any[] = [];
     
     constructor(public facService: FacilityService,
                 private titleService: TitleService,
                 private eqService: EarthquakeService) {}
     ngOnInit() {
         this.titleService.title.next('Facilities')
-        this.facService.clearMap()
+        this.subscriptions.push(this.facService.facilityData.subscribe((facs: any[]) => {
+            if (facs.length > 0) {
+                this.facList = facs;
+                this.facService.plotFac(facs[0]);
+            }
+        }));
         this.eqService.configs['clearOnPlot'] = 'events';
         this.facService.getData();
         this.toggleRight();
+    }
+
+    ngAfterViewInit() {
+        this.facService.clearMap()
+        if (this.facList.length > 0) {
+            this.facService.plotFac(this.facList[0]);
+        }
     }
 
     toggleLeft() {
