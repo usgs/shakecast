@@ -8,7 +8,7 @@
                 [class.triangle-left]="side=='left'"
                 [class.triangle-right]="side=='right'">
             <i class="fa fa-times" id="close" aria-hidden="true" (click)="showInfo='no'"></i>
-            <p>{{ text }}</p>
+            <p [innerHtml]="text"></p>
         </div>
     </div>
 </div>

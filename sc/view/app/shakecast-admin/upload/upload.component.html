@@ -7,7 +7,16 @@
                 [uploader]="uploader"
                 class="drop-zone">
             <h2>Drag and Drop!</h2>
-            <p>Facility, Notification Group, User XML files, and images can be dropped here</p>
+            <p>
+                Facility, Notification Group, User XML files, and images can be dropped here 
+                <info [text]="'These XML files are generally generated through
+                                the use of the <a 
+                                href=ftp://ftpext.cr.usgs.gov/pub/cr/co/golden/shakecast/ShakeCast_Workbook/ShakeCastInventory.xlsm>ShakeCast Inventory Workbook</a>. Get some more info from our <a href=http://usgs.github.io/shakecast/inventory_workbook target=_blank>online documentation</a>. 
+                                <br><br>
+                                Uploaded images can be used as a logo in your ShakeCast notifications'"
+                        [side]="'right'">
+                </info>
+            </p>
 
             <div class="file-info">
                 <div *ngIf="uploader.queue.length>0">

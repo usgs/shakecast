@@ -10,6 +10,10 @@ input, select, th {
     font-size: 15px;
 }
 
+.date input {
+    width: 6em;
+}
+
 .section {
     border-bottom: 5px dashed #55aaee;
     padding: 5px;
