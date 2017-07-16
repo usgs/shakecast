@@ -799,4 +799,5 @@ if __name__ == '__main__':
             # run in debug mode
             app.run(host='0.0.0.0', port=5000, debug=True, threaded=True)
     else:
-        app.run(host='0.0.0.0', port=80, threaded=True)
+        sc = SC()
+        app.run(host='0.0.0.0', port=sc.dict['web_port'], threaded=True)
