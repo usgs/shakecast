@@ -86,67 +86,50 @@ class UI(object):
         Sends an input message to the Server. This is where the
         hard-wired commands are translated into the Server API
         """
-        
-        sent = False
-        while sent is False:
-            try:
-                
-                #######################################################
-                ################### API Translation ###################
-                
-                if msg == 'shutdown' and self.port != 80 and self.port != 5000:
-                    to_server = "{'shutdown': {'func': self.shutdown}}"
-                elif msg == 'info':
-                    to_server = "{'info': {'func': self.info}}"
-                elif msg == 'exit':
-                    self._get_message = 'last'
-                    self.stop_ui = 'last'
-                    to_server = "{'ui_exit': {'func': self.ui_exit}}"
-                elif 'stop_task' in msg:
-                    msg = msg.split(' ')
-                    to_server = "{'stop_task(%s)': \
-                                        {'func': self.stop_task, \
-                                         'args_in': {'task_name': '%s'}}}" % (msg[1],
-                                                                              msg[1])
-                elif msg == 'start':
-                    to_server = "{'start_shakecast': {'func': self.start_shakecast}}"
-                elif msg == 'stop':
-                    to_server = "{'stop_shakecast': {'func': self.stop_shakecast}}"
-                else:
-                    to_server = msg
-                    
-                self.connect_to_server()    
-                self.conn.send(to_server)
-                self.conn.shutdown(1)
-                
-                self.conns += [self.conn]
-                
-                sent = True
-            except Exception:
-                sent = False
-
-                #if self.stop_ui is False:
-                #    print 'Failed to connect to server'
-                #    self.start_server()
-                #    
-                #    time.sleep(2)
-                #    print 'Resending message...'
-                #else:
-                #    print 'Closing UI...'
-                #    
-                #    # The server is down, so close messaging down
-                #    # without an exit message
-                #    self._get_message = False
-                #    sent = True
+        try:
             
-        
+            #######################################################
+            ################### API Translation ###################
+            
+            if msg == 'shutdown' and self.port != 80 and self.port != 5000:
+                to_server = "{'shutdown': {'func': self.shutdown}}"
+            elif msg == 'info':
+                to_server = "{'info': {'func': self.info}}"
+            elif msg == 'exit':
+                self._get_message = 'last'
+                self.stop_ui = 'last'
+                to_server = "{'ui_exit': {'func': self.ui_exit}}"
+            elif 'stop_task' in msg:
+                msg = msg.split(' ')
+                to_server = "{'stop_task(%s)': \
+                                    {'func': self.stop_task, \
+                                        'args_in': {'task_name': '%s'}}}" % (msg[1],
+                                                                            msg[1])
+            elif msg == 'start':
+                to_server = "{'start_shakecast': {'func': self.start_shakecast}}"
+            elif msg == 'stop':
+                to_server = "{'stop_shakecast': {'func': self.stop_shakecast}}"
+            else:
+                to_server = msg
+                
+            self.connect_to_server()    
+            self.conn.send(to_server)
+            self.conn.shutdown(1)
+            
+            self.conns += [self.conn]
+            
+            sent = True
+        except Exception as e:
+            sent = False
+
         return sent
 
     def connect_to_server(self):
         """
         Attempt to connect to the server
         """
-        self.conn = socket.socket()
+        self.conn = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.conn.settimeout(3)
         self.conn.connect(('localhost', self.port))
         
     def get_message(self):
@@ -230,25 +213,9 @@ class UI(object):
         try:
             self.connect_to_server()
             return True
-            #print 'connected'
         except:
             return False
-            #print 'None available.'
-    
-        
-    # def start_server(self):
-    #     """
-    #     Starts a Server if there isn't one running
-    #     """
-    #     print 'Starting server...'
-    #     try:
-    #         sc_server = Server()
-    #         sc_server.silent = True
-    #         sc_server.ui_open = True
-    #         server_thread = New_Thread(func=sc_server.loop)
-    #         server_thread.start()
-    #     except:
-    #         print 'failed'
+
         
         
 if __name__ == '__main__':

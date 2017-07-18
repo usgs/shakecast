@@ -617,6 +617,7 @@ def software_update():
     s = SoftwareUpdater()
     if request.method == 'POST':
         s.update()
+        ui.send("{'Restart': {'func': self.restart, 'args_in': {}, 'db_use': True, 'loop': False}}")
 
     update_required, notify, update_info = s.check_update()
     return json.dumps({'required': update_required,
@@ -778,6 +779,11 @@ def shutdown():
     shutdown_server()
     return 'Server shutting down...'
 
+@app.route('/admin/restart')
+def restart():
+    ui.send("{'Restart': {'func': self.restart, 'args_in': {}, 'db_use': True, 'loop': False}}")
+    return json.dumps(True)
+
 @app.errorhandler(404)
 def page_not_found(error):
     return render_template('index.html')
@@ -800,11 +806,14 @@ def get_file_type(file_name):
     elif ext in ['xml']:
         return 'xml'
 
+def start():
+    sc = SC()
+    app.run(host='0.0.0.0', port=sc.dict['web_port'], threaded=True)
+
 if __name__ == '__main__':
     if len(sys.argv) > 1:
         if sys.argv[1] == '-d':
             # run in debug mode
             app.run(host='0.0.0.0', port=5000, debug=True, threaded=True)
     else:
-        sc = SC()
-        app.run(host='0.0.0.0', port=sc.dict['web_port'], threaded=True)
+        start()
