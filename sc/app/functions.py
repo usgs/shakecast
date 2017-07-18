@@ -1088,6 +1088,11 @@ def import_user_dicts(users=None, _user=None):
             u = session.query(User).filter(User.username == username).all()
             if u:
                 u = u[0]
+
+                # if this user has updated their info and a different user
+                # is uploading this XML; don't update their info...
+                if u.updated_by == u.username and _user.username != u.username:
+                    continue
             else:
                 u = User()
                 u.username = username
@@ -1258,13 +1263,61 @@ def check_for_updates():
         status = 'failed'
 
     return {'status': status, 'message': update_required, 'error': error}
+
 #######################################################################
 ########################## TEST FUNCTIONS #############################
-def task_test():
-    return {'status': 'finished', 'message': 'Success'}
 
-def job_fail_test():
-    return {'status': 'failed', 'message': 'Success'}
+def url_test():
+    pg = ProductGrabber()
+    pg.get_json_feed()
 
+def db_test():
+    session = Session()
+    u = User()
+    u.username = 'SC_TEST_USER'
+    session.add(u)
+    session.commit()
 
+    session.delete(u)
+    session.commit()
+    Session.remove()
 
+def smtp_test():
+    m = Mailer()
+    you = 'test@gmail.com'
+    msg = MIMEText('This email is a test of your ShakeCast SMTP server')
+    msg['Subject'] = 'ShakeCast SMTP TEST'
+    msg['From'] = m.me
+    msg['To'] = you
+    m.send(msg=msg, you=you)
+
+def system_test():
+    results = {'pass': [], 'fail': [], 'errors': []}
+    tests = [{'name': 'url', 'test': url_test}, 
+             {'name': 'db', 'test': db_test},
+             {'name': 'smtp', 'test': smtp_test}]
+
+    for test in tests:
+        try:
+            result = test['test']()
+            results['pass'] += [test['name']]
+        except Exception as e:
+            results['fail'] += [test['name']]
+            results['errors'] += [str(e)]
+
+    Session.remove()
+
+    title = 'Tests Passed'
+    success = True
+    if len(results['fail']) > 0:
+        title = 'Some Tests Failed'
+        success = False
+    
+    data = {'status': 'finished',
+            'message': {'from': 'system_test',
+                        'title': title,
+                        'message': str(results),
+                        'success': success},
+            'log': 'System Test: ' + str(results)}
+
+    return data

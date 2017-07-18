@@ -38,5 +38,15 @@ export class ConfigService {
         ).subscribe((result: any) => {
             this.notService.success('Success!', 'New Configurations Saved');
         });
-    }    
+    }
+
+    systemTest() {
+        let headers = new Headers();
+        this.notService.success('System Test', 'System test starting...');
+        this._http.get('/admin/system-test')
+            .map((result: Response) => result.json())
+            .subscribe((result: any) => {
+                this.loadingData.next(false);
+            });
+    }
 }

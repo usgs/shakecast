@@ -718,7 +718,6 @@ def new_not_template(name):
 
     return json.dumps(True)
 
-
 @app.route('/admin/get/inventory')
 @admin_only
 @login_required
@@ -759,6 +758,14 @@ def get_inventory():
     
     Session.remove()    
     return facilities_json
+
+@app.route('/admin/system-test')
+@admin_only
+@login_required
+def system_test():
+    ui.send("{'System Test': {'func': f.system_test, 'args_in': {}, 'db_use': True, 'loop': False}}")
+
+    return json.dumps(True)
 
 def shutdown_server():
     func = request.environ.get('werkzeug.server.shutdown')
