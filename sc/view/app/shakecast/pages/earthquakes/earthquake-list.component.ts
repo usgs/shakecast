@@ -76,6 +76,7 @@ export class EarthquakeListComponent implements OnInit, OnDestroy {
 
     ngOnDestroy() {
         this.earthquakeData = [];
+        this.eqService.current = [];
         this.endSubscriptions()
     }
 

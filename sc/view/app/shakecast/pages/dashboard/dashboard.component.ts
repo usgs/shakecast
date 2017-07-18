@@ -21,9 +21,9 @@ export class DashboardComponent implements OnInit, OnDestroy {
     public earthquakeData: any = [];
     private subscriptions: any[] = [];
 
-    public showBottom: string = 'hidden';
+    public showBottom: string = 'shown';
     public showLeft: string = 'hidden';
-    public showRight: string = 'hidden';
+    public showRight: string = 'shown';
 
     constructor(private eqService: EarthquakeService,
                 private facService: FacilityService,

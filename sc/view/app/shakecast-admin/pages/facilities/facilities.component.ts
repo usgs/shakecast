@@ -41,10 +41,12 @@ export class FacilitiesComponent implements OnInit, OnDestroy, AfterViewInit {
     }
 
     ngAfterViewInit() {
+        /*
         this.facService.clearMap()
         if (this.facList.length > 0) {
             this.facService.plotFac(this.facList[0]);
         }
+        */
     }
 
     toggleLeft() {
