@@ -11,6 +11,18 @@ if path not in sys.path:
 from app.functions import *
 from app.task import Task
 
+class SystemTest(unittest.TestCase):
+    '''
+    System Test
+    '''
+    def test_systemTest(self):
+        '''
+        Test user run system tests
+        '''
+        result = system_test()
+        
+
+
 class TestProductGrabber(unittest.TestCase):
     '''
     Test functions for the ProductGrabber class
@@ -407,12 +419,18 @@ class TestFull(unittest.TestCase):
 
     def step17_CheckUpdate(self):
         s = SoftwareUpdater()
-        s.json_url = 'https://raw.githubusercontent.com/usgs/shakecast/update-feed/update_test.json'
+        s.json_url = os.path.normpath(delim.join(['file://', 
+                                                    sc_dir(), 
+                                                    'test', 
+                                                    'update_test.json']))
         s.check_update(testing=True)
     
     def step18_Update(self):
         s = SoftwareUpdater()
-        s.json_url = 'https://raw.githubusercontent.com/usgs/shakecast/update-feed/update_test.json'
+        s.json_url = os.path.normpath(delim.join(['file://', 
+                                                    sc_dir(), 
+                                                    'test', 
+                                                    'update_test.json']))
         s.update(testing=True)
 
     def step19_NotifyAdmin(self):
