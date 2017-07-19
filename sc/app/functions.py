@@ -1291,11 +1291,14 @@ def smtp_test():
     msg['To'] = you
     m.send(msg=msg, you=you)
 
-def system_test():
+def system_test(add_tests=None):
     results = {'pass': [], 'fail': [], 'errors': []}
     tests = [{'name': 'url', 'test': url_test}, 
              {'name': 'db', 'test': db_test},
              {'name': 'smtp', 'test': smtp_test}]
+
+    if add_tests is not None:
+        tests += add_tests
 
     for test in tests:
         try:

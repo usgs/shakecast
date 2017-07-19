@@ -19,9 +19,13 @@ class SystemTest(unittest.TestCase):
         '''
         Test user run system tests
         '''
+        # all these tests should pass
         result = system_test()
-        
+        self.assertTrue(result['message']['success'])
 
+        # insert a test that raises an error
+        result = system_test(add_tests=[{'name': 'fail', 'test': fail_test}])
+        self.assertFalse(result['message']['success'])
 
 class TestProductGrabber(unittest.TestCase):
     '''
@@ -313,7 +317,7 @@ class TestFull(unittest.TestCase):
                 f.orange = 12
                 f.red = 13
                 session.add(f)
-                
+
             session.commit()
 
         grid.in_grid(facility=f)
@@ -933,6 +937,13 @@ def create_user(group_str=None, email=None):
     user.group_string = group_str
 
     return user
+
+def fail_test():
+    '''
+    A test to inject into the system_test function forcing it to run
+    its fail routines
+    '''
+    raise ValueError('This test fails on purpose')
 
 if __name__ == '__main__':
     
