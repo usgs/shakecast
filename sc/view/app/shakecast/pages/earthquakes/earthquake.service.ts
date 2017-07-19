@@ -196,6 +196,7 @@ export class EarthquakeService {
             .map((result: Response) => result.json())
             .subscribe((result: any) => {
                 this.earthquakeData.next(result.data);
+                this.current = result.data
                 this.dataLoading.next(false);
             })
     }
