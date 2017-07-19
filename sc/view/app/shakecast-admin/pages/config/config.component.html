@@ -16,6 +16,16 @@
         </div>
 
         <div class="item">
+            <label for="scPort">ShakeCast Server Port: </label>
+            <input id="scPort" [(ngModel)]="configs.port">
+        </div>
+
+        <div class="item">
+            <label for="scWebPort">Web Server Port: </label>
+            <input id="scWebPort" [(ngModel)]="configs.web_port">
+        </div>
+
+        <div class="item">
             <label for="proxy">Use a proxy: </label>
             <input type="checkbox" 
                         id="proxy" 

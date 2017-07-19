@@ -262,7 +262,14 @@ class ProductGrabber(object):
             else:
                 sm_str = 'shakemap'
 
-            shakemap.shakemap_version = eq_info['properties']['products'][sm_str][0]['properties']['version']
+            # which shakemap has the highest weight
+            weight = 0
+            for idx in xrange(len(eq_info['properties']['products'][sm_str])):
+                if eq_info['properties']['products'][sm_str][idx]['preferredWeight'] > weight:
+                    weight = eq_info['properties']['products'][sm_str][idx]['preferredWeight']
+                    shakemap.json = eq_info['properties']['products'][sm_str][idx]
+
+            shakemap.shakemap_version = shakemap.json['properties']['version']
             
             # check if we already have the shakemap
             if shakemap.is_new() is False:
@@ -272,8 +279,6 @@ class ProductGrabber(object):
                     .filter(ShakeMap.shakemap_version == shakemap.shakemap_version)
                     .first()
                 )
-            
-            shakemap.json = eq_info['properties']['products'][sm_str][0]
             
             # check if the shakemap has required products. If it does,
             # it is not a new map, and can be skipped
