@@ -304,6 +304,16 @@ class TestFull(unittest.TestCase):
                 f = create_fac(grid=grid)
                 f.name = 'TEST FAC'
                 session.add(f)
+
+                f = create_fac(grid=grid)
+                f.name = 'GREY FAC'
+                f.grey = 0
+                f.green = 10
+                f.yellow = 11
+                f.orange = 12
+                f.red = 13
+                session.add(f)
+                
             session.commit()
 
         grid.in_grid(facility=f)

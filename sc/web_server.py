@@ -781,8 +781,8 @@ def shutdown():
 
 @app.route('/admin/restart')
 def restart():
-    ui.send("{'Restart': {'func': self.restart, 'args_in': {}, 'db_use': True, 'loop': False}}")
-    return json.dumps(True)
+    result = ui.send("{'Restart': {'func': self.restart, 'args_in': {}, 'db_use': True, 'loop': False}}")
+    return json.dumps(result)
 
 @app.errorhandler(404)
 def page_not_found(error):

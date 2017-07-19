@@ -461,7 +461,8 @@ class Server(object):
         return {'status': 'finished',
                 'message': 'Stopping server...'}
 
-    def restart(self):
+    @staticmethod
+    def restart():
         """
         Stops the current ShakeCast system and starts a new one. Used
         after software updates or in case of error

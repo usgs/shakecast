@@ -1299,7 +1299,7 @@ def system_test():
 
     for test in tests:
         try:
-            result = test['test']()
+            test['test']()
             results['pass'] += [test['name']]
         except Exception as e:
             results['fail'] += [test['name']]

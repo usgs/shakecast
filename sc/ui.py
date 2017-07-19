@@ -119,7 +119,7 @@ class UI(object):
             self.conns += [self.conn]
             
             sent = True
-        except Exception as e:
+        except Exception:
             sent = False
 
         return sent

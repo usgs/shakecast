@@ -45,7 +45,10 @@ export class ConfigService {
         this.notService.success('System Test', 'System test starting...');
         this._http.get('/admin/system-test')
             .map((result: Response) => result.json())
-            .subscribe((result: any) => {
+            .subscribe((result: boolean) => {
+                if (!result) {
+                    this.notService.error('System Test Failed', 'Unable to reach the ShakeCast server')
+                }
                 this.loadingData.next(false);
             });
     }
