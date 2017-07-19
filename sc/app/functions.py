@@ -1041,7 +1041,8 @@ def import_group_dicts(groups=None, _user=None):
     status = 'finished'
     data = {'status': status,
             'message': {'title': 'Group Upload',
-                        'message': imported_groups},
+                        'message': imported_groups,
+                        'success': True},
             'log': log_message,
             'success': True}
     return data
@@ -1075,7 +1076,7 @@ def import_user_dicts(users=None, _user=None):
     session = Session()
     
     if isinstance(_user, int):
-        _user = session.query(User).filter(User.shakecast_id == _user).fist()
+        _user = session.query(User).filter(User.shakecast_id == _user).first()
     
     if users is not None:
         for user in users:
@@ -1317,6 +1318,7 @@ def system_test(add_tests=None):
         success = False
     
     data = {'status': 'finished',
+            'results': results,
             'message': {'from': 'system_test',
                         'title': title,
                         'message': str(results),
