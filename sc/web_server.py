@@ -617,6 +617,7 @@ def software_update():
     s = SoftwareUpdater()
     if request.method == 'POST':
         s.update()
+        ui.send("{'Restart': {'func': self.restart, 'args_in': {}, 'db_use': True, 'loop': False}}")
 
     update_required, notify, update_info = s.check_update()
     return json.dumps({'required': update_required,
@@ -718,7 +719,6 @@ def new_not_template(name):
 
     return json.dumps(True)
 
-
 @app.route('/admin/get/inventory')
 @admin_only
 @login_required
@@ -760,6 +760,14 @@ def get_inventory():
     Session.remove()    
     return facilities_json
 
+@app.route('/admin/system-test')
+@admin_only
+@login_required
+def system_test():
+    ui.send("{'System Test': {'func': f.system_test, 'args_in': {}, 'db_use': True, 'loop': False}}")
+
+    return json.dumps(True)
+
 def shutdown_server():
     func = request.environ.get('werkzeug.server.shutdown')
     if func is None:
@@ -770,6 +778,11 @@ def shutdown_server():
 def shutdown():
     shutdown_server()
     return 'Server shutting down...'
+
+@app.route('/admin/restart')
+def restart():
+    result = ui.send("{'Restart': {'func': self.restart, 'args_in': {}, 'db_use': True, 'loop': False}}")
+    return json.dumps(result)
 
 @app.errorhandler(404)
 def page_not_found(error):
@@ -793,10 +806,14 @@ def get_file_type(file_name):
     elif ext in ['xml']:
         return 'xml'
 
+def start():
+    sc = SC()
+    app.run(host='0.0.0.0', port=sc.dict['web_port'], threaded=True)
+
 if __name__ == '__main__':
     if len(sys.argv) > 1:
         if sys.argv[1] == '-d':
             # run in debug mode
             app.run(host='0.0.0.0', port=5000, debug=True, threaded=True)
     else:
-        app.run(host='0.0.0.0', port=80, threaded=True)
+        start()

@@ -25,7 +25,7 @@ logging.basicConfig(
     format = '[ShakeCast - Web] %(levelname)-7.7s %(message)s'
 )
 
-from web_server import app
+from web_server import start
 
 class ShakecastServer (win32serviceutil.ServiceFramework):
     _svc_name_ = "sc_web_server"
@@ -60,7 +60,7 @@ class ShakecastServer (win32serviceutil.ServiceFramework):
     def main():
         logging.info(' ** Starting ShakeCast Web Server ** ')
         try:
-            app.run(host='0.0.0.0', port=80)
+            start()
 
         except Exception as e:
             exc_tb = sys.exc_info()[2]

@@ -353,17 +353,17 @@ class Server(object):
             status = ''
             message = ''
             task_names = [task.name for task in self.queue]
-            if 'geo_json' not in task_names:
-                task = Task()
-                task.id = int(time.time() * 1000000)
-                task.func = f.geo_json
-                task.loop = True
-                task.interval = 60 * 60 * 12
-                task.db_use = True
-                task.name = 'geo_json'
+            # if 'geo_json' not in task_names:
+            #     task = Task()
+            #     task.id = int(time.time() * 1000000)
+            #     task.func = f.geo_json
+            #     task.loop = True
+            #     task.interval = 60 * 60 * 12
+            #     task.db_use = True
+            #     task.name = 'geo_json'
             
-                self.queue += [task]
-                message += 'Started monitoring earthquake feed \n'
+            #     self.queue += [task]
+            #     message += 'Started monitoring earthquake feed \n'
 
             if 'fast_geo_json' not in task_names:
                 task = Task()
@@ -460,6 +460,32 @@ class Server(object):
         logging.info('ShakeCast Server Stopped...')
         return {'status': 'finished',
                 'message': 'Stopping server...'}
+
+    @staticmethod
+    def restart():
+        """
+        Stops the current ShakeCast system and starts a new one. Used
+        after software updates or in case of error
+        """
+        # get the admin directory:
+        split_sc_dir = sc_dir().split(os.sep)
+        split_admin_dir = split_sc_dir[:-1] + ['admin']
+
+        # determine which OS type we're on and which program to run
+        if os.sep == '/':
+            sys_type = 'Linux'
+            program = 'restart_shakecast.sh'
+            split_restart = split_admin_dir + [sys_type, program]
+            restart = 'sudo bash ' + os.path.normpath(os.sep.join(split_restart))
+        else:
+            sys_type = 'Windows'
+            program = 'restart_shakecast.cmd'
+            split_restart = split_admin_dir + [sys_type, program]
+            restart = os.path.normpath(os.sep.join(split_restart))
+        # concatinate the full restart command
+
+        # and run it
+        os.system(restart)
             
 if __name__ == '__main__':
     logging.info('start')
@@ -467,6 +493,7 @@ if __name__ == '__main__':
     # start shakecast
     sc_server.start_shakecast()
     
+    # catch crashes
     while sc_server.stop_server is False:
         sc_server.stop_loop = False
         sc_server.loop()

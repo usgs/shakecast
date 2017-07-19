@@ -1,9 +1,5 @@
 {
-    "Logging": {
-        "log_file": "sc.log", 
-        "log_level": "normal", 
-        "log_rotate": 3
-    }, 
+    "web_port": 80, 
     "DBConnection": {
         "username": "", 
         "retry_count": 0, 
@@ -35,6 +31,11 @@
         }, 
         "DNS": "https://localhost", 
         "name": "ShakeCast"
+    }, 
+    "Logging": {
+        "log_file": "sc.log", 
+        "log_level": "normal", 
+        "log_rotate": 3
     }, 
     "gmap_key": "AIzaSyDLDpOUwK7PlOju_E7z02lEJOxgrtBIPkY", 
     "Proxy": {

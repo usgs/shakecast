@@ -11,6 +11,22 @@ if path not in sys.path:
 from app.functions import *
 from app.task import Task
 
+class SystemTest(unittest.TestCase):
+    '''
+    System Test
+    '''
+    def test_systemTest(self):
+        '''
+        Test user run system tests
+        '''
+        # all these tests should pass
+        result = system_test()
+        self.assertTrue(result['message']['success'])
+
+        # insert a test that raises an error
+        result = system_test(add_tests=[{'name': 'fail', 'test': fail_test}])
+        self.assertFalse(result['message']['success'])
+
 class TestProductGrabber(unittest.TestCase):
     '''
     Test functions for the ProductGrabber class
@@ -292,6 +308,16 @@ class TestFull(unittest.TestCase):
                 f = create_fac(grid=grid)
                 f.name = 'TEST FAC'
                 session.add(f)
+
+                f = create_fac(grid=grid)
+                f.name = 'GREY FAC'
+                f.grey = 0
+                f.green = 10
+                f.yellow = 11
+                f.orange = 12
+                f.red = 13
+                session.add(f)
+
             session.commit()
 
         grid.in_grid(facility=f)
@@ -407,12 +433,18 @@ class TestFull(unittest.TestCase):
 
     def step17_CheckUpdate(self):
         s = SoftwareUpdater()
-        s.json_url = 'https://raw.githubusercontent.com/usgs/shakecast/update-feed/update_test.json'
+        s.json_url = os.path.normpath(delim.join(['file://', 
+                                                    sc_dir(), 
+                                                    'test', 
+                                                    'update_test.json']))
         s.check_update(testing=True)
     
     def step18_Update(self):
         s = SoftwareUpdater()
-        s.json_url = 'https://raw.githubusercontent.com/usgs/shakecast/update-feed/update_test.json'
+        s.json_url = os.path.normpath(delim.join(['file://', 
+                                                    sc_dir(), 
+                                                    'test', 
+                                                    'update_test.json']))
         s.update(testing=True)
 
     def step19_NotifyAdmin(self):
@@ -905,6 +937,13 @@ def create_user(group_str=None, email=None):
     user.group_string = group_str
 
     return user
+
+def fail_test():
+    '''
+    A test to inject into the system_test function forcing it to run
+    its fail routines
+    '''
+    raise ValueError('This test fails on purpose')
 
 if __name__ == '__main__':
     
