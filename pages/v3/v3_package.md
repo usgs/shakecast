@@ -24,7 +24,7 @@ toc: false
                  <div class="panel-body">
                      <h4>Windows</h4>
                      <p>A native Windows application (Windows 7/Server 2008 and later) with a user interface. This is the main method of installation for most Windows users.</p>
-                     <p><a href="ftp://ftpext.usgs.gov/pub/cr/co/golden/shakecast/ShakeCast_Installer/ShakeCast_V3.14_installer.exe" class="btn btn-primary">Download</a></p>
+                     <p><a href="ftp://ftpext.usgs.gov/pub/cr/co/golden/shakecast/ShakeCast_Installer/ShakeCast_V3.14.1_installer.exe" class="btn btn-primary">Download</a></p>
                      <p><a href="v3_install_shakecast_on_windows.html" class="btn btn-default">Learn More</a></p>
                  </div>
              </div>
