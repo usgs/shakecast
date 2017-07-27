@@ -508,7 +508,13 @@ export class MapComponent implements OnInit, OnDestroy {
             popupStr += '</tr></td></table>'
         }
 
-        popupStr += '</table>'
+        popupStr += `<tr>
+                        <table>
+                            <th>Template: </th>
+                            <td>` + group['info']['template'] + `</td>
+                        </table>
+                    </tr>
+                </table>`
         groupLayer.bindPopup(popupStr);
         this.groupLayers.addLayer(groupLayer);
         this.map.addLayer(this.groupLayers);

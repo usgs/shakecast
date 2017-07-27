@@ -539,7 +539,7 @@ def inspection_notification(notification=Notification(),
     error = ''
 
     not_builder = NotificationBuilder()
-    html = not_builder.build_insp_html(shakemap)
+    html = not_builder.build_insp_html(shakemap, name=group.template)
 
     alert_level = 'none'
     if len(shakemap.facility_shaking) > 0:
@@ -564,7 +564,7 @@ def inspection_notification(notification=Notification(),
             
             # find the ShakeCast logo
             temp_manager = TemplateManager()
-            configs = temp_manager.get_configs('new_event', 
+            configs = temp_manager.get_configs('inspection', 
                                         name=notification.group.template)
             logo_str = os.path.join(sc_dir(),'view','static',configs['logo'])
             

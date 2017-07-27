@@ -125,6 +125,9 @@ export class EarthquakeService {
             filter['minmagnitude'] = '6'
         }
 
+        // only get events with shakemaps
+        filter['producttype'] = 'shakemap'
+
         let params = new URLSearchParams();
         for (var search in filter) {
             if (search != 'scenariosOnly') {
