@@ -684,7 +684,8 @@ def get_group_info(group_id):
                     'heartbeat': group.has_spec('heartbeat'),
                     'scenario': group.get_scenario_alert_levels(),
                     'facilities': get_facility_info(group_name=group.name),
-                    'users': group.users}
+                    'users': group.users,
+                    'template': group.template}
     
     specs_json = json.dumps(group_specs, cls=AlchemyEncoder)
     

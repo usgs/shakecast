@@ -37,7 +37,7 @@
 .triangle-left, .triangle-right {
     position: relative;
     padding: 5px;
-    margin: .5em 0 1em;
+    margin-top: 15px;
     background: white;
     -webkit-border-radius: 10px;
     -moz-border-radius: 10px;
