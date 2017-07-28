@@ -1,0 +1,10 @@
+<div *ngIf="user">
+    <h1>{{ user.username }}</h1>
+
+    <div class="info">
+        <input placeholder="New Password" type="password" [(ngModel)]="user.password">
+        <input placeholder="Email" [(ngModel)]="user.email">
+    </div>
+
+    <h3 class="button" (click)="usersService.saveUsers([user])">Save User Info</h3>
+</div>

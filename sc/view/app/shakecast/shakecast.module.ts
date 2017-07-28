@@ -10,9 +10,10 @@ import { routing,
 import { DashboardComponent } from './pages/dashboard/dashboard.component'
 import { NotificationDashComponent } from './pages/dashboard/notification-dash/notification-dash.component.ts'
 
-import { EarthquakesComponent} from './pages/earthquakes/earthquakes.component'
 import { EarthquakeListComponent } from './pages/earthquakes/earthquake-list.component'
 import { EarthquakeFilter } from './pages/earthquakes/earthquake-filter/earthquake-filter.component'
+
+import { UserProfileComponent } from './pages/user-profile/user-profile.component'
 
 import { SharedModule } from '../shared/shared.module'
 
@@ -29,7 +30,8 @@ import { SharedModule } from '../shared/shared.module'
     ShakeCastComponent,
     DashboardComponent,
     NotificationDashComponent,
-    EarthquakeFilter
+    EarthquakeFilter,
+    UserProfileComponent
   ],
   providers: [
   ]

@@ -42,9 +42,9 @@
                                 </tr>
                             </table>
                             <div class="updated">
-                                <p>{{ group.updated * 1000 | date }}</p>
+                                <p>Updated: {{ group.updated * 1000 | date }}</p>
                                 <p>|</p>
-                                <p>Updated by: {{ group.updated_by }}</p>
+                                <p>{{ group.updated_by }}</p>
                             </div>
                         </div>
                     </div>
@@ -84,7 +84,7 @@
                                             Users: 
                                         </th>
                                         <td>
-                                            <select>
+                                            <select class="users">
                                                 <option *ngFor="let user of group['info']['users']">
                                                     {{ user.username }}
                                                 </option>
@@ -94,9 +94,9 @@
                                 </tr>
                             </table>
                             <div class="updated">
-                                <p>{{ group.updated * 1000 | date }}</p>
+                                <p>Updated: {{ group.updated * 1000 | date }}</p>
                                 <p>|</p>
-                                <p>Updated by: {{ group.updated_by }}</p>
+                                <p>{{ group.updated_by }}</p>
                             </div>
                         </div>
                     </div>
