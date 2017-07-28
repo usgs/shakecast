@@ -10,7 +10,7 @@
                 </div>
                 <div class="data-body">
                     <div class="data-info-container">
-                        <table>
+                        <table class="container-table">
                             <tr>
                                 <th>Type: </th><td><p>{{ fac.facility_type }}</p></td>
                             </tr>
@@ -18,6 +18,11 @@
                                 <th>Location: </th><td><p>{{ (fac.lat_max + fac.lat_min) / 2 }}, {{ (fac.lon_max + fac.lon_min) / 2 }}</p></td>
                             </tr>
                         </table>
+                        <div class="updated">
+                            <p>{{ fac.updated * 1000 | date }}</p>
+                            <p>|</p>
+                            <p>Updated by: {{ fac.updated_by }}</p>
+                        </div>
                     </div>
                 </div>
             </div>

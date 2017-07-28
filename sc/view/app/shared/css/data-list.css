@@ -29,7 +29,7 @@
     border-color:#aaaaaa;
     vertical-align: top;
     cursor: pointer;
-    transform: translateX(0), translateY(0);
+    transform: translateX(0%) translateY(0%);
     transition: transform .1s ease-in-out;
     box-shadow: 1px 1px 5px 1px rgba(0,0,0,0.3);
     -webkit-box-shadow: 1px 1px 5px 1px rgba(0,0,0,0.3);
@@ -100,5 +100,19 @@
 }
 
 .data table {
-    width: 95%
+    width: 95%;
+}
+
+.data .container-table {
+    margin-bottom: 20px;
+}
+
+.updated {
+    position: absolute;
+    bottom: 0;
+}
+.updated p {
+    font-size: 10px;
+    display: inline-block;
+    margin-left: 5px;
 }

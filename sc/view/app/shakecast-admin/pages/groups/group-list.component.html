@@ -10,7 +10,7 @@
                     </div>
                     <div class="data-body">
                         <div class="data-info-container">
-                            <table>
+                            <table class="container-table">
                                 <tr>
                                     <table>
                                         <th>Facility Type:</th><td>{{ group.facility_type }}</td>
@@ -41,6 +41,11 @@
                                     </table>
                                 </tr>
                             </table>
+                            <div class="updated">
+                                <p>{{ group.updated * 1000 | date }}</p>
+                                <p>|</p>
+                                <p>Updated by: {{ group.updated_by }}</p>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -57,7 +62,7 @@
                     </div>
                     <div class="data-body">
                         <div class="data-info-container">
-                            <table>
+                            <table class="container-table">
                                 <tr>
                                     <table>
                                         <th>Facility Type:</th><td>{{ group.facility_type }}</td>
@@ -88,6 +93,11 @@
                                     </table>
                                 </tr>
                             </table>
+                            <div class="updated">
+                                <p>{{ group.updated * 1000 | date }}</p>
+                                <p>|</p>
+                                <p>Updated by: {{ group.updated_by }}</p>
+                            </div>
                         </div>
                     </div>
                 </div>
