@@ -351,8 +351,9 @@ def get_users():
 
         if users is not None:
             ui.send("{'import_user_dicts': {'func': f.import_user_dicts, \
-                                           'args_in': {'users': %s}, \
-                                           'db_use': True, 'loop': False}}" % str(users))
+                                           'args_in': {'users': %s, '_user': %s}, \
+                                           'db_use': True, 'loop': False}}" % (str(users), 
+                                                                                current_user.shakecast_id))
         user_json = json.dumps(users)
 
     return user_json

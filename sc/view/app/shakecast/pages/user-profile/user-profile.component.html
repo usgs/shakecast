@@ -4,6 +4,7 @@
     <div class="info">
         <input placeholder="New Password" type="password" [(ngModel)]="user.password">
         <input placeholder="Email" [(ngModel)]="user.email">
+        <input placeholder="Group String" [(ngModel)]="user.group_string">
     </div>
 
     <h3 class="button" (click)="usersService.saveUsers([user])">Save User Info</h3>
