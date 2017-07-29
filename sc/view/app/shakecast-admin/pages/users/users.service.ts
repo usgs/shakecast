@@ -38,6 +38,15 @@ export class UsersService {
                 this.loadingData.next(false)
             })
     }
+
+    getCurrentUser() {
+        this._http.get('/api/users/current')
+            .map((result: Response) => result.json())
+            .subscribe((result: any) => {
+                this.userData.next([result]);
+                this.loadingData.next(false)
+            })
+    }
     
     selectAll() {
         this.selection.next('all');

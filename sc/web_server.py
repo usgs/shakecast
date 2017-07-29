@@ -345,11 +345,29 @@ def get_users():
         
     else:
         users = request.json.get('users', 'null')
+        for user in users:
+            if user['password'] == '':
+                user.pop('password')
+
         if users is not None:
             ui.send("{'import_user_dicts': {'func': f.import_user_dicts, \
-                                           'args_in': {'users': %s}, \
-                                           'db_use': True, 'loop': False}}" % str(users))
+                                           'args_in': {'users': %s, '_user': %s}, \
+                                           'db_use': True, 'loop': False}}" % (str(users), 
+                                                                                current_user.shakecast_id))
         user_json = json.dumps(users)
+
+    return user_json
+
+@app.route('/api/users/current', methods=['GET', 'POST'])
+@login_required
+def get_current_user():
+    user = current_user
+    user_dict = user.__dict__.copy()
+    user_dict.pop('_sa_instance_state', None)
+    user_dict['password'] = ''
+        
+    user_json = json.dumps(user_dict, cls=AlchemyEncoder)
+    Session.remove()  
 
     return user_json
 

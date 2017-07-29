@@ -2,6 +2,7 @@ from util import *
 import os
 import sys
 import inspect as inspect_mod
+import time
 
 modules_dir = os.path.join(sc_dir(), 'modules')
 if modules_dir not in sys.path:
@@ -961,6 +962,8 @@ if not us:
     u.username = 'scadmin'
     u.password = generate_password_hash('scadmin', method='pbkdf2:sha512')
     u.user_type = 'ADMIN'
+    u.updated = time.time()
+    u.updated_by = 'shakecast'
     session.add(u)
     session.commit()
 Session.remove()
