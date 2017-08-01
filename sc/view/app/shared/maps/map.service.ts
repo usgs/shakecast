@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { ReplaySubject } from 'rxjs/ReplaySubject';
 
+import { Http, Response } from '@angular/http';
 import { Earthquake } from '../../shakecast/pages/earthquakes/earthquake.service';
 import { Facility } from '../../shakecast-admin/pages/facilities/facility.service';
 import { Group } from '../../shakecast-admin/pages/groups/group.service';
@@ -14,6 +15,8 @@ export class MapService {
     public removeFacMarkers = new ReplaySubject(1)
     public clearMapNotify = new ReplaySubject(1)
     public center = new ReplaySubject(1)
+    
+    constructor(private _http: Http) {}
 
     plotEq(eq: Earthquake,
            clear: any = null) {
@@ -121,6 +124,11 @@ export class MapService {
 
     clearMap() {
         this.clearMapNotify.next(true)
+    }
+
+    getMapKey() {
+        return this._http.get('/api/map-key')
+            .map((result: Response) => result.json())
     }
 }
 

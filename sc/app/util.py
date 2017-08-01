@@ -90,7 +90,7 @@ class SC(object):
         self.software_version = ''
         self.json = ''
         self.conf_file_location = ''
-        self.gmap_key = ''
+        self.map_key = ''
     
         self.load()
     
@@ -113,7 +113,7 @@ class SC(object):
 
         # timezone
         self.timezone = conf_json['timezone']
-        self.gmap_key = conf_json['gmap_key']
+        self.map_key = conf_json['map_key']
         
         # Services
         self.new_eq_mag_cutoff = conf_json['Services']['new_eq_mag_cutoff']

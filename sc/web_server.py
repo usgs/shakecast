@@ -803,6 +803,12 @@ def restart():
     result = ui.send("{'Restart': {'func': self.restart, 'args_in': {}, 'db_use': True, 'loop': False}}")
     return json.dumps(result)
 
+@app.route('/api/map-key')
+@login_required
+def map_key():
+    sc = SC()
+    return json.dumps(sc.map_key)
+
 @app.errorhandler(404)
 def page_not_found(error):
     return render_template('index.html')

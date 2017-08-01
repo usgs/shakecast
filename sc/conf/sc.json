@@ -25,19 +25,19 @@
         "update": {
             "json_url": "https://raw.githubusercontent.com/usgs/shakecast/master/update.json", 
             "db_version": 1, 
-            "update_version": "4.0.0b6", 
+            "update_version": "4.0.0rc1", 
             "admin_notified": true, 
-            "software_version": "4.0.0b6"
+            "software_version": "4.0.0rc1"
         }, 
         "DNS": "https://localhost", 
         "name": "ShakeCast"
     }, 
+    "map_key": "pk.eyJ1IjoiZHNsb3NreSIsImEiOiJjaXR1aHJnY3EwMDFoMnRxZWVtcm9laWJmIn0.1C3GE0kHPGOpbVV9kTxBlQ", 
     "Logging": {
         "log_file": "sc.log", 
         "log_level": "normal", 
         "log_rotate": 3
     }, 
-    "gmap_key": "AIzaSyDLDpOUwK7PlOju_E7z02lEJOxgrtBIPkY", 
     "Proxy": {
         "username": "", 
         "use": false, 
