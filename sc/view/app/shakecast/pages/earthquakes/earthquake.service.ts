@@ -126,7 +126,9 @@ export class EarthquakeService {
         }
 
         // only get events with shakemaps
-        filter['producttype'] = 'shakemap'
+        if (!scenario) {
+            filter['producttype'] = 'shakemap'
+        }
 
         let params = new URLSearchParams();
         for (var search in filter) {
