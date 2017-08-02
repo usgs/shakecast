@@ -67,6 +67,11 @@ export class UploadComponent implements OnInit, OnDestroy{
         this.uploader.clearQueue();
     }
 
+    upload(item: any) {
+        this.notService.success('File Upload', 'Starting...');
+        item.upload();
+    }
+
     public fileOverBase(e:any):void {
         this.hasBaseDropZoneOver = e;
     }
