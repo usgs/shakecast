@@ -124,7 +124,7 @@ class Facility(Base):
         Create a dictionary that contains all the information for a
         Facility_Shaking entry in the database
         '''
-        shaking_level = shaking_point[self.metric]
+        shaking_level = shaking_point.get(self.metric, None)
         
         # check if there is already shaking for this shakemap and facility
         stmt = (select([Facility_Shaking.__table__.c.shakecast_id])
@@ -157,7 +157,7 @@ class Facility(Base):
             fac_shake['notifications'] = [''] * len(notifications)
         
         if shaking_level is None:
-            fac_shake['alert_level'] = None
+            fac_shake['alert_level'] = 'gray'
         
         else:
             # add shaking levels to fac_shake:

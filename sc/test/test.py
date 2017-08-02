@@ -318,6 +318,11 @@ class TestFull(unittest.TestCase):
                 f.red = 13
                 session.add(f)
 
+                f = create_fac(grid=grid)
+                f.name = 'No Metric'
+                f.metric = 'PSA-Not-In-ShakeMap'
+                session.add(f)
+
             session.commit()
 
         grid.in_grid(facility=f)
