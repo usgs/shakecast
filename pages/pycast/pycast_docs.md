@@ -9,14 +9,12 @@ folder: pycast
 
 pyCast is the newest version of ShakeCast with a backend written in Python and a robust Angular frontend. Although there are new features in the web application, pyCast is generally lighter weight and new users should find that it's relatively easy to install.  Existing ShakeCast users will find that pyCast has a powerful interface for downloading and running scenarios as well as notification customization.
 
-[//]: # "Start Blog Content"
-
 ## Windows Installation
 The newest ShakeCast windows installer is available [here](https://github.com/usgs/shakecast/releases/latest).
 
 Run the Windows installer as an administrator. Python will automatically be installed before the ShakeCast and you may see some command windows open and close; that's okay, this is just the application initializing! In order to determine if ShakeCast was installed correctly, use your web browser to navigate to [your localhost](http://localhost).
 
-Your application is ready to go! Checkout [ShakeCast Setup](#setup) to learn how to prepare your inventory and configure ShakeCast
+Your application is ready to go! Checkout [ShakeCast Setup](#inventory-setup) to learn how to prepare your inventory and configure ShakeCast
 
 ## Linux Installation
 There are multiple ways to install pyCast on Linux, but we recommend you use the PyPI package. Installation requires python 2.7.x and root access:
@@ -28,7 +26,7 @@ sudo python -m shakecast start
 
 In order to determine if ShakeCast has installed correctly, use your web browser to navigate to [your localhost](http://localhost).
 
-## <a name="#setup"></a> Inventory Setup
+## Inventory Setup
 Download an Inventory Workbook [here](ftp://ftpext.usgs.gov/pub/cr/co/golden/shakecast/ShakeCast_Workbook/ShakeCastInventory.xlsm) and create your initial inventory. Your ShakeCast inventory is made up of facilities, notification groups, and users. You can store all of this invormation in the ShakeCast Inventory Workbook to ensure your data is compatable with ShakeCast (including future versions). Once your information is input, you can export the data as XML files, which are easily read by ShakeCast.
 
 Learn more about the ShakeCast Inventory Workbook [here](http://usgs.github.io/shakecast/inventory_workbook.html)
@@ -101,8 +99,6 @@ Then to uninstall it:
 ~~~
 sudo pip uninstall pycast-usgs
 ~~~
-
-[//]: # "END BLOG CONTENT"
 
 ## Admin Changes in V4
 Although V4 has an entirely new codebase, the administration process remains the same. One detail, which you can take advantage of, or simply ignore, is a user's ability to change their own password, email information, and group associations within the web interface. This is an effort to protect our users' passwords from being stored in plain text in the ShakeCast Inventory Workbook; instead, a default password can be used during configuration, then changed later through the web.
