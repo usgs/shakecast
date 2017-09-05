@@ -14,7 +14,7 @@ The newest ShakeCast windows installer is available [here](https://github.com/us
 
 Run the Windows installer as an administrator. Python will automatically be installed before the ShakeCast and you may see some command windows open and close; that's okay, this is just the application initializing! In order to determine if ShakeCast was installed correctly, use your web browser to navigate to [your localhost](http://localhost).
 
-Your application is ready to go! Checkout [ShakeCast Setup](#inventory-setup) to learn how to prepare your inventory and configure ShakeCast
+Your application is ready to go! Checkout [Inventory Setup](#inventory-setup) below to learn how to prepare your inventory and configure ShakeCast.
 
 ## Linux Installation
 There are multiple ways to install pyCast on Linux, but we recommend you use the PyPI package. Installation requires python 2.7.x and root access:
