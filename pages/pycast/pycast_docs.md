@@ -12,7 +12,7 @@ pyCast is the newest version of ShakeCast with a backend written in Python and a
 ## Windows Installation
 The newest ShakeCast windows installer is available [here](https://github.com/usgs/shakecast/releases/latest).
 
-Run the Windows installer as an administrator. Python will automatically be installed before the ShakeCast and you may see some command windows open and close; that's okay, this is just the application initializing! In order to determine if ShakeCast was installed correctly, use your web browser to navigate to [your localhost](http://localhost).
+Run the Windows installer as an administrator. Python will automatically be installed before the ShakeCast and you may see some command windows open and close; that's okay, this is just the application initializing! In order to determine if ShakeCast was installed correctly, use your web browser to navigate to [your localhost](http://localhost). You can login using the default administrator account by entering "scadmin" for both the username and password.
 
 Your application is ready to go! Checkout [Inventory Setup](#inventory-setup) below to learn how to prepare your inventory and configure ShakeCast.
 
@@ -24,7 +24,7 @@ sudo pip install pycast-usgs
 sudo python -m shakecast start
 ~~~
 
-In order to determine if ShakeCast has installed correctly, use your web browser to navigate to [your localhost](http://localhost).
+In order to determine if ShakeCast has installed correctly, use your web browser to navigate to [your localhost](http://localhost). You can login using the default administrator account by entering "scadmin" for both the username and password.
 
 ## Inventory Setup
 Download an Inventory Workbook [here](ftp://ftpext.usgs.gov/pub/cr/co/golden/shakecast/ShakeCast_Workbook/ShakeCastInventory.xlsm) and create your initial inventory. Your ShakeCast inventory is made up of facilities, notification groups, and users. You can store all of this invormation in the ShakeCast Inventory Workbook to ensure your data is compatable with ShakeCast (including future versions). Once your information is input, you can export the data as XML files, which are easily read by ShakeCast.
