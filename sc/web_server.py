@@ -18,9 +18,13 @@ import datetime
 from ast import literal_eval
 from app.objects import Clock, SC, NotificationBuilder, TemplateManager, SoftwareUpdater
 from app.orm import *
-from app.server import Server
 from app.functions import determine_xml, get_facility_info
 from ui import UI
+
+# setup logging
+import logging
+log = logging.getLogger('werkzeug')
+log.setLevel(logging.ERROR)
 
 BASE_DIR = os.path.join(sc_dir(),'view')
 STATIC_DIR = os.path.join(sc_dir(),'view','static')
@@ -698,12 +702,12 @@ def get_group_info(group_id):
 
     if group is not None:
         group_specs = {'inspection': group.get_alert_levels(),
-                    'new_event': group.get_min_mag(),
-                    'heartbeat': group.has_spec('heartbeat'),
-                    'scenario': group.get_scenario_alert_levels(),
-                    'facilities': get_facility_info(group_name=group.name),
-                    'users': group.users,
-                    'template': group.template}
+                        'new_event': group.get_min_mag(),
+                        'heartbeat': group.has_spec('heartbeat'),
+                        'scenario': group.get_scenario_alert_levels(),
+                        'facilities': get_facility_info(group_name=group.name),
+                        'users': group.users,
+                        'template': group.template}
     
     specs_json = json.dumps(group_specs, cls=AlchemyEncoder)
     

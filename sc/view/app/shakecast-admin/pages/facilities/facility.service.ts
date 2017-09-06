@@ -5,7 +5,7 @@ import 'rxjs/add/operator/catch';
 import { Observable } from 'rxjs/Observable';
 import { ReplaySubject } from 'rxjs/ReplaySubject';
 import { Router } from '@angular/router';
-
+import { NotificationsService } from 'angular2-notifications'
 import { MapService } from '../../../shared/maps/map.service'
 
 export interface Facility {
@@ -34,7 +34,8 @@ export class FacilityService {
 
     constructor(private _http: Http,
                 private mapService: MapService,
-                private _router: Router) {}
+                private _router: Router,
+                private notService: NotificationsService) {}
 
     getData(filter: any = {}) {
         this.loadingData.next(true)
@@ -114,6 +115,7 @@ export class FacilityService {
     }
 
     deleteFacs() {
+        this.notService.success('Deleting Facilities', 'Deleting ' + this.selectedFacs.length + ' facilities')
         this.loadingData.next(true)
         let params = new URLSearchParams();
         params.set('inventory', JSON.stringify(this.selectedFacs))

@@ -26,20 +26,33 @@ export class ScenarioSearchComponent implements OnInit, OnDestroy{
     private show: string = 'hide';
     public facilityShaking: any = null;
     public showFragilityInfo: boolean = false;
+    public lats: number[] = [];
+    public lons: number[] = [];
     public filter: any = {starttime: '2005-01-01',
-                          endtime: '2008-01-01',
+                          endtime: '',
                           eventid: null,
-                          minmagnitude: 6,
+                          minmagnitude: 7,
                           minlatitude: -90,
                           maxlatitude: 90,
                           minlongitude: -180,
                           maxlongitude: 180,
                           scenariosOnly: false}
 
-    public lats: number[] = [];
-    public lons: number[] = [];
+    constructor(private eqService: EarthquakeService) {
+        let date = new Date()
+        let day: any = date.getDate()
+        let month: any = date.getMonth()
 
-    constructor(private eqService: EarthquakeService) {}
+        if (day < 10) {
+            day = '0' + day
+        }
+        if (month < 10) {
+            month = '0' + month
+        }
+
+        this.filter['endtime'] = [date.getFullYear(), 
+                                    month, day].join('-')
+    }
 
     ngOnInit() {
 

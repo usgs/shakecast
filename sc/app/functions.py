@@ -1200,10 +1200,13 @@ def delete_inventory_by_id(inventory_type=None, ids=None):
     deleted = []
     if inventory_type is not None and ids is not None:
         if inventory_type == 'facility':
+            plural = 'facilities'
             inv_table = Facility
         elif inventory_type == 'group':
+            plural = 'groups'
             inv_table = Group
         elif inventory_type == 'user':
+            plural = 'users'
             inv_table = User
 
         session = Session()
@@ -1214,9 +1217,21 @@ def delete_inventory_by_id(inventory_type=None, ids=None):
         for inv in inventory:
             session.delete(inv)
             deleted += [inv]
+
+            if len(deleted) > 1:
+                inventory_type = plural
         session.commit()
 
         Session.remove()
+
+    data = {'status': 'finished',
+            'message': {'from': 'delete_inventory',
+                        'title': 'Deleted Inventory',
+                        'message': 'Removed {} {}'.format(len(deleted), inventory_type),
+                        'success': True},
+            'log': ''}
+    
+    return data
 
     return {'status': 'finished', 'message': deleted}
 

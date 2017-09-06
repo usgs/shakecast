@@ -5,7 +5,6 @@ import 'rxjs/add/operator/catch';
 import { Observable } from 'rxjs/Observable';
 import { ReplaySubject } from 'rxjs/ReplaySubject';
 import { NotificationsService } from 'angular2-notifications'
-
 import { MapService } from '../../../shared/maps/map.service'
 
 export interface User {
@@ -72,6 +71,7 @@ export class UsersService {
     }
 
     deleteUsers(users: User[]) {
+        this.notService.success('Delete User', 'Deleting ' + users.length + ' user')
         this.loadingData.next(true)
         let params = new URLSearchParams();
         params.set('inventory', JSON.stringify(users))

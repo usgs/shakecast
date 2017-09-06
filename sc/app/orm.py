@@ -946,7 +946,7 @@ def db_migration(engine):
             # update the configs
             sc.dict['Server']['update']['db_version'] = mig_version
 
-    session_maker = sessionmaker(bind=engine)
+    session_maker = sessionmaker(bind=engine, autoflush=False)
     Session = scoped_session(session_maker)
 
     sc.save_dict()

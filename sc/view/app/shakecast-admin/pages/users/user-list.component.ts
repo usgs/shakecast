@@ -41,7 +41,7 @@ export class UserListComponent implements OnInit, OnDestroy {
     public editing: User = null;
     private subscriptions: any[] = [];
 
-    constructor(private userService: UsersService,
+    constructor(public userService: UsersService,
                 private groupService: GroupService) {}
 
     ngOnInit() {
