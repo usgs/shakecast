@@ -10,7 +10,7 @@
         </div>
     </div>
     <div class="panel-content">
-            <h2 class="panel-title">{{ earthquakeData.length }} Recent Earthquakes</h2>
+            <h1 class="panel-title">{{ earthquakeData.length }} Recent Earthquakes</h1>
             
             <div class="panel-scroll-container">
                 <div class="inner-shadow"></div>
@@ -27,7 +27,11 @@
         </div>
     </div>
     <div class="panel-content">
-        <h2 class="panel-title">Notifications: </h2>
+        <h1 class="panel-title">Notifications:  <info [text]="'A list of notifications sent to specific groups for
+                                                                this event. Double check your notification group settings 
+                                                                if you should have received a notification for this event, 
+                                                                but did not.'"
+                                                                [side]="'left'"></info></h1>
 
         <div class="not-container">
             <div class="not-dash">

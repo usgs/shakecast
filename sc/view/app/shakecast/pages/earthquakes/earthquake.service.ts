@@ -112,7 +112,7 @@ export class EarthquakeService {
             usgs = 'https://earthquake.usgs.gov/fdsnws/event/1/query';
         }
 
-        delete filter['scenariosOnly'];
+        //delete filter['scenariosOnly'];
 
         filter['format'] = 'geojson'
 
@@ -125,22 +125,41 @@ export class EarthquakeService {
             filter['minmagnitude'] = '6'
         }
 
+        // only get events with shakemaps
+        if (!scenario) {
+            filter['producttype'] = 'shakemap'
+        }
+
         let params = new URLSearchParams();
         for (var search in filter) {
-            params.set(search, filter[search])
+            if (search != 'scenariosOnly') {
+                params.set(search, filter[search])
+            }
         }
         
         this._http.get(usgs, {search: params})
             .map((result: Response) => result.json())
+            .catch((error: any) => {
+                return Observable.throw('');
+            })
             .subscribe((result: any) => {
                 // convert from geoJSON to sc conventions
-                var data = this.geoJsonToSc(result['features']);
+                var data: any[] = []
+                if (result.hasOwnProperty('features')) {
+                    data = this.geoJsonToSc(result['features']);
+                } else {
+                    data = this.geoJsonToSc([result]);
+                }
 
                 for (var eq in data) {
                     data[eq]['scenario'] = scenario;
                 }
 
                 this.earthquakeData.next(data);
+                this.dataLoading.next(false);
+            },
+            (error: any) => {
+                this.earthquakeData.next([]);
                 this.dataLoading.next(false);
             });
     }
@@ -182,6 +201,7 @@ export class EarthquakeService {
             .map((result: Response) => result.json())
             .subscribe((result: any) => {
                 this.earthquakeData.next(result.data);
+                this.current = result.data
                 this.dataLoading.next(false);
             })
     }

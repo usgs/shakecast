@@ -22,6 +22,7 @@ export class MapComponent implements OnInit, OnDestroy {
     public eventMarkers: any = [];
     public facilityMarkers: any = {};
     public center: any = {};
+    private mapKey: string = null
     private markerLayer: any = L.featureGroup();
     private eventMarker: any = L.marker();
     private eventLayer: any = L.featureGroup();
@@ -54,7 +55,10 @@ export class MapComponent implements OnInit, OnDestroy {
                 private _router: Router) {}
 
     ngOnInit() {
-        this.initMap();
+        this.subscriptions.push(this.mapService.getMapKey().subscribe((key: string) => {
+            this.mapKey = key
+            this.initMap();
+        }));
     }
 
     initMap() {
@@ -62,7 +66,7 @@ export class MapComponent implements OnInit, OnDestroy {
             scrollWheelZoom: false
         }).setView([51.505, -0.09], 8);
 
-        L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoiZHNsb3NreSIsImEiOiJjaXR1aHJnY3EwMDFoMnRxZWVtcm9laWJmIn0.1C3GE0kHPGOpbVV9kTxBlQ', {
+        L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token=' + this.mapKey, {
 			maxZoom: 18,
 			attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, ' +
 				'<a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ' +
@@ -508,7 +512,13 @@ export class MapComponent implements OnInit, OnDestroy {
             popupStr += '</tr></td></table>'
         }
 
-        popupStr += '</table>'
+        popupStr += `<tr>
+                        <table>
+                            <th>Template: </th>
+                            <td>` + group['info']['template'] + `</td>
+                        </table>
+                    </tr>
+                </table>`
         groupLayer.bindPopup(popupStr);
         this.groupLayers.addLayer(groupLayer);
         this.map.addLayer(this.groupLayers);

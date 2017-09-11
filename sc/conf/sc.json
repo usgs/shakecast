@@ -1,9 +1,5 @@
 {
-    "Logging": {
-        "log_file": "sc.log", 
-        "log_level": "normal", 
-        "log_rotate": 3
-    }, 
+    "web_port": 80, 
     "DBConnection": {
         "username": "", 
         "retry_count": 0, 
@@ -29,14 +25,14 @@
         "update": {
             "json_url": "https://raw.githubusercontent.com/usgs/shakecast/master/update.json", 
             "db_version": 1, 
-            "update_version": "4.0.0b5", 
-            "admin_notified": true, 
-            "software_version": "4.0.0b5"
+            "update_version": "4.0.0rc2", 
+            "software_version": "4.0.0rc2", 
+            "admin_notified": true
         }, 
         "DNS": "https://localhost", 
         "name": "ShakeCast"
     }, 
-    "gmap_key": "AIzaSyDLDpOUwK7PlOju_E7z02lEJOxgrtBIPkY", 
+    "map_key": "pk.eyJ1IjoiZHNsb3NreSIsImEiOiJjaXR1aHJnY3EwMDFoMnRxZWVtcm9laWJmIn0.1C3GE0kHPGOpbVV9kTxBlQ", 
     "Proxy": {
         "username": "", 
         "use": false, 
@@ -44,13 +40,14 @@
         "port": 0, 
         "server": ""
     }, 
+    "timezone": 0, 
     "Services": {
         "use_geo_json": true, 
         "ignore_nets": "at,pt", 
         "new_eq_mag_cutoff": 3, 
         "keep_eq_for": 60, 
-        "check_new_int": 3, 
         "nighttime": 18, 
+        "check_new_int": 3, 
         "night_eq_mag_cutoff": 0, 
         "geo_json_web": "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/1.0_{}.geojson", 
         "eq_req_products": [
@@ -64,6 +61,10 @@
         "archive_mag": 5, 
         "geo_json_int": 60
     }, 
-    "timezone": 0, 
+    "Logging": {
+        "log_file": "sc.log", 
+        "log_level": "normal", 
+        "log_rotate": 3
+    }, 
     "port": 1981
 }

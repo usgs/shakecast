@@ -20,7 +20,7 @@ logging.basicConfig(
     format = '[ShakeCast - Web] %(levelname)-7.7s %(message)s'
 )
 
-from web_server import app
+from web_server import start
 
 class ShakecastWebServer(object):
     _svc_name_ = "sc_web_server"
@@ -47,7 +47,7 @@ class ShakecastWebServer(object):
     def main():
         logging.info(' ** Starting ShakeCast Web Server ** ')
         try:
-            app.run(host='0.0.0.0', port=80, threaded=True)
+            start()
 
         except Exception as e:
             logging.info('FAILED')

@@ -13,7 +13,7 @@ split_sc_dir = sc_dir().split(os.sep)
 log_path = split_sc_dir + ['logs', 'sc-service.log']
 logging.basicConfig(
     filename = os.path.normpath(os.sep.join(log_path)),
-    level = logging.DEBUG, 
+    level = logging.INFO, 
     format = '[ShakeCast Server] %(levelname)-7.7s %(message)s'
 )
 
@@ -64,19 +64,15 @@ class Server(object):
         Connects the server to a specific socket
         """
         
-        self.make_print('Setting up socket...')
         connected = False
         attempts = 0
         while connected is False and attempts < 60:
             try:
-                self.make_print('connecting... ')
                 self.socket.bind(('', self.port))
                 self.socket.listen(5)
-                self.make_print('success')
                 connected = True
                 
             except:
-                self.make_print('failed')
                 logging.info('Failed to get port for server: {}'.format(self.port))
                 time.sleep(2)
                 
@@ -93,9 +89,6 @@ class Server(object):
             self.socket_check()
             self.queue_check()
             self.cleanup()
-            
-            if self.silent is not True:
-                self.talk()
             
             time.sleep(self.sleep)
         
@@ -182,7 +175,6 @@ class Server(object):
                     if task.db_use is True:
                         self.db_open = False
                     
-                    self.make_print('Running: %s' % task.name)
                     self.last_task = time.time()
                     
                     task_thread = New_Thread(func=task.run)
@@ -219,11 +211,6 @@ class Server(object):
                 server_log = 'Task: {} :: failed to run \n{}: {}'.format(task.name,
                                                                          type(task.error),
                                                                          task.error)
-
-            self.log(message=task.output.get('log', ''),
-                     which='shakecast')
-            self.log(message=task.output.get('log', ''),
-                     which='server')
             
             if task.id in self.connections.keys():
                 conn = self.connections[task.id]
@@ -235,9 +222,19 @@ class Server(object):
         else:
             task.status = 'stopped'
 
-        logging.info('{}: \n\tSTATUS: {} \n\tOUTPUT: {}'.format(task.name,
-                                                                task.status,
-                                                                task.output))
+        # only log results from failed normal tasks or abnormal tasks
+        if ((task.name != 'fast_geo_json' and 
+                task.name != 'check_new' and 
+                task.name != 'check_for_updates') or 
+                    task.error or task.output['error']):
+            logging.info('{}: \n\tSTATUS: {} \n\tOUTPUT: {}'.format(task.name,
+                                                                    task.status,
+                                                                    task.output))
+        else:
+            # if we're debugging, log everything
+            logging.debug('{}: \n\tSTATUS: {} \n\tOUTPUT: {}'.format(task.name,
+                                                                    task.status,
+                                                                    task.output))
             
         if task.db_use is True:
             self.db_open = True
@@ -272,32 +269,9 @@ class Server(object):
                               'connections': %s}" % (self.queue,
                                                     self.connections)}
     
-    def talk(self):
-        """
-        Prints a monitoring message from the server
-        """
+
         
-        # print information to the terminal... we'll change change
-        # this to print to a log most likely...
-        #os.system('cls' if os.name == 'nt' else 'clear')
-        #print 'ShakeCast Server \n'
-        #print 'Looping: %s' % time.time()
-        #print 'QUEUE: %s' % [str(task) for task in self.queue]
-        #print 'QUEUE: %s' % self.queue
-        #print 'Connections: %s' % self.connections
-        #print '\n%s' % self.print_out
-        
-    def make_print(self, add_str):
-        """
-        Add a new string onto the output string from the server. It
-        loops at 15 lines for the print statement
-        """
-        
-        # if len(self.print_out.splitlines()) < 15:
-        #     self.print_out += '\n' + add_str
-        # else:
-        #     self.print_out = '\n' + add_str
-        return
+
         
     def log(self, message='', which=''):
         """
@@ -328,7 +302,6 @@ class Server(object):
                 else:
                     message += '%s is currently running, but will stop when finished' % task.name
                 
-        self.make_print(message)
         return {'status': 'finished',
                 'message': message}
     
@@ -353,17 +326,6 @@ class Server(object):
             status = ''
             message = ''
             task_names = [task.name for task in self.queue]
-            if 'geo_json' not in task_names:
-                task = Task()
-                task.id = int(time.time() * 1000000)
-                task.func = f.geo_json
-                task.loop = True
-                task.interval = 60 * 60 * 12
-                task.db_use = True
-                task.name = 'geo_json'
-            
-                self.queue += [task]
-                message += 'Started monitoring earthquake feed \n'
 
             if 'fast_geo_json' not in task_names:
                 task = Task()
@@ -460,6 +422,32 @@ class Server(object):
         logging.info('ShakeCast Server Stopped...')
         return {'status': 'finished',
                 'message': 'Stopping server...'}
+
+    @staticmethod
+    def restart():
+        """
+        Stops the current ShakeCast system and starts a new one. Used
+        after software updates or in case of error
+        """
+        # get the admin directory:
+        split_sc_dir = sc_dir().split(os.sep)
+        split_admin_dir = split_sc_dir[:-1] + ['admin']
+
+        # determine which OS type we're on and which program to run
+        if os.sep == '/':
+            sys_type = 'Linux'
+            program = 'restart_shakecast.sh'
+            split_restart = split_admin_dir + [sys_type, program]
+            restart = 'sudo bash ' + os.path.normpath(os.sep.join(split_restart))
+        else:
+            sys_type = 'Windows'
+            program = 'restart_shakecast.cmd'
+            split_restart = split_admin_dir + [sys_type, program]
+            restart = os.path.normpath(os.sep.join(split_restart))
+        # concatinate the full restart command
+
+        # and run it
+        os.system(restart)
             
 if __name__ == '__main__':
     logging.info('start')
@@ -467,6 +455,7 @@ if __name__ == '__main__':
     # start shakecast
     sc_server.start_shakecast()
     
+    # catch crashes
     while sc_server.stop_server is False:
         sc_server.stop_loop = False
         sc_server.loop()

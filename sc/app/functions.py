@@ -539,7 +539,7 @@ def inspection_notification(notification=Notification(),
     error = ''
 
     not_builder = NotificationBuilder()
-    html = not_builder.build_insp_html(shakemap)
+    html = not_builder.build_insp_html(shakemap, name=group.template)
 
     alert_level = 'none'
     if len(shakemap.facility_shaking) > 0:
@@ -564,7 +564,7 @@ def inspection_notification(notification=Notification(),
             
             # find the ShakeCast logo
             temp_manager = TemplateManager()
-            configs = temp_manager.get_configs('new_event', 
+            configs = temp_manager.get_configs('inspection', 
                                         name=notification.group.template)
             logo_str = os.path.join(sc_dir(),'view','static',configs['logo'])
             
@@ -1041,7 +1041,8 @@ def import_group_dicts(groups=None, _user=None):
     status = 'finished'
     data = {'status': status,
             'message': {'title': 'Group Upload',
-                        'message': imported_groups},
+                        'message': imported_groups,
+                        'success': True},
             'log': log_message,
             'success': True}
     return data
@@ -1075,7 +1076,7 @@ def import_user_dicts(users=None, _user=None):
     session = Session()
     
     if isinstance(_user, int):
-        _user = session.query(User).filter(User.shakecast_id == _user).fist()
+        _user = session.query(User).filter(User.shakecast_id == _user).first()
     
     if users is not None:
         for user in users:
@@ -1088,6 +1089,11 @@ def import_user_dicts(users=None, _user=None):
             u = session.query(User).filter(User.username == username).all()
             if u:
                 u = u[0]
+
+                # if this user has updated their info and a different user
+                # is uploading this XML; don't update their info...
+                if u.updated_by == u.username and _user.username != u.username:
+                    continue
             else:
                 u = User()
                 u.username = username
@@ -1194,10 +1200,13 @@ def delete_inventory_by_id(inventory_type=None, ids=None):
     deleted = []
     if inventory_type is not None and ids is not None:
         if inventory_type == 'facility':
+            plural = 'facilities'
             inv_table = Facility
         elif inventory_type == 'group':
+            plural = 'groups'
             inv_table = Group
         elif inventory_type == 'user':
+            plural = 'users'
             inv_table = User
 
         session = Session()
@@ -1208,9 +1217,21 @@ def delete_inventory_by_id(inventory_type=None, ids=None):
         for inv in inventory:
             session.delete(inv)
             deleted += [inv]
+
+            if len(deleted) > 1:
+                inventory_type = plural
         session.commit()
 
         Session.remove()
+
+    data = {'status': 'finished',
+            'message': {'from': 'delete_inventory',
+                        'title': 'Deleted Inventory',
+                        'message': 'Removed {} {}'.format(len(deleted), inventory_type),
+                        'success': True},
+            'log': ''}
+    
+    return data
 
     return {'status': 'finished', 'message': deleted}
 
@@ -1258,13 +1279,65 @@ def check_for_updates():
         status = 'failed'
 
     return {'status': status, 'message': update_required, 'error': error}
+
 #######################################################################
 ########################## TEST FUNCTIONS #############################
-def task_test():
-    return {'status': 'finished', 'message': 'Success'}
 
-def job_fail_test():
-    return {'status': 'failed', 'message': 'Success'}
+def url_test():
+    pg = ProductGrabber()
+    pg.get_json_feed()
 
+def db_test():
+    session = Session()
+    u = User()
+    u.username = 'SC_TEST_USER'
+    session.add(u)
+    session.commit()
 
+    session.delete(u)
+    session.commit()
+    Session.remove()
 
+def smtp_test():
+    m = Mailer()
+    you = 'test@gmail.com'
+    msg = MIMEText('This email is a test of your ShakeCast SMTP server')
+    msg['Subject'] = 'ShakeCast SMTP TEST'
+    msg['From'] = m.me
+    msg['To'] = you
+    m.send(msg=msg, you=you)
+
+def system_test(add_tests=None):
+    results = {'pass': [], 'fail': [], 'errors': []}
+    tests = [{'name': 'url', 'test': url_test}, 
+             {'name': 'db', 'test': db_test},
+             {'name': 'smtp', 'test': smtp_test}]
+
+    if add_tests is not None:
+        tests += add_tests
+
+    for test in tests:
+        try:
+            test['test']()
+            results['pass'] += [test['name']]
+        except Exception as e:
+            results['fail'] += [test['name']]
+            results['errors'] += [str(e)]
+
+    Session.remove()
+
+    title = 'Tests Passed'
+    success = True
+    if len(results['fail']) > 0:
+        title = 'Some Tests Failed'
+        success = False
+    
+    data = {'status': 'finished',
+            'results': results,
+            'message': {'from': 'system_test',
+                        'title': title,
+                        'message': str(results),
+                        'success': success},
+            'log': 'System Test: ' + str(results)}
+
+    return data

@@ -46,7 +46,7 @@ export class EarthquakeListComponent implements OnInit, OnDestroy {
                 private _router: Router) {}
 
     ngOnInit() {
-        this.subscriptions.push(this.eqService.earthquakeData.subscribe(eqs => {
+        this.subscriptions.push(this.eqService.earthquakeData.subscribe((eqs: any[]) => {
             this.earthquakeData = eqs
             if ((eqs.length > 0) && 
                     (this._router.url != '/shakecast-admin/facilities')) {
@@ -75,6 +75,8 @@ export class EarthquakeListComponent implements OnInit, OnDestroy {
     }
 
     ngOnDestroy() {
+        this.earthquakeData = [];
+        this.eqService.current = [];
         this.endSubscriptions()
     }
 

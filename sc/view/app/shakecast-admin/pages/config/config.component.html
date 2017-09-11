@@ -16,6 +16,16 @@
         </div>
 
         <div class="item">
+            <label for="scPort">ShakeCast Server Port: </label>
+            <input id="scPort" [(ngModel)]="configs.port">
+        </div>
+
+        <div class="item">
+            <label for="scWebPort">Web Server Port: </label>
+            <input id="scWebPort" [(ngModel)]="configs.web_port">
+        </div>
+
+        <div class="item">
             <label for="proxy">Use a proxy: </label>
             <input type="checkbox" 
                         id="proxy" 
@@ -49,7 +59,9 @@
                     <td>{{ utcTime | date:'dd-M-yyyy H:mm'}}</td>
                 </tr>
                 <tr>
-                    <th>ShakeCast Time: </th>
+                    <th>ShakeCast Time: <info [text]="'Change the ShakeCast Time for your notifications to
+                                                        use a different time zone than UTC'"
+                                                [side]="'left'"></info></th>
                     <td>{{ offsetTime | date:'dd-M-yyyy H:mm'}}</td>
                     <table class="spin-table">
                         <tr class="button spin" (click)="hourUp()"><th><i class="fa fa-chevron-up"></i></th></tr>
@@ -57,7 +69,13 @@
                     </table>
                 </tr>
                 <tr>
-                    <th>Nighttime: </th>
+                    <th>Nighttime: <info [text]="'ShakeCast allows you to set a different minimum
+                                                    magnitude while you\'re not at work. This way,
+                                                    you won\'t be bothered by multiple small magnitude
+                                                    earthquakes while you\'re at home. This Nighttime
+                                                    setting determines what time the minimum magnitude
+                                                    change goes into effect.'"
+                                            [side]="'left'"></info></th>
                     <td>{{ configs.Services.nighttime }}:00</td>
                     <table class="spin-table">
                         <tr class="button spin" 
@@ -67,7 +85,15 @@
                     </table>
                 </tr>
                 <tr>
-                    <th>Morning: </th>
+                    <th>Morning: <info [text]="'ShakeCast allows you to set a different minimum
+                                                    magnitude while you\'re not at work. This way,
+                                                    you won\'t be bothered by multiple small magnitude
+                                                    earthquakes while you\'re at home. This Morning
+                                                    setting determines what time the minimum magnitude
+                                                    switches back to normal. If there were any smaller
+                                                    earthquakes over night, you will receive notifications
+                                                    for them now.'"
+                                            [side]="'left'"></info></th>
                     <td>{{ configs.Services.morning }}:00</td>
                     <table class="spin-table">
                         <tr class="button spin" 
@@ -77,7 +103,14 @@
                     </table>
                 </tr>
                 <tr>
-                    <th>Nighttime Min Magnitude: </th>
+                    <th>Nighttime Min Magnitude: <info [text]="'ShakeCast allows you to set a different minimum
+                                                                    magnitude while you\'re not at work. This way,
+                                                                    you won\'t be bothered by multiple small magnitude
+                                                                    earthquakes while you\'re at home. 
+                                                                    You can set that minimum magnitude here. If you
+                                                                    do not wish to utilize this setting, set the
+                                                                    minimum magnitude to 0.'"
+                                                            [side]="'left'"></info></th>
                     <td>{{ configs.Services.night_eq_mag_cutoff }}</td>
                     <table class="spin-table">
                         <tr class="button spin" 
@@ -105,6 +138,6 @@
     </div>
 </div>
 
-<h1 class="button save" (click)="saveConfigs()">SAVE</h1>
-<h1 class="button reset" (click)="resetConfigs()">RESET</h1>
-
+<h1 class="button save" (click)="saveConfigs()">Save</h1>
+<h1 class="button reset" (click)="resetConfigs()">Reset</h1>
+<h1 class="button" (click)="confService.systemTest()">Run a System Test</h1>

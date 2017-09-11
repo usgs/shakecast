@@ -4,7 +4,7 @@ import { Routes, RouterModule }   from '@angular/router';
 import { ShakeCastComponent } from './shakecast.component'
 
 import { DashboardComponent } from './pages/dashboard/dashboard.component'
-import { EarthquakesComponent } from './pages/earthquakes/earthquakes.component'
+import { UserProfileComponent } from './pages/user-profile/user-profile.component'
 
 import { LoginGuard } from '../auth/login.guard'
 
@@ -17,6 +17,10 @@ const appRoutes: Routes = [
             {
                 path: 'dashboard',
                 component: DashboardComponent
+            },
+            {
+                path: 'user-profile',
+                component: UserProfileComponent
             },
             {
                 path: '',

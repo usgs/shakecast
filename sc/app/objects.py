@@ -206,11 +206,11 @@ class ProductGrabber(object):
         sc=SC()
         # download the google maps image
         url_opener = URLOpener()
-        gmap = url_opener.open("https://maps.googleapis.com/maps/api/staticmap?center=%s,%s&zoom=5&size=200x200&sensor=false&maptype=terrain&markers=icon:http://earthquake.usgs.gov/research/software/shakecast/icons/epicenter.png|%s,%s&key=%s" % (event.lat,
+        gmap = url_opener.open("https://api.mapbox.com/styles/v1/mapbox/streets-v10/static/pin-s+F00(%s,%s)/%s,%s,5/200x200?access_token=%s" % (event.lon,
+                                          event.lat,
                                            event.lon,
                                            event.lat,
-                                           event.lon,
-                                           sc.gmap_key))
+                                           sc.map_key))
         
         # and save it
         image_loc = os.path.join(event.directory_name,
@@ -262,7 +262,14 @@ class ProductGrabber(object):
             else:
                 sm_str = 'shakemap'
 
-            shakemap.shakemap_version = eq_info['properties']['products'][sm_str][0]['properties']['version']
+            # which shakemap has the highest weight
+            weight = 0
+            for idx in xrange(len(eq_info['properties']['products'][sm_str])):
+                if eq_info['properties']['products'][sm_str][idx]['preferredWeight'] > weight:
+                    weight = eq_info['properties']['products'][sm_str][idx]['preferredWeight']
+                    shakemap.json = eq_info['properties']['products'][sm_str][idx]
+
+            shakemap.shakemap_version = shakemap.json['properties']['version']
             
             # check if we already have the shakemap
             if shakemap.is_new() is False:
@@ -272,8 +279,6 @@ class ProductGrabber(object):
                     .filter(ShakeMap.shakemap_version == shakemap.shakemap_version)
                     .first()
                 )
-            
-            shakemap.json = eq_info['properties']['products'][sm_str][0]
             
             # check if the shakemap has required products. If it does,
             # it is not a new map, and can be skipped
@@ -379,8 +384,8 @@ class ProductGrabber(object):
             e.time = time.time()
             e.event_id = 'heartbeat'
             e.magnitude = 10
-            e.lat = 1000
-            e.lon = 1000
+            e.lat = 0
+            e.lon = 0
             e.title = 'ShakeCast Heartbeat'
             e.place = 'ShakeCast is running'
             e.status = 'new'
@@ -1104,13 +1109,27 @@ class SoftwareUpdater(object):
 
     @staticmethod
     def check_new_update(new, existing):
+        if (('b' in existing and 'b' not in new) or   
+                ('b' in existing and 'rc' in new) or
+                ('rc' in existing and ('rc' not in new 
+                                        and 'b' not in new))):
+            return True
+        elif (('rc' in existing and 'b' in new) or
+                    ('b' not in existing and 'b' in new) or
+                    ('rc' not in existing and 'rc' in new)):
+            return False
+
         new_split = new.split('.')
         if 'b' in new_split[-1]:
             new_split = new_split[:-1] + new_split[-1].split('b')
+        elif 'rc' in new_split[-1]:
+            new_split = new_split[:-1] + new_split[-1].split('rc')
 
         existing_split = existing.split('.')
         if 'b' in existing_split[-1]:
             existing_split = existing_split[:-1] + existing_split[-1].split('b')
+        elif 'rc' in existing_split[-1]:
+            existing_split = existing_split[:-1] + existing_split[-1].split('rc')
 
         if len(existing_split) > len(new_split):
             range_ = len(new_split)

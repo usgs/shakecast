@@ -38,6 +38,9 @@ export class ScenariosComponent implements OnInit, OnDestroy {
 
         this.eqService.getData({'scenario': true});
         this.eqService.showScenarioSearch.next(false);
+
+        this.toggleBottom();
+        this.toggleRight();
     }
 
     getMore() {

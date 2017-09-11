@@ -2,6 +2,7 @@ from util import *
 import os
 import sys
 import inspect as inspect_mod
+import time
 
 modules_dir = os.path.join(sc_dir(), 'modules')
 if modules_dir not in sys.path:
@@ -123,7 +124,7 @@ class Facility(Base):
         Create a dictionary that contains all the information for a
         Facility_Shaking entry in the database
         '''
-        shaking_level = shaking_point[self.metric]
+        shaking_level = shaking_point.get(self.metric, None)
         
         # check if there is already shaking for this shakemap and facility
         stmt = (select([Facility_Shaking.__table__.c.shakecast_id])
@@ -156,7 +157,7 @@ class Facility(Base):
             fac_shake['notifications'] = [''] * len(notifications)
         
         if shaking_level is None:
-            fac_shake['alert_level'] = None
+            fac_shake['alert_level'] = 'gray'
         
         else:
             # add shaking levels to fac_shake:
@@ -961,6 +962,8 @@ if not us:
     u.username = 'scadmin'
     u.password = generate_password_hash('scadmin', method='pbkdf2:sha512')
     u.user_type = 'ADMIN'
+    u.updated = time.time()
+    u.updated_by = 'shakecast'
     session.add(u)
     session.commit()
 Session.remove()

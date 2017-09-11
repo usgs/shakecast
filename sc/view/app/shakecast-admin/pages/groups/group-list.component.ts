@@ -40,7 +40,7 @@ export class GroupListComponent implements OnInit, OnDestroy {
     private subscriptions: any[] = [];
     private _this: any = this
     
-    constructor(private groupService: GroupService) {}
+    constructor(public groupService: GroupService) {}
     ngOnInit() {
         this.subscriptions.push(this.groupService.groupData.subscribe((data: any) => {
             this.groupData = data;

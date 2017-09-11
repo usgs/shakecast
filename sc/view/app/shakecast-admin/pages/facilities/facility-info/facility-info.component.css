@@ -1,15 +1,15 @@
 .header {
-    border-bottom: 5px solid #AED8FA;
+    border-bottom: 5px solid #55aaee;
     color: white;
 }
 
 .info-header {
     color: white;
+    margin-bottom: 0;
 }
 
 .desc {
     text-align: center;
-    font-style: italic;
     background: #efefef;
     padding: 10px;
     margin: 10px;
@@ -21,6 +21,33 @@
     color: black;
 }
 
+.location {
+    color: white;
+    font-style: italic;
+
+}
+
+.colors-table th {
+    padding: 5px;
+    color:white;
+    border-radius: 5px;
+    margin: 3px;
+}
+
+.fragility h2 {
+    margin: 10px 0 5px 0;
+    color: white;
+}
+
+.fragility p {
+    color:white;
+    margin:0;
+}
+
+.type {
+    color: white;
+    margin: 0 0 20px 0;
+}
 /*
 
 .info-content {

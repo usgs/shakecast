@@ -12,7 +12,7 @@
                 </div>
                 <div class="data-body">
                     <div class="data-info-container">
-                        <table>
+                        <table class="container-table">
                             <tr>
                                 <th>Username: </th>
                                 <td *ngIf="!data?.editing">{{ data.username }}</td>
@@ -31,6 +31,14 @@
                         <h3 *ngIf="data.user_type == 'ADMIN'">
                             Admin
                         </h3>
+                        <div class="delete">
+                            <p class="button" (click)="userService.deleteUsers([data])">Delete</p>
+                        </div>
+                        <div class="updated">
+                            <p>Updated: {{ data.updated * 1000 | date }}</p>
+                            <p>|</p>
+                            <p>{{ data.updated_by }}</p>
+                        </div>
                     </div>
                 </div>
             </div>

@@ -1,10 +1,14 @@
+.item input, .item select, .item textarea {
+    font-size: 15px;
+}
+
 .container {
     width: 100%;
     background: #fff;
     display: flex;
 }
 
-.not-dropdown {
+#notDropdown {
     width: 200px;
     margin-left: auto;
     margin-right: auto;
@@ -22,10 +26,13 @@
 .not-column, .conf-column {
     z-index: 2;
     background: white;
+    margin: 5px;
+    border-radius: 10px;
 }
 
 .not-column {
-    width: 55%
+    width: 55%;
+    border: 2px solid #55aaee;
 }
 
 .conf-column {
@@ -101,10 +108,6 @@
 
 .section.last {
     border: none;
-}
-
-.item input {
-    font-size: 15px;
 }
 
 #templateName {
