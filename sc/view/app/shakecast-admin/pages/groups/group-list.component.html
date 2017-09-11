@@ -93,6 +93,9 @@
                                     </table>
                                 </tr>
                             </table>
+                            <div class="delete">
+                                <p class="button" (click)="groupService.deleteGroups([group])">Delete</p>
+                            </div>
                             <div class="updated">
                                 <p>Updated: {{ group.updated * 1000 | date }}</p>
                                 <p>|</p>

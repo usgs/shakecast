@@ -31,6 +31,9 @@
                         <h3 *ngIf="data.user_type == 'ADMIN'">
                             Admin
                         </h3>
+                        <div class="delete">
+                            <p class="button" (click)="userService.deleteUsers([data])">Delete</p>
+                        </div>
                         <div class="updated">
                             <p>Updated: {{ data.updated * 1000 | date }}</p>
                             <p>|</p>
