@@ -44,7 +44,7 @@ class Facility(Base):
     name = Column(String(255))
     short_name = Column(String(20))
     description = Column(String(255))
-    html = Column(String())
+    html = Column(String(2000))
     geom_type = Column(String(15))
     lat_min = Column(Float)
     lat_max = Column(Float)
@@ -391,7 +391,7 @@ class User(Base):
     phone_number = Column(String(25))
     full_name = Column(String(32))
     user_type = Column(String(10))
-    group_string = Column(String())
+    group_string = Column(String(1000))
     updated = Column(Integer)
     updated_by = Column(String(32))
 
