@@ -361,7 +361,7 @@ class Notification(Base):
     shakecast_id = Column(Integer, primary_key=True)
     shakemap_id = Column(Integer, ForeignKey('shakemap.shakecast_id'))
     event_id = Column(String(20), ForeignKey('event.event_id'))
-    group_name = Column(String(25), ForeignKey('group.name'))
+    group_id = Column(Integer, ForeignKey('group.shakecast_id'))
     notification_type = Column(String(25))
     status = Column(String(15))
     notification_file = Column(String(255))
@@ -435,7 +435,8 @@ class User(Base):
     
 class Group(Base):
     __tablename__ = 'group'
-    name = Column(String(25), primary_key=True)
+    shakecast_id = Column(Integer, primary_key=True)
+    name = Column(String(25))
     facility_type = Column(String(25))
     lon_min = Column(Integer)
     lon_max = Column(Integer)

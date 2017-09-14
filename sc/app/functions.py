@@ -189,7 +189,7 @@ def process_events(events=None, session=None, scenario=False):
             nots = (session.query(Notification)
                         .filter(Notification.notification_type == 'NEW_EVENT')
                         .filter(Notification.status == 'created')
-                        .filter(Notification.group_name == group.name)
+                        .filter(Notification.group_id == group.shakecast_id)
                         .all())
             
             filter_nots = filter(lambda x: x.event is not None, nots)
