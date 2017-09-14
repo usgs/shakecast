@@ -363,7 +363,7 @@ class Notification(Base):
     event_id = Column(Integer, ForeignKey('event.shakecast_id'))
     group_id = Column(Integer, ForeignKey('group.shakecast_id'))
     notification_type = Column(String(25))
-    status = Column(String(15))
+    status = Column(String(64))
     notification_file = Column(String(255))
     
     facility_shaking = relationship('Facility_Shaking',
@@ -686,7 +686,7 @@ class Event(Base):
     __tablename__ = 'event'
     shakecast_id = Column(Integer, primary_key=True)
     event_id = Column(String(20))
-    status = Column(String(20))
+    status = Column(String(64))
     all_event_ids = Column(String(255))
     lat = Column(Float)
     lon = Column(Float)
@@ -758,8 +758,8 @@ class ShakeMap(Base):
     event_id = Column(Integer,
                       ForeignKey('event.shakecast_id'))
     shakemap_version = Column(Integer)
-    status = Column(String(10))
-    map_status = Column(String(10))
+    status = Column(String(64))
+    map_status = Column(String(24))
     event_version = Column(Integer)
     generating_server = Column(Integer)
     region = Column(String(10))
@@ -874,7 +874,7 @@ class Product(Base):
     shakecast_id = Column(Integer, primary_key=True)
     shakemap_id = Column(Integer,
                          ForeignKey('shakemap.shakecast_id'))
-    product_type = Column(String(10))
+    product_type = Column(String(32))
     name = Column(String(32))
     description = Column(String(255))
     metric = Column(String(10))
@@ -937,6 +937,9 @@ elif sc.dict['DBConnection']['type'] == 'mysql':
         engine = create_engine(server_str)
         engine.execute("CREATE DATABASE pycast")
         engine.execute("USE pycast")
+
+        # try to get that connection going again
+        engine = create_engine(db_str)
 
 # if we're testing, we want to drop all existing database info to test
 # from scratch
