@@ -16,7 +16,7 @@ if app_dir not in sys.path:
 path += ['logs', 'sc-web-server.log']
 logging.basicConfig(
     filename = os.path.normpath(os.sep.join(path)),
-    level = logging.DEBUG, 
+    level = logging.INFO, 
     format = '[ShakeCast - Web] %(levelname)-7.7s %(message)s'
 )
 
