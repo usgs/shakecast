@@ -454,6 +454,10 @@ class Group(Base):
                                       backref='group',
                                       cascade='save-update, delete')
     
+    specs = relationship('Group_Specification',
+                                  backref='group',
+                                  cascade='save-update, delete, delete-orphan')
+    
     def __repr__(self):
         return '''Group(name=%s,
                         facility_type=%s,
@@ -614,17 +618,13 @@ class Group(Base):
 class Group_Specification(Base):
     __tablename__ = 'group_specification'
     shakecast_id = Column(Integer, primary_key=True)
-    group_id = Column(String(25), ForeignKey('group.shakecast_id'))
+    group_id = Column(Integer, ForeignKey('group.shakecast_id'))
     notification_type = Column(String(25))
     event_type = Column(String(25))
     inspection_priority = Column(String(10))
     minimum_magnitude = Column(Integer)
     notification_format = Column(String(25))
     aggregate_name = Column(String(25))
-
-    group = relationship('Group',
-                            backref='specs',
-                            cascade='save-update, delete, delete-orphan')
     
     def __repr__(self):
         return '''Group_Specification(group_id=%s,
