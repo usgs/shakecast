@@ -454,10 +454,6 @@ class Group(Base):
                                       backref='group',
                                       cascade='save-update, delete')
     
-    specs = relationship('Group_Specification',
-                                  backref='group',
-                                  cascade='save-update, delete, delete-orphan')
-    
     def __repr__(self):
         return '''Group(name=%s,
                         facility_type=%s,
@@ -625,6 +621,10 @@ class Group_Specification(Base):
     minimum_magnitude = Column(Integer)
     notification_format = Column(String(25))
     aggregate_name = Column(String(25))
+
+    group = relationship('Group',
+                            backref='specs',
+                            cascade='save-update, delete, delete-orphan')
     
     def __repr__(self):
         return '''Group_Specification(group_id=%s,
