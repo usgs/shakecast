@@ -167,10 +167,15 @@ class Server(object):
         that can be removed
         """
         timestamp = time.time()
+        sc = SC()
         for i,task in enumerate(self.queue):
             # run tasks if it's their time and they aren't already running
-            if ((task.next_run < timestamp and task.status == 'stopped') and
-                (task.db_use is False or self.db_open is True)):
+            # and the db is available
+            if ((task.next_run < timestamp and 
+                    task.status == 'stopped') and
+                        (task.db_use is False or 
+                            self.db_open is True or 
+                            sc.dict['DBConnection']['type'] != 'sqlite')):
                     
                     if task.db_use is True:
                         self.db_open = False
