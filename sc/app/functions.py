@@ -382,7 +382,6 @@ def process_shakemaps(shakemaps=None, session=None, scenario=False):
             # just computed
             for n in notifications:
                 inspection_notification(notification=n,
-                                        grid=grid,
                                         scenario=scenario)
         
         session.commit()
