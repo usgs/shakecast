@@ -687,7 +687,7 @@ class Event(Base):
     shakecast_id = Column(Integer, primary_key=True)
     event_id = Column(String(20))
     status = Column(String(20))
-    all_event_ids = Column(String(20))
+    all_event_ids = Column(String(255))
     lat = Column(Float)
     lon = Column(Float)
     depth = Column(Float)
