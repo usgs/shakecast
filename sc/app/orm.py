@@ -360,7 +360,7 @@ class Notification(Base):
     __tablename__ = 'notification'
     shakecast_id = Column(Integer, primary_key=True)
     shakemap_id = Column(Integer, ForeignKey('shakemap.shakecast_id'))
-    event_id = Column(String(20), ForeignKey('event.event_id'))
+    event_id = Column(Integer, ForeignKey('event.shakecast_id'))
     group_id = Column(Integer, ForeignKey('group.shakecast_id'))
     notification_type = Column(String(25))
     status = Column(String(15))
@@ -701,7 +701,7 @@ class Event(Base):
                              backref='event')
     
     notifications = relationship('Notification',
-                                 backref='event')
+                                    backref='event')
     
     def __repr__(self):
         return '''Event(event_id=%s,
@@ -929,6 +929,7 @@ elif sc.dict['DBConnection']['type'] == 'mysql':
         db_str = 'mysql://{}:{}@localhost/pycast'.format(sc.dict['DBConnection']['username'],
                                                          sc.dict['DBConnection']['password'])
         engine = create_engine(db_str)
+        engine.execute('USE pycast')
     except:
         # db doesn't exist yet, let's create it
         server_str = 'mysql://{}:{}@localhost'.format(sc.dict['DBConnection']['username'],
