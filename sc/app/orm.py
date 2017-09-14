@@ -435,8 +435,7 @@ class User(Base):
     
 class Group(Base):
     __tablename__ = 'group'
-    shakecast_id = Column(Integer, primary_key=True)
-    name = Column(String(25))
+    name = Column(String(25), primary_key=True)
     facility_type = Column(String(25))
     lon_min = Column(Integer)
     lon_max = Column(Integer)
