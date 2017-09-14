@@ -360,7 +360,7 @@ class Notification(Base):
     __tablename__ = 'notification'
     shakecast_id = Column(Integer, primary_key=True)
     shakemap_id = Column(Integer, ForeignKey('shakemap.shakecast_id'))
-    event_id = Column(Integer, ForeignKey('event.event_id'))
+    event_id = Column(String(20), ForeignKey('event.event_id'))
     group_name = Column(String(25), ForeignKey('group.name'))
     notification_type = Column(String(25))
     status = Column(String(15))
