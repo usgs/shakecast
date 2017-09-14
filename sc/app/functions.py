@@ -521,15 +521,13 @@ def new_event_notification(notifications = None,
     else:
         notification.status = 'not sent - no users'
     
-def inspection_notification(notification=Notification(),
-                            grid=ShakeMapGrid(),
+def inspection_notification(notification=None,
                             scenario=False):
     '''
     Create local products and send inspection notification
     
     Args:
         notification (Notification): The Notification that will be sent
-        grid (ShakeMapGrid): create from the ShakeMap
 
     Returns:
         None

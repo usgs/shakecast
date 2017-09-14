@@ -1024,10 +1024,7 @@ class URLOpener(object):
             raise Exception('URLOpener Error({}: {}, url: {})'.format(type(e),
                                                              e,
                                                              url))
-        
-
-
-  
+                                                             
   
 class AlchemyEncoder(json.JSONEncoder):
     def default(self, obj):

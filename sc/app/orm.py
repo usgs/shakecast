@@ -68,7 +68,7 @@ class Facility(Base):
     red_metric = Column(String(20))
     metric = Column(String(20))
     updated = Column(Integer)
-    updated_by = Column(String)
+    updated_by = Column(String(32))
     
     shaking_history = relationship('Facility_Shaking',
                         backref='facility',
@@ -393,7 +393,7 @@ class User(Base):
     user_type = Column(String(10))
     group_string = Column(String())
     updated = Column(Integer)
-    updated_by = Column(String)
+    updated_by = Column(String(32))
 
     groups = relationship('Group',
                           secondary='user_group_connection',
@@ -444,7 +444,7 @@ class Group(Base):
     lat_max = Column(Integer)
     template = Column(String(255))
     updated = Column(Integer)
-    updated_by = Column(String)
+    updated_by = Column(String(32))
     
     facilities = relationship('Facility',
                               secondary='facility_group_connection',
@@ -692,10 +692,10 @@ class Event(Base):
     lon = Column(Float)
     depth = Column(Float)
     magnitude = Column(Float)
-    title = Column(String)
-    place = Column(String)
+    title = Column(String(100))
+    place = Column(String(255))
     time = Column(Integer)
-    directory_name = Column(String)
+    directory_name = Column(String(255))
     
     shakemaps = relationship('ShakeMap',
                              backref='event')
@@ -921,8 +921,21 @@ for stack in insp:
 #logging.getLogger('sqlalchemy.engine.base').setLevel(logging.DEBUG)
 
 # SETUP DATABASE
-engine = create_engine('sqlite:///%s' % os.path.join(directory, db_name))
-#connection = engine.connect()
+sc = SC()
+if sc.dict['DBConnection']['type'] == 'sqlite' or testing is True:
+    engine = create_engine('sqlite:///%s' % os.path.join(directory, db_name))
+elif sc.dict['DBConnection']['type'] == 'mysql':
+    try:
+        db_str = 'mysql://{}:{}@localhost/pycast'.format(sc.dict['DBConnection']['username'],
+                                                         sc.dict['DBConnection']['password'])
+        engine = create_engine(db_str)
+    except:
+        # db doesn't exist yet, let's create it
+        server_str = 'mysql://{}:{}@localhost'.format(sc.dict['DBConnection']['username'],
+                                                      sc.dict['DBConnection']['password'])
+        engine = create_engine(server_str)
+        engine.execute("CREATE DATABASE pycast")
+        engine.execute("USE pycast")
 
 # if we're testing, we want to drop all existing database info to test
 # from scratch
