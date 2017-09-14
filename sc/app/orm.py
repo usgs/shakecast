@@ -386,7 +386,7 @@ class User(Base):
     __tablename__ = 'user'
     shakecast_id = Column(Integer, primary_key=True)
     username = Column(String(32))
-    password = Column(String(64))
+    password = Column(String(255))
     email = Column(String(255))
     phone_number = Column(String(25))
     full_name = Column(String(32))
