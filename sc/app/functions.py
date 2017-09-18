@@ -360,8 +360,8 @@ def process_shakemaps(shakemaps=None, session=None, scenario=False):
                 stmt = str(stmt).replace('INSERT', 'INSERT OR REPLACE')
                 rel_stmt = str(rel_stmt).replace('INSERT', 'INSERT OR REPLACE')
             else:
-                stmt = str(stmt) + ' ON DUPLICATE KEY UPDATE'
-                rel_stmt = str(rel_stmt) + ' ON DUPLICATE KEY UPDATE'
+                stmt = str(stmt).replace('INSERT', 'REPLACE')
+                rel_stmt = str(rel_stmt).replace('INSERT', 'REPLACE')
 
             # if there are facilities affected, send shaking data to
             # database
