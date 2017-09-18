@@ -359,7 +359,10 @@ def process_shakemaps(shakemaps=None, session=None, scenario=False):
             if sc.dict['DBConnection']['type'] == 'sqlite':
                 stmt = str(stmt).replace('INSERT', 'INSERT OR REPLACE')
                 rel_stmt = str(rel_stmt).replace('INSERT', 'INSERT OR REPLACE')
-            
+            else:
+                stmt = str(stmt).replace('VALUES', 'ON DUPLICATE KEY UPDATE VALUES')
+                rel_stmt = str(rel_stmt).replace('VALUES', 'ON DUPLICATE KEY UPDATE VALUES')
+
             # if there are facilities affected, send shaking data to
             # database
             if fac_shaking_lst:
