@@ -19,6 +19,7 @@ class Task(object):
                  run_in=0,
                  kill_time=None,
                  db_use=False,
+                 from_user=False,
                  use_pdb=False):
         self.name = name
         self.id = task_id

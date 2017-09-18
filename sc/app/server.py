@@ -148,7 +148,7 @@ class Server(object):
                 except:
                     db_use = False
                     
-                new_task = Task(name=key, task_id=task_id, db_use=db_use, **value)
+                new_task = Task(name=key, task_id=task_id, db_use=db_use, from_user=True, **value)
                 
                 if new_task.loop is True:
                     conn.send('Received looping task. Closing connection...')
@@ -175,7 +175,8 @@ class Server(object):
                     task.status == 'stopped') and
                         (task.db_use is False or 
                             self.db_open is True or 
-                            sc.dict['DBConnection']['type'] != 'sqlite')):
+                            (sc.dict['DBConnection']['type'] != 'sqlite' and 
+                                task.from_user is True))):
                     
                     if task.db_use is True:
                         self.db_open = False
