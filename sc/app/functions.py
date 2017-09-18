@@ -288,92 +288,26 @@ def process_shakemaps(shakemaps=None, session=None, scenario=False):
                                          groups_affected]))
         
         if affected_facilities:
-            # find the largest shaking id
-            shaking_id = (session
-                            .query(Facility_Shaking.shakecast_id,
-                                   func.max(Facility_Shaking.shakecast_id))
-                            .first()[0])
-            if shaking_id:
-                shaking_id += 1
-            else:
-                shaking_id = 1
-                
-            fac_shaking_lst = [{}] * len(affected_facilities)
-            relationships = [{}] * (len(affected_facilities) * len(notifications))
+            fac_shaking_lst = [None] * len(affected_facilities)
             f_count = 0
-            r_count = 0
             for facility in affected_facilities:
                 fac_shaking = make_inspection_prios(facility=facility,
                                                     shakemap=shakemap,
-                                                    grid=grid,
-                                                    notifications=notifications)
+                                                    grid=grid)
                 if fac_shaking is False:
                     continue
-
-                if not fac_shaking['update']:
-                    fac_shaking['_shakecast_id'] = shaking_id
-                    shaking_id += 1
                 
-                fac_shaking_lst[f_count] = fac_shaking
-                
-                for n in fac_shaking['notifications']:
-                    if n:
-                        relationships[r_count] = {'notification': n.shakecast_id,
-                                                  'facility_shaking': fac_shaking['_shakecast_id']}
-                        r_count += 1
-                
-                
+                fac_shaking.pop('lat')
+                fac_shaking.pop('lon')
+                fac_shaking_lst[f_count] = Facility_Shaking(**fac_shaking)
                 f_count += 1
-            
-            # get rid of empty dictionaries in relationships
-            relationships = filter(None, relationships)
-                
-            # create a statement to insert fac_shaking_list into database
-            stmt = (Facility_Shaking.__table__.insert()
-                        .values(gray=bindparam('gray'),
-                                green=bindparam('green'),
-                                yellow=bindparam('yellow'),
-                                orange=bindparam('orange'),
-                                red=bindparam('red'),
-                                alert_level=bindparam('alert_level'),
-                                weight=bindparam('weight'),
-                                facility_id=bindparam('facility_id'),
-                                shakemap_id=bindparam('shakemap_id'),
-                                metric=bindparam('metric'),
-                                mmi=bindparam('MMI'),
-                                pga=bindparam('PGA'),
-                                psa03=bindparam('PSA03'),
-                                psa10=bindparam('PSA10'),
-                                psa30=bindparam('PSA30'),
-                                pgv=bindparam('PGV'),
-                                shakecast_id=bindparam('_shakecast_id')
-                                ))
-            
-            # create a seperate statement containing the relationships
-            # of these shaking levels with their facilities
-            rel_stmt = (shaking_notification_connection.insert()
-                            .values(notification=bindparam('notification'),
-                                    facility_shaking=bindparam('facility_shaking')))
-            
-            #sqlite specific adjustment to overwrite existing records
-            if sc.dict['DBConnection']['type'] == 'sqlite':
-                stmt = str(stmt).replace('INSERT', 'INSERT OR REPLACE')
-                rel_stmt = str(rel_stmt).replace('INSERT', 'INSERT OR REPLACE')
-            else:
-                stmt = str(stmt).replace('INSERT', 'REPLACE')
-                rel_stmt = str(rel_stmt).replace('INSERT', 'REPLACE')
 
-            # if there are facilities affected, send shaking data to
-            # database
-            if fac_shaking_lst:
-                engine.execute(stmt, fac_shaking_lst)
-            # quick check for relationships before inserting into
-            # database in order to avoid errors in strange
-            # circumstances... probably not necessary
-            if relationships:
-                engine.execute(rel_stmt, relationships)
+            # Remove all old shaking and add all fac_shaking_lst
+            shakemap.facility_shaking = []
             session.commit()
- 
+
+            session.bulk_save_objects(fac_shaking_lst)
+            session.commit()
             shakemap.status = 'processed'
         else:
             shakemap.status = 'processed - no facs'
@@ -392,8 +326,7 @@ def process_shakemaps(shakemaps=None, session=None, scenario=False):
         
 def make_inspection_prios(facility=None,
                           shakemap=None,
-                          grid=None,
-                          notifications=None):
+                          grid=None):
     '''
     Determines inspection priorities for the input facility
     
@@ -429,8 +362,7 @@ def make_inspection_prios(facility=None,
     # use the max shaking value to create fragility curves for the
     # damage states
     fac_shaking = facility.make_alert_level(shaking_point=shaking_point,
-                                            shakemap=shakemap,
-                                            notifications=notifications)
+                                            shakemap=shakemap)
     return fac_shaking
     
 def new_event_notification(notifications = None,
