@@ -280,6 +280,20 @@ class Facility_Shaking(Base):
     psa03 = Column(Float)
     psa10 = Column(Float)
     psa30 = Column(Float)
+
+    def __init__(self, **kwargs):
+        '''
+        Adjust the constructor to allow us to pass in anything as a 
+        key word, and filter out the ones we don't want to use
+        '''
+        cls_ = type(self)
+        move_on = {}
+        for k in kwargs:
+            if hasattr(cls_, k):
+                move_on[k] = kwargs[k]
+
+        # now let sqlalchemy do the real initialization
+        super(Facility_Shaking, self).__init__(**move_on)
     
     def __repr__(self):
         return '''Facility_Shaking(shakemap_id=%s,
