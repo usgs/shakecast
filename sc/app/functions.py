@@ -297,8 +297,6 @@ def process_shakemaps(shakemaps=None, session=None, scenario=False):
                 if fac_shaking is False:
                     continue
                 
-                fac_shaking.pop('lat')
-                fac_shaking.pop('lon')
                 fac_shaking_lst[f_count] = Facility_Shaking(**fac_shaking)
                 f_count += 1
 
