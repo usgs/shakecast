@@ -356,8 +356,9 @@ def process_shakemaps(shakemaps=None, session=None, scenario=False):
                                     facility_shaking=bindparam('facility_shaking')))
             
             #sqlite specific adjustment to overwrite existing records
-            stmt = str(stmt).replace('INSERT', 'INSERT OR REPLACE')
-            rel_stmt = str(rel_stmt).replace('INSERT', 'INSERT OR REPLACE')
+            if sc.dict['DBConnection']['type'] == 'sqlite':
+                stmt = str(stmt).replace('INSERT', 'INSERT OR REPLACE')
+                rel_stmt = str(rel_stmt).replace('INSERT', 'INSERT OR REPLACE')
             
             # if there are facilities affected, send shaking data to
             # database
