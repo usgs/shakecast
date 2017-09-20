@@ -472,10 +472,10 @@ def inspection_notification(notification=None,
     not_builder = NotificationBuilder()
     html = not_builder.build_insp_html(shakemap, name=group.template)
 
-    alert_level = 'none'
+    alert_level = None
     if len(shakemap.facility_shaking) > 0:
         insp_val = max(fs.weight for fs in shakemap.facility_shaking)
-        alert_levels = ['gray', 'green', 'yellow', 'orange', 'red']
+        alert_levels = ['grey', 'green', 'yellow', 'orange', 'red']
         alert_level = alert_levels[int(floor(insp_val))]
 
     if group.has_alert_level(alert_level):

@@ -551,12 +551,16 @@ class Group(Base):
             return 0 == 1
 
     def has_alert_level(self, level):
+        if level is None:
+            level = 'grey'
+        
         levels = [s.inspection_priority.lower() for s in self.specs if 
                                 s.notification_type == 'DAMAGE']
 
         # need to match grey and gray... we use gray in pyCast, but
         # workbook and V3 use grey
-        if 'grey' in levels and level.lower() == 'gray':
+        if (('grey' in levels or 'gray' in levels) and 
+                (level == 'gray' or level == 'grey')):
             return True
 
         return level.lower() in levels
@@ -818,7 +822,7 @@ class ShakeMap(Base):
             return True
            
     def has_products(self, req_prods):
-        shakemap_prods = [prod.product_type for prod in self.products]
+        shakemap_prods = [prod.product_type for prod in self.products if prod.error is None]
         for prod in req_prods:
             if prod not in shakemap_prods:
                 return False
@@ -844,6 +848,8 @@ class Product(Base):
     url = Column(String(255))
     display = Column(Integer)
     source = Column(String(64))
+    status = Column(String(64))
+    error = Column(String(10000))
     update_username = Column(String(32))
     update_timestamp = Column(String(32))
     

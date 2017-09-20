@@ -524,6 +524,7 @@ class TestFull(unittest.TestCase):
     def step26_groupInspLevel(self):
         session = Session()
         g = session.query(Group).first()
+        self.assertEqual(g.has_alert_level(None), True)
         self.assertEqual(g.has_alert_level('GREY'), True)
         self.assertEqual(g.has_alert_level('grey'), True)
         self.assertEqual(g.has_alert_level('GRAY'), True)
