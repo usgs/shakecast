@@ -551,8 +551,12 @@ class Group(Base):
             return 0 == 1
 
     def has_alert_level(self, level):
+        # grey groups get no-inspection notifications
         if level is None:
             level = 'grey'
+
+        # make sure we're only dealing with lowercase
+        level = level.lower()
         
         levels = [s.inspection_priority.lower() for s in self.specs if 
                                 s.notification_type == 'DAMAGE']
