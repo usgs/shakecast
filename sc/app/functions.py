@@ -740,7 +740,7 @@ def import_facility_dicts(facs=None, _user=None):
                 continue
 
             existing = (session.query(Facility)
-                            .filter(Facility.facility_id == fac['EXTERNAL_FACILITY_ID'])
+                            .filter(Facility.facility_id == str(fac['EXTERNAL_FACILITY_ID']))
                             .filter(Facility.component == fac['COMPONENT'])
                             .filter(Facility.component_class == fac['COMPONENT_CLASS'])
                             .all())

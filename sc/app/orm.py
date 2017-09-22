@@ -37,7 +37,7 @@ Base = declarative_base(metadata=metadata)
 class Facility(Base):
     __tablename__ = 'facility'
     shakecast_id = Column(Integer, primary_key=True)
-    facility_id = Column(Integer)
+    facility_id = Column(String(1000))
     facility_type = Column(String(25))
     component = Column(String(100))
     component_class = Column(String(100))
