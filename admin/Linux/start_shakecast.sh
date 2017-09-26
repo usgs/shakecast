@@ -14,7 +14,7 @@ createCron () {
     #Creates a cron job that runs on reboot to restart pyCast
     echo "Installing pyCast watcher..."
     sudo crontab -l > mycron
-    echo "@reboot $(pwd)/pycast_watcher.sh" >> mycron
+    echo "@reboot $(pwd)/pycast_watcher.sh &" >> mycron
     #install new cron file
     sudo crontab mycron
     rm mycron
