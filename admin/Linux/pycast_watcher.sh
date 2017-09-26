@@ -25,7 +25,7 @@ logger "Start pyCast watcher"
 
 while true; do
   procs=`getRunningProcs`
-  (echo $proces | grep -q server_service.py\ start) || start
+  (echo $procs | grep -q server_service.py\ start) || start
   sleep $S
 done
 
