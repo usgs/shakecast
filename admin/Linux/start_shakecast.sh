@@ -42,7 +42,7 @@ python server_service.py start &
 echo "Done."
 
 # check to see if cron job is installed already, install it otherwise
-(echo sudo crontab -l | grep -q pycast_watcher.sh) || createCron
+(sudo crontab -l | grep -q pycast_watcher.sh) || createCron
 
 # check to see if the watcher is running and run it otherwise
 procs=`getRunningProcs`
