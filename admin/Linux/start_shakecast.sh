@@ -29,7 +29,7 @@ startWatcher() {
     # start the watcher daemon
     DAEMON=$(pwd)/pycast_watcher.sh
     PIDFILE=$(pwd)/pycast_watcher.pid
-    ./pycast_watcher.sh &
+    $(pwd)/pycast_watcher.sh &
     echo $! > $PIDFILE
     echo "Done."
 }

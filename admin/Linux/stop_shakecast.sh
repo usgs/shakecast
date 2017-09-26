@@ -10,6 +10,8 @@ echo "Stopping pyCast Watcher..."
 PIDFILE=$(pwd)/pycast_watcher.pid
 PID=$(cat $PIDFILE)
 kill $PID
+sleep 2
+echo "Done."
 
 echo "Stopping pycast..."
 

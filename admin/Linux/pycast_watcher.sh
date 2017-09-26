@@ -17,7 +17,7 @@ getRunningProcs() {
 
 start() {
     logger "pyCast watcher starting ShakeCast"
-    sudo ./start_shakecast.sh
+    sudo $(pwd)/start_shakecast.sh
     sleep 2
 }
 
