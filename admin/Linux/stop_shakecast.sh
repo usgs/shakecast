@@ -13,7 +13,7 @@ kill $PID
 sleep 2
 echo "Done."
 
-echo "Stopping pycast..."
+echo "Stopping pyCast..."
 
 python web_server_service.py stop
 python server_service.py stop
