@@ -27,7 +27,6 @@ createCron () {
 startWatcher() {
     echo "Starting pyCast Watcher..."
     # start the watcher daemon
-    DAEMON=$(pwd)/pycast_watcher.sh
     PIDFILE=$(pwd)/pycast_watcher.pid
     $(pwd)/pycast_watcher.sh &
     echo $! > $PIDFILE
@@ -45,7 +44,7 @@ echo "Done."
 (sudo crontab -l | grep -q pycast_watcher.sh) || createCron
 
 # check to see if the watcher is running and run it otherwise
-procs=`getRunningProcs`
+procs=$(getRunningProcs)
 (echo $procs | grep -q pycast_watcher.sh) || startWatcher
 
 exit 0

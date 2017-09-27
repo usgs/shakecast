@@ -902,7 +902,7 @@ elif sc.dict['DBConnection']['type'] == 'mysql':
                                                          sc.dict['DBConnection']['password'])
         engine = create_engine(db_str)
         engine.execute('USE pycast')
-    except:
+    except Exception:
         # db doesn't exist yet, let's create it
         server_str = 'mysql://{}:{}@localhost'.format(sc.dict['DBConnection']['username'],
                                                       sc.dict['DBConnection']['password'])
