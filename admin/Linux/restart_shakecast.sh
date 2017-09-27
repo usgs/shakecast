@@ -5,14 +5,7 @@ if [[ $UID != 0 ]]; then
     exit 1
 fi
 
-echo "Stopping Shakecast..."
-
-python web_server_service.py stop
-python server_service.py stop
-
-echo "Starting Shakecast..."
-
-python web_server_service.py start &
-python server_service.py start &
-
-echo "Done."
+./stop_shakecast
+echo "Waiting..."
+sleep 5
+./start_shakecast

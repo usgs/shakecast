@@ -148,7 +148,7 @@ class Server(object):
                 except:
                     db_use = False
                     
-                new_task = Task(name=key, task_id=task_id, db_use=db_use, **value)
+                new_task = Task(name=key, task_id=task_id, db_use=db_use, from_user=True, **value)
                 
                 if new_task.loop is True:
                     conn.send('Received looping task. Closing connection...')
@@ -167,10 +167,16 @@ class Server(object):
         that can be removed
         """
         timestamp = time.time()
+        sc = SC()
         for i,task in enumerate(self.queue):
             # run tasks if it's their time and they aren't already running
-            if ((task.next_run < timestamp and task.status == 'stopped') and
-                (task.db_use is False or self.db_open is True)):
+            # and the db is available
+            if ((task.next_run < timestamp and 
+                    task.status == 'stopped') and
+                        (task.db_use is False or 
+                            self.db_open is True or 
+                            (sc.dict['DBConnection']['type'] != 'sqlite' and 
+                                task.from_user is True))):
                     
                     if task.db_use is True:
                         self.db_open = False

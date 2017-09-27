@@ -189,7 +189,7 @@ def process_events(events=None, session=None, scenario=False):
             nots = (session.query(Notification)
                         .filter(Notification.notification_type == 'NEW_EVENT')
                         .filter(Notification.status == 'created')
-                        .filter(Notification.group_name == group.name)
+                        .filter(Notification.group_id == group.shakecast_id)
                         .all())
             
             filter_nots = filter(lambda x: x.event is not None, nots)
@@ -288,88 +288,24 @@ def process_shakemaps(shakemaps=None, session=None, scenario=False):
                                          groups_affected]))
         
         if affected_facilities:
-            # find the largest shaking id
-            shaking_id = (session
-                            .query(Facility_Shaking.shakecast_id,
-                                   func.max(Facility_Shaking.shakecast_id))
-                            .first()[0])
-            if shaking_id:
-                shaking_id += 1
-            else:
-                shaking_id = 1
-                
-            fac_shaking_lst = [{}] * len(affected_facilities)
-            relationships = [{}] * (len(affected_facilities) * len(notifications))
+            fac_shaking_lst = [None] * len(affected_facilities)
             f_count = 0
-            r_count = 0
             for facility in affected_facilities:
                 fac_shaking = make_inspection_prios(facility=facility,
                                                     shakemap=shakemap,
-                                                    grid=grid,
-                                                    notifications=notifications)
+                                                    grid=grid)
                 if fac_shaking is False:
                     continue
-
-                if not fac_shaking['update']:
-                    fac_shaking['_shakecast_id'] = shaking_id
-                    shaking_id += 1
                 
-                fac_shaking_lst[f_count] = fac_shaking
-                
-                for n in fac_shaking['notifications']:
-                    if n:
-                        relationships[r_count] = {'notification': n.shakecast_id,
-                                                  'facility_shaking': fac_shaking['_shakecast_id']}
-                        r_count += 1
-                
-                
+                fac_shaking_lst[f_count] = Facility_Shaking(**fac_shaking)
                 f_count += 1
-            
-            # get rid of empty dictionaries in relationships
-            relationships = filter(None, relationships)
-                
-            # create a statement to insert fac_shaking_list into database
-            stmt = (Facility_Shaking.__table__.insert()
-                        .values(gray=bindparam('gray'),
-                                green=bindparam('green'),
-                                yellow=bindparam('yellow'),
-                                orange=bindparam('orange'),
-                                red=bindparam('red'),
-                                alert_level=bindparam('alert_level'),
-                                weight=bindparam('weight'),
-                                facility_id=bindparam('facility_id'),
-                                shakemap_id=bindparam('shakemap_id'),
-                                metric=bindparam('metric'),
-                                mmi=bindparam('MMI'),
-                                pga=bindparam('PGA'),
-                                psa03=bindparam('PSA03'),
-                                psa10=bindparam('PSA10'),
-                                psa30=bindparam('PSA30'),
-                                pgv=bindparam('PGV'),
-                                shakecast_id=bindparam('_shakecast_id')
-                                ))
-            
-            # create a seperate statement containing the relationships
-            # of these shaking levels with their facilities
-            rel_stmt = (shaking_notification_connection.insert()
-                            .values(notification=bindparam('notification'),
-                                    facility_shaking=bindparam('facility_shaking')))
-            
-            #sqlite specific adjustment to overwrite existing records
-            stmt = str(stmt).replace('INSERT', 'INSERT OR REPLACE')
-            rel_stmt = str(rel_stmt).replace('INSERT', 'INSERT OR REPLACE')
-            
-            # if there are facilities affected, send shaking data to
-            # database
-            if fac_shaking_lst:
-                engine.execute(stmt, fac_shaking_lst)
-            # quick check for relationships before inserting into
-            # database in order to avoid errors in strange
-            # circumstances... probably not necessary
-            if relationships:
-                engine.execute(rel_stmt, relationships)
+
+            # Remove all old shaking and add all fac_shaking_lst
+            shakemap.facility_shaking = []
             session.commit()
- 
+
+            session.bulk_save_objects(fac_shaking_lst)
+            session.commit()
             shakemap.status = 'processed'
         else:
             shakemap.status = 'processed - no facs'
@@ -382,15 +318,13 @@ def process_shakemaps(shakemaps=None, session=None, scenario=False):
             # just computed
             for n in notifications:
                 inspection_notification(notification=n,
-                                        grid=grid,
                                         scenario=scenario)
         
         session.commit()
         
 def make_inspection_prios(facility=None,
                           shakemap=None,
-                          grid=None,
-                          notifications=None):
+                          grid=None):
     '''
     Determines inspection priorities for the input facility
     
@@ -426,8 +360,7 @@ def make_inspection_prios(facility=None,
     # use the max shaking value to create fragility curves for the
     # damage states
     fac_shaking = facility.make_alert_level(shaking_point=shaking_point,
-                                            shakemap=shakemap,
-                                            notifications=notifications)
+                                            shakemap=shakemap)
     return fac_shaking
     
 def new_event_notification(notifications = None,
@@ -521,15 +454,13 @@ def new_event_notification(notifications = None,
     else:
         notification.status = 'not sent - no users'
     
-def inspection_notification(notification=Notification(),
-                            grid=ShakeMapGrid(),
+def inspection_notification(notification=None,
                             scenario=False):
     '''
     Create local products and send inspection notification
     
     Args:
         notification (Notification): The Notification that will be sent
-        grid (ShakeMapGrid): create from the ShakeMap
 
     Returns:
         None
@@ -541,10 +472,10 @@ def inspection_notification(notification=Notification(),
     not_builder = NotificationBuilder()
     html = not_builder.build_insp_html(shakemap, name=group.template)
 
-    alert_level = 'none'
+    alert_level = None
     if len(shakemap.facility_shaking) > 0:
         insp_val = max(fs.weight for fs in shakemap.facility_shaking)
-        alert_levels = ['gray', 'green', 'yellow', 'orange', 'red']
+        alert_levels = ['grey', 'green', 'yellow', 'orange', 'red']
         alert_level = alert_levels[int(floor(insp_val))]
 
     if group.has_alert_level(alert_level):
@@ -809,7 +740,7 @@ def import_facility_dicts(facs=None, _user=None):
                 continue
 
             existing = (session.query(Facility)
-                            .filter(Facility.facility_id == fac['EXTERNAL_FACILITY_ID'])
+                            .filter(Facility.facility_id == str(fac['EXTERNAL_FACILITY_ID']))
                             .filter(Facility.component == fac['COMPONENT'])
                             .filter(Facility.component_class == fac['COMPONENT_CLASS'])
                             .all())

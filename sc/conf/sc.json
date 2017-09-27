@@ -24,7 +24,7 @@
     "Server": {
         "update": {
             "json_url": "https://raw.githubusercontent.com/usgs/shakecast/master/update.json", 
-            "db_version": 1, 
+            "db_version": 2, 
             "update_version": "4.0.0rc2", 
             "software_version": "4.0.0rc2", 
             "admin_notified": true
@@ -49,8 +49,12 @@
         "nighttime": 18, 
         "check_new_int": 3, 
         "night_eq_mag_cutoff": 0, 
-        "geo_json_web": "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/1.0_{}.geojson", 
+        "geo_json_web": "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_{}.geojson", 
         "eq_req_products": [
+            "grid.xml", 
+            "intensity.jpg"
+        ], 
+        "eq_pref_products": [
             "grid.xml", 
             "stationlist.xml", 
             "intensity.jpg", 

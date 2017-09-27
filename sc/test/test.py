@@ -508,7 +508,7 @@ class TestFull(unittest.TestCase):
             self.assertIsNone(e)
             self.assertIsNone(sm)
 
-            Session.remove()
+        Session.remove()
 
     def step23_badScenario(self):
         result = run_scenario('a_bad_Event_id')
@@ -524,6 +524,7 @@ class TestFull(unittest.TestCase):
     def step26_groupInspLevel(self):
         session = Session()
         g = session.query(Group).first()
+        self.assertEqual(g.has_alert_level(None), True)
         self.assertEqual(g.has_alert_level('GREY'), True)
         self.assertEqual(g.has_alert_level('grey'), True)
         self.assertEqual(g.has_alert_level('GRAY'), True)
@@ -537,6 +538,7 @@ class TestFull(unittest.TestCase):
         self.assertEqual(g.has_alert_level('RED'), True)
         self.assertEqual(g.has_alert_level('red'), True)
         self.assertEqual(g.has_alert_level('does_not_exist'), False)
+        Session.remove()
 
     def steps(self):
         '''

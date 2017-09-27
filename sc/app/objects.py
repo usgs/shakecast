@@ -38,6 +38,7 @@ class ProductGrabber(object):
         sc = SC()
         
         self.req_products = req_products
+        self.pref_products = []
         self.server_address = ''
         self.json_feed_url = sc.geo_json_web
         self.ignore_nets = sc.ignore_nets.split(',')
@@ -50,6 +51,9 @@ class ProductGrabber(object):
         
         if not self.req_products:
             self.req_products = sc.eq_req_products
+
+        if not self.pref_products:
+            self.pref_products = sc.dict['Services']['eq_pref_products']
         
         if data_dir == '':
             self.get_data_path()
@@ -282,7 +286,7 @@ class ProductGrabber(object):
             
             # check if the shakemap has required products. If it does,
             # it is not a new map, and can be skipped
-            if (shakemap.has_products(self.req_products)) and scenario is False:
+            if (shakemap.has_products(self.pref_products)) and scenario is False:
                 continue
             
             # depricate previous unprocessed versions of the ShakeMap
@@ -303,11 +307,6 @@ class ProductGrabber(object):
             shakemap.lon_min = shakemap.json['properties']['minimum-longitude']
             shakemap.generation_timestamp = shakemap.json['properties']['process-timestamp']
             shakemap.recieve_timestamp = time.time()
-
-            if scenario is False:
-                shakemap.status = 'new'
-            else:
-                shakemap.status = 'scenario'
             
             # make a directory for the new event
             shakemap.directory_name = os.path.join(self.data_dir,
@@ -317,7 +316,7 @@ class ProductGrabber(object):
                 os.makedirs(shakemap.directory_name)
         
             # download products
-            for product_name in self.req_products:
+            for product_name in self.pref_products:
                 product = Product(shakemap = shakemap,
                                   product_type = product_name)
                 
@@ -326,23 +325,26 @@ class ProductGrabber(object):
                     product.url = product.json['url']
                     
                     # download and allow partial products
-                    try:
-                        product.str_ = url_opener.open(product.url)
-                        eq['status'] = 'downloaded'
-                    except httplib.IncompleteRead as e:
-                        product.web = e.partial
-                        eq['status'] = 'incomplete'
+                    product.str_ = url_opener.open(product.url)
+                    product.status = 'downloaded'
                     
+                    # determine if we're writing binary or not
                     if product_name.lower().endswith(('.png', '.jpg', '.jpeg')):
                         mode = 'wb'
                     else:
                         mode = 'wt'
+
                     product.file_ = open('%s%s%s' % (shakemap.directory_name,
                                                       self.delim,
                                                       product_name), mode)
                     product.file_.write(product.str_)
                     product.file_.close()
-                except:
+
+                    product.error = None
+
+                except Exception as e:
+                    product.status = 'download failed'
+                    product.error = '{}: {}'.format(type(e), e)
                     self.log += 'Failed to download: %s %s' % (eq_id, product_name)
             
             # check for event whose id or one of its old ids matches the shakemap id
@@ -354,6 +356,13 @@ class ProductGrabber(object):
             if event:
                 event = event[0]
                 event.shakemaps.append(shakemap)
+
+            if scenario is False and shakemap.has_products(self.req_products):
+                shakemap.status = 'new'
+            elif scenario is False:
+                shakemap.status = 'waiting for products'
+            else:
+                shakemap.status = 'scenario'
                 
             session.commit()
             
@@ -1024,10 +1033,7 @@ class URLOpener(object):
             raise Exception('URLOpener Error({}: {}, url: {})'.format(type(e),
                                                              e,
                                                              url))
-        
 
-
-  
   
 class AlchemyEncoder(json.JSONEncoder):
     def default(self, obj):

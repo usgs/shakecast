@@ -37,14 +37,14 @@ Base = declarative_base(metadata=metadata)
 class Facility(Base):
     __tablename__ = 'facility'
     shakecast_id = Column(Integer, primary_key=True)
-    facility_id = Column(Integer)
+    facility_id = Column(String(1000))
     facility_type = Column(String(25))
     component = Column(String(100))
     component_class = Column(String(100))
     name = Column(String(255))
     short_name = Column(String(20))
     description = Column(String(255))
-    html = Column(String())
+    html = Column(String(2000))
     geom_type = Column(String(15))
     lat_min = Column(Float)
     lat_max = Column(Float)
@@ -68,7 +68,7 @@ class Facility(Base):
     red_metric = Column(String(20))
     metric = Column(String(20))
     updated = Column(Integer)
-    updated_by = Column(String)
+    updated_by = Column(String(32))
     
     shaking_history = relationship('Facility_Shaking',
                         backref='facility',
@@ -119,31 +119,18 @@ class Facility(Base):
         return self.name
     
     
-    def make_alert_level(self, shaking_point=None, shakemap=None, notifications=None):
+    def make_alert_level(self, shaking_point=None, shakemap=None):
         '''
         Create a dictionary that contains all the information for a
         Facility_Shaking entry in the database
         '''
         shaking_level = shaking_point.get(self.metric, None)
-        
-        # check if there is already shaking for this shakemap and facility
-        stmt = (select([Facility_Shaking.__table__.c.shakecast_id])
-                        .where(and_(Facility_Shaking.__table__.c.facility_id == self.shakecast_id,
-                                    Facility_Shaking.__table__.c.shakemap_id == shakemap.shakecast_id)))
-        result = engine.execute(stmt)
-        fac_shake_id = [row for row in result]
-        
-        
+
         fac_shake = {'gray': 0,
                      'green': 0,
                      'yellow': 0,
                      'orange': 0,
                      'red': 0,
-                     'metric': None,
-                     'facility_id': 0,
-                     'shakemap_id': 0,
-                     '_shakecast_id': 0,
-                     'update': '',
                      'alert_level': '',
                      'weight': 0,
                      'MMI': 0,
@@ -151,10 +138,10 @@ class Facility(Base):
                      'PSA03': 0,
                      'PSA10': 0,
                      'PSA30': 0,
-                     'PGV': 0}
-
-        if notifications is not None:
-            fac_shake['notifications'] = [''] * len(notifications)
+                     'PGV': 0,
+                     'metric': self.metric,
+                     'facility_id': self.shakecast_id,
+                     'shakemap_id': shakemap.shakecast_id}
         
         if shaking_level is None:
             fac_shake['alert_level'] = 'gray'
@@ -163,17 +150,6 @@ class Facility(Base):
             # add shaking levels to fac_shake:
             for metric in shaking_point.keys():
                 fac_shake[metric] = shaking_point[metric]
-            
-            # if shaking exists for this facility for this shakemap
-            # assign it's shakecast_id, otherwise it will get assigned
-            # later
-            if fac_shake_id:
-                #fac_shake = Facility_Shaking()
-                fac_shake['update'] = True
-                fac_shake['_shakecast_id'] = fac_shake_id[0][0]
-            else:
-                fac_shake['update'] = False
-                fac_shake['_shakecast_id'] = 0
                 
             # get_exceedence green
             fragility = [{'med': self.red, 'spread': self.red_beta, 'level': 'red', 'rank': 4},
@@ -205,18 +181,10 @@ class Facility(Base):
             if fac_shake['gray'] > large_prob:
                 fac_shake['alert_level'] = 'gray'
                 fac_shake['weight'] = (fac_shake['gray'] / 100)
-                
-        fac_shake['facility_id'] = self.shakecast_id
-        fac_shake['metric'] = self.metric
-        fac_shake['shakemap_id'] = shakemap.shakecast_id
         
-        not_count = 0
-        if notifications is not None:
-            for notification in notifications:
-                if notification.group in self.groups:
-                    fac_shake['notifications'][not_count] = notification
-                    not_count += 1
-        
+        # make fac_shake keys lowercase
+        fac_shake = dict((k.lower(), v) for 
+                                k,v in fac_shake.iteritems())
         return fac_shake
 
  
@@ -298,7 +266,6 @@ class Facility_Shaking(Base):
     shakecast_id = Column(Integer, primary_key=True)
     shakemap_id = Column(Integer, ForeignKey('shakemap.shakecast_id'))
     facility_id = Column(Integer, ForeignKey('facility.shakecast_id'))
-    notification_id = Column(Integer, ForeignKey('notification.shakecast_id'))
     metric = Column(String(20))
     alert_level = Column(String(20))
     weight = Column(Float)
@@ -313,11 +280,24 @@ class Facility_Shaking(Base):
     psa03 = Column(Float)
     psa10 = Column(Float)
     psa30 = Column(Float)
+
+    def __init__(self, **kwargs):
+        '''
+        Adjust the constructor to allow us to pass in anything as a 
+        key word, and filter out the ones we don't want to use
+        '''
+        cls_ = type(self)
+        move_on = {}
+        for k in kwargs:
+            if hasattr(cls_, k):
+                move_on[k] = kwargs[k]
+
+        # now let sqlalchemy do the real initialization
+        super(Facility_Shaking, self).__init__(**move_on)
     
     def __repr__(self):
         return '''Facility_Shaking(shakemap_id=%s,
                                    facility_id=%s,
-                                   notification_id=%s,
                                    metric=%s,
                                    alert_level=%s,
                                    weight=%s,
@@ -333,7 +313,6 @@ class Facility_Shaking(Base):
                                    psa10=%s,
                                    psa30=%s)''' % (self.shakemap_id,
                                                    self.facility_id,
-                                                   self.notification_id,
                                                    self.metric,
                                                    self.alert_level,
                                                    self.weight,
@@ -360,15 +339,11 @@ class Notification(Base):
     __tablename__ = 'notification'
     shakecast_id = Column(Integer, primary_key=True)
     shakemap_id = Column(Integer, ForeignKey('shakemap.shakecast_id'))
-    event_id = Column(Integer, ForeignKey('event.event_id'))
-    group_name = Column(String(25), ForeignKey('group.name'))
+    event_id = Column(Integer, ForeignKey('event.shakecast_id'))
+    group_id = Column(Integer, ForeignKey('group.shakecast_id'))
     notification_type = Column(String(25))
-    status = Column(String(15))
+    status = Column(String(64))
     notification_file = Column(String(255))
-    
-    facility_shaking = relationship('Facility_Shaking',
-                                    secondary='shaking_notification_connection',
-                                    backref='notifications')
     
     def __rept__(self):
         return '''Notification(shakemap_id=%s,
@@ -386,14 +361,14 @@ class User(Base):
     __tablename__ = 'user'
     shakecast_id = Column(Integer, primary_key=True)
     username = Column(String(32))
-    password = Column(String(64))
+    password = Column(String(255))
     email = Column(String(255))
     phone_number = Column(String(25))
     full_name = Column(String(32))
     user_type = Column(String(10))
-    group_string = Column(String())
+    group_string = Column(String(1000))
     updated = Column(Integer)
-    updated_by = Column(String)
+    updated_by = Column(String(32))
 
     groups = relationship('Group',
                           secondary='user_group_connection',
@@ -444,7 +419,7 @@ class Group(Base):
     lat_max = Column(Integer)
     template = Column(String(255))
     updated = Column(Integer)
-    updated_by = Column(String)
+    updated_by = Column(String(32))
     
     facilities = relationship('Facility',
                               secondary='facility_group_connection',
@@ -576,12 +551,20 @@ class Group(Base):
             return 0 == 1
 
     def has_alert_level(self, level):
+        # grey groups get no-inspection notifications
+        if level is None:
+            level = 'grey'
+
+        # make sure we're only dealing with lowercase
+        level = level.lower()
+        
         levels = [s.inspection_priority.lower() for s in self.specs if 
                                 s.notification_type == 'DAMAGE']
 
         # need to match grey and gray... we use gray in pyCast, but
         # workbook and V3 use grey
-        if 'grey' in levels and level.lower() == 'gray':
+        if (('grey' in levels or 'gray' in levels) and 
+                (level == 'gray' or level == 'grey')):
             return True
 
         return level.lower() in levels
@@ -618,7 +601,7 @@ class Group(Base):
 class Group_Specification(Base):
     __tablename__ = 'group_specification'
     shakecast_id = Column(Integer, primary_key=True)
-    group_id = Column(String(25), ForeignKey('group.shakecast_id'))
+    group_id = Column(Integer, ForeignKey('group.shakecast_id'))
     notification_type = Column(String(25))
     event_type = Column(String(25))
     inspection_priority = Column(String(10))
@@ -666,19 +649,6 @@ facility_group_connection = Table('facility_group_connection', Base.metadata,
            primary_key=True)
 )
 
-shaking_notification_connection = Table('shaking_notification_connection', Base.metadata,
-    Column('facility_shaking',
-           Integer,
-           ForeignKey('facility_shaking.shakecast_id',
-                      ondelete='cascade'),
-           primary_key=True),
-    Column('notification',
-           Integer,
-           ForeignKey('notification.shakecast_id',
-                      ondelete='cascade'),
-           primary_key=True)
-)
-
 #######################################################################
 ######################### Earthquake Tables ###########################
 
@@ -686,22 +656,22 @@ class Event(Base):
     __tablename__ = 'event'
     shakecast_id = Column(Integer, primary_key=True)
     event_id = Column(String(20))
-    status = Column(String(20))
-    all_event_ids = Column(String(20))
+    status = Column(String(64))
+    all_event_ids = Column(String(255))
     lat = Column(Float)
     lon = Column(Float)
     depth = Column(Float)
     magnitude = Column(Float)
-    title = Column(String)
-    place = Column(String)
+    title = Column(String(100))
+    place = Column(String(255))
     time = Column(Integer)
-    directory_name = Column(String)
+    directory_name = Column(String(255))
     
     shakemaps = relationship('ShakeMap',
                              backref='event')
     
     notifications = relationship('Notification',
-                                 backref='event')
+                                    backref='event')
     
     def __repr__(self):
         return '''Event(event_id=%s,
@@ -758,8 +728,8 @@ class ShakeMap(Base):
     event_id = Column(Integer,
                       ForeignKey('event.shakecast_id'))
     shakemap_version = Column(Integer)
-    status = Column(String(10))
-    map_status = Column(String(10))
+    status = Column(String(64))
+    map_status = Column(String(24))
     event_version = Column(Integer)
     generating_server = Column(Integer)
     region = Column(String(10))
@@ -856,7 +826,7 @@ class ShakeMap(Base):
             return True
            
     def has_products(self, req_prods):
-        shakemap_prods = [prod.product_type for prod in self.products]
+        shakemap_prods = [prod.product_type for prod in self.products if prod.error is None]
         for prod in req_prods:
             if prod not in shakemap_prods:
                 return False
@@ -874,7 +844,7 @@ class Product(Base):
     shakecast_id = Column(Integer, primary_key=True)
     shakemap_id = Column(Integer,
                          ForeignKey('shakemap.shakecast_id'))
-    product_type = Column(String(10))
+    product_type = Column(String(32))
     name = Column(String(32))
     description = Column(String(255))
     metric = Column(String(10))
@@ -882,6 +852,8 @@ class Product(Base):
     url = Column(String(255))
     display = Column(Integer)
     source = Column(String(64))
+    status = Column(String(64))
+    error = Column(String(10000))
     update_username = Column(String(32))
     update_timestamp = Column(String(32))
     
@@ -921,8 +893,25 @@ for stack in insp:
 #logging.getLogger('sqlalchemy.engine.base').setLevel(logging.DEBUG)
 
 # SETUP DATABASE
-engine = create_engine('sqlite:///%s' % os.path.join(directory, db_name))
-#connection = engine.connect()
+sc = SC()
+if sc.dict['DBConnection']['type'] == 'sqlite' or testing is True:
+    engine = create_engine('sqlite:///%s' % os.path.join(directory, db_name))
+elif sc.dict['DBConnection']['type'] == 'mysql':
+    try:
+        db_str = 'mysql://{}:{}@localhost/pycast'.format(sc.dict['DBConnection']['username'],
+                                                         sc.dict['DBConnection']['password'])
+        engine = create_engine(db_str)
+        engine.execute('USE pycast')
+    except Exception:
+        # db doesn't exist yet, let's create it
+        server_str = 'mysql://{}:{}@localhost'.format(sc.dict['DBConnection']['username'],
+                                                      sc.dict['DBConnection']['password'])
+        engine = create_engine(server_str)
+        engine.execute("CREATE DATABASE pycast")
+        engine.execute("USE pycast")
+
+        # try to get that connection going again
+        engine = create_engine(db_str)
 
 # if we're testing, we want to drop all existing database info to test
 # from scratch
