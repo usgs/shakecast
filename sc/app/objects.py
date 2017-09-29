@@ -273,9 +273,9 @@ class ProductGrabber(object):
             for idx in xrange(len(eq_info['properties']['products'][sm_str])):
                 if eq_info['properties']['products'][sm_str][idx]['preferredWeight'] > weight:
                     weight = eq_info['properties']['products'][sm_str][idx]['preferredWeight']
-                    shakemap.json = eq_info['properties']['products'][sm_str][idx]
+                    shakemap_json = eq_info['properties']['products'][sm_str][idx]
 
-            shakemap.shakemap_version = shakemap.json['properties']['version']
+            shakemap.shakemap_version = shakemap_json['properties']['version']
             
             # check if we already have the shakemap
             if shakemap.is_new() is False:
@@ -301,13 +301,13 @@ class ProductGrabber(object):
                 dep_shakemap.status = 'depricated'
             
             # assign relevent information to shakemap
-            shakemap.map_status = shakemap.json['properties']['map-status']
-            shakemap.region = shakemap.json['properties']['eventsource']
-            shakemap.lat_max = shakemap.json['properties']['maximum-latitude']
-            shakemap.lat_min = shakemap.json['properties']['minimum-latitude']
-            shakemap.lon_max = shakemap.json['properties']['maximum-longitude']
-            shakemap.lon_min = shakemap.json['properties']['minimum-longitude']
-            shakemap.generation_timestamp = shakemap.json['properties']['process-timestamp']
+            shakemap.map_status = shakemap_json['properties']['map-status']
+            shakemap.region = shakemap_json['properties']['eventsource']
+            shakemap.lat_max = shakemap_json['properties']['maximum-latitude']
+            shakemap.lat_min = shakemap_json['properties']['minimum-latitude']
+            shakemap.lon_max = shakemap_json['properties']['maximum-longitude']
+            shakemap.lon_min = shakemap_json['properties']['minimum-longitude']
+            shakemap.generation_timestamp = shakemap_json['properties']['process-timestamp']
             shakemap.recieve_timestamp = time.time()
             
             # make a directory for the new event
@@ -323,7 +323,7 @@ class ProductGrabber(object):
                                   product_type = product_name)
                 
                 try:
-                    product.json = shakemap.json['contents']['download/%s' % product_name]
+                    product.json = shakemap_json['contents']['download/%s' % product_name]
                     product.url = product.json['url']
                     
                     # download and allow partial products
