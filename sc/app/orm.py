@@ -368,7 +368,7 @@ class User(Base):
     user_type = Column(String(10))
     group_string = Column(String(1000))
     updated = Column(Integer)
-    updated_by = Column(String(32))
+    updated_by = Column(String(1000))
 
     groups = relationship('Group',
                           secondary='user_group_connection',

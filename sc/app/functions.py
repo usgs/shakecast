@@ -1020,28 +1020,29 @@ def import_user_dicts(users=None, _user=None):
             u = session.query(User).filter(User.username == username).all()
             if u:
                 u = u[0]
-
-                # if this user has updated their info and a different user
-                # is uploading this XML; don't update their info...
-                if u.updated_by == u.username and _user.username != u.username:
-                    continue
             else:
                 u = User()
                 u.username = username
         
             u.group_string = user.get('GROUP', user.get('group_string', ''))
-            u.email = user.get('EMAIL_ADDRESS', user.get('email', ''))
             u.user_type = user.get('USER_TYPE', user.get('user_type', ''))
             u.full_name = user.get('FULL_NAME', user.get('full_name', ''))
             u.phone_number = user.get('PHONE_NUMBER', user.get('group_string', ''))
                     
             u.updated = time.time()
             if _user is not None:
-                u.updated_by = _user.username
+                if _user.username not in u.updated_by:
+                    updated_lst = u.updated_by.split(',')
+                    updated_lst += [_user.username]
+                    u.updated_by = ','.join(updated_lst)
 
-            password = user.get('PASSWORD', user.get('password', None))
-            if password is not None:
-                u.password = generate_password_hash(password, method='pbkdf2:sha512')
+            # set the user's password and email if they haven't changed it
+            # themselves
+            if u.username not in u.updated_by or _user.username == u.username:
+                u.email = user.get('EMAIL_ADDRESS', user.get('email', ''))
+                password = user.get('PASSWORD', user.get('password', None))
+                if password is not None:
+                    u.password = generate_password_hash(password, method='pbkdf2:sha512')
 
             session.add(u)
         session.commit()
