@@ -11,6 +11,8 @@ import { NotificationService } from '../dashboard/notification-dash/notification
 import { NotificationsService } from 'angular2-notifications'
 import { FacilityService } from '../../../shakecast-admin/pages/facilities/facility.service.ts'
 
+import { LoadingService } from '../../../loading/loading.service';
+
 declare var _: any;
 
 export interface Earthquake {
@@ -57,9 +59,13 @@ export class EarthquakeService {
                 public mapService: MapService,
                 private facService: FacilityService,
                 private _router: Router,
-                private toastService: NotificationsService) {}
+                private toastService: NotificationsService,
+                private loadingService: LoadingService) {}
 
     getData(filter: any = {}) {
+        if (this.facService.sub) {
+            this.facService.sub.unsubscribe();
+        }
         if (this.filter) {
             this.filter = filter
         }
@@ -102,7 +108,11 @@ export class EarthquakeService {
     }
 
     getDataFromWeb(filter: any = {}) {
-        this.dataLoading.next(true);
+        if (this.facService.sub) {
+            this.facService.sub.unsubscribe();
+        }
+
+        this.loadingService.add('Scenarios')
         var scenario = filter['scenariosOnly'];
 
         var usgs: string;
@@ -159,33 +169,29 @@ export class EarthquakeService {
                 }
 
                 this.earthquakeData.next(data);
-                this.dataLoading.next(false);
+                this.loadingService.finish('Scenarios');
             },
             (error: any) => {
                 this.earthquakeData.next([]);
-                this.dataLoading.next(false);
+                this.loadingService.finish('Scenarios');
             });
     }
 
     downloadScenario(scenario_id: string, scenario:boolean = false) {
-        this.dataLoading.next(true);
         let params = new URLSearchParams();
         params.set('scenario', JSON.stringify(scenario))
         this._http.get('/api/scenario-download/' + scenario_id, {search: params})
             .map((result: Response) => result.json())
             .subscribe((result: any) => {
                 this.toastService.success('Scenario: ' + scenario_id, 'Download starting...')
-                this.dataLoading.next(false);
             });
     }
 
     deleteScenario(scenario_id: string) {
-        this.dataLoading.next(true);
         this._http.delete('/api/scenario-delete/' + scenario_id)
             .map((result: Response) => result.json())
             .subscribe((result: any) => {
                 this.toastService.success('Delete Scenario: ' + scenario_id, 'Deleting... This may take a moment')
-                this.dataLoading.next(false);
             });
     }
 
@@ -194,18 +200,15 @@ export class EarthquakeService {
             .map((result: Response) => result.json())
             .subscribe((result: any) => {
                 this.toastService.success('Run Scenario: ' + scenario_id, 'Running Scenario... This may take a moment')
-                this.dataLoading.next(false);
             });
     }
 
     getFacilityData(facility: any) {
-        this.dataLoading.next(true);
         this._http.get('/api/earthquake-data/facility/' + facility['shakecast_id'])
             .map((result: Response) => result.json())
             .subscribe((result: any) => {
                 this.earthquakeData.next(result.data);
                 this.current = result.data
-                this.dataLoading.next(false);
             })
     }
     
@@ -221,6 +224,9 @@ export class EarthquakeService {
 
             // get relevant facility info and plot it
             this.facService.getShakeMapData(eq);
+        }
+        else {
+            this.clearData();
         }
     }
 

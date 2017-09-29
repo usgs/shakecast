@@ -14,7 +14,7 @@ log_path = split_sc_dir + ['logs', 'sc-service.log']
 logging.basicConfig(
     filename = os.path.normpath(os.sep.join(log_path)),
     level = logging.INFO, 
-    format = '[ShakeCast Server] %(levelname)-7.7s %(message)s'
+    format = '%(asctime)s: [ShakeCast Server] %(levelname)-7.7s %(message)s'
 )
 
 class Server(object):
@@ -183,6 +183,11 @@ class Server(object):
                     
                     self.last_task = time.time()
                     
+                    if ((task.name != 'fast_geo_json' and 
+                                    task.name != 'check_new' and 
+                                    task.name != 'check_for_updates')):
+                        logging.info('Running task: {}'.format(task.name))
+
                     task_thread = New_Thread(func=task.run)
                     task_thread.start()
                     

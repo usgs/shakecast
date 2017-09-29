@@ -24,6 +24,8 @@ modules_dir = os.path.join(sc_dir(), 'modules')
 if modules_dir not in sys.path:
     sys.path += [modules_dir]
 
+from copy import copy
+
 class ProductGrabber(object):
     
     """
@@ -1040,7 +1042,8 @@ class AlchemyEncoder(json.JSONEncoder):
         if isinstance(obj.__class__, DeclarativeMeta):
             # an SQLAlchemy class
             fields = {}
-            for field in [x for x in dir(obj) if not x.startswith('_') and x != 'metadata']:
+            for field in [x for x in dir(obj) if not x.startswith('_') 
+                                and x != 'metadata' and x != '_sa_instance_state']:
                 data = obj.__getattribute__(field)
 
                 if isinstance(data, types.MethodType):

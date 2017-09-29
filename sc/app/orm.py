@@ -759,7 +759,7 @@ class ShakeMap(Base):
     facility_shaking = relationship('Facility_Shaking',
                                     backref='shakemap',
                                     order_by='Facility_Shaking.weight.desc()',
-                                    cascade='save-update, delete')
+                                    cascade='save-update, delete, delete-orphan')
     
     def __repr__(self):
         return '''ShakeMap(shakemap_id=%s,

@@ -36,6 +36,9 @@ import { MessagingComponent } from './messaging/messaging.component';
 import { MessagesService } from './shared/messages.service';
 import { CookieService } from './shared/cookie.service';
 
+import { LoadingService } from './loading/loading.service';
+import { LoadingComponent } from './loading/loading.component';
+
 @NgModule({
   imports: [
     BrowserModule,
@@ -53,7 +56,8 @@ import { CookieService } from './shared/cookie.service';
     AppComponent,
     NavComponent,
     TitleComponent,
-    MessagingComponent
+    MessagingComponent,
+    LoadingComponent
   ],
   providers: [
     appRoutingProviders,
@@ -70,7 +74,8 @@ import { CookieService } from './shared/cookie.service';
     TimeService,
     TitleService,
     MessagesService,
-    CookieService
+    CookieService,
+    LoadingService
   ],
   bootstrap: [ AppComponent ]
 })
