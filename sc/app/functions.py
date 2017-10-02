@@ -1031,7 +1031,9 @@ def import_user_dicts(users=None, _user=None):
                     
             u.updated = time.time()
             if _user is not None:
-                if _user.username not in u.updated_by:
+                if u.updated_by is None:
+                    u.updated_by = _user
+                elif _user.username not in u.updated_by:
                     updated_lst = u.updated_by.split(',')
                     updated_lst += [_user.username]
                     u.updated_by = ','.join(updated_lst)
