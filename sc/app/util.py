@@ -129,12 +129,6 @@ class SC(object):
         self.ignore_nets = conf_json['Services']['ignore_nets']
         self.eq_req_products = conf_json['Services']['eq_req_products']
         
-        
-        # Logging
-        self.log_rotate = conf_json['Logging']['log_rotate']
-        self.log_file = conf_json['Logging']['log_file']
-        self.log_level = conf_json['Logging']['log_level']
-        
         # DBConnection
         self.db_type = conf_json['DBConnection']['type']
         self.db_password = conf_json['DBConnection']['password']

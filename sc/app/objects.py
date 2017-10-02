@@ -295,8 +295,7 @@ class ProductGrabber(object):
             dep_shakemaps = (
                 session.query(ShakeMap)
                     .filter(ShakeMap.shakemap_id == shakemap.shakemap_id)
-                    .filter(ShakeMap.status == 'new')
-            )
+                    .filter(ShakeMap.status == 'new')).all()
             for dep_shakemap in dep_shakemaps:
                 dep_shakemap.status = 'depricated'
             
@@ -319,8 +318,18 @@ class ProductGrabber(object):
         
             # download products
             for product_name in self.pref_products:
-                product = Product(shakemap = shakemap,
-                                  product_type = product_name)
+                if shakemap.has_products([product_name]):
+                    continue
+
+                existing_prod = (session.query(Product)
+                                    .filter(Product.shakemap_id == shakemap.shakemap_id)
+                                    .filter(Product.product_type == product_name)).all()
+
+                if existing_prod:
+                    product = existing_prod[0]
+                else:
+                    product = Product(shakemap = shakemap,
+                                        product_type = product_name)
                 
                 try:
                     product.json = shakemap_json['contents']['download/%s' % product_name]
@@ -328,7 +337,6 @@ class ProductGrabber(object):
                     
                     # download and allow partial products
                     product.str_ = url_opener.open(product.url)
-                    product.status = 'downloaded'
                     
                     # determine if we're writing binary or not
                     if product_name.lower().endswith(('.png', '.jpg', '.jpeg')):
@@ -343,7 +351,7 @@ class ProductGrabber(object):
                     product.file_.close()
 
                     product.error = None
-
+                    product.status = 'downloaded'
                 except Exception as e:
                     product.status = 'download failed'
                     product.error = '{}: {}'.format(type(e), e)

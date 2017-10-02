@@ -826,7 +826,7 @@ class ShakeMap(Base):
             return True
            
     def has_products(self, req_prods):
-        shakemap_prods = [prod.product_type for prod in self.products if prod.error is None]
+        shakemap_prods = [prod.product_type for prod in self.products if prod.status == 'downloaded' and prod.error is None]
         for prod in req_prods:
             if prod not in shakemap_prods:
                 return False
