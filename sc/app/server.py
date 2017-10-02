@@ -17,7 +17,7 @@ if sc.dict['Logging']['level'] == 'info':
 elif sc.dict['Logging']['level'] == 'debug':
     log_level = logging.DEBUG
 
-logger = logging.basicConfig(
+logging.basicConfig(
     filename = os.path.normpath(os.sep.join(log_path)),
     level = log_level, 
     format = '%(asctime)s: [ShakeCast Server] %(levelname)-7.7s %(message)s')
@@ -78,7 +78,7 @@ class Server(object):
                 connected = True
                 
             except:
-                logger.info('Failed to get port for server: {}'.format(self.port))
+                logging.info('Failed to get port for server: {}'.format(self.port))
                 time.sleep(2)
                 
             attempts += 1
@@ -188,9 +188,9 @@ class Server(object):
                     if ((task.name != 'fast_geo_json' and 
                                     task.name != 'check_new' and 
                                     task.name != 'check_for_updates')):
-                        logger.info('Running task: {}'.format(task.name))
+                        logging.info('Running task: {}'.format(task.name))
                     else:
-                        logger.debug('Running task: {}'.format(task.name))
+                        logging.debug('Running task: {}'.format(task.name))
 
                     task_thread = New_Thread(func=task.run)
                     task_thread.start()
@@ -242,12 +242,12 @@ class Server(object):
                 task.name != 'check_new' and 
                 task.name != 'check_for_updates') or 
                     task.error or task.output['error']):
-            logger.info('{}: \n\tSTATUS: {} \n\tOUTPUT: {}'.format(task.name,
+            logging.info('{}: \n\tSTATUS: {} \n\tOUTPUT: {}'.format(task.name,
                                                                     task.status,
                                                                     task.output))
         else:
             # if we're debugging, log everything
-            logger.debug('{}: \n\tSTATUS: {} \n\tOUTPUT: {}'.format(task.name,
+            logging.debug('{}: \n\tSTATUS: {} \n\tOUTPUT: {}'.format(task.name,
                                                                     task.status,
                                                                     task.output))
             
@@ -318,7 +318,7 @@ class Server(object):
                 'message': msg}
     
     def start_shakecast(self):
-        logger.info('Starting ShakeCast Server... ')
+        logging.info('Starting ShakeCast Server... ')
         try:
             status = ''
             message = ''
@@ -416,7 +416,7 @@ class Server(object):
         """
         self.stop_server = True
         self.stop()
-        logger.info('ShakeCast Server Stopped...')
+        logging.info('ShakeCast Server Stopped...')
         return {'status': 'finished',
                 'message': 'Stopping server...'}
 
@@ -447,7 +447,7 @@ class Server(object):
         os.system(restart)
             
 if __name__ == '__main__':
-    logger.info('start')
+    logging.info('start')
     sc_server = Server()
     # start shakecast
     sc_server.start_shakecast()
