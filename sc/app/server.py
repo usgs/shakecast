@@ -12,9 +12,9 @@ import logging
 split_sc_dir = sc_dir().split(os.sep)
 log_path = split_sc_dir + ['logs', 'sc-service.log']
 sc = SC()
-if sc.dict['Loggin']['level'] == 'info':
+if sc.dict['Logging']['level'] == 'info':
     log_level = logging.INFO
-elif sc.dict['Loggin']['level'] == 'debug':
+elif sc.dict['Logging']['level'] == 'debug':
     log_level = logging.DEBUG
 
 logger = logging.basicConfig(
