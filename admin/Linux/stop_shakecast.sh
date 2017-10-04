@@ -5,6 +5,9 @@ if [[ $UID != 0 ]]; then
     exit 1
 fi
 
+script_dir=$(dirname "$0")
+cd $script_dir
+
 # stop the watcher daemon
 echo "Stopping pyCast Watcher..."
 PIDFILE=$(pwd)/pycast_watcher.pid
