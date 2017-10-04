@@ -367,7 +367,9 @@ class ProductGrabber(object):
                 event = event[0]
                 event.shakemaps.append(shakemap)
 
-            if scenario is False and shakemap.has_products(self.req_products):
+            if (scenario is False and 
+                    shakemap.has_products(self.req_products) and 
+                    shakemap.status != 'processed'):
                 shakemap.status = 'new'
             elif scenario is False:
                 shakemap.status = 'waiting for products'
