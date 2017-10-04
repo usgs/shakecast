@@ -38,16 +38,16 @@ startWatcher() {
 
 echo "Starting pyCast..."
 
-python web_server_service.py start &
-python server_service.py start &
+python $(pwd)/web_server_service.py start &
+python $(pwd)/server_service.py start &
 
 echo "Done."
 
 # check to see if cron job is installed already, install it otherwise
-(sudo crontab -l | grep -q start_shakecast.sh) || createCron
+(sudo crontab -l | grep -q $(pwd)/start_shakecast.sh) || createCron
 
 # check to see if the watcher is running and run it otherwise
 procs=$(getRunningProcs)
-(echo $procs | grep -q pycast_watcher.sh) || startWatcher
+(echo $procs | grep -q $(pwd)/pycast_watcher.sh) || startWatcher
 
 exit 0

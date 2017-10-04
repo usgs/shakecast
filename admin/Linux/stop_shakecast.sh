@@ -18,7 +18,7 @@ echo "Done."
 
 echo "Stopping pyCast..."
 
-python web_server_service.py stop
-python server_service.py stop
+python $(pwd)/web_server_service.py stop
+python $(pwd)/server_service.py stop
 
 echo "Done."
