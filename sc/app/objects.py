@@ -322,7 +322,7 @@ class ProductGrabber(object):
                     continue
 
                 existing_prod = (session.query(Product)
-                                    .filter(Product.shakemap_id == shakemap.shakemap_id)
+                                    .filter(Product.shakemap_id == shakemap.shakecast_id)
                                     .filter(Product.product_type == product_name)).all()
 
                 if existing_prod:
@@ -369,7 +369,7 @@ class ProductGrabber(object):
 
             if (scenario is False and 
                     shakemap.has_products(self.req_products) and 
-                    shakemap.status != 'processed'):
+                    'processed' not in shakemap.status):
                 shakemap.status = 'new'
             elif scenario is False:
                 shakemap.status = 'waiting for products'
