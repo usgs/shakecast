@@ -1,0 +1,141 @@
+{
+    "metadata": {
+        "status": 200, 
+        "count": 225, 
+        "title": "USGS All Earthquakes, Past Day", 
+        "url": "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_day.geojson", 
+        "generated": 1507199423000, 
+        "api": "1.5.8"
+    }, 
+    "type": "FeatureCollection", 
+    "features": [
+        {
+            "geometry": {
+                "type": "Point", 
+                "coordinates": [
+                    -152.901, 
+                    58.3623, 
+                    46.5
+                ]
+            }, 
+            "type": "Feature", 
+            "properties": {
+                "rms": 0.49, 
+                "code": "16989295", 
+                "cdi": 2.2, 
+                "sources": ",ak,at,", 
+                "nst": null, 
+                "tz": -540, 
+                "title": "M 4.3 - 68km NNW of Kodiak Station, Alaska", 
+                "magType": "ml", 
+                "detail": "https://earthquake.usgs.gov/earthquakes/feed/v1.0/detail/ak16989295.geojson", 
+                "sig": 285, 
+                "net": "ak", 
+                "type": "earthquake", 
+                "status": "reviewed", 
+                "updated": 1507177082996, 
+                "felt": 2, 
+                "alert": "green", 
+                "dmin": null, 
+                "mag": 4.3, 
+                "gap": null, 
+                "types": ",dyfi,geoserve,impact-link,losspager,origin,phase-data,shakemap,", 
+                "url": "https://earthquake.usgs.gov/earthquakes/eventpage/ak16989295", 
+                "ids": ",ak16989295,at00oxbv2m,", 
+                "tsunami": 1, 
+                "place": "68km NNW of Kodiak Station, Alaska", 
+                "time": 1507169038804, 
+                "mmi": 3.13
+            }, 
+            "id": "ak16989295"
+        }, 
+        {
+            "geometry": {
+                "type": "Point", 
+                "coordinates": [
+                    -98.7425, 
+                    36.4507, 
+                    4.85
+                ]
+            }, 
+            "type": "Feature", 
+            "properties": {
+                "rms": 0.29, 
+                "code": "2000b15z", 
+                "cdi": null, 
+                "sources": ",us,", 
+                "nst": null, 
+                "tz": -360, 
+                "title": "M 3.5 - 31km NW of Fairview, Oklahoma", 
+                "magType": "mb_lg", 
+                "detail": "https://earthquake.usgs.gov/earthquakes/feed/v1.0/detail/us2000b15z.geojson", 
+                "sig": 188, 
+                "net": "us", 
+                "type": "earthquake", 
+                "status": "reviewed", 
+                "updated": 1507162077424, 
+                "felt": null, 
+                "alert": null, 
+                "dmin": 0.027, 
+                "mag": 3.5, 
+                "gap": 69, 
+                "types": ",geoserve,origin,phase-data,shakemap,", 
+                "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us2000b15z", 
+                "ids": ",us2000b15z,", 
+                "tsunami": 0, 
+                "place": "31km NW of Fairview, Oklahoma", 
+                "time": 1507154804460, 
+                "mmi": 3.77
+            }, 
+            "id": "us2000b15z"
+        }, 
+        {
+            "geometry": {
+                "type": "Point", 
+                "coordinates": [
+                    178.5051, 
+                    -25.068, 
+                    564.41
+                ]
+            }, 
+            "type": "Feature", 
+            "properties": {
+                "rms": 0.87, 
+                "code": "2000b1da", 
+                "cdi": null, 
+                "sources": ",us,", 
+                "nst": null, 
+                "tz": 720, 
+                "title": "M 4.5 - South of the Fiji Islands", 
+                "magType": "mb", 
+                "detail": "https://earthquake.usgs.gov/earthquakes/feed/v1.0/detail/us2000b1da.geojson", 
+                "sig": 312, 
+                "net": "us", 
+                "type": "earthquake", 
+                "status": "reviewed", 
+                "updated": 1507197653040, 
+                "felt": null, 
+                "alert": null, 
+                "dmin": 7.299, 
+                "mag": 4.5, 
+                "gap": 66, 
+                "types": ",geoserve,origin,phase-data,", 
+                "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us2000b1da", 
+                "ids": ",us2000b1da,", 
+                "tsunami": 0, 
+                "place": "South of the Fiji Islands", 
+                "time": 1507196589420, 
+                "mmi": null
+            }, 
+            "id": "us2000b1da"
+        }
+    ], 
+    "bbox": [
+        -165.8816, 
+        -25.068, 
+        -2, 
+        178.5051, 
+        68.4924, 
+        564.41
+    ]
+}
