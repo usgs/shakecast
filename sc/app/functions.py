@@ -160,7 +160,7 @@ def process_events(events=None, session=None, scenario=False):
             all_groups_affected.update(groups_affected)
         
         if not groups_affected:
-            event.status = 'no groups'
+            event.status = 'processed - no groups'
             session.commit()
         else:
             event.status = 'processing_started'
@@ -244,7 +244,7 @@ def process_shakemaps(shakemaps=None, session=None, scenario=False):
                                     if not group.has_spec('scenario')]
         
         if not groups_affected:
-            shakemap.status = 'no groups'
+            shakemap.status = 'processed - no groups'
             session.commit()
             continue
         

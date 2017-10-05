@@ -49,7 +49,7 @@ class TestProductGrabber(unittest.TestCase):
         self.assertNotEqual(pg.json_feed, '')
 
     def test_geoJSON(self):
-        result = geo_json('day')
+        result = geo_json('hour')
         self.assertEqual(result['error'], '')
 
 class TestMailer(unittest.TestCase):
@@ -275,27 +275,22 @@ class TestFull(unittest.TestCase):
     def step05_geoJSON(self):
         '''
         Test run of geo_json
-        '''
+        '''    
         data = geo_json('hour')
         self.assertEqual(data['error'], '')
 
-        # grab a scenario and save it as a shakemap in case no shakemaps
-        # are available
-        download_scenario('bssc2014nsanandreassaosansap_m8p04_se', scenario=True)
-        # download a second time to hit more code
-        download_scenario('bssc2014nsanandreassaosansap_m8p04_se', scenario=True)
-        
-        session = Session()
-        sm = session.query(ShakeMap).filter(ShakeMap.shakemap_id == 'bssc2014nsanandreassaosansap_m8p04_se_scenario').first()
-        sm.status = 'new'
-        sm.shakemap_id = 'bssc2014nsanandreassaosansap'
+        # grab some prepackaged geoJSON to ensure we have some 
+        # events and shakemaps for testing
+        json_file = os.path.join(sc_dir(), 'test', 'test_json_feed.json')
+        with open(json_file, 'r') as file_:
+            json_feed = json.loads(file_.read())
+        pg = ProductGrabber()
+        pg.json_feed = json_feed
+        new_events, log_message = pg.get_new_events()
+        new_shakemaps, log_message = pg.get_new_shakemaps()
 
-        e = session.query(Event).filter(Event.event_id == 'bssc2014nsanandreassaosansap_m8p04_se_scenario').first()
-        e.status = 'new'
-        e.event_id = 'bssc2014nsanandreassaosansap'
-
-        session.commit()
-        Session.remove()
+        self.assertEqual(len(new_events), 3)
+        self.assertEqual(len(new_shakemaps), 2)
 
 
     def step06_createFacility(self):
@@ -351,9 +346,6 @@ class TestFull(unittest.TestCase):
                     raise ValueError('Notification not sent... {}: {}, {}'.format(event.event_id,
                                                                                   notification.notification_type,
                                                                                   notification.status))
-
-        if event:
-            print event
                     
         Session.remove()
         
@@ -379,6 +371,16 @@ class TestFull(unittest.TestCase):
         '''
         data = geo_json('hour')
         self.assertEqual(data['error'], '')
+
+        # grab some prepackaged geoJSON to ensure we have some 
+        # events and shakemaps for testing
+        json_file = os.path.join(sc_dir(), 'test', 'test_json_feed.json')
+        with open(json_file, 'r') as file_:
+            json_feed = json.loads(file_.read())
+        pg = ProductGrabber()
+        pg.json_feed = json_feed
+        new_events, log_message = pg.get_new_events()
+        new_shakemaps, log_message = pg.get_new_shakemaps()
 
     def step12_checkNew2(self):
         '''
@@ -406,14 +408,6 @@ class TestFull(unittest.TestCase):
             run_scenario(sm.shakemap_id)
 
         Session.remove()
-
-    def step15_getScenarioWeb(self):
-        session = Session()
-        sm = session.query(ShakeMap).filter(ShakeMap.shakemap_id != 'bssc2014nsanandreassaosansap_m8p04_se_scenario').first()
-        Session.remove()
-
-        if sm is not None:
-            download_scenario(shakemap_id=sm.shakemap_id)
 
     def step16_NewUpdate(self):
         s = SoftwareUpdater()
@@ -519,7 +513,7 @@ class TestFull(unittest.TestCase):
         self.assertEqual('failed', result['status'])
 
     def step25_downloadActualScenario(self):
-        download_scenario('bssc2014nsanandreassaosansap_m8p04_se', scenario=True)
+        download_scenario('bssc2014sanjacintolytlecreek_m6p72_se', scenario=True)
 
     def step26_groupInspLevel(self):
         session = Session()

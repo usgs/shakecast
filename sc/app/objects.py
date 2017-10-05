@@ -82,27 +82,27 @@ class ProductGrabber(object):
         else:
             json_str = url_opener.open(self.json_feed_url)
         self.json_feed = json.loads(json_str)
+
+    def read_json_feed(self):
+        """
+        Reads a list of events from the downloaded json feed
+        """
         
-        #self.earthquakes = self.json_feed['features']
-        
+        # Check for results with a single event
         if self.json_feed.get('features', None) is None:
             eq = self.json_feed
-            info = {'status': 'new'}
-            eq.update(info)
             self.earthquakes[eq['id']] = eq
         
         else:
-
             for eq in self.json_feed['features']:
                 # skip earthquakes without dictionaries... why does this
                 # happen??
                 try:
                     if eq['id'] not in self.earthquakes.keys():
-                        info = {'status': 'new'}
-                        eq.update(info)
                         self.earthquakes[eq['id']] = eq
-                except:
+                except Exception:
                     continue
+        return
         
     def get_new_events(self, scenario=False):
         """
@@ -110,7 +110,9 @@ class ProductGrabber(object):
         """
         session = Session()
         sc = SC()
-        
+
+        self.read_json_feed()
+
         event_str = ''
         new_events = []
         for eq_id in self.earthquakes.keys():
@@ -286,10 +288,10 @@ class ProductGrabber(object):
                     .first()
                 )
             
-            # check if the shakemap has required products. If it does,
-            # it is not a new map, and can be skipped
-            if (shakemap.has_products(self.pref_products)) and scenario is False:
-                continue
+            # Check for new shakemaps without statuses; git them a
+            # status so we know what to do with them later
+            if shakemap.status is None:
+                shakemap.status = 'downloading'
             
             # depricate previous unprocessed versions of the ShakeMap
             dep_shakemaps = (
@@ -316,8 +318,10 @@ class ProductGrabber(object):
             if not os.path.exists(shakemap.directory_name):
                 os.makedirs(shakemap.directory_name)
         
-            # download products
+            # Try to download all prefered products
             for product_name in self.pref_products:
+                # if we already have a good version of this product
+                # just skip it
                 if shakemap.has_products([product_name]):
                     continue
 
@@ -369,11 +373,9 @@ class ProductGrabber(object):
 
             if (scenario is False and 
                     shakemap.has_products(self.req_products) and 
-                    'processed' not in shakemap.status):
+                    shakemap.status == 'downloading'):
                 shakemap.status = 'new'
-            elif scenario is False:
-                shakemap.status = 'waiting for products'
-            else:
+            elif scenario is True:
                 shakemap.status = 'scenario'
                 
             session.commit()
