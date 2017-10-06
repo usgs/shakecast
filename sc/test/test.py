@@ -805,8 +805,8 @@ class TestSCConfig(unittest.TestCase):
                                                            test_user,
                                                            test_pass))
         sc = SC()
-        self.assertEqual(sc.smtp_username, 'clear')
-        self.assertEqual(sc.smtp_password, 'clear')
+        self.assertEqual(sc.smtp_username, test_user)
+        self.assertEqual(sc.smtp_password, test_pass)
     
     def step3_SCConfigSet(self):
         '''
@@ -822,7 +822,12 @@ class TestSCConfig(unittest.TestCase):
         self.assertEqual(sc.smtp_username, test_user)
         self.assertEqual(sc.smtp_password, test_pass)
         
-    def step4_SCRevert(self):
+    def step4_SCSave(self):
+        sc = SC()
+        if sc.validate(sc.json) is True:
+            sc.save(sc.json)
+
+    def step5_SCRevert(self):
         sc = SC()
         sc.revert()
         

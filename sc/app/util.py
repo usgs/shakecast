@@ -162,20 +162,16 @@ class SC(object):
         self.server_dns = conf_json['Server']['DNS']
         self.software_version = conf_json['Server']['update']['software_version']
     
-    def validate(self):
+    def validate(self, json_str=None):
         return True
 
     def save_dict(self):
         json_str = json.dumps(self.dict, indent=4)
         self.save(json_str)
     
-    def save(self, json_str=None):
-        conf_file = open(self.conf_file_location, 'w')
-        if json_str is None:
-            conf_file.write(self.json)
-        else:
+    def save(self, json_str):
+        with open(self.conf_file_location, 'w') as conf_file:
             conf_file.write(json_str)
-        conf_file.close()
     
     @staticmethod
     def get_conf_dir():

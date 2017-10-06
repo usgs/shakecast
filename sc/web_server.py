@@ -537,9 +537,9 @@ def get_settings():
     if request.method == 'POST':
         configs = request.json.get('configs', '')
         if configs:
-            sc.json = json.dumps(configs, indent=4)
-            if sc.validate() is True:
-                sc.save()
+            json_str = json.dumps(configs, indent=4)
+            if sc.validate(json_str) is True:
+                sc.save(json_str)
     return sc.json
 
 ############################ Admin Pages ##############################
