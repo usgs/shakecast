@@ -1040,8 +1040,10 @@ def import_user_dicts(users=None, _user=None):
 
             # set the user's password and email if they haven't changed it
             # themselves
-            if u.updated_by is None or (u.username not in u.updated_by 
-                                            or _user.username == u.username):
+            if (u.updated_by is None or 
+                        _user is None or 
+                        u.username not in u.updated_by or 
+                        _user.username == u.username):
                 u.email = user.get('EMAIL_ADDRESS', user.get('email', ''))
                 password = user.get('PASSWORD', user.get('password', None))
                 if password is not None:

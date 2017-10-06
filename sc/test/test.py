@@ -230,9 +230,6 @@ class TestFull(unittest.TestCase):
         session.commit()
         Session.remove()
 
-        result = geo_json('hour')
-        self.assertEqual(result['error'], '')
-
         # clean up events, shakemaps, notifications
         session = Session()
         es = session.query(Event).all()
@@ -379,6 +376,10 @@ class TestFull(unittest.TestCase):
             json_feed = json.loads(file_.read())
         pg = ProductGrabber()
         pg.json_feed = json_feed
+        
+        # add a bad product to make sure it's processed correctly
+        pg.pref_products += ['this_product_is_bad']
+
         new_events, log_message = pg.get_new_events()
         new_shakemaps, log_message = pg.get_new_shakemaps()
 
@@ -610,9 +611,18 @@ class TestImport(unittest.TestCase):
         user_file = os.path.join(sc_dir(), 'test', 'test_users.xml')
         file_type = determine_xml(user_file)
         import_user_xml(user_file)
+        
+        session = Session()
+        users = session.query(User).all()
+        id1 = users[0].shakecast_id
+        id2 = users[1].shakecast_id
+        Session.remove()
+
+        import_user_xml(user_file, id1)
+        import_user_xml(user_file, id2)
 
         self.assertEqual(file_type, 'user')
-        
+
     def step03_groupImport(self):
         group_file = os.path.join(sc_dir(), 'test', 'test_groups.xml')
         file_type = determine_xml(group_file)

@@ -87,7 +87,7 @@ class ProductGrabber(object):
         """
         Reads a list of events from the downloaded json feed
         """
-        
+
         # Check for results with a single event
         if self.json_feed.get('features', None) is None:
             eq = self.json_feed
@@ -521,64 +521,54 @@ class ShakeMapGrid(object):
         """
         Loads data from a specified grid.xml file into the object
         """
+        self.tree = ET.parse(file_)
+        root = self.tree.getroot()
         
-        if file_ == '':
-            file_ = self.xml_file
-        else:
-            self.xml_file = file_
+        # set the ShakeMapGrid's attributes
+        all_atts = {}
+        [all_atts.update(child.attrib) for child in root]
         
-        try:
-            self.tree = ET.parse(file_)
-            root = self.tree.getroot()
-            
-            # set the ShakeMapGrid's attributes
-            all_atts = {}
-            [all_atts.update(child.attrib) for child in root]
-            
-            self.lat_min = float(all_atts.get('lat_min'))
-            self.lat_max = float(all_atts.get('lat_max'))
-            self.lon_min = float(all_atts.get('lon_min'))
-            self.lon_max = float(all_atts.get('lon_max'))
-            self.nom_lon_spacing = float(all_atts.get('nominal_lon_spacing'))
-            self.nom_lat_spacing = float(all_atts.get('nominal_lat_spacing'))
-            self.num_lon = int(all_atts.get('nlon'))
-            self.num_lat = int(all_atts.get('nlat'))
-            self.event_id = all_atts.get('event_id')
-            self.magnitude = float(all_atts.get('magnitude'))
-            self.depth = float(all_atts.get('depth'))
-            self.lat = float(all_atts.get('lat'))
-            self.lon = float(all_atts.get('lon'))
-            self.description = all_atts.get('event_description')
-            
-            self.sorted_by = ''
-            
-            self.fields = [child.attrib['name']
-                           for child in root
-                           if 'grid_field' in child.tag]
-            
-            grid_str = [child.text
+        self.lat_min = float(all_atts.get('lat_min'))
+        self.lat_max = float(all_atts.get('lat_max'))
+        self.lon_min = float(all_atts.get('lon_min'))
+        self.lon_max = float(all_atts.get('lon_max'))
+        self.nom_lon_spacing = float(all_atts.get('nominal_lon_spacing'))
+        self.nom_lat_spacing = float(all_atts.get('nominal_lat_spacing'))
+        self.num_lon = int(all_atts.get('nlon'))
+        self.num_lat = int(all_atts.get('nlat'))
+        self.event_id = all_atts.get('event_id')
+        self.magnitude = float(all_atts.get('magnitude'))
+        self.depth = float(all_atts.get('depth'))
+        self.lat = float(all_atts.get('lat'))
+        self.lon = float(all_atts.get('lon'))
+        self.description = all_atts.get('event_description')
+        
+        self.sorted_by = ''
+        
+        self.fields = [child.attrib['name']
                         for child in root
-                        if 'grid_data' in child.tag][0]
-            
-            #get rid of trailing and leading white space
-            grid_str = grid_str.lstrip().rstrip()
-            
-            # break into point strings
-            grid_lst = grid_str.split('\n')
-            
-            # split points and save them as Point objects
-            for point_str in grid_lst:
-                point_str = point_str.lstrip().rstrip()
-                point_lst = point_str.split(' ')
-            
-                point = Point()
-                for count, field in enumerate(self.fields):
-                    point.info[field] = float(point_lst[count])
-                        
-                self.grid += [point]
-
-        except:
-            return False
+                        if 'grid_field' in child.tag]
+        
+        grid_str = [child.text
+                    for child in root
+                    if 'grid_data' in child.tag][0]
+        
+        #get rid of trailing and leading white space
+        grid_str = grid_str.lstrip().rstrip()
+        
+        # break into point strings
+        grid_lst = grid_str.split('\n')
+        
+        # split points and save them as Point objects
+        for point_str in grid_lst:
+            point_str = point_str.lstrip().rstrip()
+            point_lst = point_str.split(' ')
+        
+            point = Point()
+            for count, field in enumerate(self.fields):
+                point.info[field] = float(point_lst[count])
+                    
+            self.grid += [point]
         
     def sort_grid(self, metric= ''):
         """
