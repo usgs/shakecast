@@ -1,6 +1,6 @@
 {
     "updates": [
-        {"version": "500.0.0b5",
+        {"version": "500.0.0",
         "info": "TEST UPDATE",
         "files": [
             {"url": "https://raw.githubusercontent.com/usgs/shakecast/master/sc/app/functions.py",

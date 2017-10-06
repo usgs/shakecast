@@ -24,8 +24,6 @@ modules_dir = os.path.join(sc_dir(), 'modules')
 if modules_dir not in sys.path:
     sys.path += [modules_dir]
 
-from copy import copy
-
 class ProductGrabber(object):
     
     """
