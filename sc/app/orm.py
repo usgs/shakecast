@@ -327,9 +327,6 @@ class Facility_Shaking(Base):
                                                    self.psa03,
                                                    self.psa10,
                                                    self.psa30)
-                                   
-    def __str__(self):
-        return ""
     
     
 #######################################################################
@@ -345,13 +342,13 @@ class Notification(Base):
     status = Column(String(64))
     notification_file = Column(String(255))
     
-    def __rept__(self):
+    def __repr__(self):
         return '''Notification(shakemap_id=%s,
-                               group_name=%s,
+                               group_id=%s,
                                notification_type=%s,
                                status=%s,
                                notification_file=%s)''' % (self.shakemap_id,
-                                                             self.group_name,
+                                                             self.group_id,
                                                              self.notification_type,
                                                              self.status,
                                                              self.notification_file)
@@ -368,7 +365,7 @@ class User(Base):
     user_type = Column(String(10))
     group_string = Column(String(1000))
     updated = Column(Integer)
-    updated_by = Column(String(32))
+    updated_by = Column(String(1000))
 
     groups = relationship('Group',
                           secondary='user_group_connection',
@@ -759,7 +756,7 @@ class ShakeMap(Base):
     facility_shaking = relationship('Facility_Shaking',
                                     backref='shakemap',
                                     order_by='Facility_Shaking.weight.desc()',
-                                    cascade='save-update, delete')
+                                    cascade='save-update, delete, delete-orphan')
     
     def __repr__(self):
         return '''ShakeMap(shakemap_id=%s,
@@ -826,7 +823,7 @@ class ShakeMap(Base):
             return True
            
     def has_products(self, req_prods):
-        shakemap_prods = [prod.product_type for prod in self.products if prod.error is None]
+        shakemap_prods = [prod.product_type for prod in self.products if prod.status == 'downloaded' and prod.error is None]
         for prod in req_prods:
             if prod not in shakemap_prods:
                 return False

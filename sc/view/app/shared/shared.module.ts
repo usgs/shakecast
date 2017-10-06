@@ -23,8 +23,7 @@ import { FileSelectDirective, FileDropDirective } from 'ng2-file-upload';
 import { StickToTopDirective } from './directives/stick-to-top.directive';
 // screen dimmer
 import { ScreenDimmerComponent } from './screen-dimmer/screen-dimmer.component';
-// loading
-import { LoadingComponent } from './loading/loading.component';
+
 // in-app documentation
 import { InfoComponent } from './info/info.component';
 
@@ -41,7 +40,6 @@ import { InfoComponent } from './info/info.component';
                  FacilityInfoComponent,
                  FileSelectDirective,
                  FileDropDirective,
-                 LoadingComponent,
                  InfoComponent],
   providers: [
   ],
@@ -56,7 +54,6 @@ import { InfoComponent } from './info/info.component';
             ScreenDimmerComponent,
             FileSelectDirective,
             FileDropDirective,
-            LoadingComponent,
             InfoComponent]
 })
 export class SharedModule { }

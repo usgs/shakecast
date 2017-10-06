@@ -1,6 +1,7 @@
 import { Component,
          OnInit,
-         OnDestroy } from '@angular/core';
+         OnDestroy,
+         AfterViewInit } from '@angular/core';
 
 import { EarthquakeService } from '../earthquakes/earthquake.service'
 import { FacilityService } from '../../../shakecast-admin/pages/facilities/facility.service'
@@ -16,7 +17,7 @@ import { showLeft, showRight, showBottom } from '../../../shared/animations/anim
                   'app/shared/css/panels.css'],
     animations: [ showLeft, showRight, showBottom ]
 })
-export class DashboardComponent implements OnInit, OnDestroy {
+export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
     public facilityData: any = [];
     public earthquakeData: any = [];
     private subscriptions: any[] = [];
@@ -31,15 +32,9 @@ export class DashboardComponent implements OnInit, OnDestroy {
   
     ngOnInit() {
         this.titleService.title.next('Dashboard')
-        this.subscriptions.push(this.eqService.earthquakeData.subscribe((eqs: any[]) => {
-            this.earthquakeData = eqs;
-            if (eqs.length > 0) {
-                this.eqService.plotEq(eqs[0])
-                this.showRight = 'shown'
-            } else {
-                this.eqService.clearData();
-            }
-        }));
+        if (this.facService.sub) {
+            this.facService.sub.unsubscribe();
+        }
         
         this.subscriptions.push(this.facService.facilityData.subscribe(facs => {
             this.facilityData = facs;
@@ -54,7 +49,19 @@ export class DashboardComponent implements OnInit, OnDestroy {
         this.eqService.filter['shakemap'] = true
         this.eqService.filter['scenario'] = false
         this.eqService.getData(this.eqService.filter);
-  }
+    }
+
+    ngAfterViewInit() {
+        this.subscriptions.push(this.eqService.earthquakeData.subscribe((eqs: any[]) => {
+            this.earthquakeData = eqs;
+            if (eqs.length > 0) {
+                this.eqService.plotEq(eqs[0])
+                this.showRight = 'shown'
+            } else {
+                this.eqService.clearData();
+            }
+        }));
+    }
 
     toggleLeft() {
         if (this.showLeft == 'hidden') {

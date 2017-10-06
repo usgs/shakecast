@@ -1,7 +1,14 @@
 #!/bin/sh
+if [[ $UID != 0 ]]; then
+    echo "Please run this script with sudo:"
+    echo "sudo $0 $*"
+    exit 1
+fi
+
+script_dir=$(dirname "$0")
+cd $script_dir
 
 S=60
-
 cleanup ()
 {
     logger "Stopping pycast watcher."
@@ -23,11 +30,17 @@ start() {
 
 logger "Start pyCast watcher"
 
+sleep_count=65
 while true; do
-  procs=$(getRunningProcs)
-  (echo $procs | grep -q python\ server_service.py) || start
-  (echo $procs | grep -q python\ web_server_service.py) || start
-  sleep $S
+    if [ $sleep_count -gt $S ]
+    then
+        procs=$(getRunningProcs)
+        (echo $procs | grep -q python\ $(pwd)/server_service.py) || start
+        (echo $procs | grep -q python\ $(pwd)/web_server_service.py) || start
+        sleep_count=0
+    else
+        ((sleep_count=sleep_count+5))
+    fi
+
+    sleep 5
 done
-
-
