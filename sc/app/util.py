@@ -162,6 +162,7 @@ class SC(object):
         self.server_dns = conf_json['Server']['DNS']
         self.software_version = conf_json['Server']['update']['software_version']
     
+    @staticmethod
     def validate(self, json_str=None):
         return True
 
