@@ -643,7 +643,7 @@ facility_group_connection = Table('facility_group_connection', Base.metadata,
 class Event(Base):
     __tablename__ = 'event'
     shakecast_id = Column(Integer, primary_key=True)
-    event_id = Column(String(20))
+    event_id = Column(String(80))
     status = Column(String(64))
     all_event_ids = Column(String(255))
     lat = Column(Float)

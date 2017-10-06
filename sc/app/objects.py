@@ -290,6 +290,8 @@ class ProductGrabber(object):
             # status so we know what to do with them later
             if shakemap.status is None:
                 shakemap.status = 'downloading'
+            session.add(shakemap)
+            session.commit()
             
             # depricate previous unprocessed versions of the ShakeMap
             dep_shakemaps = (
