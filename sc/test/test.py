@@ -230,25 +230,6 @@ class TestFull(unittest.TestCase):
         session.commit()
         Session.remove()
 
-        # clean up events, shakemaps, notifications
-        session = Session()
-        es = session.query(Event).all()
-        for e in es:
-            session.delete(e)
-
-        sms = session.query(ShakeMap).all()
-        for sm in sms:
-            session.delete(sm)
-
-        ns = session.query(Notification).all()
-        for n in ns:
-            session.delete(n)
-
-        small_group = session.query(Group).filter(Group.name == 'small').first()
-        session.delete(small_group)
-        session.commit()
-        Session.remove()
-
     def step03_createGroup(self):
         session = Session()
         
@@ -305,7 +286,7 @@ class TestFull(unittest.TestCase):
                 f.name = 'GREY FAC'
                 f.grey = 0
                 f.green = 10
-                f.yellow = 11
+                f.yellow = -1
                 f.orange = 12
                 f.red = 13
                 session.add(f)
@@ -339,10 +320,12 @@ class TestFull(unittest.TestCase):
             for notification in event.notifications:
                 if (notification.status != 'sent' and 
                     notification.status != 'aggregated' and
-                    notification.group.name != 'HIGH_INSP'):
-                    raise ValueError('Notification not sent... {}: {}, {}'.format(event.event_id,
-                                                                                  notification.notification_type,
-                                                                                  notification.status))
+                    (notification.group.name != 'HIGH_INSP' and
+                    notification.group.name != 'small')):
+                    raise ValueError('Notification not sent to {}... {}: {}, {}'.format(notification.group.name,
+                                                                                    event.event_id,
+                                                                                    notification.notification_type,
+                                                                                    notification.status))
                     
         Session.remove()
         
@@ -362,12 +345,10 @@ class TestFull(unittest.TestCase):
                                                                                   notification.status))
         Session.remove()
     
-    def step11_geoJSON2(self):
+    def step11_eventDownload2(self):
         '''
-        Second run of geo_json
+        Second event download to hit more code
         '''
-        data = geo_json('hour')
-        self.assertEqual(data['error'], '')
 
         # grab some prepackaged geoJSON to ensure we have some 
         # events and shakemaps for testing

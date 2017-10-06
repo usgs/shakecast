@@ -327,9 +327,6 @@ class Facility_Shaking(Base):
                                                    self.psa03,
                                                    self.psa10,
                                                    self.psa30)
-                                   
-    def __str__(self):
-        return ""
     
     
 #######################################################################
@@ -345,13 +342,13 @@ class Notification(Base):
     status = Column(String(64))
     notification_file = Column(String(255))
     
-    def __rept__(self):
+    def __repr__(self):
         return '''Notification(shakemap_id=%s,
-                               group_name=%s,
+                               group_id=%s,
                                notification_type=%s,
                                status=%s,
                                notification_file=%s)''' % (self.shakemap_id,
-                                                             self.group_name,
+                                                             self.group_id,
                                                              self.notification_type,
                                                              self.status,
                                                              self.notification_file)
