@@ -886,14 +886,16 @@ if sc.dict['DBConnection']['type'] == 'sqlite' or testing is True:
     engine = create_engine('sqlite:///%s' % os.path.join(directory, db_name))
 elif sc.dict['DBConnection']['type'] == 'mysql':
     try:
-        db_str = 'mysql://{}:{}@localhost/pycast'.format(sc.dict['DBConnection']['username'],
-                                                         sc.dict['DBConnection']['password'])
+        db_str = 'mysql://{}:{}@{}/pycast'.format(sc.dict['DBConnection']['username'],
+                                                         sc.dict['DBConnection']['password'],
+                                                         sc.dict['DBConnection']['server'])
         engine = create_engine(db_str)
         engine.execute('USE pycast')
     except Exception:
         # db doesn't exist yet, let's create it
-        server_str = 'mysql://{}:{}@localhost'.format(sc.dict['DBConnection']['username'],
-                                                      sc.dict['DBConnection']['password'])
+        server_str = 'mysql://{}:{}@{}'.format(sc.dict['DBConnection']['username'],
+                                                      sc.dict['DBConnection']['password'],
+                                                      sc.dict['DBConnection']['server'])
         engine = create_engine(server_str)
         engine.execute("CREATE DATABASE pycast")
         engine.execute("USE pycast")
