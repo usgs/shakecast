@@ -194,9 +194,8 @@ def get_eq_data():
 @login_required
 def get_shaking_events(facility_id):
     session = Session()
-    
     fac = session.query(Facility).filter(Facility.shakecast_id == facility_id).first()
-    eqs = [fs.shakemap.event for fs in fac.shaking_history]
+    eqs = [fs.shakemap.event for fs in fac.shaking_history if fs.shakemap is not None]
 
     eq_dicts = []
     for eq in eqs:
@@ -538,9 +537,9 @@ def get_settings():
     if request.method == 'POST':
         configs = request.json.get('configs', '')
         if configs:
-            sc.json = json.dumps(configs, indent=4)
-            if sc.validate() is True:
-                sc.save()
+            json_str = json.dumps(configs, indent=4)
+            if sc.validate(json_str) is True:
+                sc.save(json_str)
     return sc.json
 
 ############################ Admin Pages ##############################

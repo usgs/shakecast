@@ -1,11 +1,13 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
 import { Router } from '@angular/router'
 import { Marker } from './map.service';
 import { ShakemapService } from './shakemap.service'
 import { MapService } from './map.service'
 import { FacilityService } from '../../shakecast-admin/pages/facilities/facility.service';
+import { LoadingService } from '../../loading/loading.service';
 import { NotificationsService } from 'angular2-notifications';
 declare var L: any;
+
 L.MakiMarkers.accessToken = 'pk.eyJ1IjoiZHNsb3NreSIsImEiOiJjaXR1aHJnY3EwMDFoMnRxZWVtcm9laWJmIn0.1C3GE0kHPGOpbVV9kTxBlQ'
 
 declare var _: any;
@@ -52,7 +54,9 @@ export class MapComponent implements OnInit, OnDestroy {
                 private smService: ShakemapService,
                 private facService: FacilityService,
                 private notService: NotificationsService,
-                private _router: Router) {}
+                private _router: Router,
+                private loadingService: LoadingService,
+                private changeDetector: ChangeDetectorRef) {}
 
     ngOnInit() {
         this.subscriptions.push(this.mapService.getMapKey().subscribe((key: string) => {
@@ -62,6 +66,7 @@ export class MapComponent implements OnInit, OnDestroy {
     }
 
     initMap() {
+        var this_: any = this;
         this.map = L.map('map', {
             scrollWheelZoom: false
         }).setView([51.505, -0.09], 8);
@@ -109,6 +114,7 @@ export class MapComponent implements OnInit, OnDestroy {
 
         // subscribe to facility markers
         this.subscriptions.push(this.mapService.facMarkers.subscribe((markers: any[]) => {
+                this.loadingService.add('Facility Markers');
                 var silent: boolean = (markers.length > 1)
                 for (var mark in markers) {
                     this.plotFacMarker(markers[mark], silent);
@@ -117,6 +123,7 @@ export class MapComponent implements OnInit, OnDestroy {
                 if (silent === false) {
                     this.map.setView([markers[0].lat + .5, markers[0].lon]);
                 }
+                this.loadingService.finish('Facility Markers');
         }));
 
         // subscribe to REMOVING facility markers
@@ -132,6 +139,11 @@ export class MapComponent implements OnInit, OnDestroy {
         // subscribe to clearing the map
         this.subscriptions.push(this.mapService.clearMapNotify.subscribe(notification => {
             this.clearLayers();
+
+            // stop fetching facilities if this is still working...
+            // if (this.facService.sub) {
+            //     this.facService.sub.unsubscribe();
+            // }
         }));
 
         // subscribe to facility data to create a total shaking div
@@ -210,6 +222,8 @@ export class MapComponent implements OnInit, OnDestroy {
     plotShakemap(event: any) {
         this.smService.shakemapCheck(event).subscribe((result: any) => {
             if (result.length > 0){
+                this.loadingService.add('ShakeMap');
+                this.changeDetector.detectChanges();
                 // plot shakemaps
                 var sm = result[0]
                 var imageUrl = 'api/shakemaps/' + sm.shakemap_id + '/overlay';
@@ -231,6 +245,8 @@ export class MapComponent implements OnInit, OnDestroy {
                 catch(e) {
                     this.notService.alert('Shakemap Error', 'Unable to retreive shakemap')
                 }
+                this.loadingService.finish('ShakeMap');
+                this.changeDetector.detectChanges();
             }
         });
     }

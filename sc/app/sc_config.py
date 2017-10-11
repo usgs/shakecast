@@ -26,8 +26,8 @@ def sc_config(new_configs={}):
                     sc_config[key][i_key] = i_value
                     
     sc.json = json.dumps(sc_config)
-    if sc.validate() is True:
-        sc.save()
+    if sc.validate(sc.json) is True:
+        sc.save(sc.json)
 
 parser = argparse.ArgumentParser()
 parser.add_argument('-d', '--dict', type=dict,

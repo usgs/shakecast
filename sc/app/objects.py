@@ -38,6 +38,7 @@ class ProductGrabber(object):
         sc = SC()
         
         self.req_products = req_products
+        self.pref_products = []
         self.server_address = ''
         self.json_feed_url = sc.geo_json_web
         self.ignore_nets = sc.ignore_nets.split(',')
@@ -50,6 +51,9 @@ class ProductGrabber(object):
         
         if not self.req_products:
             self.req_products = sc.eq_req_products
+
+        if not self.pref_products:
+            self.pref_products = sc.dict['Services']['eq_pref_products']
         
         if data_dir == '':
             self.get_data_path()
@@ -76,27 +80,27 @@ class ProductGrabber(object):
         else:
             json_str = url_opener.open(self.json_feed_url)
         self.json_feed = json.loads(json_str)
-        
-        #self.earthquakes = self.json_feed['features']
-        
+
+    def read_json_feed(self):
+        """
+        Reads a list of events from the downloaded json feed
+        """
+
+        # Check for results with a single event
         if self.json_feed.get('features', None) is None:
             eq = self.json_feed
-            info = {'status': 'new'}
-            eq.update(info)
             self.earthquakes[eq['id']] = eq
         
         else:
-
             for eq in self.json_feed['features']:
                 # skip earthquakes without dictionaries... why does this
                 # happen??
                 try:
                     if eq['id'] not in self.earthquakes.keys():
-                        info = {'status': 'new'}
-                        eq.update(info)
                         self.earthquakes[eq['id']] = eq
-                except:
+                except Exception:
                     continue
+        return
         
     def get_new_events(self, scenario=False):
         """
@@ -104,7 +108,9 @@ class ProductGrabber(object):
         """
         session = Session()
         sc = SC()
-        
+
+        self.read_json_feed()
+
         event_str = ''
         new_events = []
         for eq_id in self.earthquakes.keys():
@@ -267,9 +273,9 @@ class ProductGrabber(object):
             for idx in xrange(len(eq_info['properties']['products'][sm_str])):
                 if eq_info['properties']['products'][sm_str][idx]['preferredWeight'] > weight:
                     weight = eq_info['properties']['products'][sm_str][idx]['preferredWeight']
-                    shakemap.json = eq_info['properties']['products'][sm_str][idx]
+                    shakemap_json = eq_info['properties']['products'][sm_str][idx]
 
-            shakemap.shakemap_version = shakemap.json['properties']['version']
+            shakemap.shakemap_version = shakemap_json['properties']['version']
             
             # check if we already have the shakemap
             if shakemap.is_new() is False:
@@ -280,34 +286,30 @@ class ProductGrabber(object):
                     .first()
                 )
             
-            # check if the shakemap has required products. If it does,
-            # it is not a new map, and can be skipped
-            if (shakemap.has_products(self.req_products)) and scenario is False:
-                continue
+            # Check for new shakemaps without statuses; git them a
+            # status so we know what to do with them later
+            if shakemap.status is None:
+                shakemap.status = 'downloading'
+            session.add(shakemap)
+            session.commit()
             
             # depricate previous unprocessed versions of the ShakeMap
             dep_shakemaps = (
                 session.query(ShakeMap)
                     .filter(ShakeMap.shakemap_id == shakemap.shakemap_id)
-                    .filter(ShakeMap.status == 'new')
-            )
+                    .filter(ShakeMap.status == 'new')).all()
             for dep_shakemap in dep_shakemaps:
                 dep_shakemap.status = 'depricated'
             
             # assign relevent information to shakemap
-            shakemap.map_status = shakemap.json['properties']['map-status']
-            shakemap.region = shakemap.json['properties']['eventsource']
-            shakemap.lat_max = shakemap.json['properties']['maximum-latitude']
-            shakemap.lat_min = shakemap.json['properties']['minimum-latitude']
-            shakemap.lon_max = shakemap.json['properties']['maximum-longitude']
-            shakemap.lon_min = shakemap.json['properties']['minimum-longitude']
-            shakemap.generation_timestamp = shakemap.json['properties']['process-timestamp']
+            shakemap.map_status = shakemap_json['properties']['map-status']
+            shakemap.region = shakemap_json['properties']['eventsource']
+            shakemap.lat_max = shakemap_json['properties']['maximum-latitude']
+            shakemap.lat_min = shakemap_json['properties']['minimum-latitude']
+            shakemap.lon_max = shakemap_json['properties']['maximum-longitude']
+            shakemap.lon_min = shakemap_json['properties']['minimum-longitude']
+            shakemap.generation_timestamp = shakemap_json['properties']['process-timestamp']
             shakemap.recieve_timestamp = time.time()
-
-            if scenario is False:
-                shakemap.status = 'new'
-            else:
-                shakemap.status = 'scenario'
             
             # make a directory for the new event
             shakemap.directory_name = os.path.join(self.data_dir,
@@ -316,33 +318,47 @@ class ProductGrabber(object):
             if not os.path.exists(shakemap.directory_name):
                 os.makedirs(shakemap.directory_name)
         
-            # download products
-            for product_name in self.req_products:
-                product = Product(shakemap = shakemap,
-                                  product_type = product_name)
+            # Try to download all prefered products
+            for product_name in self.pref_products:
+                # if we already have a good version of this product
+                # just skip it
+                if shakemap.has_products([product_name]):
+                    continue
+
+                existing_prod = (session.query(Product)
+                                    .filter(Product.shakemap_id == shakemap.shakecast_id)
+                                    .filter(Product.product_type == product_name)).all()
+
+                if existing_prod:
+                    product = existing_prod[0]
+                else:
+                    product = Product(shakemap = shakemap,
+                                        product_type = product_name)
                 
                 try:
-                    product.json = shakemap.json['contents']['download/%s' % product_name]
+                    product.json = shakemap_json['contents']['download/%s' % product_name]
                     product.url = product.json['url']
                     
                     # download and allow partial products
-                    try:
-                        product.str_ = url_opener.open(product.url)
-                        eq['status'] = 'downloaded'
-                    except httplib.IncompleteRead as e:
-                        product.web = e.partial
-                        eq['status'] = 'incomplete'
+                    product.str_ = url_opener.open(product.url)
                     
+                    # determine if we're writing binary or not
                     if product_name.lower().endswith(('.png', '.jpg', '.jpeg')):
                         mode = 'wb'
                     else:
                         mode = 'wt'
+
                     product.file_ = open('%s%s%s' % (shakemap.directory_name,
                                                       self.delim,
                                                       product_name), mode)
                     product.file_.write(product.str_)
                     product.file_.close()
-                except:
+
+                    product.error = None
+                    product.status = 'downloaded'
+                except Exception as e:
+                    product.status = 'download failed'
+                    product.error = '{}: {}'.format(type(e), e)
                     self.log += 'Failed to download: %s %s' % (eq_id, product_name)
             
             # check for event whose id or one of its old ids matches the shakemap id
@@ -354,6 +370,13 @@ class ProductGrabber(object):
             if event:
                 event = event[0]
                 event.shakemaps.append(shakemap)
+
+            if (scenario is False and 
+                    shakemap.has_products(self.req_products) and 
+                    shakemap.status == 'downloading'):
+                shakemap.status = 'new'
+            elif scenario is True:
+                shakemap.status = 'scenario'
                 
             session.commit()
             
@@ -498,64 +521,54 @@ class ShakeMapGrid(object):
         """
         Loads data from a specified grid.xml file into the object
         """
+        self.tree = ET.parse(file_)
+        root = self.tree.getroot()
         
-        if file_ == '':
-            file_ = self.xml_file
-        else:
-            self.xml_file = file_
+        # set the ShakeMapGrid's attributes
+        all_atts = {}
+        [all_atts.update(child.attrib) for child in root]
         
-        try:
-            self.tree = ET.parse(file_)
-            root = self.tree.getroot()
-            
-            # set the ShakeMapGrid's attributes
-            all_atts = {}
-            [all_atts.update(child.attrib) for child in root]
-            
-            self.lat_min = float(all_atts.get('lat_min'))
-            self.lat_max = float(all_atts.get('lat_max'))
-            self.lon_min = float(all_atts.get('lon_min'))
-            self.lon_max = float(all_atts.get('lon_max'))
-            self.nom_lon_spacing = float(all_atts.get('nominal_lon_spacing'))
-            self.nom_lat_spacing = float(all_atts.get('nominal_lat_spacing'))
-            self.num_lon = int(all_atts.get('nlon'))
-            self.num_lat = int(all_atts.get('nlat'))
-            self.event_id = all_atts.get('event_id')
-            self.magnitude = float(all_atts.get('magnitude'))
-            self.depth = float(all_atts.get('depth'))
-            self.lat = float(all_atts.get('lat'))
-            self.lon = float(all_atts.get('lon'))
-            self.description = all_atts.get('event_description')
-            
-            self.sorted_by = ''
-            
-            self.fields = [child.attrib['name']
-                           for child in root
-                           if 'grid_field' in child.tag]
-            
-            grid_str = [child.text
+        self.lat_min = float(all_atts.get('lat_min'))
+        self.lat_max = float(all_atts.get('lat_max'))
+        self.lon_min = float(all_atts.get('lon_min'))
+        self.lon_max = float(all_atts.get('lon_max'))
+        self.nom_lon_spacing = float(all_atts.get('nominal_lon_spacing'))
+        self.nom_lat_spacing = float(all_atts.get('nominal_lat_spacing'))
+        self.num_lon = int(all_atts.get('nlon'))
+        self.num_lat = int(all_atts.get('nlat'))
+        self.event_id = all_atts.get('event_id')
+        self.magnitude = float(all_atts.get('magnitude'))
+        self.depth = float(all_atts.get('depth'))
+        self.lat = float(all_atts.get('lat'))
+        self.lon = float(all_atts.get('lon'))
+        self.description = all_atts.get('event_description')
+        
+        self.sorted_by = ''
+        
+        self.fields = [child.attrib['name']
                         for child in root
-                        if 'grid_data' in child.tag][0]
-            
-            #get rid of trailing and leading white space
-            grid_str = grid_str.lstrip().rstrip()
-            
-            # break into point strings
-            grid_lst = grid_str.split('\n')
-            
-            # split points and save them as Point objects
-            for point_str in grid_lst:
-                point_str = point_str.lstrip().rstrip()
-                point_lst = point_str.split(' ')
-            
-                point = Point()
-                for count, field in enumerate(self.fields):
-                    point.info[field] = float(point_lst[count])
-                        
-                self.grid += [point]
-
-        except:
-            return False
+                        if 'grid_field' in child.tag]
+        
+        grid_str = [child.text
+                    for child in root
+                    if 'grid_data' in child.tag][0]
+        
+        #get rid of trailing and leading white space
+        grid_str = grid_str.lstrip().rstrip()
+        
+        # break into point strings
+        grid_lst = grid_str.split('\n')
+        
+        # split points and save them as Point objects
+        for point_str in grid_lst:
+            point_str = point_str.lstrip().rstrip()
+            point_lst = point_str.split(' ')
+        
+            point = Point()
+            for count, field in enumerate(self.fields):
+                point.info[field] = float(point_lst[count])
+                    
+            self.grid += [point]
         
     def sort_grid(self, metric= ''):
         """
@@ -1024,17 +1037,15 @@ class URLOpener(object):
             raise Exception('URLOpener Error({}: {}, url: {})'.format(type(e),
                                                              e,
                                                              url))
-        
 
-
-  
   
 class AlchemyEncoder(json.JSONEncoder):
     def default(self, obj):
         if isinstance(obj.__class__, DeclarativeMeta):
             # an SQLAlchemy class
             fields = {}
-            for field in [x for x in dir(obj) if not x.startswith('_') and x != 'metadata']:
+            for field in [x for x in dir(obj) if not x.startswith('_') 
+                                and x != 'metadata' and x != '_sa_instance_state']:
                 data = obj.__getattribute__(field)
 
                 if isinstance(data, types.MethodType):

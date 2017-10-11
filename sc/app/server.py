@@ -11,11 +11,16 @@ import logging
 
 split_sc_dir = sc_dir().split(os.sep)
 log_path = split_sc_dir + ['logs', 'sc-service.log']
+sc = SC()
+if sc.dict['Logging']['level'] == 'info':
+    log_level = logging.INFO
+elif sc.dict['Logging']['level'] == 'debug':
+    log_level = logging.DEBUG
+
 logging.basicConfig(
     filename = os.path.normpath(os.sep.join(log_path)),
-    level = logging.INFO, 
-    format = '[ShakeCast Server] %(levelname)-7.7s %(message)s'
-)
+    level = log_level, 
+    format = '%(asctime)s: [ShakeCast Server] %(levelname)-7.7s %(message)s')
 
 class Server(object):
     
@@ -39,7 +44,7 @@ class Server(object):
         self.stop_loop = False
         self.stop_server = False
         self.socket = socket.socket()
-        self.sleep = .2
+        self.sleep = 2
         self.connections = {}
         self.queue = []
         self.print_out = ''
@@ -148,7 +153,7 @@ class Server(object):
                 except:
                     db_use = False
                     
-                new_task = Task(name=key, task_id=task_id, db_use=db_use, **value)
+                new_task = Task(name=key, task_id=task_id, db_use=db_use, from_user=True, **value)
                 
                 if new_task.loop is True:
                     conn.send('Received looping task. Closing connection...')
@@ -158,25 +163,35 @@ class Server(object):
                 
                 self.queue += [new_task]
                 
-                self.log(message='Task added to queue: %s' % new_task.name,
-                         which='server')
-    
     def queue_check(self):
         """
         Check for tasks that are ready to be run and finished tasks
         that can be removed
         """
         timestamp = time.time()
+        sc = SC()
         for i,task in enumerate(self.queue):
             # run tasks if it's their time and they aren't already running
-            if ((task.next_run < timestamp and task.status == 'stopped') and
-                (task.db_use is False or self.db_open is True)):
+            # and the db is available
+            if ((task.next_run < timestamp and 
+                    task.status == 'stopped') and
+                        (task.db_use is False or 
+                            self.db_open is True or 
+                            (sc.dict['DBConnection']['type'] != 'sqlite' and 
+                                task.from_user is True))):
                     
                     if task.db_use is True:
                         self.db_open = False
                     
                     self.last_task = time.time()
                     
+                    if ((task.name != 'fast_geo_json' and 
+                                    task.name != 'check_new' and 
+                                    task.name != 'check_for_updates')):
+                        logging.info('Running task: {}'.format(task.name))
+                    else:
+                        logging.debug('Running task: {}'.format(task.name))
+
                     task_thread = New_Thread(func=task.run)
                     task_thread.start()
                     
@@ -268,24 +283,6 @@ class Server(object):
                 'message': "{'queue': %s, \
                               'connections': %s}" % (self.queue,
                                                     self.connections)}
-    
-
-        
-
-        
-    def log(self, message='', which=''):
-        """
-        Logs a message to either the shakecast or server log
-        """
-        if which == 'shakecast':
-            log_file = self.sc_log_file
-        else:
-            log_file = self.log_file
-            
-        date_time = time.strftime('%c')    
-            
-        with open(log_file, 'a') as file_:
-            file_.write('%s%s%s\n' % (date_time, ':: ', message))
     
     def stop_task(self, task_name=None):
         """

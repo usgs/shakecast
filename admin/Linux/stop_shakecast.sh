@@ -5,9 +5,20 @@ if [[ $UID != 0 ]]; then
     exit 1
 fi
 
-echo "Stopping Shakecast..."
+script_dir=$(dirname "$0")
+cd $script_dir
 
-python web_server_service.py stop
-python server_service.py stop
+# stop the watcher daemon
+echo "Stopping pyCast Watcher..."
+PIDFILE=$(pwd)/pycast_watcher.pid
+PID=$(cat $PIDFILE)
+kill $PID
+sleep 2
+echo "Done."
+
+echo "Stopping pyCast..."
+
+python $(pwd)/web_server_service.py stop
+python $(pwd)/server_service.py stop
 
 echo "Done."

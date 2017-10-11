@@ -19,6 +19,7 @@ class Task(object):
                  run_in=0,
                  kill_time=None,
                  db_use=False,
+                 from_user=False,
                  use_pdb=False):
         self.name = name
         self.id = task_id
@@ -32,6 +33,7 @@ class Task(object):
         self.next_run = time.time() + run_in
         self.kill_time = None
         self.db_use = db_use
+        self.from_user = from_user
         self.output = {'status': '',
                        'messege': ''}
         self.error = ''

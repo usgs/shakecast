@@ -49,7 +49,7 @@ class TestProductGrabber(unittest.TestCase):
         self.assertNotEqual(pg.json_feed, '')
 
     def test_geoJSON(self):
-        result = geo_json('day')
+        result = geo_json('hour')
         self.assertEqual(result['error'], '')
 
 class TestMailer(unittest.TestCase):
@@ -230,28 +230,6 @@ class TestFull(unittest.TestCase):
         session.commit()
         Session.remove()
 
-        result = geo_json('hour')
-        self.assertEqual(result['error'], '')
-
-        # clean up events, shakemaps, notifications
-        session = Session()
-        es = session.query(Event).all()
-        for e in es:
-            session.delete(e)
-
-        sms = session.query(ShakeMap).all()
-        for sm in sms:
-            session.delete(sm)
-
-        ns = session.query(Notification).all()
-        for n in ns:
-            session.delete(n)
-
-        small_group = session.query(Group).filter(Group.name == 'small').first()
-        session.delete(small_group)
-        session.commit()
-        Session.remove()
-
     def step03_createGroup(self):
         session = Session()
         
@@ -275,27 +253,22 @@ class TestFull(unittest.TestCase):
     def step05_geoJSON(self):
         '''
         Test run of geo_json
-        '''
+        '''    
         data = geo_json('hour')
         self.assertEqual(data['error'], '')
 
-        # grab a scenario and save it as a shakemap in case no shakemaps
-        # are available
-        download_scenario('bssc2014nsanandreassaosansap_m8p04_se', scenario=True)
-        # download a second time to hit more code
-        download_scenario('bssc2014nsanandreassaosansap_m8p04_se', scenario=True)
-        
-        session = Session()
-        sm = session.query(ShakeMap).filter(ShakeMap.shakemap_id == 'bssc2014nsanandreassaosansap_m8p04_se_scenario').first()
-        sm.status = 'new'
-        sm.shakemap_id = 'bssc2014nsanandreassaosansap'
+        # grab some prepackaged geoJSON to ensure we have some 
+        # events and shakemaps for testing
+        json_file = os.path.join(sc_dir(), 'test', 'test_json_feed.json')
+        with open(json_file, 'r') as file_:
+            json_feed = json.loads(file_.read())
+        pg = ProductGrabber()
+        pg.json_feed = json_feed
+        new_events, log_message = pg.get_new_events()
+        new_shakemaps, log_message = pg.get_new_shakemaps()
 
-        e = session.query(Event).filter(Event.event_id == 'bssc2014nsanandreassaosansap_m8p04_se_scenario').first()
-        e.status = 'new'
-        e.event_id = 'bssc2014nsanandreassaosansap'
-
-        session.commit()
-        Session.remove()
+        self.assertEqual(len(new_events), 3)
+        self.assertEqual(len(new_shakemaps), 2)
 
 
     def step06_createFacility(self):
@@ -313,7 +286,7 @@ class TestFull(unittest.TestCase):
                 f.name = 'GREY FAC'
                 f.grey = 0
                 f.green = 10
-                f.yellow = 11
+                f.yellow = -1
                 f.orange = 12
                 f.red = 13
                 session.add(f)
@@ -347,13 +320,12 @@ class TestFull(unittest.TestCase):
             for notification in event.notifications:
                 if (notification.status != 'sent' and 
                     notification.status != 'aggregated' and
-                    notification.group.name != 'HIGH_INSP'):
-                    raise ValueError('Notification not sent... {}: {}, {}'.format(event.event_id,
-                                                                                  notification.notification_type,
-                                                                                  notification.status))
-
-        if event:
-            print event
+                    (notification.group.name != 'HIGH_INSP' and
+                    notification.group.name != 'small')):
+                    raise ValueError('Notification not sent to {}... {}: {}, {}'.format(notification.group.name,
+                                                                                    event.event_id,
+                                                                                    notification.notification_type,
+                                                                                    notification.status))
                     
         Session.remove()
         
@@ -373,12 +345,24 @@ class TestFull(unittest.TestCase):
                                                                                   notification.status))
         Session.remove()
     
-    def step11_geoJSON2(self):
+    def step11_eventDownload2(self):
         '''
-        Second run of geo_json
+        Second event download to hit more code
         '''
-        data = geo_json('hour')
-        self.assertEqual(data['error'], '')
+
+        # grab some prepackaged geoJSON to ensure we have some 
+        # events and shakemaps for testing
+        json_file = os.path.join(sc_dir(), 'test', 'test_json_feed.json')
+        with open(json_file, 'r') as file_:
+            json_feed = json.loads(file_.read())
+        pg = ProductGrabber()
+        pg.json_feed = json_feed
+        
+        # add a bad product to make sure it's processed correctly
+        pg.pref_products += ['this_product_is_bad']
+
+        new_events, log_message = pg.get_new_events()
+        new_shakemaps, log_message = pg.get_new_shakemaps()
 
     def step12_checkNew2(self):
         '''
@@ -406,14 +390,6 @@ class TestFull(unittest.TestCase):
             run_scenario(sm.shakemap_id)
 
         Session.remove()
-
-    def step15_getScenarioWeb(self):
-        session = Session()
-        sm = session.query(ShakeMap).filter(ShakeMap.shakemap_id != 'bssc2014nsanandreassaosansap_m8p04_se_scenario').first()
-        Session.remove()
-
-        if sm is not None:
-            download_scenario(shakemap_id=sm.shakemap_id)
 
     def step16_NewUpdate(self):
         s = SoftwareUpdater()
@@ -508,7 +484,7 @@ class TestFull(unittest.TestCase):
             self.assertIsNone(e)
             self.assertIsNone(sm)
 
-            Session.remove()
+        Session.remove()
 
     def step23_badScenario(self):
         result = run_scenario('a_bad_Event_id')
@@ -519,11 +495,12 @@ class TestFull(unittest.TestCase):
         self.assertEqual('failed', result['status'])
 
     def step25_downloadActualScenario(self):
-        download_scenario('bssc2014nsanandreassaosansap_m8p04_se', scenario=True)
+        download_scenario('bssc2014sanjacintolytlecreek_m6p72_se', scenario=True)
 
     def step26_groupInspLevel(self):
         session = Session()
         g = session.query(Group).first()
+        self.assertEqual(g.has_alert_level(None), True)
         self.assertEqual(g.has_alert_level('GREY'), True)
         self.assertEqual(g.has_alert_level('grey'), True)
         self.assertEqual(g.has_alert_level('GRAY'), True)
@@ -537,6 +514,7 @@ class TestFull(unittest.TestCase):
         self.assertEqual(g.has_alert_level('RED'), True)
         self.assertEqual(g.has_alert_level('red'), True)
         self.assertEqual(g.has_alert_level('does_not_exist'), False)
+        Session.remove()
 
     def steps(self):
         '''
@@ -614,9 +592,18 @@ class TestImport(unittest.TestCase):
         user_file = os.path.join(sc_dir(), 'test', 'test_users.xml')
         file_type = determine_xml(user_file)
         import_user_xml(user_file)
+        
+        session = Session()
+        users = session.query(User).all()
+        id1 = users[0].shakecast_id
+        id2 = users[1].shakecast_id
+        Session.remove()
+
+        import_user_xml(user_file, id1)
+        import_user_xml(user_file, id2)
 
         self.assertEqual(file_type, 'user')
-        
+
     def step03_groupImport(self):
         group_file = os.path.join(sc_dir(), 'test', 'test_groups.xml')
         file_type = determine_xml(group_file)
@@ -818,8 +805,8 @@ class TestSCConfig(unittest.TestCase):
                                                            test_user,
                                                            test_pass))
         sc = SC()
-        self.assertEqual(sc.smtp_username, 'clear')
-        self.assertEqual(sc.smtp_password, 'clear')
+        self.assertEqual(sc.smtp_username, test_user)
+        self.assertEqual(sc.smtp_password, test_pass)
     
     def step3_SCConfigSet(self):
         '''
@@ -835,7 +822,12 @@ class TestSCConfig(unittest.TestCase):
         self.assertEqual(sc.smtp_username, test_user)
         self.assertEqual(sc.smtp_password, test_pass)
         
-    def step4_SCRevert(self):
+    def step4_SCSave(self):
+        sc = SC()
+        if sc.validate(sc.json) is True:
+            sc.save(sc.json)
+
+    def step5_SCRevert(self):
         sc = SC()
         sc.revert()
         

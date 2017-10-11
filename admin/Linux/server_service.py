@@ -13,15 +13,22 @@ app_dir = os.path.normpath(os.sep.join(path))
 if app_dir not in sys.path:
     sys.path += [app_dir]
 
-path += ['logs', 'sc-service.log']
-logging.basicConfig(
-    filename = os.path.normpath(os.sep.join(path)),
-    level = logging.DEBUG, 
-    format = '[ShakeCast] %(levelname)-7.7s %(message)s'
-)
-
 from app.server import Server
 from ui import UI
+from app.util import SC
+
+path += ['logs', 'sc-service.log']
+sc = SC()
+if sc.dict['Logging']['level'] == 'info':
+    log_level = logging.INFO
+elif sc.dict['Logging']['level'] == 'debug':
+    log_level = logging.DEBUG
+
+logging.basicConfig(
+    filename = os.path.normpath(os.sep.join(path)),
+    level = log_level, 
+    format = '%(asctime)s: [ShakeCast Server] %(levelname)-7.7s %(message)s')
+
 
 class ShakecastServer(object):
     _svc_name_ = "sc_server"
