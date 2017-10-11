@@ -1,7 +1,7 @@
 {
     "updates": [
-        {"version": "4.0.0b5",
-        "info": "Update 1",
+        {"version": "4.0.0rc3",
+        "info": "Update: Release Candidate 3",
         "files": [
             {"url": "https://raw.githubusercontent.com/usgs/shakecast/master/sc/app/functions.py",
              "path": "sc/app/functions.py"},
