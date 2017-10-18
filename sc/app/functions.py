@@ -3,8 +3,8 @@ import sys
 import itertools
 import xml.etree.ElementTree as ET
 from email.mime.text import MIMEText
-from email.MIMEImage import MIMEImage
-from email.MIMEMultipart import MIMEMultipart
+from email.mime.image import MIMEImage
+from email.mime.multipart import MIMEMultipart
 from orm import *
 from objects import *
 from util import *

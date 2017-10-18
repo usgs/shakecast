@@ -508,15 +508,17 @@ def event_image(event_id):
 @login_required
 def get_notification(event_id):
     session = Session()
-    nots = (session.query(Notification)
-                    .filter(or_(Notification.event_id == event_id,
-                                Notification.shakemap_id == event_id))
-                    .all())
+    event = session.query(Event).filter(Event.event_id == event_id).first()
+    
+    nots = event.notifications
+    for sm in event.shakemaps:
+        nots += sm.notifications
 
     dicts = []
     for obj in nots:
         dict_ = obj.__dict__.copy()
         dict_.pop('_sa_instance_state', None)
+        dict_['group_name'] = obj.group.name
         dicts += [dict_]
     
     json_ = json.dumps(dicts, cls=AlchemyEncoder)
