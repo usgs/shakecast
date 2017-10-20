@@ -8,7 +8,7 @@ topnav_dropdowns:
           url: /doc_project.html
         - title: ShakeCast V3
           url: /v3_introduction.html
-        - title: ShakeCast V4 "pyCast" (BETA)
+        - title: ShakeCast V4 "pyCast"
           url: /pycast_docs.html
         - title: ShakeCast Workbook
           url: /inventory_workbook.html
