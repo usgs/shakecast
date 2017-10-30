@@ -2,8 +2,10 @@
 This program holds all the non-database objects used necessary for
 ShakeCast to run. These objects are used in the functions.py program
 """
-
-import urllib2
+try:
+    import urllib2
+except:
+    import urllib as urllib2
 import ssl
 import json
 import os
@@ -13,8 +15,8 @@ import xml.etree.ElementTree as ET
 import smtplib
 import datetime
 from email.mime.text import MIMEText
-from email.MIMEImage import MIMEImage
-from email.MIMEMultipart import MIMEMultipart
+from email.mime.image import MIMEImage
+from email.mime.multipart import MIMEMultipart
 from util import *
 from jinja2 import Template
 import socks
@@ -84,6 +86,7 @@ class ProductGrabber(object):
     def read_json_feed(self):
         """
         Reads a list of events from the downloaded json feed
+        and caches them in self.earthquakes by id
         """
 
         # Check for results with a single event
@@ -385,7 +388,6 @@ class ProductGrabber(object):
         
         self.log += shakemap_str
         Session.remove()
-        # print shakemap_str
         return new_shakemaps, shakemap_str
 
     def make_heartbeat(self):
@@ -1040,6 +1042,10 @@ class URLOpener(object):
 
   
 class AlchemyEncoder(json.JSONEncoder):
+    '''
+    Use as the JSON encoder when passing SQLAlchemy objects to the 
+    web UI
+    '''
     def default(self, obj):
         if isinstance(obj.__class__, DeclarativeMeta):
             # an SQLAlchemy class
@@ -1069,7 +1075,9 @@ class AlchemyEncoder(json.JSONEncoder):
 
 class SoftwareUpdater(object):
     '''
-    Check against USGS web to determine 
+    Check against USGS web to determine if pyCast needs to update.
+    Notifies admin when updates are required and handles the update
+    process.
     '''
     def __init__(self):
         sc = SC()
