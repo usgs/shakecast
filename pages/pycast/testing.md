@@ -7,8 +7,7 @@ sidebar: pycast_sidebar
 folder: pycast
 ---
 
-## Testing Suite
-Before running the testing suite, configure a username and password for pyCast to use. For some SMTP servers (GMail included) you'll need this email to be accessable from "less secure" applications. This should be a setting offered by your email provider. If you've already configured your pyCast instance with an email address, you can skip this step.
+Before running the test suite, configure a username and password for pyCast to use. For some SMTP servers (GMail included) you'll need this email to be accessable from "less secure" applications. This should be a setting offered by your email provider. If you've already configured your pyCast instance with an email address, you can skip this step.
 ~~~
 python shakecast/sc/app/sc_config.py --smtpu your.email@email.com --smtpp youRpAssw0rd
 ~~~
