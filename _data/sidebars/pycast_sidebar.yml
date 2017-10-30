@@ -16,3 +16,7 @@ entries:
       - title: Developer Documentation
         output: web
         url: /apidocs
+
+      - title: Test Suite
+        output: web
+        url: /pycast_testing.html
