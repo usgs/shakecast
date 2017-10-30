@@ -109,3 +109,27 @@ Using the newly developed HAZUS Advanced Engineering Building Module, ShakeCast 
 
 ### Connection to MySQL Database
 Although pyCast is distributed with a file-based SQLite database, some of our more demanding users may require a more robust system. Specifically, users with dense inventories that may  For these users, we will offer an extension of pyCast that will allow you to connect to a MySQL-like database. 
+
+
+## Contributor Installation (GitHub)
+Contributors may want to install pyCast directly from GitHub to have the most updated code.
+
+Download from GitHub:
+~~~
+git clone https://github.com/usgs/shakecast.git
+~~~
+
+Move into the Linux admin directory:
+~~~
+cd shakecast/admin/Linux
+~~~
+
+Start pyCast directly:
+~~~
+sudo ./start_shakecast.sh
+~~~
+
+and stop it:
+~~~
+sudo ./stop_shakecast.sh
+~~~
