@@ -25,11 +25,16 @@ sudo python -m shakecast start
 ~~~
 
 ## Contributor Installation (GitHub)
-Contributors may want to install pyCast directly from GitHub to have the most updated code.
+Contributors may want to install pyCast directly from GitHub to have the most updated code. 
 
 Download from GitHub:
 ~~~
 git clone https://github.com/usgs/shakecast.git
+~~~
+
+Install the required Python libraries. Feel free to use a virtual environment!
+~~~
+pip install -r shakecast/requirements.txt
 ~~~
 
 Start and stop pyCast directly:
