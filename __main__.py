@@ -6,13 +6,11 @@ path = top_path.split(os.sep)
 path += ['admin', 'Linux']
 path = os.sep.join(path)
 def start():
-    os.system('chmod 664 ' + top_path)
-    os.system('python ' + path + os.sep + 'web_server_service.py start &')
-    os.system('python ' + path + os.sep + 'server_service.py start &')
+    os.system('chmod 700 ' + top_path)
+    os.system(path + os.sep + 'start_shakecast.sh')
 
 def stop():
-    os.system('python ' + path + os.sep + 'web_server_service.py stop')
-    os.system('python ' + path + os.sep + 'server_service.py stop')
+    os.system(path + os.sep + 'start_shakecast.sh')
 
 
 def invalid():
