@@ -39,6 +39,8 @@ sudo ./shakecast/admin/Linux/start_shakecast.sh
 sudo ./shakecast/admin/Linux/stop_shakecast.sh
 ~~~
 
+## After Installation...
+
 In order to determine if ShakeCast has installed correctly, use your web browser to navigate to [your localhost](http://localhost). You can login using the default administrator account by entering "scadmin" for both the username and password.
 
 ## Inventory Setup
