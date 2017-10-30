@@ -70,7 +70,7 @@ class Facility(Base):
     updated = Column(Integer)
     updated_by = Column(String(32))
     
-    shaking_history = relationship('Facility_Shaking',
+    shaking_history = relationship('FacilityShaking',
                         backref='facility',
                         cascade='save-update, delete, delete-orphan')
     
@@ -122,7 +122,7 @@ class Facility(Base):
     def make_alert_level(self, shaking_point=None, shakemap=None):
         '''
         Create a dictionary that contains all the information for a
-        Facility_Shaking entry in the database
+        FacilityShaking entry in the database
         '''
         shaking_level = shaking_point.get(self.metric, None)
 
@@ -261,7 +261,7 @@ class Facility(Base):
                         cls.lat_max > grid.lat_max))
   
     
-class Facility_Shaking(Base):
+class FacilityShaking(Base):
     __tablename__ = 'facility_shaking'
     shakecast_id = Column(Integer, primary_key=True)
     shakemap_id = Column(Integer, ForeignKey('shakemap.shakecast_id'))
@@ -293,10 +293,10 @@ class Facility_Shaking(Base):
                 move_on[k] = kwargs[k]
 
         # now let sqlalchemy do the real initialization
-        super(Facility_Shaking, self).__init__(**move_on)
+        super(FacilityShaking, self).__init__(**move_on)
     
     def __repr__(self):
-        return '''Facility_Shaking(shakemap_id=%s,
+        return '''FacilityShaking(shakemap_id=%s,
                                    facility_id=%s,
                                    metric=%s,
                                    alert_level=%s,
@@ -744,9 +744,9 @@ class ShakeMap(Base):
     notifications = relationship('Notification',
                                  backref = 'shakemap')
 
-    facility_shaking = relationship('Facility_Shaking',
+    facility_shaking = relationship('FacilityShaking',
                                     backref='shakemap',
-                                    order_by='Facility_Shaking.weight.desc()',
+                                    order_by='FacilityShaking.weight.desc()',
                                     cascade='save-update, delete, delete-orphan')
     
     def __repr__(self):

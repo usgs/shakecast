@@ -1042,6 +1042,10 @@ class URLOpener(object):
 
   
 class AlchemyEncoder(json.JSONEncoder):
+    '''
+    Use as the JSON encoder when passing SQLAlchemy objects to the 
+    web UI
+    '''
     def default(self, obj):
         if isinstance(obj.__class__, DeclarativeMeta):
             # an SQLAlchemy class
@@ -1071,7 +1075,9 @@ class AlchemyEncoder(json.JSONEncoder):
 
 class SoftwareUpdater(object):
     '''
-    Check against USGS web to determine 
+    Check against USGS web to determine if pyCast needs to update.
+    Notifies admin when updates are required and handles the update
+    process.
     '''
     def __init__(self):
         sc = SC()

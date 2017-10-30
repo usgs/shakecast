@@ -3,7 +3,7 @@ import select as select_
 import time
 import os
 import sys
-from newthread import New_Thread
+from newthread import NewThread
 from task import Task
 import functions as f
 from util import *
@@ -111,7 +111,7 @@ class Server(object):
             conn, addr = self.socket.accept()
             conn.setblocking(0)
             
-            client_thread = New_Thread(func=self.handle_client,
+            client_thread = NewThread(func=self.handle_client,
                                        args_in={'conn': conn, 'addr': addr})
             client_thread.start()
             
@@ -192,7 +192,7 @@ class Server(object):
                     else:
                         logging.debug('Running task: {}'.format(task.name))
 
-                    task_thread = New_Thread(func=task.run)
+                    task_thread = NewThread(func=task.run)
                     task_thread.start()
                     
                     # move task to the end of the list

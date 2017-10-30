@@ -165,7 +165,7 @@ def get_eq_data():
         if filter_.get('facility', None):
             query = (query.filter(ShakeMap
                                     .facility_shaking
-                                    .any(Facility_Shaking
+                                    .any(FacilityShaking
                                             .facility_id == filter_['facility']['shakecast_id'])))
 
     # get the time of the last earthquake in UI,
@@ -261,8 +261,8 @@ def get_fac_data():
 @login_required
 def get_shaking_data(facility_id, eq_id):
     session = Session()
-    shaking = (session.query(Facility_Shaking)
-                    .filter(Facility_Shaking
+    shaking = (session.query(FacilityShaking)
+                    .filter(FacilityShaking
                                 .shakemap
                                 .has(ShakeMap.shakemap_id == eq_id))
                     .first())
@@ -679,18 +679,6 @@ def upload():
         image_files.save(request.files['file'])
 
     return 'file uploaded'
-
-@app.route('/admin/notification', methods=['GET','POST'])
-@admin_only
-@login_required
-def notification():
-    return render_template('admin/notification.html')
-
-@app.route('/admin/earthquakes')
-@admin_only
-@login_required
-def admin_eqs():
-    return render_template('admin/earthquakes.html')
 
 @app.route('/admin/api/groups/<group_id>/info')
 @admin_only

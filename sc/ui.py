@@ -3,7 +3,7 @@ import time
 import select as select_
 import sys
 from app.server import Server
-from app.newthread import New_Thread
+from app.newthread import NewThread
 from app.util import SC
 
 class UI(object):
@@ -42,7 +42,7 @@ class UI(object):
         """
         self.server_check()
         
-        message_thread = New_Thread(self.get_message_loop)
+        message_thread = NewThread(self.get_message_loop)
         message_thread.start()
         
         print "ShakeCast> ",

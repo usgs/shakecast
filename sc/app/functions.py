@@ -5,13 +5,13 @@ import xml.etree.ElementTree as ET
 from email.mime.text import MIMEText
 from email.mime.image import MIMEImage
 from email.mime.multipart import MIMEMultipart
-from orm import *
-from objects import *
-from util import *
 import xmltodict
 import shutil
 import time
 from math import floor
+from orm import *
+from objects import *
+from util import *
 
 modules_dir = os.path.join(sc_dir() + 'modules')
 if modules_dir not in sys.path:
@@ -210,6 +210,7 @@ def process_shakemaps(shakemaps=None, session=None, scenario=False):
     Args:
         shakemaps (list): List of ShakeMap objects to process
         session (Session()): SQLAlchemy session
+        scenario (boolean): True for manually triggered events
     
     Returns:
         dict: a dictionary that contains information about the function run
@@ -228,6 +229,7 @@ def process_shakemaps(shakemaps=None, session=None, scenario=False):
                 continue
             
         shakemap.status = 'processing_started'
+
         # open the grid.xml file and find groups affected by event
         grid = create_grid(shakemap)
         if scenario is True:
@@ -297,7 +299,7 @@ def process_shakemaps(shakemaps=None, session=None, scenario=False):
                 if fac_shaking is False:
                     continue
                 
-                fac_shaking_lst[f_count] = Facility_Shaking(**fac_shaking)
+                fac_shaking_lst[f_count] = FacilityShaking(**fac_shaking)
                 f_count += 1
 
             # Remove all old shaking and add all fac_shaking_lst
@@ -335,7 +337,7 @@ def make_inspection_prios(facility=None,
         notifications (list): List of Notification objects which should be associated with the shaking
         
     Returns:
-        dict: A dictionary with all the parameters needed to make a Facility_Shaking entry in the database
+        dict: A dictionary with all the parameters needed to make a FacilityShaking entry in the database
         ::
             fac_shaking = {'gray': PDF Value,
                            'green': PDF Value,
@@ -345,8 +347,8 @@ def make_inspection_prios(facility=None,
                            'metric': which metric is used to compute PDF values,
                            'facility_id': shakecast_id of the facility that's shaking,
                            'shakemap_id': shakecast_id of the associated ShakeMap,
-                           '_shakecast_id': ID for the Facility_Shaking entry that will be created,
-                           'update': bool -- True if an ID already exists for this Facility_Shaking,
+                           '_shakecast_id': ID for the FacilityShaking entry that will be created,
+                           'update': bool -- True if an ID already exists for this FacilityShaking,
                            'alert_level': string ('gray', 'green', 'yellow' ...),
                            'weight': float that determines inspection priority,
                            'notifications': list of notifications associated with this shaking}
@@ -660,12 +662,48 @@ def create_grid(shakemap=None):
     grid.load(shakemap.directory_name + get_delim() + 'grid.xml')
     
     return grid    
-    
+
+def check_for_updates():
+    '''
+    Hits the USGS github for ShakeCast to determine if there are
+    updates. If there are new updates, the software updater will
+    email admin users to alert them
+    '''
+    status = ''
+    error = ''
+    update_required = None
+    try:
+        s = SoftwareUpdater()
+        update_required, notify, update_info = s.check_update()
+
+        if notify is True:
+            s.notify_admin(update_info=update_info)
+        status = 'finished'
+    except Exception as e:
+        error = str(e)
+        status = 'failed'
+
+    return {'status': status, 'message': update_required, 'error': error}
     
 #######################################################################
 ######################## Import Inventory Data ########################
 
 def import_master_xml(xml_file='', _user=None):
+    '''
+    Import an XML file created by the ShakeCast workbook; Facilities, Groups, and Users
+    
+    Args:
+        xml_file (string): The filepath to the xml_file that will be uploaded
+        _user (int): User id of admin making inventory changes
+        
+    Returns:
+        dict: a dictionary that contains information about the function run
+        ::
+            data = {'status': either 'finished' or 'failed',
+                    'message': message to be returned to the UI,
+                    'log': message to be added to ShakeCast log
+                           and should contain info on error}
+    '''
     fac_list = []
     group_list = []
     user_list = []
@@ -705,6 +743,7 @@ def import_facility_xml(xml_file='', _user=None):
     
     Args:
         xml_file (string): The filepath to the xml_file that will be uploaded
+        _user (int): User id of admin making inventory changes
         
     Returns:
         dict: a dictionary that contains information about the function run
@@ -726,6 +765,21 @@ def import_facility_xml(xml_file='', _user=None):
     return data
 
 def import_facility_dicts(facs=None, _user=None):
+    '''
+    Import a list of dicts containing facility info
+    
+    Args:
+        facs (list): facility dictionaries
+        _user (int): User id of admin making inventory changes
+        
+    Returns:
+        dict: a dictionary that contains information about the function run
+        ::
+            data = {'status': either 'finished' or 'failed',
+                    'message': message to be returned to the UI,
+                    'log': message to be added to ShakeCast log
+                           and should contain info on error}
+    '''
     session = Session()
     
     if isinstance(_user, int):
@@ -852,6 +906,8 @@ def import_group_xml(xml_file='', _user=None):
     
     Args:
         xml_file (string): The filepath to the xml_file that will be uploaded
+        _user (int): User id of admin making inventory changes
+
         
     Returns:
         dict: a dictionary that contains information about the function run
@@ -873,6 +929,21 @@ def import_group_xml(xml_file='', _user=None):
     return data
 
 def import_group_dicts(groups=None, _user=None):
+    '''
+    Import a list of dicts containing group info
+    
+    Args:
+        groups (list): group dictionaries
+        _user (int): User id of admin making inventory changes
+        
+    Returns:
+        dict: a dictionary that contains information about the function run
+        ::
+            data = {'status': either 'finished' or 'failed',
+                    'message': message to be returned to the UI,
+                    'log': message to be added to ShakeCast log
+                           and should contain info on error}
+    '''
     session = Session()
     
     if isinstance(_user, int):
@@ -984,6 +1055,7 @@ def import_user_xml(xml_file='', _user=None):
     
     Args:
         xml_file (string): The filepath to the xml_file that will be uploaded
+        _user (int): User id of admin making inventory changes
         
     Returns:
         dict: a dictionary that contains information about the function run
@@ -1004,6 +1076,21 @@ def import_user_xml(xml_file='', _user=None):
     return data
 
 def import_user_dicts(users=None, _user=None):
+    '''
+    Import a list of dicts containing user info
+    
+    Args:
+        users (list): user dictionaries
+        _user (int): User id of admin making inventory changes
+        
+    Returns:
+        dict: a dictionary that contains information about the function run
+        ::
+            data = {'status': either 'finished' or 'failed',
+                    'message': message to be returned to the UI,
+                    'log': message to be added to ShakeCast log
+                           and should contain info on error}
+    '''
     session = Session()
     
     if isinstance(_user, int):
@@ -1067,6 +1154,10 @@ def import_user_dicts(users=None, _user=None):
     return data
 
 def determine_xml(xml_file=''):
+    '''
+    Determine what type of XML file this is; facility, group, 
+    user, master, or unknown
+    '''
     tree = ET.parse(xml_file)
     root = tree.getroot()
     
@@ -1189,7 +1280,7 @@ def get_facility_info(group_name='', shakemap_id=''):
             query = query.filter(Facility.groups.any(Group.name == group_name))
         if shakemap_id:
             query = (query.filter(Facility.shaking_history
-                                    .any(Facility_Shaking.shakemap
+                                    .any(FacilityShaking.shakemap
                                             .has(shakemap_id=shakemap_id))))
 
         query = query.filter(Facility.facility_type == f_type[0])
@@ -1200,22 +1291,7 @@ def get_facility_info(group_name='', shakemap_id=''):
     return f_dict
 
 
-def check_for_updates():
-    status = ''
-    error = ''
-    update_required = None
-    try:
-        s = SoftwareUpdater()
-        update_required, notify, update_info = s.check_update()
 
-        if notify is True:
-            s.notify_admin(update_info=update_info)
-        status = 'finished'
-    except Exception as e:
-        error = str(e)
-        status = 'failed'
-
-    return {'status': status, 'message': update_required, 'error': error}
 
 #######################################################################
 ########################## TEST FUNCTIONS #############################
