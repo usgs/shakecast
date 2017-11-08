@@ -191,8 +191,9 @@ def process_events(events=None, session=None, scenario=False):
                         .filter(Notification.status == 'created')
                         .filter(Notification.group_id == group.shakecast_id)
                         .all())
-            
-            filter_nots = filter(lambda x: x.event is not None, nots)
+
+            last_day = time.time() - 60 * 60 * 5
+            filter_nots = filter(lambda x: x.event is not None and x.event.time > last_day, nots)
             new_event_notification(notifications=filter_nots,
                                     scenario=scenario)
             processed_events = [n.event for n in filter_nots]

@@ -5,7 +5,8 @@ ShakeCast to run. These objects are used in the functions.py program
 try:
     import urllib2
 except:
-    import urllib as urllib2
+    import urllib.request as urllib2
+
 import ssl
 import json
 import os
@@ -273,7 +274,7 @@ class ProductGrabber(object):
 
             # which shakemap has the highest weight
             weight = 0
-            for idx in xrange(len(eq_info['properties']['products'][sm_str])):
+            for idx in range(len(eq_info['properties']['products'][sm_str])):
                 if eq_info['properties']['products'][sm_str][idx]['preferredWeight'] > weight:
                     weight = eq_info['properties']['products'][sm_str][idx]['preferredWeight']
                     shakemap_json = eq_info['properties']['products'][sm_str][idx]
