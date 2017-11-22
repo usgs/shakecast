@@ -17,7 +17,7 @@ path += ['logs', 'sc-web-server.log']
 logging.basicConfig(
     filename = os.path.normpath(os.sep.join(path)),
     level = logging.INFO, 
-    format = '[ShakeCast - Web] %(levelname)-7.7s %(message)s'
+    format = '%(asctime)s: [ShakeCast - Web] %(levelname)-7.7s %(message)s'
 )
 
 from web_server import start
