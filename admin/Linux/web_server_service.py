@@ -21,6 +21,7 @@ logging.basicConfig(
 )
 
 from web_server import start
+from app.util import SC
 
 class ShakecastWebServer(object):
     _svc_name_ = "sc_web_server"
@@ -32,13 +33,13 @@ class ShakecastWebServer(object):
     @staticmethod
     def stop():
         # Send the http request to shutdown the server
+        sc = SC()
         try:
-            urllib2.urlopen('http://localhost:80/shutdown')
+            logging.info('Stopping web server...')
+            urllib2.urlopen('http://localhost:{}/shutdown'.format(sc.dict['web_port']))
+            logging.info('Done.')
         except Exception:
-            try:
-                urllib2.urlopen('http://localhost:5000/shutdown')
-            except Exception:
-                pass
+            logging.info('Web server is not running.')
         
     def start(self):
         self.main()
