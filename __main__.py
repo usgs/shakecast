@@ -10,7 +10,7 @@ def start():
     os.system(path + os.sep + 'start_shakecast.sh')
 
 def stop():
-    os.system(path + os.sep + 'start_shakecast.sh')
+    os.system(path + os.sep + 'stop_shakecast.sh')
 
 
 def invalid():
