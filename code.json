@@ -1,0 +1,37 @@
+{
+  "name": "shakecast",
+  "organization": "U.S. Geological Survey",
+  "description": "Application for rapid ShakeMap distribution",
+  "status": "Beta",
+  "homepage": "https://github.com/usgs/shakecast",
+  "downloadURL": "https://github.com/usgs/shakecast/archive/master.zip",
+  "openSourceProject": 1,
+  "license": "https://github.com/usgs/shakecast/blob/master/LICENSE",
+  "vcs": "git",
+  "repository": "https://github.com/usgs/shakecast.git",
+
+  "tags": [
+    "earthquake",
+    "impact",
+    "losses",
+    "shakemap",
+    "notifications",
+    "shaking"
+  ],
+  "languages": [
+    "python",
+    "typescript",
+    "html",
+    "css",
+    "shell",
+    "batch"
+  ],
+
+  "contact": {
+    "name": "Daniel Slosky",
+    "email": "dslosky@usgs.gov"
+  },
+  "updated": {
+    "metadataLastUpdated": "2017-12-06"
+  }
+}
