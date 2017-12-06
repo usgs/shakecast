@@ -8,3 +8,7 @@ install:
 
 script:
   - python sc/test/test.py dslosky@usgs.gov
+
+branches:
+  only:
+    - master

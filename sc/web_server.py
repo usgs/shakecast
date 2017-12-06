@@ -50,7 +50,9 @@ def client_app_angular2_folder(filename):
 def load_user(user_id):
     session = Session()
     user = session.query(User).filter(User.shakecast_id==int(user_id)).first()
-    
+
+    # Expunge here might help with Windows threading
+    #session.expunge(user)
     Session.remove()
     return user
 
@@ -509,17 +511,18 @@ def event_image(event_id):
 def get_notification(event_id):
     session = Session()
     event = session.query(Event).filter(Event.event_id == event_id).first()
-    
-    nots = event.notifications
-    for sm in event.shakemaps:
-        nots += sm.notifications
 
     dicts = []
-    for obj in nots:
-        dict_ = obj.__dict__.copy()
-        dict_.pop('_sa_instance_state', None)
-        dict_['group_name'] = obj.group.name
-        dicts += [dict_]
+    if event is not None:
+        nots = event.notifications
+        for sm in event.shakemaps:
+            nots += sm.notifications
+
+        for obj in nots:
+            dict_ = obj.__dict__.copy()
+            dict_.pop('_sa_instance_state', None)
+            dict_['group_name'] = obj.group.name
+            dicts += [dict_]
     
     json_ = json.dumps(dicts, cls=AlchemyEncoder)
     Session.remove()    
