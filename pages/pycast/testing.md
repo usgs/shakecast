@@ -17,7 +17,7 @@ Now you can run the suite:
 sudo python shakecast/sc/test/test.py
 ~~~
 
-If you wish to receive the test emails generated, you can run it with your own email address:
+If you wish to receive the test emails generated, you can run it with your own email address as an argument:
 ~~~
 sudo python shakecast/sc/test/test.py my.email@email.com
 ~~~
