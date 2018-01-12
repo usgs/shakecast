@@ -288,6 +288,13 @@ class TestFull(unittest.TestCase):
         self.assertEqual(len(new_events), 3)
         self.assertEqual(len(new_shakemaps), 2)
 
+        # adjust event times to allow for processing
+        session = Session()
+        es = session.query(Event).all()
+        for e in es:
+            e.time = time.time()
+        session.commit()
+        Session.remove()
 
     def step06_createFacility(self):
         session = Session()
