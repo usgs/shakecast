@@ -213,21 +213,23 @@ class ProductGrabber(object):
     def get_event_map(event):
         if not os.path.exists(event.directory_name):
                 os.makedirs(event.directory_name)
-        sc=SC()
-        # download the google maps image
-        url_opener = URLOpener()
-        gmap = url_opener.open("https://api.mapbox.com/styles/v1/mapbox/streets-v10/static/pin-s+F00(%s,%s)/%s,%s,5/200x200?access_token=%s" % (event.lon,
-                                          event.lat,
-                                           event.lon,
-                                           event.lat,
-                                           sc.map_key))
-        
-        # and save it
+
         image_loc = os.path.join(event.directory_name,
                                  'image.png')
-        image = open(image_loc, 'wb')
-        image.write(gmap)
-        image.close()
+
+        if os.path.exists(image_loc) is False:
+            sc=SC()
+            # download the google maps image
+            url_opener = URLOpener()
+            gmap = url_opener.open("https://api.mapbox.com/styles/v1/mapbox/streets-v10/static/pin-s+F00(%s,%s)/%s,%s,5/200x200?access_token=%s" % (event.lon,
+                                            event.lat,
+                                            event.lon,
+                                            event.lat,
+                                            sc.map_key))
+            # and save it
+            image = open(image_loc, 'wb')
+            image.write(gmap)
+            image.close()
             
     def get_new_shakemaps(self, scenario=False):
         """
