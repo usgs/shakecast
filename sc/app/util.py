@@ -5,6 +5,8 @@ import datetime
 import time
 from shutil import copyfile
 
+DAY = 60 * 60 * 24
+
 class SC(object):
     """
     Holds application custimization settings
@@ -278,6 +280,18 @@ def root_dir():
     
     return directory
 
-def lognorm_opt(med=0, spread=0, step=.01, just_norm=False, shaking=False):
+def lognorm_opt(med=0, spread=0, shaking=0):
+    '''
+    Lognormal calculation to determine probability of exceedance
+    
+    Args:
+        med (float): Median value that might be exceeded
+        spread (float): Uncertainty in the median value
+        shaking (float): recorded shaking value
+    
+    Returns:
+        float: probability of exceedance as a human readable percentage
+    '''
+    
     p_norm = (math.erf((shaking-med)/(math.sqrt(2) * spread)) + 1)/2
     return p_norm * 100
