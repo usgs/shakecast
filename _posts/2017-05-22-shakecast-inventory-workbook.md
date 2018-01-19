@@ -3,10 +3,10 @@ title:  "ShakeCast Inventory Workbook (MS Excel)"
 published: true
 permalink: 2017_shakecast_inventory_workbook.html
 summary: "Progress report on our extensively revised ShakeCast Workbook."
-tags: ["software_update"]
+tags: ["software_update", "workbook"]
 ---
 
-The ShakeCast Inventory Workbook is a collection of Excel® spreadsheets used to bridge the gap between users' data and the ShakeCast application. It allows users to collect their facility, notification group, and user information in a single spreadsheet. Once the data have been collected, a customized function generates a master XML file that contains all the information needed for the user's ShakeCast instance.
+The [ShakeCast Inventory Workbook](ftp://ftpext.usgs.gov/pub/cr/co/golden/shakecast/ShakeCast_Workbook/ShakeCastInventory.xlsm) is a collection of Excel® spreadsheets used to bridge the gap between users' data and the ShakeCast application. It allows users to collect their facility, notification group, and user information in a single spreadsheet. Once the data have been collected, a customized function generates a master XML file that contains all the information needed for the user's ShakeCast instance.
 
 A revision to the Workbook has been developed in the form of a spreadsheet specifically designed for the inclusion of building-specific HAZUS AEBM structural parameters. This spreadsheet is completely separable from the rest of the workbook, allowing users with the required information to take advantage of the AEBM without distracting users with less-detailed inventories.
 
