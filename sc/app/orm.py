@@ -147,7 +147,7 @@ class Facility(Base):
             fac_shake['alert_level'] = 'gray'
         
         else:
-            # add shaking levels to fac_shake:
+            # add shaking levels to fac_shake for record in db
             for metric in shaking_point.keys():
                 fac_shake[metric] = shaking_point[metric]
                 
@@ -161,22 +161,27 @@ class Facility(Base):
             large_prob = 0
             for level in fragility:
                 
+                # skips non-user-defined levels 
                 if level['med'] < 0 or level['spread'] < 0:
                     continue
                 
+                # calculate probability of exceedence
                 p = lognorm_opt(med=level['med'],
                                 spread=level['spread'],
                                 shaking=shaking_level)
                 
+                # alter based on total probability of higher states
                 p -= prob_sum
                 prob_sum += p
                 fac_shake[level['level']] = p
                 
+                # keep track of the largest probability
                 if p > large_prob:
                     large_prob = p
                     fac_shake['alert_level'] = level['level']
                     fac_shake['weight'] = level['rank'] + (p / 100)
-                    
+            
+            # put remaining exceedance into grey damage state
             fac_shake['gray'] = 100 - prob_sum
             if fac_shake['gray'] > large_prob:
                 fac_shake['alert_level'] = 'gray'

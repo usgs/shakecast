@@ -6,6 +6,7 @@ update-feed/
 modules/
 docs/
 pypy/
+dist/
 templates/inspection/*
 templates/new_event/*
 !default.json

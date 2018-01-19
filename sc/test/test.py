@@ -27,6 +27,24 @@ class SystemTest(unittest.TestCase):
         result = system_test(add_tests=[{'name': 'fail', 'test': fail_test}])
         self.assertFalse(result['message']['success'])
 
+class TestProbCalc(unittest.TestCase):
+    '''
+    Check the results of the probability calculation
+    '''
+    def test_lognorm(self):
+        '''
+        Pobability calculation
+        '''
+        result = lognorm_opt(med=.5, spread=.64, shaking=.5)
+        self.assertEqual(int(result), 50)
+        result = lognorm_opt(med=.5, spread=.64, shaking=10)
+        self.assertEqual(int(result), 100)
+        result = lognorm_opt(med=.5, spread=.64, shaking=1)
+        self.assertTrue(50 < result < 100)
+        result = lognorm_opt(med=.5, spread=.64, shaking=0)
+        self.assertTrue(0 < result < 50)
+
+
 class TestProductGrabber(unittest.TestCase):
     '''
     Test functions for the ProductGrabber class
@@ -270,6 +288,13 @@ class TestFull(unittest.TestCase):
         self.assertEqual(len(new_events), 3)
         self.assertEqual(len(new_shakemaps), 2)
 
+        # adjust event times to allow for processing
+        session = Session()
+        es = session.query(Event).all()
+        for e in es:
+            e.time = time.time()
+        session.commit()
+        Session.remove()
 
     def step06_createFacility(self):
         session = Session()
@@ -881,9 +906,9 @@ def create_fac(grid=None, fac_id='AUTO_GENERATED'):
     '''
     
     facility = Facility()
-    lat_adjust = abs((grid.lat_max - grid.lat_min) / 10)
-    lon_adjust = abs((grid.lon_max - grid.lon_min) / 10)
     if grid:
+        lat_adjust = abs((grid.lat_max - grid.lat_min) / 10)
+        lon_adjust = abs((grid.lon_max - grid.lon_min) / 10)
         facility.lat_min = grid.lat_min + lat_adjust
         facility.lat_max = facility.lat_min + (2 * lat_adjust)
         facility.lon_min = grid.lon_min + lon_adjust
