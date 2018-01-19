@@ -7,7 +7,11 @@ entries:
     folderitems:
       - title: Introduction
         output: web
-        url: /pycast_docs.html      
+        url: /pycast_docs.html     
+
+      - title: Calculating Potential Impacts
+        output: web
+        url: /exceedance.html 
         
       - title: AEBM Implementation
         output: web
@@ -16,3 +20,7 @@ entries:
       - title: Developer Documentation
         output: web
         url: /apidocs
+
+      - title: Test Suite
+        output: web
+        url: /pycast_testing.html

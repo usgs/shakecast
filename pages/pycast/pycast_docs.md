@@ -24,6 +24,28 @@ sudo pip install pycast-usgs
 sudo python -m shakecast start
 ~~~
 
+## Contributor Installation (GitHub)
+Contributors may want to install pyCast directly from GitHub to have the most updated code. 
+
+Download from GitHub:
+~~~
+git clone https://github.com/usgs/shakecast.git
+~~~
+
+Install the required Python libraries. Feel free to use a virtual environment!
+~~~
+pip install -r shakecast/requirements.txt
+~~~
+
+Start and stop pyCast directly:
+~~~
+sudo ./shakecast/admin/Linux/start_shakecast.sh
+
+sudo ./shakecast/admin/Linux/stop_shakecast.sh
+~~~
+
+## After Installation...
+
 In order to determine if ShakeCast has installed correctly, use your web browser to navigate to [your localhost](http://localhost). You can login using the default administrator account by entering "scadmin" for both the username and password.
 
 ## Inventory Setup
