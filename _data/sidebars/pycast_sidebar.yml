@@ -9,7 +9,7 @@ entries:
         output: web
         url: /pycast_docs.html     
 
-      - title: Probability Methodology
+      - title: Calculating Potential Impacts
         output: web
         url: /exceedance.html 
         
