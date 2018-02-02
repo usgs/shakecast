@@ -108,20 +108,7 @@ def get_messages():
     except Exception:
         messages = []
 
-    if len(messages) > 0:
-        count = 0
-        for message in messages:
-            int_time = int(time.time() + count)
-            app.config['MESSAGES'][int_time] = message
-            count += 1
-
-    int_time = int(time.time())
-    # remove messages after 5 minutes
-    for mes_time in app.config['MESSAGES'].keys():
-        if int_time - mes_time > 300:
-            del app.config['MESSAGES'][mes_time]
-
-    return json.dumps(app.config['MESSAGES'])
+    return json.dumps(messages)
 
 @app.route('/api/earthquake-data')
 @login_required
