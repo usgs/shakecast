@@ -40,16 +40,16 @@ export class NavComponent implements OnInit {
             .subscribe(x => {
                 if (!this.hovering) {
                     this.ignoreTime += .5;
-                    if (this.scrolled !== document.querySelector('body').scrollTop) {
-                        if (this.scrolled > (document.querySelector('body').scrollTop) || 
-                            (document.querySelector('body').scrollTop===0)) {
+                    if (this.scrolled !== document.scrollingElement.scrollTop) {
+                        if (this.scrolled > (document.scrollingElement.scrollTop) || 
+                            (document.scrollingElement.scrollTop===0)) {
                             // show the element
                             if (this.scrollUp === 'up') {
                                 console.log('scroll up');
                                 this.scrollUp = 'down';
                                 this.ignoreTime = 0;
                             }
-                        } else if (this.scrolled < document.querySelector('body').scrollTop) {
+                        } else if (this.scrolled < document.scrollingElement.scrollTop) {
                             // hide the element
                             if (this.scrollUp === 'down') {
                                 console.log('scroll down');
@@ -57,14 +57,14 @@ export class NavComponent implements OnInit {
                             }
                         }
 
-                        this.scrolled = document.querySelector('body').scrollTop
+                        this.scrolled = document.scrollingElement.scrollTop
                     }
                     
                     console.log(this.scrolled)
 
                     // hide the header after 5 seconds of ignoreTime 
                     // unless at the top of the page
-                    if ((this.ignoreTime > 5) && (document.querySelector('body').scrollTop!==0)) {
+                    if ((this.ignoreTime > 5) && (document.scrollingElement.scrollTop!==0)) {
                         this.scrollUp = 'up';
                     }
                 }

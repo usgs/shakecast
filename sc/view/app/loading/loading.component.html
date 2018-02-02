@@ -1,0 +1,8 @@
+<div *ngIf="loadingService.loading.length > 0" class="container">
+	<img class="spinning-icon" src="/static/sc_logo.png">
+	<div class="messages">
+		<div *ngFor="let data of loadingService.loading">
+			<h3 class="loading">Loading {{ data }}...</h3>
+		</div>
+	</div>
+</div>

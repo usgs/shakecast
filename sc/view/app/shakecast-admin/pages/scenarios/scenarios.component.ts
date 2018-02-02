@@ -3,6 +3,7 @@ import { Component,
          OnDestroy } from '@angular/core';
 import { TitleService } from '../../../title/title.service';
 import { EarthquakeService, Earthquake } from '../../../shakecast/pages/earthquakes/earthquake.service';
+import { FacilityService } from '../facilities/facility.service';
 
 import { showLeft, showRight, showBottom } from '../../../shared/animations/animations';
 
@@ -23,7 +24,8 @@ export class ScenariosComponent implements OnInit, OnDestroy {
     public showRight: string = 'hidden';
 
     constructor(private titleService: TitleService,
-                public eqService: EarthquakeService) {}
+                public eqService: EarthquakeService,
+                private facService: FacilityService) {}
 
     ngOnInit() {
         this.titleService.title.next('Scenarios');

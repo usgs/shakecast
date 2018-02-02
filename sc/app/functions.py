@@ -3,15 +3,15 @@ import sys
 import itertools
 import xml.etree.ElementTree as ET
 from email.mime.text import MIMEText
-from email.MIMEImage import MIMEImage
-from email.MIMEMultipart import MIMEMultipart
-from orm import *
-from objects import *
-from util import *
+from email.mime.image import MIMEImage
+from email.mime.multipart import MIMEMultipart
 import xmltodict
 import shutil
 import time
 from math import floor
+from orm import *
+from objects import *
+from util import *
 
 modules_dir = os.path.join(sc_dir() + 'modules')
 if modules_dir not in sys.path:
@@ -160,7 +160,7 @@ def process_events(events=None, session=None, scenario=False):
             all_groups_affected.update(groups_affected)
         
         if not groups_affected:
-            event.status = 'no groups'
+            event.status = 'processed - no groups'
             session.commit()
         else:
             event.status = 'processing_started'
@@ -191,8 +191,9 @@ def process_events(events=None, session=None, scenario=False):
                         .filter(Notification.status == 'created')
                         .filter(Notification.group_id == group.shakecast_id)
                         .all())
-            
-            filter_nots = filter(lambda x: x.event is not None, nots)
+
+            last_day = time.time() - 60 * 60 * 5
+            filter_nots = filter(lambda x: x.event is not None and x.event.time > last_day, nots)
             new_event_notification(notifications=filter_nots,
                                     scenario=scenario)
             processed_events = [n.event for n in filter_nots]
@@ -210,6 +211,7 @@ def process_shakemaps(shakemaps=None, session=None, scenario=False):
     Args:
         shakemaps (list): List of ShakeMap objects to process
         session (Session()): SQLAlchemy session
+        scenario (boolean): True for manually triggered events
     
     Returns:
         dict: a dictionary that contains information about the function run
@@ -228,6 +230,7 @@ def process_shakemaps(shakemaps=None, session=None, scenario=False):
                 continue
             
         shakemap.status = 'processing_started'
+
         # open the grid.xml file and find groups affected by event
         grid = create_grid(shakemap)
         if scenario is True:
@@ -244,7 +247,7 @@ def process_shakemaps(shakemaps=None, session=None, scenario=False):
                                     if not group.has_spec('scenario')]
         
         if not groups_affected:
-            shakemap.status = 'no groups'
+            shakemap.status = 'processed - no groups'
             session.commit()
             continue
         
@@ -297,7 +300,7 @@ def process_shakemaps(shakemaps=None, session=None, scenario=False):
                 if fac_shaking is False:
                     continue
                 
-                fac_shaking_lst[f_count] = Facility_Shaking(**fac_shaking)
+                fac_shaking_lst[f_count] = FacilityShaking(**fac_shaking)
                 f_count += 1
 
             # Remove all old shaking and add all fac_shaking_lst
@@ -335,7 +338,7 @@ def make_inspection_prios(facility=None,
         notifications (list): List of Notification objects which should be associated with the shaking
         
     Returns:
-        dict: A dictionary with all the parameters needed to make a Facility_Shaking entry in the database
+        dict: A dictionary with all the parameters needed to make a FacilityShaking entry in the database
         ::
             fac_shaking = {'gray': PDF Value,
                            'green': PDF Value,
@@ -345,8 +348,8 @@ def make_inspection_prios(facility=None,
                            'metric': which metric is used to compute PDF values,
                            'facility_id': shakecast_id of the facility that's shaking,
                            'shakemap_id': shakecast_id of the associated ShakeMap,
-                           '_shakecast_id': ID for the Facility_Shaking entry that will be created,
-                           'update': bool -- True if an ID already exists for this Facility_Shaking,
+                           '_shakecast_id': ID for the FacilityShaking entry that will be created,
+                           'update': bool -- True if an ID already exists for this FacilityShaking,
                            'alert_level': string ('gray', 'green', 'yellow' ...),
                            'weight': float that determines inspection priority,
                            'notifications': list of notifications associated with this shaking}
@@ -429,7 +432,7 @@ def new_event_notification(notifications = None,
     
     if len(you) > 0:
         if len(events) == 1:
-            msg['Subject'] = event.title.encode('utf-8')
+            subject = event.title.encode('utf-8')
         else:
             mags = []
             for e in events:
@@ -438,12 +441,13 @@ def new_event_notification(notifications = None,
                 else:
                     mags += [e.magnitude]
                     
-            msg['Subject'] = '{0} New Events -- Magnitudes: {1}'.format(len(events),
+            subject = '{0} New Events -- Magnitudes: {1}'.format(len(events),
                                                                         str(mags).replace("'", ''))
         
         if scenario is True:
-            msg['Subject'] = 'SCENARIO: ' + msg['Subject']
+            subject = 'SCENARIO: ' + subject
 
+        msg['Subject'] = subject
         msg['To'] = ', '.join(you)
         msg['From'] = me
         
@@ -512,11 +516,12 @@ def inspection_notification(notification=None,
             you = [user.email for user in group.users]
             
             if len(you) > 0:
-                msg['Subject'] = '{0} {1}'.format('Inspection - ', shakemap.event.title)
+                subject = '{0} {1}'.format('Inspection - ', shakemap.event.title)
 
                 if scenario is True:
-                    msg['Subject'] = 'SCENARIO: ' + msg['Subject']
+                    subject = 'SCENARIO: ' + subject
 
+                msg['Subject'] = subject
                 msg['To'] = ', '.join(you)
                 msg['From'] = me
                 
@@ -660,12 +665,48 @@ def create_grid(shakemap=None):
     grid.load(shakemap.directory_name + get_delim() + 'grid.xml')
     
     return grid    
-    
+
+def check_for_updates():
+    '''
+    Hits the USGS github for ShakeCast to determine if there are
+    updates. If there are new updates, the software updater will
+    email admin users to alert them
+    '''
+    status = ''
+    error = ''
+    update_required = None
+    try:
+        s = SoftwareUpdater()
+        update_required, notify, update_info = s.check_update()
+
+        if notify is True:
+            s.notify_admin(update_info=update_info)
+        status = 'finished'
+    except Exception as e:
+        error = str(e)
+        status = 'failed'
+
+    return {'status': status, 'message': update_required, 'error': error}
     
 #######################################################################
 ######################## Import Inventory Data ########################
 
 def import_master_xml(xml_file='', _user=None):
+    '''
+    Import an XML file created by the ShakeCast workbook; Facilities, Groups, and Users
+    
+    Args:
+        xml_file (string): The filepath to the xml_file that will be uploaded
+        _user (int): User id of admin making inventory changes
+        
+    Returns:
+        dict: a dictionary that contains information about the function run
+        ::
+            data = {'status': either 'finished' or 'failed',
+                    'message': message to be returned to the UI,
+                    'log': message to be added to ShakeCast log
+                           and should contain info on error}
+    '''
     fac_list = []
     group_list = []
     user_list = []
@@ -705,6 +746,7 @@ def import_facility_xml(xml_file='', _user=None):
     
     Args:
         xml_file (string): The filepath to the xml_file that will be uploaded
+        _user (int): User id of admin making inventory changes
         
     Returns:
         dict: a dictionary that contains information about the function run
@@ -726,6 +768,21 @@ def import_facility_xml(xml_file='', _user=None):
     return data
 
 def import_facility_dicts(facs=None, _user=None):
+    '''
+    Import a list of dicts containing facility info
+    
+    Args:
+        facs (list): facility dictionaries
+        _user (int): User id of admin making inventory changes
+        
+    Returns:
+        dict: a dictionary that contains information about the function run
+        ::
+            data = {'status': either 'finished' or 'failed',
+                    'message': message to be returned to the UI,
+                    'log': message to be added to ShakeCast log
+                           and should contain info on error}
+    '''
     session = Session()
     
     if isinstance(_user, int):
@@ -852,6 +909,8 @@ def import_group_xml(xml_file='', _user=None):
     
     Args:
         xml_file (string): The filepath to the xml_file that will be uploaded
+        _user (int): User id of admin making inventory changes
+
         
     Returns:
         dict: a dictionary that contains information about the function run
@@ -873,6 +932,21 @@ def import_group_xml(xml_file='', _user=None):
     return data
 
 def import_group_dicts(groups=None, _user=None):
+    '''
+    Import a list of dicts containing group info
+    
+    Args:
+        groups (list): group dictionaries
+        _user (int): User id of admin making inventory changes
+        
+    Returns:
+        dict: a dictionary that contains information about the function run
+        ::
+            data = {'status': either 'finished' or 'failed',
+                    'message': message to be returned to the UI,
+                    'log': message to be added to ShakeCast log
+                           and should contain info on error}
+    '''
     session = Session()
     
     if isinstance(_user, int):
@@ -984,6 +1058,7 @@ def import_user_xml(xml_file='', _user=None):
     
     Args:
         xml_file (string): The filepath to the xml_file that will be uploaded
+        _user (int): User id of admin making inventory changes
         
     Returns:
         dict: a dictionary that contains information about the function run
@@ -1004,6 +1079,21 @@ def import_user_xml(xml_file='', _user=None):
     return data
 
 def import_user_dicts(users=None, _user=None):
+    '''
+    Import a list of dicts containing user info
+    
+    Args:
+        users (list): user dictionaries
+        _user (int): User id of admin making inventory changes
+        
+    Returns:
+        dict: a dictionary that contains information about the function run
+        ::
+            data = {'status': either 'finished' or 'failed',
+                    'message': message to be returned to the UI,
+                    'log': message to be added to ShakeCast log
+                           and should contain info on error}
+    '''
     session = Session()
     
     if isinstance(_user, int):
@@ -1020,28 +1110,34 @@ def import_user_dicts(users=None, _user=None):
             u = session.query(User).filter(User.username == username).all()
             if u:
                 u = u[0]
-
-                # if this user has updated their info and a different user
-                # is uploading this XML; don't update their info...
-                if u.updated_by == u.username and _user.username != u.username:
-                    continue
             else:
                 u = User()
                 u.username = username
         
             u.group_string = user.get('GROUP', user.get('group_string', ''))
-            u.email = user.get('EMAIL_ADDRESS', user.get('email', ''))
             u.user_type = user.get('USER_TYPE', user.get('user_type', ''))
             u.full_name = user.get('FULL_NAME', user.get('full_name', ''))
             u.phone_number = user.get('PHONE_NUMBER', user.get('group_string', ''))
                     
             u.updated = time.time()
             if _user is not None:
-                u.updated_by = _user.username
+                if u.updated_by is None:
+                    u.updated_by = _user.username
+                elif _user.username not in u.updated_by:
+                    updated_lst = u.updated_by.split(',')
+                    updated_lst += [_user.username]
+                    u.updated_by = ','.join(updated_lst)
 
-            password = user.get('PASSWORD', user.get('password', None))
-            if password is not None:
-                u.password = generate_password_hash(password, method='pbkdf2:sha512')
+            # set the user's password and email if they haven't changed it
+            # themselves
+            if (u.updated_by is None or 
+                        _user is None or 
+                        u.username not in u.updated_by or 
+                        _user.username == u.username):
+                u.email = user.get('EMAIL_ADDRESS', user.get('email', ''))
+                password = user.get('PASSWORD', user.get('password', None))
+                if password is not None:
+                    u.password = generate_password_hash(password, method='pbkdf2:sha512')
 
             session.add(u)
         session.commit()
@@ -1061,6 +1157,10 @@ def import_user_dicts(users=None, _user=None):
     return data
 
 def determine_xml(xml_file=''):
+    '''
+    Determine what type of XML file this is; facility, group, 
+    user, master, or unknown
+    '''
     tree = ET.parse(xml_file)
     root = tree.getroot()
     
@@ -1183,7 +1283,7 @@ def get_facility_info(group_name='', shakemap_id=''):
             query = query.filter(Facility.groups.any(Group.name == group_name))
         if shakemap_id:
             query = (query.filter(Facility.shaking_history
-                                    .any(Facility_Shaking.shakemap
+                                    .any(FacilityShaking.shakemap
                                             .has(shakemap_id=shakemap_id))))
 
         query = query.filter(Facility.facility_type == f_type[0])
@@ -1194,22 +1294,7 @@ def get_facility_info(group_name='', shakemap_id=''):
     return f_dict
 
 
-def check_for_updates():
-    status = ''
-    error = ''
-    update_required = None
-    try:
-        s = SoftwareUpdater()
-        update_required, notify, update_info = s.check_update()
 
-        if notify is True:
-            s.notify_admin(update_info=update_info)
-        status = 'finished'
-    except Exception as e:
-        error = str(e)
-        status = 'failed'
-
-    return {'status': status, 'message': update_required, 'error': error}
 
 #######################################################################
 ########################## TEST FUNCTIONS #############################

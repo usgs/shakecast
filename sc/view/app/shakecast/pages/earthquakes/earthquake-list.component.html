@@ -22,15 +22,9 @@
                     </div>
                 </div>
             </div>
-            <div *ngIf="moreData" class="eq loading">
-                <loading></loading>
-            </div>
         </div>
         <div *ngIf="earthquakeData.length == 0" class="data-list-no-data-container">
             <h1 class="data-list-no-data">No Earthquake Data</h1>
         </div>
-    </div>
-    <div *ngIf="dataLoading">
-        <loading></loading>
     </div>
 </div>

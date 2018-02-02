@@ -23,7 +23,9 @@ export class ConfigComponent implements OnInit, OnDestroy {
     public utcTime: any = null;
     public offsetTime: any = null;
     public enteringNet: boolean = false;
-    public newNet: string = ''
+    public newNet: string = '';
+    public dbOptions: any[] = [{'name': 'SQLite', 'value': 'sqlite'},
+                                    {'name': 'MySQL', 'value': 'mysql'}];
 
     constructor(private confService: ConfigService,
                 public timeService: TimeService,

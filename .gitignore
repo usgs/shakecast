@@ -6,6 +6,7 @@ update-feed/
 modules/
 docs/
 pypy/
+dist/
 templates/inspection/*
 templates/new_event/*
 !default.json
@@ -16,3 +17,4 @@ templates/new_event/*
 *.db
 conf/sc_back.json
 *.DS_Store
+templates/

@@ -50,7 +50,9 @@ def client_app_angular2_folder(filename):
 def load_user(user_id):
     session = Session()
     user = session.query(User).filter(User.shakecast_id==int(user_id)).first()
-    
+
+    # Expunge here might help with Windows threading
+    #session.expunge(user)
     Session.remove()
     return user
 
@@ -165,7 +167,7 @@ def get_eq_data():
         if filter_.get('facility', None):
             query = (query.filter(ShakeMap
                                     .facility_shaking
-                                    .any(Facility_Shaking
+                                    .any(FacilityShaking
                                             .facility_id == filter_['facility']['shakecast_id'])))
 
     # get the time of the last earthquake in UI,
@@ -194,9 +196,8 @@ def get_eq_data():
 @login_required
 def get_shaking_events(facility_id):
     session = Session()
-    
     fac = session.query(Facility).filter(Facility.shakecast_id == facility_id).first()
-    eqs = [fs.shakemap.event for fs in fac.shaking_history]
+    eqs = [fs.shakemap.event for fs in fac.shaking_history if fs.shakemap is not None]
 
     eq_dicts = []
     for eq in eqs:
@@ -262,8 +263,8 @@ def get_fac_data():
 @login_required
 def get_shaking_data(facility_id, eq_id):
     session = Session()
-    shaking = (session.query(Facility_Shaking)
-                    .filter(Facility_Shaking
+    shaking = (session.query(FacilityShaking)
+                    .filter(FacilityShaking
                                 .shakemap
                                 .has(ShakeMap.shakemap_id == eq_id))
                     .first())
@@ -509,16 +510,19 @@ def event_image(event_id):
 @login_required
 def get_notification(event_id):
     session = Session()
-    nots = (session.query(Notification)
-                    .filter(or_(Notification.event_id == event_id,
-                                Notification.shakemap_id == event_id))
-                    .all())
+    event = session.query(Event).filter(Event.event_id == event_id).first()
 
     dicts = []
-    for obj in nots:
-        dict_ = obj.__dict__.copy()
-        dict_.pop('_sa_instance_state', None)
-        dicts += [dict_]
+    if event is not None:
+        nots = event.notifications
+        for sm in event.shakemaps:
+            nots += sm.notifications
+
+        for obj in nots:
+            dict_ = obj.__dict__.copy()
+            dict_.pop('_sa_instance_state', None)
+            dict_['group_name'] = obj.group.name
+            dicts += [dict_]
     
     json_ = json.dumps(dicts, cls=AlchemyEncoder)
     Session.remove()    
@@ -538,9 +542,9 @@ def get_settings():
     if request.method == 'POST':
         configs = request.json.get('configs', '')
         if configs:
-            sc.json = json.dumps(configs, indent=4)
-            if sc.validate() is True:
-                sc.save()
+            json_str = json.dumps(configs, indent=4)
+            if sc.validate(json_str) is True:
+                sc.save(json_str)
     return sc.json
 
 ############################ Admin Pages ##############################
@@ -678,18 +682,6 @@ def upload():
         image_files.save(request.files['file'])
 
     return 'file uploaded'
-
-@app.route('/admin/notification', methods=['GET','POST'])
-@admin_only
-@login_required
-def notification():
-    return render_template('admin/notification.html')
-
-@app.route('/admin/earthquakes')
-@admin_only
-@login_required
-def admin_eqs():
-    return render_template('admin/earthquakes.html')
 
 @app.route('/admin/api/groups/<group_id>/info')
 @admin_only

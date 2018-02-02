@@ -26,6 +26,22 @@
         </div>
 
         <div class="item">
+            <label for="db">Database: </label>
+            <select id="db" [(ngModel)]="configs.DBConnection.type">
+                <option *ngFor="let opt of dbOptions" [value]="opt.value">{{ opt.name }}</option>
+            </select>
+
+            <div *ngIf="configs.DBConnection.type == 'mysql'">
+                <h3 id="db-str">
+                    {{configs.DBConnection.username}}:{{'*'.repeat(configs.DBConnection.password.length)}}@{{configs.DBConnection.server}}/pycast
+                    </h3>
+                <input placeholder="Username" type="text" [(ngModel)]="configs.DBConnection.username">
+                <input placeholder="Password" type="password" [(ngModel)]="configs.DBConnection.password">
+                <input placeholder="Server" type="text" [(ngModel)]="configs.DBConnection.server">
+            </div>
+        </div>
+
+        <div class="item">
             <label for="proxy">Use a proxy: </label>
             <input type="checkbox" 
                         id="proxy" 

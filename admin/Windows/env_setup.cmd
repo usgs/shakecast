@@ -18,3 +18,5 @@ C:\Python27\python.exe -m pip install --no-deps SQLAlchemy-1.0.14.tar.gz
 C:\Python27\python.exe -m pip install --no-deps xmltodict-0.10.2.tar.gz
 
 C:\Python27\python.exe -m pip install --no-deps pypiwin32-219-cp27-none-win32.whl
+
+pause

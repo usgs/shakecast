@@ -5,7 +5,10 @@ if [[ $UID != 0 ]]; then
     exit 1
 fi
 
-./stop_shakecast
+script_dir=$(dirname "$0")
+cd $script_dir
+
+./stop_shakecast.sh
 echo "Waiting..."
 sleep 5
-./start_shakecast
+./start_shakecast.sh

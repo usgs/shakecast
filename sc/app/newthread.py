@@ -2,21 +2,21 @@ import threading
 import time
 import pdb
 
-class New_Thread(threading.Thread):
+class NewThread(threading.Thread):
     
     """
-    A New_Thread is built from a threading.thread with the added
+    A NewThread is built from a threading.thread with the added
     functionality of looping and intuitive argument passing
     
     Usage:
     ::
-        >>>new_thread = New_Thread(func=func, args_in=kwargs)
+        >>>new_thread = NewThread(func=func, args_in=kwargs)
         >>>new_thread.start()
     
     """
     
     def __init__(self, func, args_in=None, loop=False, loop_time=5, use_pdb=False):
-        super(New_Thread, self).__init__()
+        super(NewThread, self).__init__()
         self._stop = threading.Event()
         self.func = func
         self.args_in = args_in

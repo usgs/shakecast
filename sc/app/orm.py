@@ -70,7 +70,7 @@ class Facility(Base):
     updated = Column(Integer)
     updated_by = Column(String(32))
     
-    shaking_history = relationship('Facility_Shaking',
+    shaking_history = relationship('FacilityShaking',
                         backref='facility',
                         cascade='save-update, delete, delete-orphan')
     
@@ -122,7 +122,7 @@ class Facility(Base):
     def make_alert_level(self, shaking_point=None, shakemap=None):
         '''
         Create a dictionary that contains all the information for a
-        Facility_Shaking entry in the database
+        FacilityShaking entry in the database
         '''
         shaking_level = shaking_point.get(self.metric, None)
 
@@ -147,7 +147,7 @@ class Facility(Base):
             fac_shake['alert_level'] = 'gray'
         
         else:
-            # add shaking levels to fac_shake:
+            # add shaking levels to fac_shake for record in db
             for metric in shaking_point.keys():
                 fac_shake[metric] = shaking_point[metric]
                 
@@ -161,22 +161,27 @@ class Facility(Base):
             large_prob = 0
             for level in fragility:
                 
+                # skips non-user-defined levels 
                 if level['med'] < 0 or level['spread'] < 0:
                     continue
                 
+                # calculate probability of exceedence
                 p = lognorm_opt(med=level['med'],
                                 spread=level['spread'],
                                 shaking=shaking_level)
                 
+                # alter based on total probability of higher states
                 p -= prob_sum
                 prob_sum += p
                 fac_shake[level['level']] = p
                 
+                # keep track of the largest probability
                 if p > large_prob:
                     large_prob = p
                     fac_shake['alert_level'] = level['level']
                     fac_shake['weight'] = level['rank'] + (p / 100)
-                    
+            
+            # put remaining exceedance into grey damage state
             fac_shake['gray'] = 100 - prob_sum
             if fac_shake['gray'] > large_prob:
                 fac_shake['alert_level'] = 'gray'
@@ -261,7 +266,7 @@ class Facility(Base):
                         cls.lat_max > grid.lat_max))
   
     
-class Facility_Shaking(Base):
+class FacilityShaking(Base):
     __tablename__ = 'facility_shaking'
     shakecast_id = Column(Integer, primary_key=True)
     shakemap_id = Column(Integer, ForeignKey('shakemap.shakecast_id'))
@@ -293,10 +298,10 @@ class Facility_Shaking(Base):
                 move_on[k] = kwargs[k]
 
         # now let sqlalchemy do the real initialization
-        super(Facility_Shaking, self).__init__(**move_on)
+        super(FacilityShaking, self).__init__(**move_on)
     
     def __repr__(self):
-        return '''Facility_Shaking(shakemap_id=%s,
+        return '''FacilityShaking(shakemap_id=%s,
                                    facility_id=%s,
                                    metric=%s,
                                    alert_level=%s,
@@ -327,9 +332,6 @@ class Facility_Shaking(Base):
                                                    self.psa03,
                                                    self.psa10,
                                                    self.psa30)
-                                   
-    def __str__(self):
-        return ""
     
     
 #######################################################################
@@ -345,13 +347,13 @@ class Notification(Base):
     status = Column(String(64))
     notification_file = Column(String(255))
     
-    def __rept__(self):
+    def __repr__(self):
         return '''Notification(shakemap_id=%s,
-                               group_name=%s,
+                               group_id=%s,
                                notification_type=%s,
                                status=%s,
                                notification_file=%s)''' % (self.shakemap_id,
-                                                             self.group_name,
+                                                             self.group_id,
                                                              self.notification_type,
                                                              self.status,
                                                              self.notification_file)
@@ -368,7 +370,7 @@ class User(Base):
     user_type = Column(String(10))
     group_string = Column(String(1000))
     updated = Column(Integer)
-    updated_by = Column(String(32))
+    updated_by = Column(String(1000))
 
     groups = relationship('Group',
                           secondary='user_group_connection',
@@ -540,15 +542,6 @@ class Group(Base):
         specs = [s.notification_type.lower() for s in self.specs]
         event_types = [s.event_type.lower() for s in self.specs]
         return bool(not_type.lower() in specs + event_types)
-        
-    @has_spec.expression   
-    def has_spec(cls, not_type=''):
-        specs = [s.notification_type.lower() for s in cls.specs]
-        event_types = [s.event_type.lower() for s in cls.specs]
-        if not_type.lower() in specs + event_types:
-            return 1 == 1
-        else:
-            return 0 == 1
 
     def has_alert_level(self, level):
         # grey groups get no-inspection notifications
@@ -655,7 +648,7 @@ facility_group_connection = Table('facility_group_connection', Base.metadata,
 class Event(Base):
     __tablename__ = 'event'
     shakecast_id = Column(Integer, primary_key=True)
-    event_id = Column(String(20))
+    event_id = Column(String(80))
     status = Column(String(64))
     all_event_ids = Column(String(255))
     lat = Column(Float)
@@ -756,10 +749,10 @@ class ShakeMap(Base):
     notifications = relationship('Notification',
                                  backref = 'shakemap')
 
-    facility_shaking = relationship('Facility_Shaking',
+    facility_shaking = relationship('FacilityShaking',
                                     backref='shakemap',
-                                    order_by='Facility_Shaking.weight.desc()',
-                                    cascade='save-update, delete')
+                                    order_by='FacilityShaking.weight.desc()',
+                                    cascade='save-update, delete, delete-orphan')
     
     def __repr__(self):
         return '''ShakeMap(shakemap_id=%s,
@@ -826,7 +819,7 @@ class ShakeMap(Base):
             return True
            
     def has_products(self, req_prods):
-        shakemap_prods = [prod.product_type for prod in self.products if prod.error is None]
+        shakemap_prods = [prod.product_type for prod in self.products if prod.status == 'downloaded' and prod.error is None]
         for prod in req_prods:
             if prod not in shakemap_prods:
                 return False
@@ -898,14 +891,16 @@ if sc.dict['DBConnection']['type'] == 'sqlite' or testing is True:
     engine = create_engine('sqlite:///%s' % os.path.join(directory, db_name))
 elif sc.dict['DBConnection']['type'] == 'mysql':
     try:
-        db_str = 'mysql://{}:{}@localhost/pycast'.format(sc.dict['DBConnection']['username'],
-                                                         sc.dict['DBConnection']['password'])
+        db_str = 'mysql://{}:{}@{}/pycast'.format(sc.dict['DBConnection']['username'],
+                                                         sc.dict['DBConnection']['password'],
+                                                         sc.dict['DBConnection']['server'])
         engine = create_engine(db_str)
         engine.execute('USE pycast')
     except Exception:
         # db doesn't exist yet, let's create it
-        server_str = 'mysql://{}:{}@localhost'.format(sc.dict['DBConnection']['username'],
-                                                      sc.dict['DBConnection']['password'])
+        server_str = 'mysql://{}:{}@{}'.format(sc.dict['DBConnection']['username'],
+                                                      sc.dict['DBConnection']['password'],
+                                                      sc.dict['DBConnection']['server'])
         engine = create_engine(server_str)
         engine.execute("CREATE DATABASE pycast")
         engine.execute("USE pycast")
