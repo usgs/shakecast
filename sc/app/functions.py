@@ -432,7 +432,7 @@ def new_event_notification(notifications = None,
     
     if len(you) > 0:
         if len(events) == 1:
-            msg['Subject'] = event.title.encode('utf-8')
+            subject = event.title.encode('utf-8')
         else:
             mags = []
             for e in events:
@@ -441,12 +441,13 @@ def new_event_notification(notifications = None,
                 else:
                     mags += [e.magnitude]
                     
-            msg['Subject'] = '{0} New Events -- Magnitudes: {1}'.format(len(events),
+            subject = '{0} New Events -- Magnitudes: {1}'.format(len(events),
                                                                         str(mags).replace("'", ''))
         
         if scenario is True:
-            msg['Subject'] = 'SCENARIO: ' + msg['Subject']
+            subject = 'SCENARIO: ' + subject
 
+        msg['Subject'] = subject
         msg['To'] = ', '.join(you)
         msg['From'] = me
         
@@ -515,11 +516,12 @@ def inspection_notification(notification=None,
             you = [user.email for user in group.users]
             
             if len(you) > 0:
-                msg['Subject'] = '{0} {1}'.format('Inspection - ', shakemap.event.title)
+                subject = '{0} {1}'.format('Inspection - ', shakemap.event.title)
 
                 if scenario is True:
-                    msg['Subject'] = 'SCENARIO: ' + msg['Subject']
+                    subject = 'SCENARIO: ' + subject
 
+                msg['Subject'] = subject
                 msg['To'] = ', '.join(you)
                 msg['From'] = me
                 
