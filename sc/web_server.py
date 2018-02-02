@@ -813,7 +813,10 @@ def get_file_type(file_name):
 
 def start():
     sc = SC()
-    app.run(host='0.0.0.0', port=sc.dict['web_port'], threaded=True)
+    
+    # don't start the web server if we're letting an extension do it
+    if 'web_server' not in sc.dict['extensions']:
+        app.run(host='0.0.0.0', port=sc.dict['web_port'], threaded=True)
 
 if __name__ == '__main__':
     if len(sys.argv) > 1:
