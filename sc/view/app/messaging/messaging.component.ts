@@ -38,13 +38,15 @@ export class MessagingComponent implements OnInit, OnDestroy {
                 messageTime = 0;
             }
 
-            for (let messTime in messages) {
-                let numTime = parseInt(messTime);
-                if (numTime > messageTime) {
-                    // Print message
-                    this.makeNotification(messages[messTime]);
-                    if (numTime > maxTime) {
-                        maxTime = numTime;
+            for (let idx in messages) {
+                for (let messTime in messages[idx]) {
+                    let numTime = parseInt(messTime);
+                    if (numTime > messageTime) {
+                        // Print message
+                        this.makeNotification(messages[idx][messTime]);
+                        if (numTime > maxTime) {
+                            maxTime = numTime;
+                        }
                     }
                 }
             }

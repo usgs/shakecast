@@ -110,20 +110,7 @@ def get_messages():
     except Exception:
         messages = []
 
-    if len(messages) > 0:
-        count = 0
-        for message in messages:
-            int_time = int(time.time() + count)
-            app.config['MESSAGES'][int_time] = message
-            count += 1
-
-    int_time = int(time.time())
-    # remove messages after 5 minutes
-    for mes_time in app.config['MESSAGES'].keys():
-        if int_time - mes_time > 300:
-            del app.config['MESSAGES'][mes_time]
-
-    return json.dumps(app.config['MESSAGES'])
+    return json.dumps(messages)
 
 @app.route('/api/earthquake-data')
 @login_required
@@ -829,7 +816,10 @@ def get_file_type(file_name):
 
 def start():
     sc = SC()
-    app.run(host='0.0.0.0', port=sc.dict['web_port'], threaded=True)
+    
+    # don't start the web server if we're letting an extension do it
+    if 'web_server' not in sc.dict['extensions']:
+        app.run(host='0.0.0.0', port=sc.dict['web_port'], threaded=True)
 
 if __name__ == '__main__':
     if len(sys.argv) > 1:

@@ -26,7 +26,7 @@
         "update": {
             "json_url": "https://raw.githubusercontent.com/usgs/shakecast/master/update.json", 
             "db_version": 1, 
-            "update_version": "4.0.0rc3",
+            "update_version": "4.0.0rc3", 
             "admin_notified": true, 
             "software_version": "4.0.0rc3"
         }, 
@@ -34,6 +34,7 @@
         "name": "ShakeCast"
     }, 
     "map_key": "pk.eyJ1IjoiZHNsb3NreSIsImEiOiJjaXR1aHJnY3EwMDFoMnRxZWVtcm9laWJmIn0.1C3GE0kHPGOpbVV9kTxBlQ", 
+    "extensions": [], 
     "Proxy": {
         "username": "", 
         "use": false, 

@@ -52,6 +52,7 @@ class Server(object):
         self.ui_open = False
         self.last_task = 0
         self.db_open = True
+        self.messages = {}
         
         self.log_file = os.path.join(sc_dir(),
                                     'logs',
@@ -226,10 +227,12 @@ class Server(object):
                 server_log = 'Task: {} :: failed to run \n{}: {}'.format(task.name,
                                                                          type(task.error),
                                                                          task.error)
-            
+
+            int_time = int(time.time())
+            self.messages[int_time] = out_str
             if task.id in self.connections.keys():
                 conn = self.connections[task.id]
-                conn.send(str(out_str))
+                conn.send(str(self.messages))
                 conn.close()
 
             task.status = 'complete'
@@ -273,6 +276,13 @@ class Server(object):
                 
         self.connections = new_conns
         self.queue = new_queue
+
+        int_time = int(time.time())
+        # remove messages after 5 minutes
+        for mes_time in self.messages.keys():
+            if int_time - mes_time > 300:
+                del self.messages[mes_time]
+
         
     def info(self):
         """
