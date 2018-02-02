@@ -34,6 +34,7 @@
         "name": "ShakeCast"
     }, 
     "map_key": "pk.eyJ1IjoiZHNsb3NreSIsImEiOiJjaXR1aHJnY3EwMDFoMnRxZWVtcm9laWJmIn0.1C3GE0kHPGOpbVV9kTxBlQ", 
+    "extensions": [], 
     "Proxy": {
         "username": "", 
         "use": false, 
@@ -68,6 +69,5 @@
     "Logging": {
         "level": "info"
     }, 
-    "port": 1981,
-    "extensions": []
+    "port": 1981
 }
