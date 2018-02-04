@@ -105,7 +105,8 @@ def index():
 @app.route('/api/messages')
 @login_required
 def get_messages():
-    fname = 'app/server-messages.json'
+    fname = os.path.join(sc_dir(), 'app', 'server-messages.json')
+    
     # ignore if file doesn't exist
     if os.path.isfile(fname):
         with open(fname) as file_:

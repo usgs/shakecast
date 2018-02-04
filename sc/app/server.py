@@ -461,7 +461,7 @@ class Server(object):
 
 
     def record_messages(self):
-        fname = 'server-messages.json'
+        fname = os.path.join(sc_dir(), 'app', 'server-messages.json')
 
         # initialize file if it doesn't exist
         if not os.path.isfile(fname):
