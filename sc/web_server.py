@@ -111,7 +111,7 @@ def get_messages():
         with open(fname) as file_:
             messages = file_.read()
     else:
-        messages = {}
+        messages = '{}'
 
     return messages
 
