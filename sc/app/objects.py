@@ -1228,7 +1228,8 @@ class SoftwareUpdater(object):
         sc = SC()
         new_dict = json.loads(new)
 
-        new_dict.update(sc.dict)
+        # map old configs on top of new to retain user settings
+        merge_dicts(new_dict, sc.dict)
         sc.dict = new_dict
         sc.save_dict()
         
