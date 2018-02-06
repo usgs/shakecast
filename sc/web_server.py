@@ -105,12 +105,16 @@ def index():
 @app.route('/api/messages')
 @login_required
 def get_messages():
-    try:
-        messages = ui.get_message()
-    except Exception:
-        messages = []
+    fname = os.path.join(sc_dir(), 'app', 'server-messages.json')
+    
+    # ignore if file doesn't exist
+    if os.path.isfile(fname):
+        with open(fname) as file_:
+            messages = file_.read()
+    else:
+        messages = '{}'
 
-    return json.dumps(messages)
+    return messages
 
 @app.route('/api/earthquake-data')
 @login_required

@@ -3,6 +3,8 @@ import select as select_
 import time
 import os
 import sys
+import json
+
 from newthread import NewThread
 from task import Task
 import functions as f
@@ -235,6 +237,7 @@ class Server(object):
                 conn.send(str(self.messages))
                 conn.close()
 
+            self.record_messages()
             task.status = 'complete'
 
         else:
@@ -455,6 +458,36 @@ class Server(object):
 
         # and run it
         os.system(restart)
+
+
+    def record_messages(self):
+        fname = os.path.join(sc_dir(), 'app', 'server-messages.json')
+
+        # initialize file if it doesn't exist
+        if not os.path.isfile(fname):
+            with open(fname, 'w') as file_:
+                file_.write('{}')
+
+        with open(fname, 'r') as file_:
+            current_messages_str = file_.read()
+
+        keep_messages = {}
+        if current_messages_str:
+            current_messages = json.loads(current_messages_str)
+
+            # figure out which current messages we should keep
+            for key in current_messages.keys():
+                if int(key) > time.time() - 300:
+                    keep_messages[key] = current_messages[key]
+
+        # add current messages
+        for key in self.messages.keys():
+            keep_messages[key] = self.messages[key]
+
+        keep_messages_str = json.dumps(keep_messages, indent=4)
+        with open(fname, 'w') as file_:
+            file_.write(keep_messages_str)
+        
             
 if __name__ == '__main__':
     logging.info('start')
