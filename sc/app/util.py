@@ -4,6 +4,7 @@ import json
 import datetime
 import time
 from shutil import copyfile
+import collections
 
 DAY = 60 * 60 * 24
 
@@ -295,3 +296,21 @@ def lognorm_opt(med=0, spread=0, shaking=0):
     
     p_norm = (math.erf((shaking-med)/(math.sqrt(2) * spread)) + 1)/2
     return p_norm * 100
+
+def merge_dicts(dct, merge_dct):
+    """ Recursive dict merge. Inspired by :meth:``dict.update()``, instead of
+    updating only top-level keys, merge_dicts recurses down into dicts nested
+    to an arbitrary depth, updating keys. The ``merge_dct`` is merged into
+    ``dct``.
+    :param dct: dict onto which the merge is executed
+    :param merge_dct: dct merged into dct
+    :return: None
+
+    @angstwad: https://gist.github.com/angstwad/bf22d1822c38a92ec0a9
+    """
+    for k in merge_dct:
+        if (k in dct and isinstance(dct[k], dict)
+                and isinstance(merge_dct[k], collections.Mapping)):
+            merge_dicts(dct[k], merge_dct[k])
+        else:
+            dct[k] = merge_dct[k]

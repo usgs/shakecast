@@ -1197,9 +1197,14 @@ class SoftwareUpdater(object):
                 norm_file_path = os.path.normpath(file_path)
 
                 # open the file
-                file_to_update = open(norm_file_path, 'w')
-                file_to_update.write(text_file)
-                file_to_update.close()
+                if 'sc.json' not in file_['path']:
+                    # normal text file
+                    file_to_update = open(norm_file_path, 'w')
+                    file_to_update.write(text_file)
+                    file_to_update.close()
+                else:
+                    # json configs require special update
+                    self.update_configs(text_file)
 
                 if self.check_new_update(file_['version'], version):
                     version = file_['version']
@@ -1212,6 +1217,23 @@ class SoftwareUpdater(object):
             sc.save_dict()
 
         return success, failed
+
+    @staticmethod
+    def update_configs(new):
+        """
+        Add new configurations, but keep users' changes intact. This will
+        have the wrong version number, which will have to be overwritten
+        later
+        """
+        sc = SC()
+        new_dict = json.loads(new)
+
+        # map old configs on top of new to retain user settings
+        merge_dicts(new_dict, sc.dict)
+        sc.dict = new_dict
+        sc.save_dict()
+        
+
 
     def condense_files(self, update_list):
         files = {}
