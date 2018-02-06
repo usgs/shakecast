@@ -894,8 +894,7 @@ elif sc.dict['DBConnection']['type'] == 'mysql':
         db_str = 'mysql://{}:{}@{}/pycast'.format(sc.dict['DBConnection']['username'],
                                                          sc.dict['DBConnection']['password'],
                                                          sc.dict['DBConnection']['server'])
-        engine = create_engine(db_str)
-        engine.execute('USE pycast')
+        
     except Exception:
         # db doesn't exist yet, let's create it
         server_str = 'mysql://{}:{}@{}'.format(sc.dict['DBConnection']['username'],
@@ -903,10 +902,11 @@ elif sc.dict['DBConnection']['type'] == 'mysql':
                                                       sc.dict['DBConnection']['server'])
         engine = create_engine(server_str)
         engine.execute("CREATE DATABASE pycast")
-        engine.execute("USE pycast")
 
+    finally:
         # try to get that connection going again
-        engine = create_engine(db_str)
+        engine = create_engine(db_str, pool_recycle=3600)
+        engine.execute('USE pycast')
 
 # if we're testing, we want to drop all existing database info to test
 # from scratch

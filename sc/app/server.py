@@ -466,7 +466,7 @@ class Server(object):
         # initialize file if it doesn't exist
         if not os.path.isfile(fname):
             with open(fname, 'w') as file_:
-                fname.write('{}')
+                file_.write('{}')
 
         with open(fname, 'r') as file_:
             current_messages_str = file_.read()

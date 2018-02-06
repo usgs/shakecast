@@ -10,7 +10,7 @@ Usage: python sc_config.py -[flag] -value
 '''
 
 import argparse
-from objects import SC
+from util import SC
 import json
 
 def sc_config(new_configs={}):
