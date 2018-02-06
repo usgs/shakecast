@@ -1228,8 +1228,8 @@ class SoftwareUpdater(object):
         sc = SC()
         new_dict = json.loads(new)
 
-        updated = new_dict.update(sc.dict)
-        sc.dict = updated
+        new_dict.update(sc.dict)
+        sc.dict = new_dict
         sc.save_dict()
         
 
