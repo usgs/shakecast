@@ -4,7 +4,9 @@
         "info": "TEST UPDATE",
         "files": [
             {"url": "https://raw.githubusercontent.com/usgs/shakecast/master/sc/app/functions.py",
-             "path": "sc/app/functions-test.py"}
+             "path": "sc/app/functions-test.py"},
+            {"url": "https://raw.githubusercontent.com/usgs/shakecast/master/sc/conf/sc.json",
+             "path": "sc/conf/sc.json"}
         ]}
     ]
 }
