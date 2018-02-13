@@ -27,7 +27,7 @@ log = logging.getLogger('werkzeug')
 log.setLevel(logging.ERROR)
 
 BASE_DIR = os.path.join(sc_dir(),'view')
-STATIC_DIR = os.path.join(sc_dir(),'view','static')
+STATIC_DIR = os.path.join(sc_dir(),'view','assets')
 app = Flask(__name__,
             template_folder=BASE_DIR,
             static_folder=STATIC_DIR)

@@ -416,7 +416,7 @@ def new_event_notification(notifications = None,
     temp_manager = TemplateManager()
     configs = temp_manager.get_configs('new_event', 
                                         name=notification.group.template)
-    logo_str = os.path.join(sc_dir(),'view','static',configs['logo'])
+    logo_str = os.path.join(sc_dir(),'view','assets',configs['logo'])
     
     # open logo and attach it to the message
     logo_file = open(logo_str, 'rb')
@@ -501,7 +501,7 @@ def inspection_notification(notification=None,
             temp_manager = TemplateManager()
             configs = temp_manager.get_configs('inspection', 
                                         name=notification.group.template)
-            logo_str = os.path.join(sc_dir(),'view','static',configs['logo'])
+            logo_str = os.path.join(sc_dir(),'view','assets',configs['logo'])
             
             # open logo and attach it to the message
             logo_file = open(logo_str, 'rb')
