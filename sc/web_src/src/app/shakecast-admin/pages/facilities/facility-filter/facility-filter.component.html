@@ -1,0 +1,18 @@
+<div class="control">
+    <div class="buttons-container">
+        <h3 class="button" (click)="selectAll()">Select All</h3>
+        <h3 class="button" (click)="unselectAll()">Unselect All</h3>
+        <h3 class="button" (click)="deleteFacs()">Delete Selected</h3>
+    </div>
+</div>
+<div class="filter-form">
+    <div class="form-container">
+        <input [(ngModel)]="filter.keywords" placeholder="Keywords">
+        <input [(ngModel)]="filter.latMin" placeholder="Min Latitude">
+        <input [(ngModel)]="filter.latMax" placeholder="Max Latitude">
+        <input [(ngModel)]="filter.lonMin" placeholder="Min Longitude">
+        <input [(ngModel)]="filter.lonMax" placeholder="Max Longitude">
+    </div>
+
+    <h3 class="button search" (click)="search()">Search</h3>
+</div>

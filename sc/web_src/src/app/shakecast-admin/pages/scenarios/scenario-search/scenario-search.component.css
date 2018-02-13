@@ -1,0 +1,45 @@
+.title, label, p, th {
+    color: white
+}
+
+.title {
+    text-align: center;
+}
+
+input, select, th {
+    font-size: 15px;
+}
+
+.date input {
+    width: 6em;
+}
+
+.section {
+    border-bottom: 5px dashed #55aaee;
+    padding: 5px;
+    margin: 5px;
+}
+
+.item {
+    display: inline-block;
+    margin: 5px;
+    border: 2px solid #55aaee;
+    border-radius: 5px;
+    padding: 10px;
+    box-shadow: 1px 1px 5px 1px rgba(0,0,0,0.3);
+    -webkit-box-shadow: 1px 1px 5px 1px rgba(0,0,0,0.3);
+    -moz-box-shadow: 1px 1px 5px 1px rgba(0,0,0,0.3);
+}
+
+#to {
+    display: inline-block;
+    font-size: 15px;
+}
+
+.event-type {
+    border: 3px solid #ffffff;
+}
+
+.event-type.selected, .event-type:hover {
+    border: 3px solid #55aaee;
+}

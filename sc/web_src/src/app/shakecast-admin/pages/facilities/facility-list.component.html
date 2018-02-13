@@ -1,0 +1,45 @@
+<div class="data-list-inner-container">
+    <div *ngIf="!loadingData">
+        <div *ngIf="facilityData.length > 0">
+            <div class="data" 
+                    [@selected]="fac?.selected" 
+                    *ngFor="let fac of shownFacilityData" 
+                    (click)="clickFac(fac)">
+                <div [@headerSelected]="fac?.selected" class="data-header" [style.border]="'5px solid ' + fac?.shaking?.alert_level">
+                    <h3>{{ fac.name }}</h3>
+                </div>
+                <div class="data-body">
+                    <div class="data-info-container">
+                        <table class="container-table">
+                            <tr>
+                                <th>Type: </th><td><p>{{ fac.facility_type }}</p></td>
+                            </tr>
+                            <tr>
+                                <th>Location: </th><td><p>{{ (fac.lat_max + fac.lat_min) / 2 }}, {{ (fac.lon_max + fac.lon_min) / 2 }}</p></td>
+                            </tr>
+                        </table>
+                        <div class="updated">
+                            <p>Updated: {{ fac.updated * 1000 | date }}</p>
+                            <p>|</p>
+                            <p>{{ fac.updated_by }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="data load-more">
+                <div class="load-more-button" (click)="loadMore()">
+                    <h1>Load More</h1>
+                </div>
+            </div>
+        </div>
+        <div *ngIf="facilityData.length == 0">
+            <h1 class="data-list-no-data">No Facilities</h1>
+
+            <h2 *ngIf="_router.url === '/shakecast-admin/facilities'" 
+                class="data-list-no-data">
+                (Drag and drop XML files here to upload)
+            </h2>
+            
+        </div>
+    </div>
+</div>

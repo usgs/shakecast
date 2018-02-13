@@ -1,0 +1,138 @@
+<div class="container">
+    <div class="not-column column">
+        <div class="notification" #notificationContainer></div>
+    </div>
+
+    <div class="conf-column column">
+        <div class="conf-content-container">
+            <div class="conf-content" stickToTop>
+                <div class="section">
+                    <div class="item" *ngIf="!enteringNew">
+                        <label for="notDropdown">Pick a template: </label>
+                        <select class="not-dropdown" id="notDropdown" 
+                                                        [(ngModel)]="name" 
+                                                        (change)="getNotification(name, eventType)">
+                            <option *ngFor="let eachName of tempNames" [ngValue]="eachName">{{ eachName }}</option>
+                        </select>
+                    </div>
+
+                    <div class="item">
+                        <label for="newTemplate" *ngIf="!enteringNew">Or</label>
+                        <h3 class="button" id="newTemplate" *ngIf="!enteringNew" (click)="enteringNew=true">Create a New Template</h3>
+                        
+                        <label for="templateName" *ngIf="enteringNew">Creating New Template</label>
+                        <input class="template-name" id="templateName"
+                            *ngIf="enteringNew" 
+                            [(ngModel)]="newName"
+                            placeholder="Give it a name, then hit enter">
+                        <h3 class="button"
+                            *ngIf="enteringNew"
+                            (click)="enteringNew=False">Cancel</h3>
+                    </div>
+
+                    <div class="item">
+                        <h3 class="conf event-type button" 
+                                [ngClass]="{'selected': eventType=='new_event'}"
+                                (click)="getNotification(name, 'new_event')">
+                            New Event
+                        </h3>
+                        <h3 class="conf event-type button"
+                                [ngClass]="{'selected': eventType=='inspection'}"
+                                (click)="getNotification(name, 'inspection')">
+                            Facilities
+                        </h3>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h1 class="header">Header</h1>
+                    <div class="item"
+                                *ngIf="config.logo" >
+                        <p class="label">Logo: </p>
+                        <select [(ngModel)]="config.logo">
+                            <option [value]="name" *ngFor="let name of imageNames">
+                                {{ name }}
+                            </option>
+                        </select>
+                    </div>
+                    <div class="item">
+                        <p class="label">Title:</p><input class="conf" *ngIf="config" [(ngModel)]="config.head_text">
+                    </div>
+                    <div class="item">
+                        <p class="label">Body Color: </p><input class="conf" *ngIf="config" [(ngModel)]="config.body_color">
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h1 class="header">Label</h1>
+                    <div class="item"
+                                *ngIf="config.section_head" >
+                        <p class="label">Background Color: </p>
+                        <input class="conf" 
+                                [(ngModel)]="config.section_head.back_color">
+                    </div>
+                    <div class="item"
+                                *ngIf="config.section_head" >
+                        <p class="label">Font Color: </p>
+                        <input class="conf" 
+                                [(ngModel)]="config.section_head.font_color">
+                    </div>
+                </div>
+                
+                <div class="section" *ngIf="config.intro">
+                    <h1 class="header">Introduction</h1>
+                    <div class="item">
+                        <p class="label">Font Color: </p>
+                        <input class="conf" 
+                                [(ngModel)]="config.intro.font_color">
+                    </div>
+                    <div class="item"
+                                *ngIf="config.intro" >
+                        <p class="label">Background Color: </p>
+                        <input class="conf" 
+                                [(ngModel)]="config.intro.back_color">
+                    </div>
+                    <div class="item"
+                                    *ngIf="config.intro" >
+                        <p class="label">Text: </p>
+                        <textarea
+                                    [(ngModel)]="config.intro.text">
+                        </textarea>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h1 class="header">Table</h1>
+                    <div class="item"
+                                *ngIf="config.section_head" >
+                        <p class="label">Title Color: </p>
+                        <input class="conf" 
+                                [(ngModel)]="config.second_head.font_color">
+                    </div>
+                    <div *ngIf="eventType=='inspection'">
+                        <label>Facility Content:</label>
+                            <div class="item"
+                                *ngFor="let field of config.table_head">
+                                
+                                <input type="checkbox" [(ngModel)]="field.use">
+                                <p>{{ field.val }}</p>
+
+                            </div>
+                    </div>
+                </div>
+                
+                <div class="section last">
+                    <div class="item">
+                        <p class="label">Admin Email:</p><input class="conf" *ngIf="config" [(ngModel)]="config.admin_email">
+                    </div>
+                </div>
+
+                <div class="control-buttons">
+                    <h2 class="button" (click)="saveConfigs()">Save</h2>
+                    <h2 class="button" (click)="reset()">Reset</h2>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>

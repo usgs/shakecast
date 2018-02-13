@@ -1,0 +1,28 @@
+
+<div class="login-title">
+    
+    <div class="sc-logo">
+        <img class="logo" src="/static/sc_logo.png">
+    </div>
+
+    <h1>ShakeCast</h1>
+
+</div>
+
+<form class="login-form">
+    <div class="form-contents">
+        <input type="text" id="username" name="username"
+        placeholder="Username" [(ngModel)]="user.username"
+        required>
+
+        <input type="password" id="password" name="password" 
+        placeholder="Password" [(ngModel)]="user.password"
+        required>
+
+        <h2 class="button" (click)="onSubmit(user.username, user.password)">Login</h2>
+    </div>
+</form>
+
+<div class="usgs-logo-container">
+    <img class="usgs-logo" src="/static/USGS_logo.png">
+</div>

@@ -1,0 +1,17 @@
+.form-container {
+    padding: 5px;
+    display: inline-block;
+    min-width: 300px;
+    text-align: center;
+}
+
+.form-container input {
+    height: 20px;
+    border-radius: 5px;
+    font-weight: bold;
+    text-align: center;
+}
+
+.form-container label {
+    color: white;
+}

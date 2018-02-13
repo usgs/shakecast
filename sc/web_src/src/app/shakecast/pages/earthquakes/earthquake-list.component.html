@@ -1,0 +1,30 @@
+<div class="data-list-inner-container">
+    <div class="data-list">
+        <div *ngIf="earthquakeData.length > 0">
+            <div class="data" [@selected]="eq?.selected" *ngFor="let eq of earthquakeData" (click)="plotEq(eq)">
+                <div class="data-header" [@headerSelected]="eq.selected">
+                    <h3>{{eq.event_id}}</h3>
+                </div>
+                <div class="data-body">
+                    <div class="data-info-container">
+                        <table>
+                            <tr>
+                                <th>Magnitude: </th><td><p>{{eq.magnitude}}</p></td>
+                            </tr>
+                            <tr>
+                                <th>Location: </th><td><p>{{eq.lat}}, {{eq.lon}}</p></td>
+                            </tr>
+                            <tr>
+                                <th>Time: </th><td>{{ eq.time * 1000 | date:'HH:mm - d/M/y' }}</td>
+                            </tr>
+                        </table>
+                        <p class="place">{{eq.place}}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div *ngIf="earthquakeData.length == 0" class="data-list-no-data-container">
+            <h1 class="data-list-no-data">No Earthquake Data</h1>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,15 @@
+.title {
+    display: inline-block;
+    font-size: 45px;
+    position: fixed;
+    top: 0;
+    left: 5%;
+    margin-top: 20px;
+    color: #46a;
+    z-index: 1;
+}
+
+img {
+    height: 30px;
+    display: inline-block;
+}

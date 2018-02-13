@@ -1,0 +1,163 @@
+.header {
+    border-bottom: 5px solid #55aaee;
+    color: white;
+}
+
+.info-header {
+    color: white;
+    margin-bottom: 0;
+}
+
+.desc {
+    text-align: center;
+    background: #efefef;
+    padding: 10px;
+    margin: 10px;
+    font-weight: bold;
+    box-shadow: 1px 1px 2px 1px rgba(0,0,0,0.3);
+    -webkit-box-shadow: 1px 1px 2px 1px rgba(0,0,0,0.3);
+    -moz-box-shadow: 1px 1px 2px 1px rgba(0,0,0,0.3);
+    overflow: scroll;
+    color: black;
+}
+
+.location {
+    color: white;
+    font-style: italic;
+
+}
+
+.colors-table th {
+    padding: 5px;
+    color:white;
+    border-radius: 5px;
+    margin: 3px;
+}
+
+.fragility h2 {
+    margin: 10px 0 5px 0;
+    color: white;
+}
+
+.fragility p {
+    color:white;
+    margin:0;
+}
+
+.type {
+    color: white;
+    margin: 0 0 20px 0;
+}
+/*
+
+.info-content {
+    height: 95%;
+    padding: 5px;
+    overflow: hidden;
+}
+
+.hide {
+    position: absolute;
+    bottom: 10px;
+    left: 10px;
+}
+
+.header {
+    border-bottom: 5px solid #AED8FA;
+}
+
+
+
+.fragility-title {
+    margin-bottom: 0;
+    text-align: center;
+}
+
+.fragility-table {
+    margin-top: 10px
+}
+
+table {
+    width: 100%;
+}
+
+.colors-table {
+    padding-left: 1em;
+    padding-right: 1em;
+}
+
+.colors-table th {
+    padding: .5em;
+}
+
+.shaking-history-link {
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    cursor: pointer;
+    margin-top: 30%;
+    height: 4.5em;
+}
+
+.shaking-history-link h1 {
+    color:#55aaee;
+    margin-bottom: 2px;
+    text-shadow: 5px 5px 5px rgba(0,0,0,0.3);
+}
+.triangle {
+    color: #55aaee;
+    font-size: 100px;
+    transform: rotate(-90deg) translateX(500%);
+    text-shadow: -5px 5px 5px rgba(0,0,0,0.3);
+}
+
+.shaking-history-link:hover .triangle {
+    text-shadow: -5px 5px 5px rgba(0,0,0,0.5);
+}
+.shaking-history-link:hover h1 {
+    text-shadow: 5px 5px 5px rgba(0,0,0,0.5);
+}
+
+.shaking-history {
+    top: 100%;
+    position: relative;
+}
+
+.impact {
+    padding: 10px;
+    border: 1px solid rgba(0,0,0,.3);
+    border-radius: 5px;
+    margin-top: 10%;
+    box-shadow: 1px 1px 3px 1px rgba(0,0,0,0.3);
+    -webkit-box-shadow: 1px 1px 3px 1px rgba(0,0,0,0.3);
+    -moz-box-shadow: 1px 1px 3px 1px rgba(0,0,0,0.3);
+}
+
+.impact h2 {
+    margin-top:5px;
+    margin-bottom: 5px;
+}
+
+.impact-level {
+    position: relative;
+    padding: 10px;
+    margin-top: 0;
+    width: 75%;
+    margin-left: auto;
+    margin-right: auto;
+    text-align: center
+}
+
+.shaking-table {
+    width: 100%;
+}
+
+.shaking-table table th, .shaking-table table td {
+    padding: 5px;
+    text-align: center;
+}
+
+.shaking-table table {
+    border-right: 3px solid #AED8FA;
+}
+*/

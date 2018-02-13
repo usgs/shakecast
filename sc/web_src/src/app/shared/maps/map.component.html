@@ -1,0 +1,22 @@
+<div id="map"></div>
+<div id="shaking" *ngIf="totalShaking > 0">
+    <table class="shaking-table">
+        <tr>
+            <th style="background-color:red" [style.width]="((shakingData?.red/totalShaking * 90) + 1) + '%'">
+                {{ shakingData?.red }}
+            </th>
+            <th style="background-color:orange" [style.width]="((shakingData?.orange/totalShaking * 90) + 1) + '%'">
+                {{ shakingData?.orange }}
+            </th>
+            <th style="background-color:gold" [style.width]="((shakingData?.yellow/totalShaking * 90) + 1) + '%'"> 
+                {{ shakingData?.yellow }}
+            </th>
+            <th style="background-color:green;" [style.width]="((shakingData?.green/totalShaking * 90) + 1) + '%'">
+                {{ shakingData?.green }}
+            </th>
+            <th style="background-color:gray;" [style.width]="((shakingData?.gray/totalShaking * 90) + 1) + '%'">
+                {{ shakingData?.gray }}
+            </th>
+        </tr>
+    </table>
+</div>

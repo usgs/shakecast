@@ -1,0 +1,80 @@
+.login-title {
+    align-items: center;
+    padding: 10px;
+    text-align: center;
+    margin-top: 5%;
+}
+
+.login-title h1 {
+    color: #444444;
+    font-size: 85px;
+    font-family: Arial;
+    margin: 0px
+}
+
+.login-title * {
+    display: inline-block;
+}
+
+.login-title .sc-logo {
+    width: 80px;
+    height: auto;
+}
+
+.login-title .logo {
+    border-radius: 50%;
+}
+
+.login {
+    padding: 10px;
+    margin-left: 20px;
+}
+
+input {
+    font-size: 24px;
+    padding: 5px;
+    margin: 5px;
+}
+
+.login-form {
+    width: 30%;
+    min-width: 300px;
+    margin-left: auto;
+    margin-right: auto;
+    display: flex;
+    flex-direction: column;
+    margin-top: 2%;
+    border-radius: 5px;
+    box-shadow: 1px 1px 15px 1px #55aaee;
+    -webkit-box-shadow: 1px 1px 15px 1px #55aaee;
+    -moz-box-shadow: 1px 1px 15px 1px #55aaee;
+    background: #ffffff;
+}
+
+.form-contents {
+    padding: 20px;
+}
+
+.button {
+    float: right;
+}
+
+.button-container {
+    margin-left: auto;
+    margin-right: auto;
+    text-align: center;
+}
+
+.usgs-logo-container {
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    z-index: -1;
+}
+
+.usgs-logo {
+    float: left;
+    padding: 10px;
+    opacity: .4;
+    margin-right: 5%;
+}

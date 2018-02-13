@@ -1,0 +1,104 @@
+.container {
+    display: inline-block;
+}
+
+.info-click {
+    cursor: pointer;
+    margin-left: 5px;
+}
+
+.fa-question-circle {
+    color: #55aaee;
+}
+
+.info-container {
+    position: absolute;
+    display: inline-block;
+    max-width: 300px;
+    min-width: 200px;
+}
+
+.info {    
+    z-index: 3;
+    display: inline-block;
+    position: absolute;
+    border: 1px solid #444444;
+    box-shadow: 1px 1px 3px 1px rgba(0,0,0,0.3);
+    -webkit-box-shadow: 1px 1px 3px 1px rgba(0,0,0,0.3);
+    -moz-box-shadow: 1px 1px 3px 1px rgba(0,0,0,0.3);
+}
+
+.info p {
+    font-size: 14px;
+    font-weight: bold;
+    text-align: center;
+}
+
+.triangle-left, .triangle-right {
+    position: relative;
+    padding: 5px;
+    margin-top: 15px;
+    background: white;
+    -webkit-border-radius: 10px;
+    -moz-border-radius: 10px;
+    border-radius: 10px;
+}
+
+.triangle-right {
+    transform: translateX(-100%);
+}
+
+.triangle-left.top, .triangle-right.top {
+    background: white
+}
+
+.triangle-left.top:after, .triangle-right.top:after, .triangle-left.top:before, .triangle-right.top:before {
+    content: "";
+    position: absolute;
+    border-style: solid;
+    display: block;
+    width: 0;
+    top: -15px;
+    bottom: auto;
+}
+
+.triangle-left.top:after {
+    left: 10px;
+    border-width: 15px 0 0 10px;
+}
+
+.triangle-left.top:before {
+    left: 9px;
+    top: -17px;
+    border-width: 16px 0 0 12px;
+}
+
+.triangle-right.top:after {
+    left: 92%;
+    margin-left: 1px;
+    border-width: 15px 10px 0 0;
+}
+
+.triangle-right.top:before {
+    left: 92%;
+    top: -18px;
+    border-width: 17px 12px 0 0;
+}
+
+.triangle-left.top:after, .triangle-right.top:after {
+    border-color: transparent white;
+}
+
+.triangle-left.top:before, .triangle-right.top:before {
+    border-color: transparent #444444;
+}
+
+#close {
+    float: right;
+    margin: 0;
+    cursor: pointer;
+}
+
+p {
+    font-size: .4em;
+}

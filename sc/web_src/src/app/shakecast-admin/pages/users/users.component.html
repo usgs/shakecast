@@ -1,0 +1,41 @@
+<div class="map-container">
+    <my-map class="map"></my-map>
+</div>
+
+<div class="left-panel" [@showLeft]="showLeft">
+    <div class="toggle">
+        <div class="toggle-click" (click)="toggleLeft()">
+            <span class="arrow-icon" [hidden]="showLeft=='shown'"><i class="fa fa-chevron-right"></i></span>
+            <span class="arrow-icon" [hidden]="showLeft=='hidden'"><i class="fa fa-chevron-left"></i></span>
+        </div>
+    </div>
+    <div class="panel-content">
+
+        <h2 class="panel-title">Users</h2>
+
+        <div class="panel-scroll-container">
+            <div class="inner-shadow"></div>
+            <user-list></user-list>
+        </div>
+    </div>
+
+    <h2 class="button" (click)="deleteCurrentUser()">Delete User</h2>
+    <h2 class="button" (click)="saveUsers()">Save Data</h2>
+</div>
+
+<div class="right-panel" [@showRight]="showRight">
+    <div class="toggle">
+        <div class="toggle-click" (click)="toggleRight()">
+            <span class="arrow-icon" [hidden]="showRight=='shown'"><i class="fa fa-chevron-left"></i></span>
+            <span class="arrow-icon" [hidden]="showRight=='hidden'"><i class="fa fa-chevron-right"></i></span>
+        </div>
+    </div>
+    <div class="panel-content">
+            <h2 class="panel-title">Groups</h2>
+            
+            <div class="panel-scroll-container">
+                <div class="inner-shadow"></div>
+                <group-list></group-list>
+            </div>
+    </div>
+</div>

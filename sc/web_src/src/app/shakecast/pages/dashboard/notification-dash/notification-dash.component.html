@@ -1,0 +1,14 @@
+<div *ngIf="notifications.length > 0">
+    <div *ngIf="newEventGroups != ''">
+        <h3>New Event:</h3><p>{{ newEventGroups }}</p>
+    </div>
+    <div *ngIf="inspGroups != ''">
+        <h3>Inspection:</h3><p>{{ inspGroups }}</p>
+    </div>
+</div>
+
+<div *ngIf="notifications.length == 0">
+    
+    <h1 class="data-list-no-data">No Notifications</h1>
+
+</div>

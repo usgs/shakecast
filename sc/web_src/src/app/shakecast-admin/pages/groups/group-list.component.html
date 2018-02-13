@@ -1,0 +1,120 @@
+<div class="data-list-inner-container">
+    <div *ngIf="!loadingData">
+        <div *ngIf="groupData.length > 0">
+
+            <h3 class="title">Subscribed to:</h3>
+            <div *ngIf="userGroupData.length > 0">
+                <div class="data" [@selected]="group.selected" *ngFor="let group of userGroupData" (click)="clickGroup(group)">
+                    <div [@headerSelected]="group.selected" class="data-header">
+                        <h3>{{group.name}}</h3>
+                    </div>
+                    <div class="data-body">
+                        <div class="data-info-container">
+                            <table class="container-table">
+                                <tr>
+                                    <table>
+                                        <th>Facility Type:</th><td>{{ group.facility_type }}</td>
+                                    </table>
+                                </tr>
+                                <tr>
+                                    <table>
+                                        <th>Geometry: </th><td>{{ group.lat_min }}, {{ group.lon_min }}<br>
+                                                                {{ group.lat_min}}, {{ group.lon_max }}<br>
+                                                            {{ group.lat_max }}, {{ group.lon_max }}<br>
+                                                            {{ group.lat_max }}, {{ group.lon_min }}<br>
+                                                            {{ group.lat_min }}, {{ group.lon_min }}  
+                                        </td>
+                                    </table>
+                                </tr>
+                                <tr>
+                                    <table>
+                                        <th>
+                                            Users: 
+                                        </th>
+                                        <td>
+                                            <select>
+                                                <option *ngFor="let user of group['info']['users']">
+                                                    {{ user.username }}
+                                                </option>
+                                            </select>
+                                        </td>
+                                    </table>
+                                </tr>
+                            </table>
+                            <div class="updated">
+                                <p>Updated: {{ group.updated * 1000 | date }}</p>
+                                <p>|</p>
+                                <p>{{ group.updated_by }}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div *ngIf="userGroupData.length === 0">
+                <h3 class="title">NONE</h3>
+            </div>
+
+            <div *ngIf="noUserGroupData.length > 0">
+                <h3 class="title">Not Subscribed to:</h3>
+                <div class="data" [@selected]="group.selected" *ngFor="let group of noUserGroupData" (click)="clickGroup(group)">
+                    <div [@headerSelected]="group.selected" class="data-header">
+                        <h3>{{group.name}}</h3>
+                    </div>
+                    <div class="data-body">
+                        <div class="data-info-container">
+                            <table class="container-table">
+                                <tr>
+                                    <table>
+                                        <th>Facility Type:</th><td>{{ group.facility_type }}</td>
+                                    </table>
+                                </tr>
+                                <tr>
+                                    <table>
+                                        <th>Geometry: </th><td>{{ group.lat_min }}, {{ group.lon_min }}<br>
+                                                                {{ group.lat_min}}, {{ group.lon_max }}<br>
+                                                            {{ group.lat_max }}, {{ group.lon_max }}<br>
+                                                            {{ group.lat_max }}, {{ group.lon_min }}<br>
+                                                            {{ group.lat_min }}, {{ group.lon_min }}  
+                                        </td>
+                                    </table>
+                                </tr>
+                                <tr>
+                                    <table>
+                                        <th>
+                                            Users: 
+                                        </th>
+                                        <td>
+                                            <select class="users">
+                                                <option *ngFor="let user of group['info']['users']">
+                                                    {{ user.username }}
+                                                </option>
+                                            </select>
+                                        </td>
+                                    </table>
+                                </tr>
+                            </table>
+                            <div class="delete">
+                                <p class="button" (click)="groupService.deleteGroups([group])">Delete</p>
+                            </div>
+                            <div class="updated">
+                                <p>Updated: {{ group.updated * 1000 | date }}</p>
+                                <p>|</p>
+                                <p>{{ group.updated_by }}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            <div *ngIf="groupData.length > 0">
+        </div>
+        <div *ngIf="groupData.length == 0">
+            <h1 class="data-list-no-data">No Groups</h1>
+
+            <h2 class="data-list-no-data">
+                (Drag and drop XML files here to upload)
+            </h2>
+        </div>
+    </div>
+    <div *ngIf="loadingData">
+        <p>loading...</p>
+    </div>
+</div>

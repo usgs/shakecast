@@ -1,0 +1,52 @@
+<div class="map-container">
+    <my-map class="map"></my-map>
+</div>
+
+<div class="right-panel" [@showRight]="showRight">
+    <div class="toggle">
+        <div class="toggle-click" (click)="toggleRight()">
+            <span class="arrow-icon" [hidden]="showRight=='shown'"><i class="fa fa-chevron-left"></i></span>
+            <span class="arrow-icon" [hidden]="showRight=='hidden'"><i class="fa fa-chevron-right"></i></span>
+        </div>
+    </div>
+    <div class="panel-content">
+            <h1 class="panel-title">Scenarios</h1>
+            <div class="panel-scroll-container">
+                <div class="inner-shadow"></div>
+                <earthquake-list></earthquake-list>
+            </div>
+    </div>
+</div>
+
+<div class="left-panel" [@showLeft]="showLeft">
+    
+    <div class="panel-content">
+            <div class="panel-scroll-container">
+                <scenario-search></scenario-search>
+            </div>
+    </div>
+</div>
+
+<div class="bottom-panel" [@showBottom]="showBottom">
+    <div class="toggle">
+        <div class="toggle-click" (click)="toggleBottom()" style="width:0">
+            <span class="arrow-icon" [hidden]="showBottom=='shown'"><i class="fa fa-chevron-up"></i></span>
+            <span class="arrow-icon" [hidden]="showBottom=='hidden'"><i class="fa fa-chevron-down"></i></span>
+        </div>
+    </div>
+    <div class="control">
+        <div *ngIf="!searchShown">
+            <h3 class="button" (click)="getMore()">Download More from the Web</h3>
+            <!--
+            <h3 class="button" (click)="getMore()">Search your Earthquake Database</h3>
+            -->
+            <h3 class="button" (click)="eqService.runScenario(eqService.selected.event_id)">Run Scenario</h3>
+            <h3 class="button" (click)="deleteScenario()">Delete Selected</h3>
+        </div>
+        <div *ngIf="searchShown">
+            <h3 class="button" (click)="eqService.downloadScenario(eqService.selected.event_id, eqService.selected.scenario)">Download Selected</h3>
+            <h3 class="button" (click)="userScenarios()">Back</h3>
+        </div>
+    </div>
+
+</div>

@@ -1,0 +1,28 @@
+.update-container {
+    width: 100%;
+    bottom: 0;
+    position: fixed;
+    background: #ff6161;
+    z-index: 3;
+}
+
+.update-container h3 {
+    display: inline-block;
+    margin-right: 30px;
+    margin-left: 10px;
+    color: #ffffff;
+}
+
+.update {
+    font-weight: bold;
+}
+
+.close-button {
+    margin: 3px;
+    padding: 5px;
+    float: right;
+    font-weight: bold;
+    right: 0;
+    color: #ffffff;
+    cursor: pointer;
+}

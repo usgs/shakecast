@@ -1,0 +1,47 @@
+<div class="map-container">
+    <my-map></my-map>
+</div>
+
+<div class="right-panel" [@showRight]="showRight">
+    <div class="toggle">
+        <div class="toggle-click" (click)="toggleRight()">
+            <span class="arrow-icon" [hidden]="showRight=='shown'"><i class="fa fa-chevron-left"></i></span>
+            <span class="arrow-icon" [hidden]="showRight=='hidden'"><i class="fa fa-chevron-right"></i></span>
+        </div>
+    </div>
+    <div class="panel-content">
+            <h2 class="panel-title">Facilities</h2>
+            
+            <div class="panel-scroll-container">
+                <div class="inner-shadow"></div>
+                <facility-list></facility-list>
+            </div>
+    </div>
+</div>
+
+<div class="left-panel" [@showLeft]="showLeft">
+
+    <div class="toggle">
+        <div class="toggle-click" (click)="toggleLeft()">
+            <span class="arrow-icon" [hidden]="showLeft=='shown'"><i class="fa fa-chevron-right"></i></span>
+            <span class="arrow-icon" [hidden]="showLeft=='hidden'"><i class="fa fa-chevron-left"></i></span>
+        </div>
+    </div>
+
+    <div class="panel-content">
+        <facility-info></facility-info>
+    </div>
+</div>
+
+<div class="bottom-panel" [@showBottom]="showBottom">
+    
+    <div class="toggle">
+        <div class="toggle-click" (click)="toggleBottom()" style="width:0">
+            <span class="arrow-icon" [hidden]="showBottom=='shown'"><i class="fa fa-chevron-up"></i></span>
+            <span class="arrow-icon" [hidden]="showBottom=='hidden'"><i class="fa fa-chevron-down"></i></span>
+        </div>
+    </div>
+    <div class="panel-content">
+        <facility-filter></facility-filter>
+    </div>
+</div>

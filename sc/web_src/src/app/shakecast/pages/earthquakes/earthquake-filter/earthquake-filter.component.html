@@ -1,0 +1,39 @@
+<div class="form-container">
+    <input type="checkbox" [(ngModel)]="eqService.filter.shakemap">
+    <label>Events with ShakeMaps</label>
+    <div *ngIf="eqService.filter.shakemap">
+        <input type="checkbox" [(ngModel)]="eqService.filter.facilities">
+        <label>Events with affected facilities</label>
+    </div>
+
+    <br>
+    <input type="radio" 
+            name="timeframe" 
+            [(ngModel)]="eqService.filter.timeframe" 
+            value="day">
+    <label>Day</label>
+    <input type="radio" 
+            name="timeframe" 
+            [(ngModel)]="eqService.filter.timeframe" 
+            value="week">
+    <label>Week</label>
+    <input type="radio" 
+            name="timeframe" 
+            [(ngModel)]="eqService.filter.timeframe" 
+            value="month">
+    <label>Month</label>
+    <input type="radio" 
+            name="timeframe" 
+            [(ngModel)]="eqService.filter.timeframe" 
+            value="all">
+    <label>All time</label>
+
+    <div class="input-container">
+        <input [(ngModel)]="eqService.filter.latMin" placeholder="Min Latitude">
+        <input [(ngModel)]="eqService.filter.latMax" placeholder="Max Latitude">
+        <input [(ngModel)]="eqService.filter.lonMin" placeholder="Min Longitude">
+        <input [(ngModel)]="eqService.filter.lonMax" placeholder="Max Longitude">
+    </div>
+
+    <h2 class="button" (click)="eqService.getData(eqService.filter)">Search</h2>
+</div>

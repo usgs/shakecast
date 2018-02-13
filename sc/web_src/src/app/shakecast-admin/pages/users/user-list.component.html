@@ -1,0 +1,59 @@
+<div class="data-list-inner-container">
+    <div *ngIf="!loadingData">
+        <div *ngIf="dataList.length > 0">
+            <div class="data" 
+                    [@selected]="data.selected" 
+                    *ngFor="let data of dataList" 
+                    (click)="clickData(data)"
+                    (dblclick)="editUser(data)">
+                <div [@headerSelected]="data.selected" class="data-header">
+                    <h3 *ngIf="data.full_name"> {{ data.full_name }} </h3>
+                    <h3 *ngIf="!data.full_name"> {{ data.username }} </h3>
+                </div>
+                <div class="data-body">
+                    <div class="data-info-container">
+                        <table class="container-table">
+                            <tr>
+                                <th>Username: </th>
+                                <td *ngIf="!data?.editing">{{ data.username }}</td>
+                                <td *ngIf="data?.editing">
+                                    <input [(ngModel)]="data.username">
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>Email: </th>
+                                <td *ngIf="!data?.editing">{{ data.email }}</td>
+                                <td *ngIf="data?.editing">
+                                    <input [(ngModel)]="data.email">
+                                </td>
+                            </tr>
+                        </table>
+                        <h3 *ngIf="data.user_type == 'ADMIN'">
+                            Admin
+                        </h3>
+                        <div class="delete">
+                            <p class="button" (click)="userService.deleteUsers([data])">Delete</p>
+                        </div>
+                        <div class="updated">
+                            <p>Updated: {{ data.updated * 1000 | date }}</p>
+                            <p>|</p>
+                            <p>{{ data.updated_by }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div *ngIf="dataList.length == 0">
+            
+            <h1 class="data-list-no-data">No Users</h1>
+            
+            <h2 class="data-list-no-data">
+                (Drag and drop XML files here to upload)
+            </h2>
+
+        </div>
+    </div>
+    <div *ngIf="loadingData">
+        <p>loading...</p>
+    </div>
+</div>

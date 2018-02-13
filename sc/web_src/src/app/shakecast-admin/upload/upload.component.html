@@ -1,0 +1,61 @@
+<div class="upload-window" [@showUpload]="show">
+    <h1 class="upload-title">Upload</h1>
+    <div class="content">
+        <div ng2FileDrop
+                [ngClass]="{'file-over': hasBaseDropZoneOver}"
+                (fileOver)="fileOverBase($event)"
+                [uploader]="uploader"
+                class="drop-zone">
+            <h2>Drag and Drop!</h2>
+            <p>
+                Facility, Notification Group, User XML files, and images can be dropped here 
+                <info [text]="'These XML files are generally generated through
+                                the use of the <a 
+                                href=ftp://ftpext.cr.usgs.gov/pub/cr/co/golden/shakecast/ShakeCast_Workbook/ShakeCastInventory.xlsm>ShakeCast Inventory Workbook</a>. Get some more info from our <a href=http://usgs.github.io/shakecast/inventory_workbook target=_blank>online documentation</a>. 
+                                <br><br>
+                                Uploaded images can be used as a logo in your ShakeCast notifications'"
+                        [side]="'right'">
+                </info>
+            </p>
+
+            <div class="file-info">
+                <div *ngIf="uploader.queue.length>0">
+                    <table class="table">
+
+                        <tbody>
+                            
+                            <tr *ngFor="let item of uploader.queue">
+                                <td>{{ item?.file?.name }}</td>
+                                <td nowrap>{{ item?.file?.size/1024/1024 | number:'.2' }} MB</td>
+                                <td>
+                                    
+                                </td>
+                                <td class="text-center">
+                                    <span *ngIf="item.isSuccess"><i class="glyphicon glyphicon-ok"></i></span>
+                                    <span *ngIf="item.isCancel"><i class="glyphicon glyphicon-ban-circle"></i></span>
+                                    <span *ngIf="item.isError"><i class="glyphicon glyphicon-remove"></i></span>
+                                </td>
+                                <td nowrap>
+                                    <div class="button"
+                                            (click)="upload(item)">
+                                        <h3 class="button-text">Upload</h3>
+                                    </div>
+                                    <div class="button"
+                                            (click)="item.remove()">
+                                        <h3 class="button-text">Remove</h3>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>             
+                <div *ngIf="uploader.queue.length===0" class="no-files">
+                    <h2>No Files to Upload</h2>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <h1 class="done" (click)="hideUpload()">Done</h1>
+</div>

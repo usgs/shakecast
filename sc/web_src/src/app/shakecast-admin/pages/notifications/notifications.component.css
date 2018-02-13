@@ -1,0 +1,115 @@
+.item input, .item select, .item textarea {
+    font-size: 15px;
+}
+
+.container {
+    width: 100%;
+    background: #fff;
+    display: flex;
+}
+
+#notDropdown {
+    width: 200px;
+    margin-left: auto;
+    margin-right: auto;
+    position: relative;
+    height: 40px;
+    font-size: 20px;
+    text-align: center;
+}
+
+.column {
+    display: inline-block;
+    padding: 5px;
+}
+
+.not-column, .conf-column {
+    z-index: 2;
+    background: white;
+    margin: 5px;
+    border-radius: 10px;
+}
+
+.not-column {
+    width: 55%;
+    border: 2px solid #55aaee;
+}
+
+.conf-column {
+    width: 40%;
+}
+
+.conf-column h2 {
+    margin-top: 0;
+}
+
+.conf-content {
+    padding-top: 20px;
+    height: 100vh;
+    width: 40vw;
+    overflow-y: auto;
+}
+
+.item p, .item h3 {
+    display: inline-block;
+    margin: 5px;
+}
+
+.item .label {
+    font-weight: bolder;
+}
+
+.event-type {
+    cursor: pointer;
+    border: 3px solid #ffffff;
+    border-radius: 5px;
+    padding: 5px;
+}
+
+.event-type:hover {
+    background: #55aaee;
+    border-color: #55aaee;
+    color: #ffffff;
+}
+
+.event-type.selected {
+    border: 3px solid #55aaee;
+}
+
+.control-buttons {
+    margin: 20px;
+}
+
+.section {
+    border-bottom: 20px dashed #efefef;
+    padding: 10px;
+    margin: 10px;
+    text-align: center;
+}
+
+.item {
+    display: inline-block;
+    margin: 5px;
+    border: 2px solid #55aaee;
+    border-radius: 5px;
+    padding: 10px;
+    box-shadow: 1px 1px 5px 1px rgba(0,0,0,0.3);
+    -webkit-box-shadow: 1px 1px 5px 1px rgba(0,0,0,0.3);
+    -moz-box-shadow: 1px 1px 5px 1px rgba(0,0,0,0.3);
+}
+
+.item p {
+    display: inline-block;
+}
+
+.section label {
+    font-weight: bold
+}
+
+.section.last {
+    border: none;
+}
+
+#templateName {
+    width:100%
+}

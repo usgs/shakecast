@@ -1,0 +1,170 @@
+* {
+    font-family: Arial;
+    color: #444444;
+}
+
+.stick-to-top {
+    position: fixed;
+    top: 0;
+    width: 100%;
+    z-index: 500;
+}
+
+body {
+    margin: 0;
+}
+
+html, body
+{
+    height: 100%;
+}
+
+/* For Tables */
+.my-table th, .my-table td {
+    text-align: left;
+    padding: 5px;
+    border-bottom: 1px solid #ddd;
+}
+
+.col-1 {
+    width: 8.33%;
+    display: inline-block;
+}
+
+.col-2 {
+    width: 16.66%;
+    display: inline-block;
+}
+
+.col-3 {
+    width: 25%;
+    display: inline-block;
+}
+
+.col-4 {
+    width: 33.33%;
+    display: inline-block;
+}
+
+.col-5 {
+    width: 41.66%;
+    display: inline-block;
+}
+
+.col-6 {
+    width: 50%;
+    display: inline-block;
+}
+
+.col-7 {
+    width: 58.33%;
+    display: inline-block;
+}
+
+.col-8 {
+    width: 66.66%;
+    display: inline-block;
+}
+
+.col-9 {
+    width: 75%;
+    display: inline-block;
+}
+
+.col-10 {
+    width: 83.33%;
+    display: inline-block;
+}
+
+.col-11 {
+    width: 91.66%;
+    display: inline-block;
+}
+
+.col-12 {
+    width: 100%;
+    display: inline-block;
+}
+
+.router-buffer {
+    width:100%;
+    height: 100px;
+}
+
+.button {
+    display: inline-block;
+    border: 3px solid #55aaee;
+    background: #ffffff;
+    margin: 5px;
+    padding: 5px;
+    cursor: pointer;
+    border-radius: 5px;
+    box-shadow: 1px 1px 3px 1px rgba(0,0,0,0.3);
+    -webkit-box-shadow: 1px 1px 3px 1px rgba(0,0,0,0.3);
+    -moz-box-shadow: 1px 1px 3px 1px rgba(0,0,0,0.3);
+}
+
+.button:hover {
+    background: #55aaee;
+    color: #ffffff;
+    box-shadow: 1px 1px 4px 2px rgba(0,0,0,0.3);
+    -webkit-box-shadow: 1px 1px 4px 2px rgba(0,0,0,0.3);
+    -moz-box-shadow: 1px 1px 4px 2px rgba(0,0,0,0.3);
+}
+
+.the-view {
+    min-height: 100vh;
+}
+
+.shaking-table:hover th {
+  opacity: 1;
+}
+
+.marker-cluster-gray {
+    background: rgba(127,127,127,.7)
+}
+
+.marker-cluster-gray div {
+    background: rgba(127,127,127,.9)
+}
+
+.marker-cluster-green {
+    background: rgba(0,127,0,.7)
+}
+
+.marker-cluster-green div {
+    background: rgba(0,127,0,.9)
+}
+
+.marker-cluster-yellow {
+    background: rgba(255,215,0,.7)
+}
+
+.marker-cluster-yellow div {
+    background: rgba(255,215,0,.9)
+}
+
+.marker-cluster-orange {
+    background: rgba(255,165,0,.7)
+}
+
+.marker-cluster-orange div {
+    background: rgba(255,165,0,.9)
+}
+
+.marker-cluster-red {
+    background: rgba(255,0,0,.7)
+}
+
+.marker-cluster-red div {
+    background: rgba(255,0,0,.9)
+}
+
+.marker-cluster span {
+    color: white;
+    font-weight: bold;
+}
+
+p a {
+    color: #55aaee
+}

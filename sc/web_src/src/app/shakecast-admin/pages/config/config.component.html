@@ -1,0 +1,159 @@
+<div class="settings">
+    <div class="section">
+        <h1 class="header">
+            Server Settings
+        </h1>
+        <div class="item">
+            <label for="server-name">Rename your Server: </label>
+            <input id="server-name" 
+                            placeholder="ShakeCast" 
+                            [(ngModel)]="configs.Server.name">
+        </div>
+
+        <div class="item">
+            <label for="networks">Networks to ignore: </label>
+            <input id="networks" [(ngModel)]="configs.Services.ignore_nets">
+        </div>
+
+        <div class="item">
+            <label for="scPort">ShakeCast Server Port: </label>
+            <input id="scPort" [(ngModel)]="configs.port">
+        </div>
+
+        <div class="item">
+            <label for="scWebPort">Web Server Port: </label>
+            <input id="scWebPort" [(ngModel)]="configs.web_port">
+        </div>
+
+        <div class="item">
+            <label for="db">Database: </label>
+            <select id="db" [(ngModel)]="configs.DBConnection.type">
+                <option *ngFor="let opt of dbOptions" [value]="opt.value">{{ opt.name }}</option>
+            </select>
+
+            <div *ngIf="configs.DBConnection.type == 'mysql'">
+                <h3 id="db-str">
+                    {{configs.DBConnection.username}}:{{'*'.repeat(configs.DBConnection.password.length)}}@{{configs.DBConnection.server}}/pycast
+                    </h3>
+                <input placeholder="Username" type="text" [(ngModel)]="configs.DBConnection.username">
+                <input placeholder="Password" type="password" [(ngModel)]="configs.DBConnection.password">
+                <input placeholder="Server" type="text" [(ngModel)]="configs.DBConnection.server">
+            </div>
+        </div>
+
+        <div class="item">
+            <label for="proxy">Use a proxy: </label>
+            <input type="checkbox" 
+                        id="proxy" 
+                        [(ngModel)]="configs.Proxy.use">
+
+            <div *ngIf="configs.Proxy.use">
+                <input placeholder="Username" type="text" [(ngModel)]="configs.Proxy.username">
+                <input placeholder="Password" type="password" [(ngModel)]="configs.Proxy.password">
+                <input placeholder="Port" type="text" [(ngModel)]="configs.Proxy.port">
+                <input placeholder="Server" type="text" [(ngModel)]="configs.Proxy.server">
+            </div>
+        </div>
+
+        <div class="item">
+            <label for="version">Software Version: </label><p>{{ configs?.Server?.update?.software_version }}</p>
+            <div *ngIf="configs?.Server?.update?.software_version != configs?.Server?.update?.update_version">
+                <p>Please update ShakeCast</p><h3 class="button" (click)="updateService.updateShakecast()">Update</h3>
+            </div>
+            <div *ngIf="configs?.Server?.update?.software_version == configs?.Server?.update?.update_version">
+                <p>No software updates required</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="section">
+        <h1 class="header">Clock Settings</h1>
+        <div class="item">
+            <table>
+                <tr>
+                    <th>UTC time: </th>
+                    <td>{{ utcTime | date:'dd-M-yyyy H:mm'}}</td>
+                </tr>
+                <tr>
+                    <th>ShakeCast Time: <info [text]="'Change the ShakeCast Time for your notifications to
+                                                        use a different time zone than UTC'"
+                                                [side]="'left'"></info></th>
+                    <td>{{ offsetTime | date:'dd-M-yyyy H:mm'}}</td>
+                    <table class="spin-table">
+                        <tr class="button spin" (click)="hourUp()"><th><i class="fa fa-chevron-up"></i></th></tr>
+                        <tr class="button spin" (click)="hourDown()"><th><i class="fa fa-chevron-down"></i></th></tr>
+                    </table>
+                </tr>
+                <tr>
+                    <th>Nighttime: <info [text]="'ShakeCast allows you to set a different minimum
+                                                    magnitude while you\'re not at work. This way,
+                                                    you won\'t be bothered by multiple small magnitude
+                                                    earthquakes while you\'re at home. This Nighttime
+                                                    setting determines what time the minimum magnitude
+                                                    change goes into effect.'"
+                                            [side]="'left'"></info></th>
+                    <td>{{ configs.Services.nighttime }}:00</td>
+                    <table class="spin-table">
+                        <tr class="button spin" 
+                            (click)="nighttimeUp()"><th><i class="fa fa-chevron-up"></i></th></tr>
+                        <tr class="button spin" 
+                            (click)="nighttimeDown()"><th><i class="fa fa-chevron-down"></i></th></tr>
+                    </table>
+                </tr>
+                <tr>
+                    <th>Morning: <info [text]="'ShakeCast allows you to set a different minimum
+                                                    magnitude while you\'re not at work. This way,
+                                                    you won\'t be bothered by multiple small magnitude
+                                                    earthquakes while you\'re at home. This Morning
+                                                    setting determines what time the minimum magnitude
+                                                    switches back to normal. If there were any smaller
+                                                    earthquakes over night, you will receive notifications
+                                                    for them now.'"
+                                            [side]="'left'"></info></th>
+                    <td>{{ configs.Services.morning }}:00</td>
+                    <table class="spin-table">
+                        <tr class="button spin" 
+                            (click)="morningUp()"><th><i class="fa fa-chevron-up"></i></th></tr>
+                        <tr class="button spin" 
+                            (click)="morningDown()"><th><i class="fa fa-chevron-down"></i></th></tr>
+                    </table>
+                </tr>
+                <tr>
+                    <th>Nighttime Min Magnitude: <info [text]="'ShakeCast allows you to set a different minimum
+                                                                    magnitude while you\'re not at work. This way,
+                                                                    you won\'t be bothered by multiple small magnitude
+                                                                    earthquakes while you\'re at home. 
+                                                                    You can set that minimum magnitude here. If you
+                                                                    do not wish to utilize this setting, set the
+                                                                    minimum magnitude to 0.'"
+                                                            [side]="'left'"></info></th>
+                    <td>{{ configs.Services.night_eq_mag_cutoff }}</td>
+                    <table class="spin-table">
+                        <tr class="button spin" 
+                            (click)="configs.Services.night_eq_mag_cutoff = configs.Services.night_eq_mag_cutoff + 1"><th><i class="fa fa-chevron-up"></i></th></tr>
+                        <tr class="button spin" 
+                            (click)="configs.Services.night_eq_mag_cutoff = configs.Services.night_eq_mag_cutoff - 1"><th><i class="fa fa-chevron-down"></i></th></tr>
+                    </table>
+                <tr>
+                
+            </table>
+        </div>
+    </div>
+
+    <div class="section">
+        <h1 class="header">
+            SMTP
+        </h1>
+        <div class="item">
+            <input placeholder="Username" type="text" [(ngModel)]="configs.SMTP.username">
+            <input placeholder="Password" type="password" [(ngModel)]="configs.SMTP.password">
+            <input placeholder="Security" type="text" [(ngModel)]="configs.SMTP.security">
+            <input placeholder="Port" type="text" [(ngModel)]="configs.SMTP.port">
+            <input placeholder="Server" type="text" [(ngModel)]="configs.SMTP.server">
+        </div>
+    </div>
+</div>
+
+<h1 class="button save" (click)="saveConfigs()">Save</h1>
+<h1 class="button reset" (click)="resetConfigs()">Reset</h1>
+<h1 class="button" (click)="confService.systemTest()">Run a System Test</h1>

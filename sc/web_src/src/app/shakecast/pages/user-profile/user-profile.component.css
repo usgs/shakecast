@@ -1,0 +1,36 @@
+h1 {
+    font-size: 50px;
+    text-align: center;
+}
+
+.info {
+    width: 30%;
+    min-width: 300px;
+    margin-left: auto;
+    margin-right: auto;
+    display: flex;
+    flex-direction: column;
+    margin-top: 2%;
+    border-radius: 5px;
+    box-shadow: 1px 1px 15px 1px #55aaee;
+    -webkit-box-shadow: 1px 1px 15px 1px #55aaee;
+    -moz-box-shadow: 1px 1px 15px 1px #55aaee;
+    background: #ffffff;
+}
+
+.info input {
+    font-size: 16px;
+    padding: 5px;
+    margin: 5px;
+}
+
+info label {
+    font-size: 16px;
+    font-weight: bold;
+}
+
+.button {
+    left: 50%;
+    position: relative;
+    transform: translateX(-50%) translateY(50%);
+}
