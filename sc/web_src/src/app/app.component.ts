@@ -23,7 +23,7 @@ export class AppComponent implements OnInit, OnDestroy {
     subscriptions: any[] = [];
 
     constructor(private userService: UserService,
-                private router: Router
+                public router: Router
                 ) {}
 
     ngOnInit() {

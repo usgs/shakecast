@@ -32,13 +32,17 @@ import { ScenarioSearchComponent } from './pages/scenarios/scenario-search/scena
 
 import { SharedModule } from '../shared/shared.module';
 
+// ng2-file-upload
+import { FileUploadModule } from 'ng2-file-upload';
+
 @NgModule({
   imports: [
     FormsModule,
     routing,
     HttpModule,
     JsonpModule,
-    SharedModule
+    SharedModule,
+    FileUploadModule
   ],
   declarations: [
     ShakeCastAdminComponent,

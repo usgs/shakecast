@@ -27,7 +27,7 @@ export class ConfigComponent implements OnInit, OnDestroy {
     public dbOptions: any[] = [{'name': 'SQLite', 'value': 'sqlite'},
                                     {'name': 'MySQL', 'value': 'mysql'}];
 
-    constructor(private confService: ConfigService,
+    constructor(public confService: ConfigService,
                 public timeService: TimeService,
                 private notService: NotificationsService,
                 private titleService: TitleService,

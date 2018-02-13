@@ -6,7 +6,7 @@ import { Component,
          style,
          transition,
          animate } from '@angular/core';
-import {FileUploader} from 'ng2-file-upload';
+import { FileUploader } from 'ng2-file-upload';
 import { NotificationsService } from 'angular2-notifications'
 import { UploadService } from './upload.service'
 import { ScreenDimmerService } from '../../shared/screen-dimmer/screen-dimmer.service'

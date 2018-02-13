@@ -38,7 +38,7 @@ export class ScenarioSearchComponent implements OnInit, OnDestroy{
                           maxlongitude: 180,
                           scenariosOnly: false}
 
-    constructor(private eqService: EarthquakeService) {
+    constructor(public eqService: EarthquakeService) {
         let date = new Date()
         let day: any = date.getDate()
         let month: any = date.getMonth()

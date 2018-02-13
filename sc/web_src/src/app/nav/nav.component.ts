@@ -23,7 +23,7 @@ export class NavComponent implements OnInit {
 
     constructor(private userService: UserService,
                 private notService: NotificationsService,
-                private router: Router) {}
+                public router: Router) {}
 
     ngOnInit() {
         TimerObservable.create(0, 500)
