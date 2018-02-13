@@ -696,6 +696,7 @@ class Mailer(object):
         self.password = sc.smtp_password
         self.server_name = sc.smtp_server
         self.server_port = sc.smtp_port
+        self.security = sc.dict['SMTP']['security']
         self.log = ''
         
         if sc.use_proxy is True:
@@ -751,11 +752,15 @@ class Mailer(object):
         Send an email (msg) to specified addresses (you) using SMTP
         server details associated with the object
         """
-        server = smtplib.SMTP(self.server_name, self.server_port) #port 465 or 587
-        server.ehlo()
-        server.starttls()
-        server.ehlo()
-        server.login(self.username, self.password)
+        server = smtplib.SMTP(self.server_name, self.server_port) #port 587 or 25
+
+        if self.security.lower() == 'tls':
+            server.ehlo()
+            server.starttls()
+            server.ehlo()
+
+        if self.username and self.password:
+            server.login(self.username, self.password)
         
         server.sendmail(self.me, you, msg.as_string())
         server.quit()
