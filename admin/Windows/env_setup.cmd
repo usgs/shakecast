@@ -1,6 +1,8 @@
 setx /M PATH "%PATH%;C:\Python27;C:\Python27\Scripts;C:\Python27\Lib\site-packages\pywin32_system32;C:\Python27\Lib\site-packages\win32"
 
-cd %USERPROFILE%\Shakecast\site-packages
+SET location=%~dp0
+cd %location%
+cd ..\..\..\site-packages
 
 C:\Python27\python.exe -m pip install --no-deps wheel-0.26.0-py2.py3-none-any.whl
 C:\Python27\python.exe -m pip install --no-deps click-6.6-py2.py3-none-any.whl

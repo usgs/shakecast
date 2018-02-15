@@ -1,2 +1,6 @@
-python "%userprofile%\Shakecast\shakecast\admin\Windows\server_service.py" remove
-python "%userprofile%\Shakecast\shakecast\admin\Windows\web_server_service.py" remove
+SET location=%~dp0
+
+python "%location%server_service.py" remove
+python "%location%web_server_service.py" remove
+
+pause
