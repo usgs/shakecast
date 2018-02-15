@@ -691,11 +691,11 @@ class Mailer(object):
         # get info from the config
         sc = SC()
         
-        self.me = sc.smtp_from
+        self.me = sc.smtp_username
         self.username = sc.smtp_username
         self.password = sc.smtp_password
         self.server_name = sc.smtp_server
-        self.server_port = sc.smtp_port
+        self.server_port = int(sc.smtp_port)
         self.security = sc.dict['SMTP']['security']
         self.log = ''
         
@@ -848,7 +848,7 @@ class TemplateManager(object):
         if name is None:
             temp_name = 'default.json'
         else:
-            temp_name = name.lower() + '.json'
+            temp_name = name + '.json'
             conf_file = os.path.join(sc_dir(),
                                     'templates',
                                     not_type,
