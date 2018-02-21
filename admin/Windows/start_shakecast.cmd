@@ -1,9 +1,18 @@
+echo off
 SET location=%~dp0
+cd %location%
 
-python "%location%server_service.py" --startup=auto install
-python "%location%web_server_service.py" --startup=auto install
+cd ..\..\..\python/Python27
+SET pythonLoc=%cd%
 
-python "%location%server_service.py" start
-python "%location%web_server_service.py" start
+echo Installing ShakeCast services...
+"%pythonLoc%\python.exe" "%location%server_service.py" --startup=auto install
+"%pythonLoc%\python.exe" "%location%web_server_service.py" --startup=auto install
+echo done.
+
+echo Starting ShakeCast services...
+"%pythonLoc%\python.exe" "%location%server_service.py" start
+"%pythonLoc%\python.exe" "%location%web_server_service.py" start
+echo done.
 
 pause
