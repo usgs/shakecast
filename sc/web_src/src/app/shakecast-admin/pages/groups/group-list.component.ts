@@ -8,7 +8,8 @@ import { Component,
          animate } from '@angular/core';
 
 import { GroupService, Group } from './group.service'
-declare var _: any;
+
+import * as _ from 'underscore';
 
 @Component({
     selector: 'group-list',

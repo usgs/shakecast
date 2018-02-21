@@ -1,27 +1,22 @@
 import { Component,
          OnInit, 
          OnDestroy,
-         HostListener,
-         trigger,
-         state,
-         style,
-         transition,
-         animate,
          ElementRef,
-         ViewChild } from '@angular/core';
+         ViewChild, 
+         HostListener } from '@angular/core';
 import { TitleService } from '../../../title/title.service';
 import { NotificationHTMLService } from './notification.service'
 import { NotificationsService } from 'angular2-notifications'
-import { Observable } from 'rxjs/Observable';
+import { TimerObservable } from "rxjs/observable/TimerObservable";
 
-declare var _: any;
+import * as _ from 'underscore';
 
 @Component({
     selector: 'notifications',
     templateUrl: './notifications.component.html',
     styleUrls: ['./notifications.component.css']
 })
-export class NotificationsComponent implements OnInit {
+export class NotificationsComponent implements OnInit, OnDestroy {
     private subscriptions: any[] = [];
     public notification: string = '';
     public name: string = 'default';
@@ -62,11 +57,10 @@ export class NotificationsComponent implements OnInit {
             })
         );
 
-        this.subscriptions.push(Observable.interval(3000).subscribe((x: any) => {
+        this.subscriptions.push(TimerObservable.create(0, 3000).subscribe((x: any) => {
             this.preview(this.name,
                          this.eventType,
                          this.config);
-                         
         }));
 
         this.subscriptions.push(this.notHTMLService.imageNames.subscribe((names: string[]) => {
@@ -112,7 +106,7 @@ export class NotificationsComponent implements OnInit {
         this.config = JSON.parse(JSON.stringify(this.oldConfig));
     }
 
-    @HostListener('window:keydown', ['$event'])
+    @HostListener('window:keydown', ['$event']) 
     keyboardInput(event: any) {
         if (this.enteringNew === true) {
             if (event.keyCode === 13) {
@@ -133,5 +127,15 @@ export class NotificationsComponent implements OnInit {
                             this.config);
             }
         }
+    }
+
+    endSubscriptions() {
+        for (var sub in this.subscriptions) {
+            this.subscriptions[sub].unsubscribe();
+        }
+    }
+
+    ngOnDestroy() {
+        this.endSubscriptions()
     }
 }

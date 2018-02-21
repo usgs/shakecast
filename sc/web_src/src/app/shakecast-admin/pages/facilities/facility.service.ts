@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Http, Response, Headers, RequestOptions, URLSearchParams } from '@angular/http';
+import { HttpClient, HttpParams} from '@angular/common/http';
 import 'rxjs/add/operator/map';
 import 'rxjs/add/operator/catch';
 import { Observable } from 'rxjs/Observable';
@@ -34,7 +34,7 @@ export class FacilityService {
     public filter = {};
     public sub: any = null;
 
-    constructor(private _http: Http,
+    constructor(private _http: HttpClient,
                 private mapService: MapService,
                 private _router: Router,
                 private notService: NotificationsService,
@@ -45,10 +45,8 @@ export class FacilityService {
         if (this.sub) {
             this.sub.unsubscribe();
         }
-        let params = new URLSearchParams();
-        params.set('filter', JSON.stringify(filter))
-        this.sub = this._http.get('/api/facility-data', {search: params})
-            .map((result: Response) => result.json())
+        let params = new HttpParams().set('filter', JSON.stringify(filter))
+        this.sub = this._http.get('/api/facility-data', {params: params})
             .subscribe((result: any) => {
                 this.selectedFacs = [];
                 this.shakingData.next(null);
@@ -58,10 +56,8 @@ export class FacilityService {
     }
 
     updateData(filter: any = {}) {
-        let params = new URLSearchParams();
-        params.set('filter', JSON.stringify(filter))
-        this._http.get('/api/facility-data', {search: params})
-            .map((result: Response) => result.json())
+        let params = new HttpParams().set('filter', JSON.stringify(filter))
+        this._http.get('/api/facility-data', {params: params})
             .subscribe((result: any) => {
                 this.facilityDataUpdate.next(result.data);
             })
@@ -74,7 +70,6 @@ export class FacilityService {
             this.sub.unsubscribe();
         }
         this.sub = this._http.get('/api/shakemaps/' + event.event_id + '/facilities')
-            .map((result: Response) => result.json())
             .subscribe((result: any) => {
 
                 if (this._router.url == '/shakecast/dashboard') {
@@ -97,7 +92,6 @@ export class FacilityService {
 
         this.loadingService.add('Facilities');
         this._http.get('/api/facility-shaking/' + facility['shakecast_id'] + '/' + event['event_id'])
-            .map((result: Response) => result.json())
             .subscribe((result: any) => {
                 if (result.data) {
                     this.facilityShaking.next(result.data);
@@ -125,11 +119,9 @@ export class FacilityService {
     deleteFacs() {
         this.notService.success('Deleting Facilities', 'Deleting ' + this.selectedFacs.length + ' facilities')
         this.loadingData.next(true)
-        let params = new URLSearchParams();
-        params.set('inventory', JSON.stringify(this.selectedFacs))
-        params.set('inventory_type', 'facility')
-        this._http.delete('/api/delete/inventory', {search: params})
-            .map((result: Response) => result.json())
+        let params = new HttpParams().set('inventory', JSON.stringify(this.selectedFacs))
+        params = params.append('inventory_type', 'facility')
+        this._http.delete('/api/delete/inventory', {params: params})
             .subscribe((result: any) => {
                 this.getData();
                 this.loadingData.next(false)

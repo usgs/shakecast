@@ -17,7 +17,7 @@ import { showLeft, showRight, showBottom } from '../../../shared/animations/anim
                   '../../../shared/css/panels.css'],
     animations: [ showLeft, showRight, showBottom ]
 })
-export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
+export class DashboardComponent implements OnInit, OnDestroy {
     public facilityData: any = [];
     public earthquakeData: any = [];
     private subscriptions: any[] = [];
@@ -40,18 +40,6 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
             this.facilityData = facs;
         }));
 
-        this.subscriptions.push(TimerObservable.create(0, 60000)
-            .subscribe((x: any) => {
-                this.eqService.getData(this.eqService.filter);
-            }));
-
-        this.eqService.filter['timeframe'] = 'day'
-        this.eqService.filter['shakemap'] = true
-        this.eqService.filter['scenario'] = false
-        this.eqService.getData(this.eqService.filter);
-    }
-
-    ngAfterViewInit() {
         this.subscriptions.push(this.eqService.earthquakeData.subscribe((eqs: any[]) => {
             this.earthquakeData = eqs;
             if (eqs.length > 0) {
@@ -61,6 +49,16 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
                 this.eqService.clearData();
             }
         }));
+
+        this.subscriptions.push(TimerObservable.create(0, 60000)
+            .subscribe((x: any) => {
+                this.eqService.getData(this.eqService.filter);
+            }));
+
+        this.eqService.filter['timeframe'] = 'day'
+        this.eqService.filter['shakemap'] = true
+        this.eqService.filter['scenario'] = false
+        this.eqService.getData(this.eqService.filter);
     }
 
     toggleLeft() {

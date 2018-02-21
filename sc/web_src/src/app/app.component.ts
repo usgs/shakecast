@@ -30,6 +30,7 @@ export class AppComponent implements OnInit, OnDestroy {
         // Skip to dashboard if user already logged in
         this.subscriptions.push(this.userService.checkLoggedIn().subscribe((data: any) => {
             if (data.loggedIn === true) {
+                this.userService.loggedIn = data.success
                 this.userService.isAdmin = data.isAdmin;
                 this.router.navigate(['/shakecast']);
             }

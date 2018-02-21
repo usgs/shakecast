@@ -1,6 +1,6 @@
 // user.service.ts
 import { Injectable } from '@angular/core';
-import { Http, Headers, Response } from '@angular/http';
+import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router'
 import 'rxjs/add/operator/map';
 import 'rxjs/add/operator/catch';
@@ -22,47 +22,25 @@ export class UserService {
   public isAdmin = false;
   public username = '';
 
-  constructor(private _http: Http,
+  constructor(private _http: HttpClient,
               private router: Router) {}
 
   
   login(username: string, password: string) {
-    let headers = new Headers();
-    headers.append('Content-Type', 'application/json');
-    return this._http.post('/api/login', 
-                          JSON.stringify({username: username,
-                                         password: password}), 
-                          {headers}
-                    )
-              .map(res => res.json())
-              .do((res) => {
-                  if (res.success) {
-                      this.loggedIn = true;
-                      this.isAdmin = res.isAdmin
-                      this.username = username
-                  }
-              });
+    return this._http.post('/api/login', {username: username,
+                                         password: password},{})
   }
 
    logout() {
-    this._http.get('/logout').map((resp: Response) => resp.json)
-                          .subscribe(resp => {
-                              this.loggedIn = false
-                              this.router.navigate(['/login'])
-                          });
+    this._http.get('/logout')
+      .subscribe(resp => {
+        this.loggedIn = false
+        this.router.navigate(['/login'])
+    });
   }
 
   checkLoggedIn() {
     return this._http.get('/logged_in')
-                  .map((resp: Response) => resp.json())
-                  .do(resp => this.loggedIn = resp.success)
-                  .catch(this.handleError);
-  }
-  
-
-  extractData(res: Response) {
-    let body = res.json()
-    return body.data || {}
   }
 
   private handleError (error: any) {

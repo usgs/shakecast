@@ -17,13 +17,20 @@ export class LoginComponent {
     user = new User('', '')
 
     onSubmit(username, password) {
-        this.userService.login(username, password).subscribe((result) => {
+        this.userService.login(username, password).subscribe((result: any) => {
             if (result.success) {
+                this.userService.loggedIn = true;
+                this.userService.isAdmin = result.isAdmin
+                this.userService.username = username
+
                 this.router.navigate(['/shakecast']);
                 this.notService.success('Login', 
                             'Welcome, ' + this.userService.username);
             } else {
                 this.notService.error('Login Failed', 'Invalid Username or Password')
+
+                this.userService.loggedIn = false;
+                this.userService.isAdmin = false;
             }
         });
     }

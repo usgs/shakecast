@@ -90,6 +90,7 @@ var AppComponent = /** @class */ (function () {
         // Skip to dashboard if user already logged in
         this.subscriptions.push(this.userService.checkLoggedIn().subscribe(function (data) {
             if (data.loggedIn === true) {
+                _this.userService.loggedIn = data.success;
                 _this.userService.isAdmin = data.isAdmin;
                 _this.router.navigate(['/shakecast']);
             }
@@ -479,7 +480,7 @@ module.exports = module.exports.toString();
 /***/ "../../../../../src/app/login/login.component.html":
 /***/ (function(module, exports) {
 
-module.exports = "\n<div class=\"login-title\">\n    \n    <div class=\"sc-logo\">\n        <img class=\"logo\" src=\"/static/sc_logo.png\">\n    </div>\n\n    <h1>ShakeCast</h1>\n\n</div>\n\n<form class=\"login-form\">\n    <div class=\"form-contents\">\n        <input type=\"text\" id=\"username\" name=\"username\"\n        placeholder=\"Username\" [(ngModel)]=\"user.username\"\n        required>\n\n        <input type=\"password\" id=\"password\" name=\"password\" \n        placeholder=\"Password\" [(ngModel)]=\"user.password\"\n        required>\n\n        <h2 class=\"button\" (click)=\"onSubmit(user.username, user.password)\">Login</h2>\n    </div>\n</form>\n\n<div class=\"usgs-logo-container\">\n    <img class=\"usgs-logo\" src=\"/static/USGS_logo.png\">\n</div>"
+module.exports = "\n<div class=\"login-title\">\n    \n    <div class=\"sc-logo\">\n        <img class=\"logo\" src=\"/assets/sc_logo.png\">\n    </div>\n\n    <h1>ShakeCast</h1>\n\n</div>\n\n<form class=\"login-form\">\n    <div class=\"form-contents\">\n        <input type=\"text\" id=\"username\" name=\"username\"\n        placeholder=\"Username\" [(ngModel)]=\"user.username\"\n        required>\n\n        <input type=\"password\" id=\"password\" name=\"password\" \n        placeholder=\"Password\" [(ngModel)]=\"user.password\"\n        required>\n\n        <h2 class=\"button\" (click)=\"onSubmit(user.username, user.password)\">Login</h2>\n    </div>\n</form>\n\n<div class=\"usgs-logo-container\">\n    <img class=\"usgs-logo\" src=\"/assets/USGS_logo.png\">\n</div>"
 
 /***/ }),
 
@@ -513,11 +514,16 @@ var LoginComponent = /** @class */ (function () {
         var _this = this;
         this.userService.login(username, password).subscribe(function (result) {
             if (result.success) {
+                _this.userService.loggedIn = true;
+                _this.userService.isAdmin = result.isAdmin;
+                _this.userService.username = username;
                 _this.router.navigate(['/shakecast']);
                 _this.notService.success('Login', 'Welcome, ' + _this.userService.username);
             }
             else {
                 _this.notService.error('Login Failed', 'Invalid Username or Password');
+                _this.userService.loggedIn = false;
+                _this.userService.isAdmin = false;
             }
         });
     };
@@ -611,7 +617,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 Object.defineProperty(exports, "__esModule", { value: true });
 // user.service.ts
 var core_1 = __webpack_require__("../../../core/esm5/core.js");
-var http_1 = __webpack_require__("../../../http/esm5/http.js");
+var http_1 = __webpack_require__("../../../common/esm5/http.js");
 var router_1 = __webpack_require__("../../../router/esm5/router.js");
 __webpack_require__("../../../../rxjs/_esm5/add/operator/map.js");
 __webpack_require__("../../../../rxjs/_esm5/add/operator/catch.js");
@@ -636,38 +642,19 @@ var UserService = /** @class */ (function () {
         this.username = '';
     }
     UserService.prototype.login = function (username, password) {
-        var _this = this;
-        var headers = new http_1.Headers();
-        headers.append('Content-Type', 'application/json');
-        return this._http.post('/api/login', JSON.stringify({ username: username,
-            password: password }), { headers: headers })
-            .map(function (res) { return res.json(); })
-            .do(function (res) {
-            if (res.success) {
-                _this.loggedIn = true;
-                _this.isAdmin = res.isAdmin;
-                _this.username = username;
-            }
-        });
+        return this._http.post('/api/login', { username: username,
+            password: password }, {});
     };
     UserService.prototype.logout = function () {
         var _this = this;
-        this._http.get('/logout').map(function (resp) { return resp.json; })
+        this._http.get('/logout')
             .subscribe(function (resp) {
             _this.loggedIn = false;
             _this.router.navigate(['/login']);
         });
     };
     UserService.prototype.checkLoggedIn = function () {
-        var _this = this;
-        return this._http.get('/logged_in')
-            .map(function (resp) { return resp.json(); })
-            .do(function (resp) { return _this.loggedIn = resp.success; })
-            .catch(this.handleError);
-    };
-    UserService.prototype.extractData = function (res) {
-        var body = res.json();
-        return body.data || {};
+        return this._http.get('/logged_in');
     };
     UserService.prototype.handleError = function (error) {
         // In a real world app, we might use a remote logging infrastructure
@@ -679,7 +666,7 @@ var UserService = /** @class */ (function () {
     };
     UserService = __decorate([
         core_1.Injectable(),
-        __metadata("design:paramtypes", [http_1.Http,
+        __metadata("design:paramtypes", [http_1.HttpClient,
             router_1.Router])
     ], UserService);
     return UserService;
@@ -949,12 +936,13 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 var core_1 = __webpack_require__("../../../core/esm5/core.js");
-var Observable_1 = __webpack_require__("../../../../rxjs/_esm5/Observable.js");
+var TimerObservable_1 = __webpack_require__("../../../../rxjs/_esm5/observable/TimerObservable.js");
 var title_service_1 = __webpack_require__("../../../../../src/app/title/title.service.ts");
 var update_service_1 = __webpack_require__("../../../../../src/app/shakecast-admin/update/update.service.ts");
 var config_service_1 = __webpack_require__("../../../../../src/app/shakecast-admin/pages/config/config.service.ts");
 var time_service_1 = __webpack_require__("../../../../../src/app/shakecast-admin/pages/config/time.service.ts");
 var angular2_notifications_1 = __webpack_require__("../../../../angular2-notifications/angular2-notifications.umd.js");
+var _ = __webpack_require__("../../../../underscore/underscore.js");
 var ConfigComponent = /** @class */ (function () {
     function ConfigComponent(confService, timeService, notService, titleService, updateServer) {
         this.confService = confService;
@@ -979,7 +967,7 @@ var ConfigComponent = /** @class */ (function () {
             _this.configs = configs;
             _this.oldConfigs = JSON.parse(JSON.stringify(_this.configs));
             _this.offsetTime = _this.timeService.getOffsetTime(configs.timezone);
-            _this.subscriptions.push(Observable_1.Observable.interval(500)
+            _this.subscriptions.push(TimerObservable_1.TimerObservable.create(0, 500)
                 .subscribe(function (x) {
                 _this.utcTime = _this.timeService.getUTCTime();
                 _this.offsetTime = _this.timeService.getOffsetTime(configs.timezone);
@@ -1097,7 +1085,7 @@ var ConfigService = /** @class */ (function () {
     };
     ConfigService.prototype.saveConfigs = function (newConfigs) {
         var _this = this;
-        this._http.post('/admin/api/configs', JSON.stringify({ configs: newConfigs })).subscribe(function (result) {
+        this._http.post('/admin/api/configs', { configs: newConfigs }).subscribe(function (result) {
             _this.notService.success('Success!', 'New Configurations Saved');
         });
     };
@@ -1710,7 +1698,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 var core_1 = __webpack_require__("../../../core/esm5/core.js");
-var http_1 = __webpack_require__("../../../http/esm5/http.js");
+var http_1 = __webpack_require__("../../../common/esm5/http.js");
 __webpack_require__("../../../../rxjs/_esm5/add/operator/map.js");
 __webpack_require__("../../../../rxjs/_esm5/add/operator/catch.js");
 var ReplaySubject_1 = __webpack_require__("../../../../rxjs/_esm5/ReplaySubject.js");
@@ -1744,10 +1732,8 @@ var FacilityService = /** @class */ (function () {
         if (this.sub) {
             this.sub.unsubscribe();
         }
-        var params = new http_1.URLSearchParams();
-        params.set('filter', JSON.stringify(filter));
-        this.sub = this._http.get('/api/facility-data', { search: params })
-            .map(function (result) { return result.json(); })
+        var params = new http_1.HttpParams().set('filter', JSON.stringify(filter));
+        this.sub = this._http.get('/api/facility-data', { params: params })
             .subscribe(function (result) {
             _this.selectedFacs = [];
             _this.shakingData.next(null);
@@ -1758,10 +1744,8 @@ var FacilityService = /** @class */ (function () {
     FacilityService.prototype.updateData = function (filter) {
         var _this = this;
         if (filter === void 0) { filter = {}; }
-        var params = new http_1.URLSearchParams();
-        params.set('filter', JSON.stringify(filter));
-        this._http.get('/api/facility-data', { search: params })
-            .map(function (result) { return result.json(); })
+        var params = new http_1.HttpParams().set('filter', JSON.stringify(filter));
+        this._http.get('/api/facility-data', { params: params })
             .subscribe(function (result) {
             _this.facilityDataUpdate.next(result.data);
         });
@@ -1774,7 +1758,6 @@ var FacilityService = /** @class */ (function () {
             this.sub.unsubscribe();
         }
         this.sub = this._http.get('/api/shakemaps/' + event.event_id + '/facilities')
-            .map(function (result) { return result.json(); })
             .subscribe(function (result) {
             if (_this._router.url == '/shakecast/dashboard') {
                 _this.facilityData.next(result.facilities);
@@ -1792,7 +1775,6 @@ var FacilityService = /** @class */ (function () {
         var _this = this;
         this.loadingService.add('Facilities');
         this._http.get('/api/facility-shaking/' + facility['shakecast_id'] + '/' + event['event_id'])
-            .map(function (result) { return result.json(); })
             .subscribe(function (result) {
             if (result.data) {
                 _this.facilityShaking.next(result.data);
@@ -1816,11 +1798,9 @@ var FacilityService = /** @class */ (function () {
         var _this = this;
         this.notService.success('Deleting Facilities', 'Deleting ' + this.selectedFacs.length + ' facilities');
         this.loadingData.next(true);
-        var params = new http_1.URLSearchParams();
-        params.set('inventory', JSON.stringify(this.selectedFacs));
-        params.set('inventory_type', 'facility');
-        this._http.delete('/api/delete/inventory', { search: params })
-            .map(function (result) { return result.json(); })
+        var params = new http_1.HttpParams().set('inventory', JSON.stringify(this.selectedFacs));
+        params = params.append('inventory_type', 'facility');
+        this._http.delete('/api/delete/inventory', { params: params })
             .subscribe(function (result) {
             _this.getData();
             _this.loadingData.next(false);
@@ -1838,7 +1818,7 @@ var FacilityService = /** @class */ (function () {
     };
     FacilityService = __decorate([
         core_1.Injectable(),
-        __metadata("design:paramtypes", [http_1.Http,
+        __metadata("design:paramtypes", [http_1.HttpClient,
             map_service_1.MapService,
             router_1.Router,
             angular2_notifications_1.NotificationsService,
@@ -1893,6 +1873,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 Object.defineProperty(exports, "__esModule", { value: true });
 var core_1 = __webpack_require__("../../../core/esm5/core.js");
 var group_service_1 = __webpack_require__("../../../../../src/app/shakecast-admin/pages/groups/group.service.ts");
+var _ = __webpack_require__("../../../../underscore/underscore.js");
 var GroupListComponent = /** @class */ (function () {
     function GroupListComponent(groupService) {
         this.groupService = groupService;
@@ -2011,7 +1992,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 var core_1 = __webpack_require__("../../../core/esm5/core.js");
-var http_1 = __webpack_require__("../../../http/esm5/http.js");
+var http_1 = __webpack_require__("../../../common/esm5/http.js");
 __webpack_require__("../../../../rxjs/_esm5/add/operator/map.js");
 __webpack_require__("../../../../rxjs/_esm5/add/operator/catch.js");
 var ReplaySubject_1 = __webpack_require__("../../../../rxjs/_esm5/ReplaySubject.js");
@@ -2032,10 +2013,9 @@ var GroupService = /** @class */ (function () {
         var _this = this;
         if (filter === void 0) { filter = {}; }
         this.loadingData.next(true);
-        var params = new http_1.URLSearchParams();
-        params.set('filter', JSON.stringify(filter));
-        this._http.get('/api/groups', { search: params })
-            .map(function (result) { return result.json(); })
+        var params = new http_1.HttpParams();
+        params = params.set('filter', JSON.stringify(filter));
+        this._http.get('/api/groups', { params: params })
             .subscribe(function (result) {
             if (filter['user']) {
                 _this.userGroupData.next(result);
@@ -2062,11 +2042,10 @@ var GroupService = /** @class */ (function () {
     GroupService.prototype.deleteGroups = function (group) {
         var _this = this;
         this.loadingData.next(true);
-        var params = new http_1.URLSearchParams();
-        params.set('inventory', JSON.stringify(group));
-        params.set('inventory_type', 'group');
-        this._http.delete('/api/delete/inventory', { search: params })
-            .map(function (result) { return result.json(); })
+        var params = new http_1.HttpParams();
+        params = params.append('inventory', JSON.stringify(group));
+        params = params.append('inventory_type', 'group');
+        this._http.delete('/api/delete/inventory', { params: params })
             .subscribe(function (result) {
             _this.getData();
             _this.loadingData.next(false);
@@ -2080,7 +2059,7 @@ var GroupService = /** @class */ (function () {
     };
     GroupService = __decorate([
         core_1.Injectable(),
-        __metadata("design:paramtypes", [http_1.Http,
+        __metadata("design:paramtypes", [http_1.HttpClient,
             map_service_1.MapService])
     ], GroupService);
     return GroupService;
@@ -2179,7 +2158,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var core_1 = __webpack_require__("../../../core/esm5/core.js");
 var http_1 = __webpack_require__("../../../common/esm5/http.js");
 __webpack_require__("../../../../rxjs/_esm5/add/operator/catch.js");
-var operators_1 = __webpack_require__("../../../../rxjs/_esm5/operators.js");
 var ReplaySubject_1 = __webpack_require__("../../../../rxjs/_esm5/ReplaySubject.js");
 var angular2_notifications_1 = __webpack_require__("../../../../angular2-notifications/angular2-notifications.umd.js");
 var NotificationHTMLService = /** @class */ (function () {
@@ -2197,15 +2175,11 @@ var NotificationHTMLService = /** @class */ (function () {
         var _this = this;
         if (config === void 0) { config = null; }
         this.loadingData.next(true);
-        var httpOptions = {
-            headers: new http_1.HttpHeaders({
-                'Content-Type': 'application/json'
-            })
-        };
-        this._http.get('/api/notification-html/' + notType + '/' + name, httpOptions)
+        var params = new http_1.HttpParams().set('config', JSON.stringify(config));
+        this._http.get('/api/notification-html/' + notType + '/' + name, { params: params, responseType: 'text' })
             .subscribe(function (result) {
             _this.name.next(name);
-            _this.notification.next(result['_body']);
+            _this.notification.next(result);
             _this.loadingData.next(false);
         });
     };
@@ -2213,7 +2187,6 @@ var NotificationHTMLService = /** @class */ (function () {
         var _this = this;
         this.loadingData.next(true);
         this._http.get('/api/notification-config/' + notType + '/' + name)
-            .pipe(operators_1.map(function (result) { return result.json(); }))
             .subscribe(function (result) {
             _this.config.next(result);
             _this.loadingData.next(false);
@@ -2223,7 +2196,6 @@ var NotificationHTMLService = /** @class */ (function () {
         var _this = this;
         this.loadingData.next(true);
         this._http.get('/api/template-names')
-            .pipe(operators_1.map(function (result) { return result.json(); }))
             .subscribe(function (result) {
             _this.tempNames.next(result);
             _this.loadingData.next(false);
@@ -2232,7 +2204,6 @@ var NotificationHTMLService = /** @class */ (function () {
     NotificationHTMLService.prototype.newTemplate = function (name) {
         var _this = this;
         this._http.get('/admin/new-template/' + name)
-            .pipe(operators_1.map(function (result) { return result.json(); }))
             .subscribe(function (result) {
             if (result === true) {
                 _this.notService.success('Template Created', 'Created ' + name + ' template');
@@ -2246,14 +2217,13 @@ var NotificationHTMLService = /** @class */ (function () {
     };
     NotificationHTMLService.prototype.saveConfigs = function (name, config) {
         var _this = this;
-        this._http.post('/api/notification-config/' + config.type + '/' + name, JSON.stringify({ config: config })).subscribe(function (result) {
+        this._http.post('/api/notification-config/' + config.type + '/' + name, { config: config }).subscribe(function (result) {
             _this.notService.success('Success!', 'New Configurations Saved');
         });
     };
     NotificationHTMLService.prototype.getImageNames = function () {
         var _this = this;
         this._http.get('/api/images/')
-            .pipe(operators_1.map(function (result) { return result.json(); }))
             .subscribe(function (result) {
             _this.imageNames.next(result);
         });
@@ -2314,7 +2284,8 @@ var core_1 = __webpack_require__("../../../core/esm5/core.js");
 var title_service_1 = __webpack_require__("../../../../../src/app/title/title.service.ts");
 var notification_service_1 = __webpack_require__("../../../../../src/app/shakecast-admin/pages/notifications/notification.service.ts");
 var angular2_notifications_1 = __webpack_require__("../../../../angular2-notifications/angular2-notifications.umd.js");
-var Observable_1 = __webpack_require__("../../../../rxjs/_esm5/Observable.js");
+var TimerObservable_1 = __webpack_require__("../../../../rxjs/_esm5/observable/TimerObservable.js");
+var _ = __webpack_require__("../../../../underscore/underscore.js");
 var NotificationsComponent = /** @class */ (function () {
     function NotificationsComponent(titleService, notHTMLService, notService) {
         this.titleService = titleService;
@@ -2349,7 +2320,7 @@ var NotificationsComponent = /** @class */ (function () {
         this.subscriptions.push(this.notHTMLService.name.subscribe(function (name) {
             _this.name = name;
         }));
-        this.subscriptions.push(Observable_1.Observable.interval(3000).subscribe(function (x) {
+        this.subscriptions.push(TimerObservable_1.TimerObservable.create(0, 3000).subscribe(function (x) {
             _this.preview(_this.name, _this.eventType, _this.config);
         }));
         this.subscriptions.push(this.notHTMLService.imageNames.subscribe(function (names) {
@@ -2404,6 +2375,14 @@ var NotificationsComponent = /** @class */ (function () {
                 this.preview(this.name, this.eventType, this.config);
             }
         }
+    };
+    NotificationsComponent.prototype.endSubscriptions = function () {
+        for (var sub in this.subscriptions) {
+            this.subscriptions[sub].unsubscribe();
+        }
+    };
+    NotificationsComponent.prototype.ngOnDestroy = function () {
+        this.endSubscriptions();
     };
     __decorate([
         core_1.ViewChild('notificationContainer'),
@@ -3148,6 +3127,8 @@ var update_service_1 = __webpack_require__("../../../../../src/app/shakecast-adm
 var scenarios_component_1 = __webpack_require__("../../../../../src/app/shakecast-admin/pages/scenarios/scenarios.component.ts");
 var scenario_search_component_1 = __webpack_require__("../../../../../src/app/shakecast-admin/pages/scenarios/scenario-search/scenario-search.component.ts");
 var shared_module_1 = __webpack_require__("../../../../../src/app/shared/shared.module.ts");
+// ng2-file-upload
+var ng2_file_upload_1 = __webpack_require__("../../../../ng2-file-upload/index.js");
 var ShakeCastAdminModule = /** @class */ (function () {
     function ShakeCastAdminModule() {
     }
@@ -3158,7 +3139,8 @@ var ShakeCastAdminModule = /** @class */ (function () {
                 shakecast_admin_routing_1.routing,
                 http_1.HttpModule,
                 http_1.JsonpModule,
-                shared_module_1.SharedModule
+                shared_module_1.SharedModule,
+                ng2_file_upload_1.FileUploadModule
             ],
             declarations: [
                 shakecast_admin_component_1.ShakeCastAdminComponent,
@@ -3632,17 +3614,6 @@ var DashboardComponent = /** @class */ (function () {
         this.subscriptions.push(this.facService.facilityData.subscribe(function (facs) {
             _this.facilityData = facs;
         }));
-        this.subscriptions.push(TimerObservable_1.TimerObservable.create(0, 60000)
-            .subscribe(function (x) {
-            _this.eqService.getData(_this.eqService.filter);
-        }));
-        this.eqService.filter['timeframe'] = 'day';
-        this.eqService.filter['shakemap'] = true;
-        this.eqService.filter['scenario'] = false;
-        this.eqService.getData(this.eqService.filter);
-    };
-    DashboardComponent.prototype.ngAfterViewInit = function () {
-        var _this = this;
         this.subscriptions.push(this.eqService.earthquakeData.subscribe(function (eqs) {
             _this.earthquakeData = eqs;
             if (eqs.length > 0) {
@@ -3653,6 +3624,14 @@ var DashboardComponent = /** @class */ (function () {
                 _this.eqService.clearData();
             }
         }));
+        this.subscriptions.push(TimerObservable_1.TimerObservable.create(0, 60000)
+            .subscribe(function (x) {
+            _this.eqService.getData(_this.eqService.filter);
+        }));
+        this.eqService.filter['timeframe'] = 'day';
+        this.eqService.filter['shakemap'] = true;
+        this.eqService.filter['scenario'] = false;
+        this.eqService.getData(this.eqService.filter);
     };
     DashboardComponent.prototype.toggleLeft = function () {
         if (this.showLeft == 'hidden') {
@@ -4052,7 +4031,6 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 Object.defineProperty(exports, "__esModule", { value: true });
 var core_1 = __webpack_require__("../../../core/esm5/core.js");
 var http_1 = __webpack_require__("../../../common/esm5/http.js");
-var operators_1 = __webpack_require__("../../../../rxjs/_esm5/operators.js");
 __webpack_require__("../../../../rxjs/_esm5/add/operator/catch.js");
 var ReplaySubject_1 = __webpack_require__("../../../../rxjs/_esm5/ReplaySubject.js");
 var router_1 = __webpack_require__("../../../router/esm5/router.js");
@@ -4094,13 +4072,8 @@ var EarthquakeService = /** @class */ (function () {
             this.filter = filter;
         }
         this.dataLoading.next(true);
-        var httpOptions = {
-            headers: new http_1.HttpHeaders({
-                'Content-Type': 'application/json'
-            })
-        };
-        httpOptions['headers'].set('filter', JSON.stringify(filter));
-        this._http.get('/api/earthquake-data', httpOptions)
+        var params = new http_1.HttpParams().set('filter', JSON.stringify(filter));
+        this._http.get('/api/earthquake-data', { params: params })
             .subscribe(function (result) {
             // build event_id arrays
             var current_events = [];
@@ -4120,6 +4093,7 @@ var EarthquakeService = /** @class */ (function () {
             else {
                 _this.current = [];
                 _this.earthquakeData.next([]);
+                _this.notService.notifications.next([]);
             }
             _this.dataLoading.next(false);
         }, function (err) {
@@ -4160,17 +4134,13 @@ var EarthquakeService = /** @class */ (function () {
         else {
             filter['producttype'] = 'shakemap-scenario';
         }
-        var httpOptions = {
-            headers: new http_1.HttpHeaders({
-                'Content-Type': 'application/json'
-            })
-        };
+        var params = new http_1.HttpParams();
         for (var search in filter) {
-            if (search != 'scenariosOnly') {
-                httpOptions['headers'].set(search, filter[search]);
+            if ((search != 'scenariosOnly') && (filter[search])) {
+                params = params.set(search, filter[search]);
             }
         }
-        this._http.get(usgs, httpOptions)
+        this._http.get(usgs, { params: params })
             .subscribe(function (result) {
             // convert from geoJSON to sc conventions
             var data = [];
@@ -4193,14 +4163,8 @@ var EarthquakeService = /** @class */ (function () {
     EarthquakeService.prototype.downloadScenario = function (scenario_id, scenario) {
         var _this = this;
         if (scenario === void 0) { scenario = false; }
-        var httpOptions = {
-            headers: new http_1.HttpHeaders({
-                'Content-Type': 'application/json'
-            })
-        };
-        httpOptions['headers'].set('scenario', JSON.stringify(scenario));
-        this._http.get('/api/scenario-download/' + scenario_id, httpOptions)
-            .pipe(operators_1.map(function (result) { return result.json(); }))
+        var params = new http_1.HttpParams().set('scenario', JSON.stringify(scenario));
+        this._http.get('/api/scenario-download/' + scenario_id, { params: params })
             .subscribe(function (result) {
             _this.toastService.success('Scenario: ' + scenario_id, 'Download starting...');
         });
@@ -4208,7 +4172,6 @@ var EarthquakeService = /** @class */ (function () {
     EarthquakeService.prototype.deleteScenario = function (scenario_id) {
         var _this = this;
         this._http.delete('/api/scenario-delete/' + scenario_id)
-            .pipe(operators_1.map(function (result) { return result.json(); }))
             .subscribe(function (result) {
             _this.toastService.success('Delete Scenario: ' + scenario_id, 'Deleting... This may take a moment');
         });
@@ -4216,7 +4179,6 @@ var EarthquakeService = /** @class */ (function () {
     EarthquakeService.prototype.runScenario = function (scenario_id) {
         var _this = this;
         this._http.post('/api/scenario-run/' + scenario_id, {})
-            .pipe(operators_1.map(function (result) { return result.json(); }))
             .subscribe(function (result) {
             _this.toastService.success('Run Scenario: ' + scenario_id, 'Running Scenario... This may take a moment');
         });
@@ -4641,6 +4603,68 @@ module.exports = module.exports.toString();
 
 /***/ }),
 
+/***/ "../../../../../src/app/shared/directives/scroll-toggle.directive.ts":
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+var core_1 = __webpack_require__("../../../core/esm5/core.js");
+var TimerObservable_1 = __webpack_require__("../../../../rxjs/_esm5/observable/TimerObservable.js");
+var ScrollToggleDirective = /** @class */ (function () {
+    function ScrollToggleDirective(el) {
+        this.el = el;
+        this.scrolled = document.querySelector('body').scrollTop;
+        this.scrollUp = false;
+    }
+    ScrollToggleDirective.prototype.ngOnInit = function () {
+        var _this = this;
+        console.log('Scroll Directive');
+        TimerObservable_1.TimerObservable.create(0, 500)
+            .subscribe(function (x) {
+            if (_this.scrolled !== document.querySelector('body').scrollTop) {
+                if (_this.scrolled > (document.querySelector('body').scrollTop + 100)) {
+                    // show the element
+                    if (_this.scrollUp === true) {
+                        console.log('Show element');
+                        _this.scrollUp = false;
+                    }
+                }
+                else if (_this.scrolled < document.querySelector('body').scrollTop) {
+                    // hide the element
+                    if (_this.scrollUp === false) {
+                        console.log('hide element');
+                        console.log(_this.el);
+                        _this.scrollUp = true;
+                    }
+                }
+                _this.scrolled = document.querySelector('body').scrollTop;
+            }
+            console.log(_this.scrolled);
+        });
+    };
+    ScrollToggleDirective = __decorate([
+        core_1.Directive({
+            selector: '[scroll-toggle]',
+        }),
+        __metadata("design:paramtypes", [core_1.ElementRef])
+    ], ScrollToggleDirective);
+    return ScrollToggleDirective;
+}());
+exports.ScrollToggleDirective = ScrollToggleDirective;
+
+
+/***/ }),
+
 /***/ "../../../../../src/app/shared/directives/stick-to-top.directive.ts":
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -4657,7 +4681,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 var core_1 = __webpack_require__("../../../core/esm5/core.js");
-var Observable_1 = __webpack_require__("../../../../rxjs/_esm5/Observable.js");
+var TimerObservable_1 = __webpack_require__("../../../../rxjs/_esm5/observable/TimerObservable.js");
 var stick_to_top_service_1 = __webpack_require__("../../../../../src/app/shared/directives/stick-to-top.service.ts");
 var StickToTopDirective = /** @class */ (function () {
     function StickToTopDirective(el, sttService) {
@@ -4675,7 +4699,7 @@ var StickToTopDirective = /** @class */ (function () {
     StickToTopDirective.prototype.ngOnInit = function () {
         var _this = this;
         this.checkLock();
-        Observable_1.Observable.interval(10)
+        TimerObservable_1.TimerObservable.create(0, 10)
             .subscribe(function (x) {
             if (_this.didScroll) {
                 _this.didScroll = false;
@@ -5421,8 +5445,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 Object.defineProperty(exports, "__esModule", { value: true });
 var core_1 = __webpack_require__("../../../core/esm5/core.js");
 var ReplaySubject_1 = __webpack_require__("../../../../rxjs/_esm5/ReplaySubject.js");
-var http_1 = __webpack_require__("../../../http/esm5/http.js");
-var operators_1 = __webpack_require__("../../../../rxjs/_esm5/operators.js");
+var http_1 = __webpack_require__("../../../common/esm5/http.js");
 var MapService = /** @class */ (function () {
     function MapService(_http) {
         this._http = _http;
@@ -5522,12 +5545,11 @@ var MapService = /** @class */ (function () {
         this.clearMapNotify.next(true);
     };
     MapService.prototype.getMapKey = function () {
-        return this._http.get('/api/map-key')
-            .pipe(operators_1.map(function (result) { return result.json(); }));
+        return this._http.get('/api/map-key');
     };
     MapService = __decorate([
         core_1.Injectable(),
-        __metadata("design:paramtypes", [http_1.Http])
+        __metadata("design:paramtypes", [http_1.HttpClient])
     ], MapService);
     return MapService;
 }());
@@ -5552,23 +5574,21 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 var core_1 = __webpack_require__("../../../core/esm5/core.js");
-var http_1 = __webpack_require__("../../../http/esm5/http.js");
+var http_1 = __webpack_require__("../../../common/esm5/http.js");
 __webpack_require__("../../../../rxjs/_esm5/add/operator/map.js");
 var ShakemapService = /** @class */ (function () {
     function ShakemapService(_http) {
         this._http = _http;
     }
     ShakemapService.prototype.shakemapCheck = function (eq) {
-        return this._http.get('/api/shakemaps/' + eq.event_id)
-            .map(function (result) { return result.json(); });
+        return this._http.get('/api/shakemaps/' + eq.event_id);
     };
     ShakemapService.prototype.getFacilities = function (sm) {
-        return this._http.get('/api/shakemaps/' + sm.shakemap_id + '/facilities')
-            .map(function (result) { return result.json(); });
+        return this._http.get('/api/shakemaps/' + sm.shakemap_id + '/facilities');
     };
     ShakemapService = __decorate([
         core_1.Injectable(),
-        __metadata("design:paramtypes", [http_1.Http])
+        __metadata("design:paramtypes", [http_1.HttpClient])
     ], ShakemapService);
     return ShakemapService;
 }());
@@ -5593,7 +5613,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 var core_1 = __webpack_require__("../../../core/esm5/core.js");
-var http_1 = __webpack_require__("../../../http/esm5/http.js");
+var http_1 = __webpack_require__("../../../common/esm5/http.js");
 __webpack_require__("../../../../rxjs/_esm5/add/operator/map.js");
 var ReplaySubject_1 = __webpack_require__("../../../../rxjs/_esm5/ReplaySubject.js");
 var angular2_notifications_1 = __webpack_require__("../../../../angular2-notifications/angular2-notifications.umd.js");
@@ -5606,14 +5626,13 @@ var MessagesService = /** @class */ (function () {
     MessagesService.prototype.getMessages = function () {
         var _this = this;
         this._http.get('/api/messages')
-            .map(function (result) { return result.json(); })
             .subscribe(function (result) {
             _this.messages.next(result);
         });
     };
     MessagesService = __decorate([
         core_1.Injectable(),
-        __metadata("design:paramtypes", [http_1.Http,
+        __metadata("design:paramtypes", [http_1.HttpClient,
             angular2_notifications_1.NotificationsService])
     ], MessagesService);
     return MessagesService;
@@ -5764,10 +5783,9 @@ var facility_info_component_1 = __webpack_require__("../../../../../src/app/shak
 var earthquake_list_component_1 = __webpack_require__("../../../../../src/app/shakecast/pages/earthquakes/earthquake-list.component.ts");
 // Earthquake Blurb
 var earthquake_blurb_component_1 = __webpack_require__("../../../../../src/app/shared/earthquake-blurb/earthquake-blurb.component.ts");
-// ng2-file-upload
-var ng2_file_upload_1 = __webpack_require__("../../../../ng2-file-upload/index.js");
 // scroll behavior
 var stick_to_top_directive_1 = __webpack_require__("../../../../../src/app/shared/directives/stick-to-top.directive.ts");
+var scroll_toggle_directive_1 = __webpack_require__("../../../../../src/app/shared/directives/scroll-toggle.directive.ts");
 // screen dimmer
 var screen_dimmer_component_1 = __webpack_require__("../../../../../src/app/shared/screen-dimmer/screen-dimmer.component.ts");
 // in-app documentation
@@ -5778,17 +5796,16 @@ var SharedModule = /** @class */ (function () {
     SharedModule = __decorate([
         core_1.NgModule({
             imports: [
-                common_1.CommonModule,
+                common_1.CommonModule
             ],
             declarations: [map_component_1.MapComponent,
                 stick_to_top_directive_1.StickToTopDirective,
+                scroll_toggle_directive_1.ScrollToggleDirective,
                 earthquake_blurb_component_1.EarthquakeBlurbComponent,
                 screen_dimmer_component_1.ScreenDimmerComponent,
                 earthquake_list_component_1.EarthquakeListComponent,
                 facility_list_component_1.FacilityListComponent,
                 facility_info_component_1.FacilityInfoComponent,
-                ng2_file_upload_1.FileSelectDirective,
-                ng2_file_upload_1.FileDropDirective,
                 info_component_1.InfoComponent],
             providers: [],
             exports: [map_component_1.MapComponent,
@@ -5799,9 +5816,8 @@ var SharedModule = /** @class */ (function () {
                 common_1.CommonModule,
                 forms_1.FormsModule,
                 stick_to_top_directive_1.StickToTopDirective,
+                scroll_toggle_directive_1.ScrollToggleDirective,
                 screen_dimmer_component_1.ScreenDimmerComponent,
-                ng2_file_upload_1.FileSelectDirective,
-                ng2_file_upload_1.FileDropDirective,
                 info_component_1.InfoComponent]
         })
     ], SharedModule);

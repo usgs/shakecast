@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Http, Response, Headers, RequestOptions, URLSearchParams } from '@angular/http';
+import { HttpClient, HttpParams} from '@angular/common/http';
 import 'rxjs/add/operator/map';
 import 'rxjs/add/operator/catch';
 import { Observable } from 'rxjs/Observable';
@@ -25,15 +25,14 @@ export class GroupService {
     public current_group: Group = null;
     public filter = {};
 
-    constructor(private _http: Http,
+    constructor(private _http: HttpClient,
                 private mapService: MapService) {}
 
     getData(filter: any = {}) {
         this.loadingData.next(true)
-        let params = new URLSearchParams();
-        params.set('filter', JSON.stringify(filter))
-        this._http.get('/api/groups', {search: params})
-            .map((result: Response) => result.json())
+        let params = new HttpParams();
+        params = params.set('filter', JSON.stringify(filter))
+        this._http.get('/api/groups', { params })
             .subscribe((result: any) => {
                 if (filter['user']) {
                     this.userGroupData.next(result)
@@ -62,11 +61,10 @@ export class GroupService {
 
     deleteGroups(group: Group[]) {
         this.loadingData.next(true)
-        let params = new URLSearchParams();
-        params.set('inventory', JSON.stringify(group))
-        params.set('inventory_type', 'group')
-        this._http.delete('/api/delete/inventory', {search: params})
-            .map((result: Response) => result.json())
+        let params = new HttpParams();
+        params = params.append('inventory', JSON.stringify(group))
+        params = params.append('inventory_type', 'group')
+        this._http.delete('/api/delete/inventory', { params })
             .subscribe((result: any) => {
                 this.getData();
                 this.loadingData.next(false)

@@ -32,7 +32,7 @@ export class ConfigService {
 
     saveConfigs(newConfigs: any) {
         this._http.post('/admin/api/configs', 
-                        JSON.stringify({configs: newConfigs})
+                        {configs: newConfigs}
         ).subscribe((result: any) => {
             this.notService.success('Success!', 'New Configurations Saved');
         });

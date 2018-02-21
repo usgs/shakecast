@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Response, Headers, RequestOptions } from '@angular/http';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { map } from 'rxjs/operators';
 import 'rxjs/add/operator/catch';
 import { Observable } from 'rxjs/Observable';
@@ -71,13 +71,8 @@ export class EarthquakeService {
             this.filter = filter
         }
         this.dataLoading.next(true);
-        let httpOptions = {
-            headers: new HttpHeaders({
-                'Content-Type':  'application/json'
-            })
-        };
-        httpOptions['headers'].set('filter', JSON.stringify(filter))
-        this._http.get('/api/earthquake-data', httpOptions)
+        const params = new HttpParams().set('filter', JSON.stringify(filter));
+        this._http.get('/api/earthquake-data', {params: params})
             .subscribe(
                 (result: any) => {
                     // build event_id arrays
@@ -98,6 +93,7 @@ export class EarthquakeService {
                     } else {
                         this.current = []
                         this.earthquakeData.next([]);
+                        this.notService.notifications.next([]);
                     }
                     this.dataLoading.next(false);
                 },
@@ -147,18 +143,14 @@ export class EarthquakeService {
         }
 
 
-        let httpOptions = {
-            headers: new HttpHeaders({
-                'Content-Type':  'application/json'
-            })
-        };
+        let params = new HttpParams();
         for (var search in filter) {
-            if (search != 'scenariosOnly') {
-                httpOptions['headers'].set(search, filter[search])
+            if ((search != 'scenariosOnly') && (filter[search])) {
+                params = params.set(search, filter[search])
             }
         }
         
-        this._http.get(usgs, httpOptions)
+        this._http.get(usgs, {params: params})
             .subscribe((result: any) => {
                 // convert from geoJSON to sc conventions
                 var data: any[] = []
@@ -182,16 +174,8 @@ export class EarthquakeService {
     }
 
     downloadScenario(scenario_id: string, scenario:boolean = false) {
-        let httpOptions = {
-            headers: new HttpHeaders({
-                'Content-Type':  'application/json'
-            })
-        };
-        httpOptions['headers'].set('scenario', JSON.stringify(scenario))
-        this._http.get('/api/scenario-download/' + scenario_id, httpOptions)
-            .pipe(
-                map((result: Response) => result.json())
-            )
+        let params = new HttpParams().set('scenario', JSON.stringify(scenario))
+        this._http.get('/api/scenario-download/' + scenario_id, {params: params})
             .subscribe((result: any) => {
                 this.toastService.success('Scenario: ' + scenario_id, 'Download starting...')
             });
@@ -199,9 +183,6 @@ export class EarthquakeService {
 
     deleteScenario(scenario_id: string) {
         this._http.delete('/api/scenario-delete/' + scenario_id)
-            .pipe(
-                map((result: Response) => result.json())
-            )
             .subscribe((result: any) => {
                 this.toastService.success('Delete Scenario: ' + scenario_id, 'Deleting... This may take a moment')
             });
@@ -209,9 +190,6 @@ export class EarthquakeService {
 
     runScenario(scenario_id: string) {
         this._http.post('/api/scenario-run/' + scenario_id, {})
-            .pipe(
-                map((result: Response) => result.json())
-            )
             .subscribe((result: any) => {
                 this.toastService.success('Run Scenario: ' + scenario_id, 'Running Scenario... This may take a moment')
             });

@@ -2,7 +2,7 @@ import { Directive,
          ElementRef, 
          OnInit, OnDestroy } from '@angular/core';
 
-import { Observable } from 'rxjs/Observable';
+import { TimerObservable } from "rxjs/observable/TimerObservable";
 import { StickToTopService } from './stick-to-top.service'
 
 @Directive({
@@ -28,7 +28,7 @@ export class StickToTopDirective implements OnInit, OnDestroy {
 
     ngOnInit() {
         this.checkLock()
-        Observable.interval(10)
+        TimerObservable.create(0, 10)
                 .subscribe(x => {
             if(this.didScroll) {
                 this.didScroll = false;

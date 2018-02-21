@@ -123,7 +123,7 @@ def get_eq_data():
     filter_ = json.loads(request.args.get('filter', '{}'))
     DAY = 24*60*60
     query = session.query(Event)
-    
+
     if filter_:
         if filter_.get('group', None):
             query = query.filter(Event.groups.any(Group.name.like(filter_['group'])))
@@ -207,20 +207,27 @@ def get_fac_data():
     session = Session()
     filter_ = json.loads(request.args.get('filter', '{}'))
     query = session.query(Facility)
+    types_query = session.query(Facility.facility_type)
 
     if filter_:
         if filter_.get('group', None) is not None:
             query = query.filter(Facility.groups.any(Group.name.like(filter_['group'])))
+            types_query = types_query.filter(Facility.groups.any(Group.name.like(filter_['group'])))
         if filter_.get('latMax', None) is not None:
             query = query.filter(Facility.lat_min < float(filter_['latMax']))
+            types_query = types_query.filter(Facility.lat_min < float(filter_['latMax']))
         if filter_.get('latMin', None) is not None:
             query = query.filter(Facility.lat_max > float(filter_['latMin']))
+            types_query = types_query.filter(Facility.lat_max > float(filter_['latMin']))
         if filter_.get('lonMax', None) is not None:
             query = query.filter(Facility.lon_min < float(filter_['lonMax']))
+            types_query = types_query.filter(Facility.lon_min < float(filter_['lonMax']))
         if filter_.get('lonMin', None) is not None:
             query = query.filter(Facility.lon_max > float(filter_['lonMin']))
+            types_query = types_query.filter(Facility.lon_max > float(filter_['lonMin']))
         if filter_.get('facility_type', None) is not None:
             query = query.filter(Facility.facility_type.like(filter_['facility_type']))
+            types_query = types_query.filter(Facility.facility_type.like(filter_['facility_type']))
         if filter_.get('keywords', None) is not None:
 
             keys_raw = filter_['keywords'].lower().split(',')
@@ -230,6 +237,15 @@ def get_fac_data():
                                             func.lower(Facility.name).contains(key),
                                             func.lower(Facility.description).contains(key)) for key in keys]
             query = query.filter(and_(*key_filter))
+            types_query = types_query.filter(and_(*key_filter))
+    
+    # get facility types
+    fac_count = {}
+    fac_types = types_query.distinct().all()
+    for fac_type in fac_types:
+        fac_count[fac_type[0]] = (session.query(Facility.facility_id)
+                                    .filter(Facility.facility_type == fac_type[0])
+                                    .count())
 
     if filter_.get('count', None) is None:
         facs = query.limit(50).all()
@@ -248,7 +264,7 @@ def get_fac_data():
         dicts += [dict_]
     
     Session.remove()
-    return jsonify(success=True, data=dicts)
+    return jsonify(success=True, data=dicts, count=fac_count)
 
 @app.route('/api/facility-shaking/<facility_id>/<eq_id>')
 @login_required
@@ -756,10 +772,18 @@ def get_inventory():
         facilities = session.query(Facility).filter(Facility.shakecast_id > request.args.get('last_id', 0)).limit(50).all()
     
     facility_dicts = []
+    fac_types = {}
     for facility in facilities:
         facility_dict = facility.__dict__.copy()
         facility_dict.pop('_sa_instance_state', None)
         facility_dicts += [facility_dict]
+
+        if facility_dict['facility_type'] in fac_types:
+            fac_types[facility_dict['facility_type']] += 1
+        else:
+            fac_types[facility_dict['facility_type']] = 1
+
+    info = {'facs': facility_dicts, 'types': fac_types}
     
     facilities_json = json.dumps(facility_dicts, cls=AlchemyEncoder)
     

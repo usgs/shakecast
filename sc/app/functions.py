@@ -193,7 +193,7 @@ def process_events(events=None, session=None, scenario=False):
                         .all())
 
             last_day = time.time() - 60 * 60 * 5
-            filter_nots = filter(lambda x: x.event is not None and x.event.time > last_day, nots)
+            filter_nots = filter(lambda x: x.event is not None and (x.event.time > last_day or scenario is True), nots)
             new_event_notification(notifications=filter_nots,
                                     scenario=scenario)
             processed_events = [n.event for n in filter_nots]

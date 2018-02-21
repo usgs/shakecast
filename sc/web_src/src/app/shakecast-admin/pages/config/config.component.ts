@@ -2,14 +2,15 @@ import { Component,
          OnInit,
          OnDestroy,
          HostListener } from '@angular/core';
-import { Observable } from 'rxjs/Observable';
+import { TimerObservable } from 'rxjs/observable/TimerObservable';
 
 import { TitleService } from '../../../title/title.service';
 import { UpdateService } from '../../update/update.service';
 import { ConfigService } from './config.service';
 import { TimeService } from './time.service';
 import { NotificationsService } from 'angular2-notifications';
-declare var _: any;
+
+import * as _ from 'underscore'
 
 @Component({
   selector: 'config',
@@ -41,8 +42,8 @@ export class ConfigComponent implements OnInit, OnDestroy {
 
             this.offsetTime = this.timeService.getOffsetTime(configs.timezone)
 
-            this.subscriptions.push(Observable.interval(500)
-                .subscribe(x => {   
+            this.subscriptions.push(TimerObservable.create(0, 500)
+                .subscribe(x => {
                     this.utcTime = this.timeService.getUTCTime();
                     this.offsetTime = this.timeService.getOffsetTime(configs.timezone)
                 })

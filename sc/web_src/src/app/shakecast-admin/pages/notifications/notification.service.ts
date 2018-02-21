@@ -1,6 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Response, RequestOptions } from '@angular/http';
-import { HttpHeaders, HttpClient } from '@angular/common/http'
+import { HttpClient, HttpParams } from '@angular/common/http'
 import 'rxjs/add/operator/catch';
 import { map } from 'rxjs/operators';
 import { Observable } from 'rxjs/Observable';
@@ -22,57 +21,44 @@ export class NotificationHTMLService {
     getNotification(name: string,
                     notType: string,
                     config: any = null) {
-        this.loadingData.next(true)
-        let httpOptions = {
-            headers: new HttpHeaders({
-                'Content-Type':  'application/json'
-            })
-        };
-        this._http.get('/api/notification-html/' + notType + '/' + name, httpOptions)
-            .subscribe((result: Response) => {
-                this.name.next(name)
-                this.notification.next(result['_body']);
-                this.loadingData.next(false)
+        this.loadingData.next(true);
+        let params = new HttpParams().set('config', JSON.stringify(config));
+        this._http.get('/api/notification-html/' + notType + '/' + name, {params: params, responseType: 'text'})
+            .subscribe((result: any) => {
+                this.name.next(name);
+                this.notification.next(result);
+                this.loadingData.next(false);
             });
     }
 
     getConfigs(notType: string,
                 name: string) {
-        this.loadingData.next(true)
+        this.loadingData.next(true);
         this._http.get('/api/notification-config/' + notType + '/' + name)
-            .pipe(
-                map((result: Response) => result.json())
-            )
             .subscribe((result: any) => {
                 this.config.next(result);
-                this.loadingData.next(false)
+                this.loadingData.next(false);
             });
     }
 
     getTemplateNames() {
-        this.loadingData.next(true)
+        this.loadingData.next(true);
         this._http.get('/api/template-names')
-            .pipe(
-                map((result: Response) => result.json())
-            )
             .subscribe((result: any) => {
                 this.tempNames.next(result);
-                this.loadingData.next(false)
+                this.loadingData.next(false);
             });
     }
 
     newTemplate(name: string) {
         this._http.get('/admin/new-template/' + name)
-            .pipe(
-                map((result: Response) => result.json())
-            )
             .subscribe((result: any) => {
                 if (result === true) {
-                    this.notService.success('Template Created', 'Created ' + name + ' template')
+                    this.notService.success('Template Created', 'Created ' + name + ' template');
                     this.getNotification(name, 'new_event');
                     this.getConfigs('new_event', name);
                 } else {
-                    this.notService.success('Template Creation Failed', 'Check application permissions')
+                    this.notService.success('Template Creation Failed', 'Check application permissions');
                 }
             });
     }
@@ -80,7 +66,7 @@ export class NotificationHTMLService {
     saveConfigs(name: string,
                 config: any) {
         this._http.post('/api/notification-config/' + config.type + '/' + name, 
-                        JSON.stringify({config: config})
+                            {config: config}
         ).subscribe((result: any) => {
             this.notService.success('Success!', 'New Configurations Saved');
         });
@@ -88,13 +74,9 @@ export class NotificationHTMLService {
 
     getImageNames() {
         this._http.get('/api/images/')
-            .pipe(
-                map((result: Response) => result.json())
-            )
             .subscribe((result: any) => {
-                this.imageNames.next(result)
+                this.imageNames.next(result);
             });
-                
     }
 
 }
