@@ -6,8 +6,11 @@ cd ..\..\..\python\Python27
 
 SET pythonLoc=%cd%
 
+:: Create symbolic link to shrink path length
+mklink /D C:\scPython %pythonLoc% 
+
 :: only add new paths if they aren't already in PATH
-SET newPath=%pythonLoc%;%pythonLoc%\Scripts;%pythonLoc%\Lib\site-packages\pywin32_system32;%pythonLoc%\Lib\site-packages\win32
+SET newPath=C:\scPython;C:\scPython\Scripts;C:\scPython\Lib\site-packages\pywin32_system32;C:\scPython\Lib\site-packages\win32
 (echo ";%PATH%;" | find /C /I ";%newPath%;")>tmp.txt
 
 SET /P var=<tmp.txt
@@ -15,7 +18,7 @@ SET /P var=<tmp.txt
 IF "%var%"=="0" (
 	echo Add new directories to path:
 	echo "%newPath%"
-	setx /M PATH "%PATH%;%newPath%"
+	setx /M PATH "%newPath%;%PATH%"
 ) ELSE (
 	echo No path updates required.
 )
