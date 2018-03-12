@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Http, Response, Headers, RequestOptions, URLSearchParams } from '@angular/http';
+import { HttpClient } from '@angular/common/http';
 import { map } from 'rxjs/operators';
 import 'rxjs/add/operator/catch';
 import { Observable } from 'rxjs/Observable';
@@ -13,15 +13,11 @@ export interface Notification {
 export class NotificationService {
     public notifications = new ReplaySubject(1);
 
-    constructor(private _http: Http) {}
+    constructor(private _http: HttpClient) {}
 
     getNotifications(eq: any) {
         if (eq) {
-            let params = new URLSearchParams();
             this._http.get('/api/notifications/' + eq.event_id + '/')
-                .pipe(
-                    map((result: Response) => result.json())
-                )
                 .subscribe((result: any) => {
                     this.notifications.next(result);
                 });

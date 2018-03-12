@@ -21,7 +21,9 @@
       "styles": [
         "styles.css",
         "../node_modules/leaflet/dist/leaflet.css",
-        "../node_modules/font-awesome/css/font-awesome.min.css"
+        "../node_modules/font-awesome/css/font-awesome.min.css",
+        "../node_modules/leaflet.markercluster/dist/MarkerCluster.css",
+        "../node_modules/leaflet.markercluster/dist/MarkerCluster.Default.css"
       ],
       "scripts": [],
       "environmentSource": "environments/environment.ts",

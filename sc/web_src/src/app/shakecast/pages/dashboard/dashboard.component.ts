@@ -9,6 +9,7 @@ import { TitleService } from '../../../title/title.service';
 
 import { TimerObservable } from "rxjs/observable/TimerObservable";
 import { showLeft, showRight, showBottom } from '../../../shared/animations/animations';
+import { LoadingService } from '../../../loading/loading.service';
 
 @Component({
     selector: 'dashboard',
@@ -28,16 +29,18 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
     constructor(private eqService: EarthquakeService,
                 private facService: FacilityService,
-                private titleService: TitleService) {}
+                private titleService: TitleService,
+                private loadingService: LoadingService) {}
   
     ngOnInit() {
         this.titleService.title.next('Dashboard')
-        if (this.facService.sub) {
-            this.facService.sub.unsubscribe();
-        }
-        
-        this.subscriptions.push(this.facService.facilityData.subscribe(facs => {
-            this.facilityData = facs;
+
+        this.subscriptions.push(TimerObservable.create(0, 60000)
+            .subscribe((x: any) => {
+                this.eqService.filter['timeframe'] = 'day'
+                this.eqService.filter['shakemap'] = true
+                this.eqService.filter['scenario'] = false
+                this.eqService.getData(this.eqService.filter);
         }));
 
         this.subscriptions.push(this.eqService.earthquakeData.subscribe((eqs: any[]) => {
@@ -49,16 +52,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
                 this.eqService.clearData();
             }
         }));
-
-        this.subscriptions.push(TimerObservable.create(0, 60000)
-            .subscribe((x: any) => {
-                this.eqService.getData(this.eqService.filter);
-            }));
-
-        this.eqService.filter['timeframe'] = 'day'
-        this.eqService.filter['shakemap'] = true
-        this.eqService.filter['scenario'] = false
-        this.eqService.getData(this.eqService.filter);
     }
 
     toggleLeft() {

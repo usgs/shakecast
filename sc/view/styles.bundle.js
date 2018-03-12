@@ -58,6 +58,36 @@ exports.push([module.i, "/*!\n *  Font Awesome 4.7.0 by @davegandy - http://font
 
 /***/ }),
 
+/***/ "../../../../css-loader/index.js?{\"sourceMap\":false,\"import\":false}!../../../../postcss-loader/lib/index.js?{\"ident\":\"postcss\",\"sourceMap\":false}!../../../../leaflet.markercluster/dist/MarkerCluster.Default.css":
+/***/ (function(module, exports, __webpack_require__) {
+
+exports = module.exports = __webpack_require__("../../../../css-loader/lib/css-base.js")(false);
+// imports
+
+
+// module
+exports.push([module.i, ".marker-cluster-small {\r\n\tbackground-color: rgba(181, 226, 140, 0.6);\r\n\t}\r\n.marker-cluster-small div {\r\n\tbackground-color: rgba(110, 204, 57, 0.6);\r\n\t}\r\n.marker-cluster-medium {\r\n\tbackground-color: rgba(241, 211, 87, 0.6);\r\n\t}\r\n.marker-cluster-medium div {\r\n\tbackground-color: rgba(240, 194, 12, 0.6);\r\n\t}\r\n.marker-cluster-large {\r\n\tbackground-color: rgba(253, 156, 115, 0.6);\r\n\t}\r\n.marker-cluster-large div {\r\n\tbackground-color: rgba(241, 128, 23, 0.6);\r\n\t}\r\n/* IE 6-8 fallback colors */\r\n.leaflet-oldie .marker-cluster-small {\r\n\tbackground-color: rgb(181, 226, 140);\r\n\t}\r\n.leaflet-oldie .marker-cluster-small div {\r\n\tbackground-color: rgb(110, 204, 57);\r\n\t}\r\n.leaflet-oldie .marker-cluster-medium {\r\n\tbackground-color: rgb(241, 211, 87);\r\n\t}\r\n.leaflet-oldie .marker-cluster-medium div {\r\n\tbackground-color: rgb(240, 194, 12);\r\n\t}\r\n.leaflet-oldie .marker-cluster-large {\r\n\tbackground-color: rgb(253, 156, 115);\r\n\t}\r\n.leaflet-oldie .marker-cluster-large div {\r\n\tbackground-color: rgb(241, 128, 23);\r\n}\r\n.marker-cluster {\r\n\tbackground-clip: padding-box;\r\n\tborder-radius: 20px;\r\n\t}\r\n.marker-cluster div {\r\n\twidth: 30px;\r\n\theight: 30px;\r\n\tmargin-left: 5px;\r\n\tmargin-top: 5px;\r\n\r\n\ttext-align: center;\r\n\tborder-radius: 15px;\r\n\tfont: 12px \"Helvetica Neue\", Arial, Helvetica, sans-serif;\r\n\t}\r\n.marker-cluster span {\r\n\tline-height: 30px;\r\n\t}", ""]);
+
+// exports
+
+
+/***/ }),
+
+/***/ "../../../../css-loader/index.js?{\"sourceMap\":false,\"import\":false}!../../../../postcss-loader/lib/index.js?{\"ident\":\"postcss\",\"sourceMap\":false}!../../../../leaflet.markercluster/dist/MarkerCluster.css":
+/***/ (function(module, exports, __webpack_require__) {
+
+exports = module.exports = __webpack_require__("../../../../css-loader/lib/css-base.js")(false);
+// imports
+
+
+// module
+exports.push([module.i, ".leaflet-cluster-anim .leaflet-marker-icon, .leaflet-cluster-anim .leaflet-marker-shadow {\r\n\t-webkit-transition: -webkit-transform 0.3s ease-out, opacity 0.3s ease-in;\r\n\t-webkit-transition: opacity 0.3s ease-in, -webkit-transform 0.3s ease-out;\r\n\ttransition: opacity 0.3s ease-in, -webkit-transform 0.3s ease-out;\r\n\ttransition: transform 0.3s ease-out, opacity 0.3s ease-in;\r\n\ttransition: transform 0.3s ease-out, opacity 0.3s ease-in, -webkit-transform 0.3s ease-out;\r\n}\r\n\r\n.leaflet-cluster-spider-leg {\r\n\t/* stroke-dashoffset (duration and function) should match with leaflet-marker-icon transform in order to track it exactly */\r\n\t-webkit-transition: -webkit-stroke-dashoffset 0.3s ease-out, -webkit-stroke-opacity 0.3s ease-in;\r\n\t-webkit-transition: stroke-dashoffset 0.3s ease-out, stroke-opacity 0.3s ease-in;\r\n\ttransition: stroke-dashoffset 0.3s ease-out, stroke-opacity 0.3s ease-in;\r\n}\r\n", ""]);
+
+// exports
+
+
+/***/ }),
+
 /***/ "../../../../css-loader/index.js?{\"sourceMap\":false,\"import\":false}!../../../../postcss-loader/lib/index.js?{\"ident\":\"postcss\",\"sourceMap\":false}!../../../../leaflet/dist/leaflet.css":
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -245,6 +275,60 @@ module.exports = __webpack_require__.p + "fontawesome-webfont.af7ae505a9eed503f8
 /***/ (function(module, exports, __webpack_require__) {
 
 module.exports = __webpack_require__.p + "fontawesome-webfont.fee66e712a8a08eef580.woff";
+
+/***/ }),
+
+/***/ "../../../../leaflet.markercluster/dist/MarkerCluster.Default.css":
+/***/ (function(module, exports, __webpack_require__) {
+
+// style-loader: Adds some css to the DOM by adding a <style> tag
+
+// load the styles
+var content = __webpack_require__("../../../../css-loader/index.js?{\"sourceMap\":false,\"import\":false}!../../../../postcss-loader/lib/index.js?{\"ident\":\"postcss\",\"sourceMap\":false}!../../../../leaflet.markercluster/dist/MarkerCluster.Default.css");
+if(typeof content === 'string') content = [[module.i, content, '']];
+// add the styles to the DOM
+var update = __webpack_require__("../../../../style-loader/addStyles.js")(content, {});
+if(content.locals) module.exports = content.locals;
+// Hot Module Replacement
+if(false) {
+	// When the styles change, update the <style> tags
+	if(!content.locals) {
+		module.hot.accept("!!../../css-loader/index.js??ref--7-1!../../postcss-loader/lib/index.js??postcss!./MarkerCluster.Default.css", function() {
+			var newContent = require("!!../../css-loader/index.js??ref--7-1!../../postcss-loader/lib/index.js??postcss!./MarkerCluster.Default.css");
+			if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
+			update(newContent);
+		});
+	}
+	// When the module is disposed, remove the <style> tags
+	module.hot.dispose(function() { update(); });
+}
+
+/***/ }),
+
+/***/ "../../../../leaflet.markercluster/dist/MarkerCluster.css":
+/***/ (function(module, exports, __webpack_require__) {
+
+// style-loader: Adds some css to the DOM by adding a <style> tag
+
+// load the styles
+var content = __webpack_require__("../../../../css-loader/index.js?{\"sourceMap\":false,\"import\":false}!../../../../postcss-loader/lib/index.js?{\"ident\":\"postcss\",\"sourceMap\":false}!../../../../leaflet.markercluster/dist/MarkerCluster.css");
+if(typeof content === 'string') content = [[module.i, content, '']];
+// add the styles to the DOM
+var update = __webpack_require__("../../../../style-loader/addStyles.js")(content, {});
+if(content.locals) module.exports = content.locals;
+// Hot Module Replacement
+if(false) {
+	// When the styles change, update the <style> tags
+	if(!content.locals) {
+		module.hot.accept("!!../../css-loader/index.js??ref--7-1!../../postcss-loader/lib/index.js??postcss!./MarkerCluster.css", function() {
+			var newContent = require("!!../../css-loader/index.js??ref--7-1!../../postcss-loader/lib/index.js??postcss!./MarkerCluster.css");
+			if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
+			update(newContent);
+		});
+	}
+	// When the module is disposed, remove the <style> tags
+	module.hot.dispose(function() { update(); });
+}
 
 /***/ }),
 
@@ -533,7 +617,9 @@ function updateLink(linkElement, obj) {
 
 __webpack_require__("../../../../../src/styles.css");
 __webpack_require__("../../../../leaflet/dist/leaflet.css");
-module.exports = __webpack_require__("../../../../font-awesome/css/font-awesome.min.css");
+__webpack_require__("../../../../font-awesome/css/font-awesome.min.css");
+__webpack_require__("../../../../leaflet.markercluster/dist/MarkerCluster.css");
+module.exports = __webpack_require__("../../../../leaflet.markercluster/dist/MarkerCluster.Default.css");
 
 
 /***/ })

@@ -2,7 +2,8 @@ import { Component,
          OnInit,
          OnDestroy } from '@angular/core';
 
-import { NotificationService } from './notification.service'
+import { NotificationService } from './notification.service';
+import { EarthquakeService } from '../../earthquakes/earthquake.service';
 
 @Component({
   selector: 'notification-dash',
@@ -16,9 +17,14 @@ export class NotificationDashComponent implements OnInit, OnDestroy {
     public newEventGroups: string = ''
     public inspGroups: string = ''
     private subscriptions: any[] = [];
-    constructor(private notService: NotificationService) {}
+    constructor(private notService: NotificationService,
+                private eqService: EarthquakeService) {}
 
     ngOnInit() {
+        this.subscriptions.push(this.eqService.selectEvent.subscribe((event: any) => {
+            this.notService.getNotifications(event);
+        }));
+
         this.subscriptions.push(this.notService.notifications.subscribe(nots => {
             this.notifications = nots;
             this.inspGroups = '';
@@ -28,13 +34,13 @@ export class NotificationDashComponent implements OnInit, OnDestroy {
                     if (this.newEventGroups === '') {
                         this.newEventGroups += nots[not]['group_name']
                     } else {
-                        this.newEventGroups += ',' + nots[not]['group_name']
+                        this.newEventGroups += ', ' + nots[not]['group_name']
                     }
                 } else {
                     if (this.inspGroups === '') {
                         this.inspGroups += nots[not]['group_name']
                     } else {
-                        this.inspGroups += ',' + nots[not]['group_name']
+                        this.inspGroups += ', ' + nots[not]['group_name']
                     }
                 }
             }

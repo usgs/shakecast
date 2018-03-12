@@ -14,7 +14,8 @@ import { trigger,
 import { Router } from '@angular/router';
 import { FacilityService, Facility } from './facility.service';
 import { filter } from './facility-filter/facility-filter.component';
-declare var _: any;
+
+import * as _ from 'underscore';
 
 @Component({
   selector: 'facility-list',

@@ -66,10 +66,6 @@ export class MapService {
         this.facMarkers.next(markers);
     }
 
-    printFacSummary(summary: any) {
-
-    }
-
     plotGroup(group: Group,
               clear: boolean = false) {
         var groupPoly: any = this.makePoly(group);

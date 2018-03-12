@@ -44,6 +44,7 @@ export class EarthquakeService {
     public dataLoading = new ReplaySubject(1);
     public plotting = new ReplaySubject(1);
     public showScenarioSearch = new ReplaySubject(1);
+    public selectEvent = new ReplaySubject(1);
     public current: any = []
     
     public filter: filter = {
@@ -64,6 +65,7 @@ export class EarthquakeService {
                 private loadingService: LoadingService) {}
 
     getData(filter: any = {}) {
+        this.loadingService.finish('Facilities');
         if (this.facService.sub) {
             this.facService.sub.unsubscribe();
         }
@@ -205,10 +207,6 @@ export class EarthquakeService {
     
     plotEq(eq: Earthquake) {
         if (eq) {
-            // get relevant notification info... this should really be up to the page...
-            this.notService.getNotifications(eq);
-            //this.plotting.next(eq);
-
             // plots the eq with the relevant config to clear all data or notification
             // this could probably be done better...
             this.mapService.plotEq(eq, this.configs['clearOnPlot']);

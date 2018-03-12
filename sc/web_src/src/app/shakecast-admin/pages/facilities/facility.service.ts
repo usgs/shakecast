@@ -41,16 +41,18 @@ export class FacilityService {
                 private loadingService: LoadingService) {}
 
     getData(filter: any = {}) {
-        this.loadingService.add('Facilities');
         if (this.sub) {
             this.sub.unsubscribe();
         }
+        this.loadingService.add('Facilities');
         let params = new HttpParams().set('filter', JSON.stringify(filter))
         this.sub = this._http.get('/api/facility-data', {params: params})
             .subscribe((result: any) => {
                 this.selectedFacs = [];
                 this.shakingData.next(null);
                 this.facilityData.next(result.data);
+                this.loadingService.finish('Facilities');
+            }, (error: any) => {
                 this.loadingService.finish('Facilities');
             })
     }
@@ -84,6 +86,8 @@ export class FacilityService {
                 }
                 
                 this.loadingService.finish('Facilities');
+            }, (error: any) => {
+                this.loadingService.finish('Facilities');
             })
     }
 
@@ -97,6 +101,8 @@ export class FacilityService {
                     this.facilityShaking.next(result.data);
                 }
                 this.loadingService.finish('Facilities')
+            }, (error: any) => {
+                this.loadingService.finish('Facilities');
             })
     }
 

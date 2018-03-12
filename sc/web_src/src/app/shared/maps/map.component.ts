@@ -10,9 +10,11 @@ import { LoadingService } from '../../loading/loading.service';
 import { NotificationsService } from 'angular2-notifications';
 
 import * as L from 'leaflet';
+import 'leaflet-makimarkers';
+import 'leaflet.markercluster';
 import * as _ from 'underscore';
 
-//L.MakiMarkers.accessToken = //'pk.eyJ1IjoiZHNsb3NreSIsImEiOiJjaXR1aHJnY3EwMDFoMnRxZWVtcm9laWJmIn0.1C3GE0kHPGOpbVV9kTxBlQ'
+L.MakiMarkers.accessToken = 'pk.eyJ1IjoiZHNsb3NreSIsImEiOiJjaXR1aHJnY3EwMDFoMnRxZWVtcm9laWJmIn0.1C3GE0kHPGOpbVV9kTxBlQ'
 
 @Component({
     selector: 'my-map',
@@ -21,6 +23,7 @@ import * as _ from 'underscore';
 }) 
 
 export class MapComponent implements OnInit, OnDestroy {
+    public layersControl = null;
     public markers: any = {};
     public overlays: any = [];
     public eventMarkers: any = [];
@@ -31,12 +34,12 @@ export class MapComponent implements OnInit, OnDestroy {
     private eventMarker: any = L.marker();
     private eventLayer: any = L.featureGroup();
     private overlayLayer: any = L.layerGroup();
-    /*
+    
     private facilityCluster: any = L.markerClusterGroup({
 	                                iconCreateFunction: this.createFacCluster
                                     });
-                                    */
-    private facilityCluster: any = L.featureGroup();
+                                    
+    //private facilityCluster: any = L.featureGroup();
     private facilityLayer: any = L.featureGroup();
     private facMarker: any = L.marker();
     private groupLayers: any = L.featureGroup();
@@ -49,27 +52,29 @@ export class MapComponent implements OnInit, OnDestroy {
                              });
     public shakingData: any = null
     public totalShaking: number = 0;
-    //public greyIcon: any = L.MakiMarkers.icon({color: "#808080", size: "m"});
-    //public greenIcon: any = L.MakiMarkers.icon({color: "#008000", size: "m"});
-    //public yellowIcon: any = L.MakiMarkers.icon({color: "#FFD700", size: "m"});
-    //public orangeIcon: any = L.MakiMarkers.icon({color: "#FFA500", size: "m"});
-    //public redIcon: any = L.MakiMarkers.icon({color: "#FF0000", size: "m"});
 
-    public impactIcons: any = /*{
-        gray: L.MakiMarkers.icon({color: "#808080", size: "m"}),
-        green: L.MakiMarkers.icon({color: "#008000", size: "m"}),
-        yellow: L.MakiMarkers.icon({color: "#FFD700", size: "m"}),
-        orange: L.MakiMarkers.icon({color: "#FFA500", size: "m"}),
-        red: L.MakiMarkers.icon({color: "#FF0000", size: "m"})
-    }*/
+    private greyIcon: any = L.MakiMarkers.icon({color: "#808080", size: "m"});
+    private greenIcon: any = L.MakiMarkers.icon({color: "#008000", size: "m"});
+    private yellowIcon: any = L.MakiMarkers.icon({color: "#FFD700", size: "m"});
+    private orangeIcon: any = L.MakiMarkers.icon({color: "#FFA500", size: "m"});
+    private redIcon: any = L.MakiMarkers.icon({color: "#FF0000", size: "m"});
+
+    public impactIcons: any = {
+        gray: this.greyIcon,
+        green: this.greenIcon,
+        yellow: this.yellowIcon,
+        orange: this.orangeIcon,
+        red: this.redIcon
+    } /*
     {
         gray: L.icon({color: "#808080", size: "m"}),
         green: L.icon({color: "#008000", size: "m"}),
         yellow: L.icon({color: "#FFD700", size: "m"}),
         orange: L.icon({color: "#FFA500", size: "m"}),
         red: L.icon({color: "#FF0000", size: "m"})
-    }
+    };
 
+*/
     constructor(private mapService: MapService,
                 private smService: ShakemapService,
                 private facService: FacilityService,
@@ -91,14 +96,6 @@ export class MapComponent implements OnInit, OnDestroy {
             scrollWheelZoom: false
         }).setView([51.505, -0.09], 8);
 
-        L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token=' + this.mapKey, {
-			maxZoom: 18,
-			attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, ' +
-				'<a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ' +
-				'Imagery � <a href="http://mapbox.com">Mapbox</a>',
-			id: 'mapbox.streets'
-		}).addTo(this.map);
-
         // eslint-disable-next-line  
         delete L.Icon.Default.prototype._getIconUrl
         // eslint-disable-next-line  
@@ -108,11 +105,14 @@ export class MapComponent implements OnInit, OnDestroy {
             shadowUrl: require('leaflet/dist/images/marker-shadow.png')  
         })
 
+        let basemap = this.getBasemap();
+        basemap.addTo(this.map);
         var layers: any  = {
             'Facility': this.facilityLayer,
             'Event': this.eventLayer
         }
-        L.control.layers(null,layers).addTo(this.map);
+        
+        this.layersControl = L.control.layers(null,layers).addTo(this.map);
 
         // subscribe to earthquake markers
         this.subscriptions.push(this.mapService.eqMarkers.subscribe(eqData => {
@@ -168,11 +168,6 @@ export class MapComponent implements OnInit, OnDestroy {
         // subscribe to clearing the map
         this.subscriptions.push(this.mapService.clearMapNotify.subscribe(notification => {
             this.clearLayers();
-
-            // stop fetching facilities if this is still working...
-            // if (this.facService.sub) {
-            //     this.facService.sub.unsubscribe();
-            // }
         }));
 
         // subscribe to facility data to create a total shaking div
@@ -189,6 +184,16 @@ export class MapComponent implements OnInit, OnDestroy {
                 this.totalShaking = 0;
             }
         }));
+    }
+
+    getBasemap() {
+        return L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token=' + this.mapKey, {
+			maxZoom: 18,
+			attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, ' +
+				'<a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ' +
+				'Imagery � <a href="http://mapbox.com">Mapbox</a>',
+			id: 'mapbox.streets'
+		})
     }
 
     //////////////////////////////////////////////////////////////
@@ -240,19 +245,11 @@ export class MapComponent implements OnInit, OnDestroy {
         return marker
     }
 
-    plotLastEvent() {
-        if (this.eventMarkers.length > 0) {
-            var marker: any = this.eventMarkers[this.eventMarkers.length - 1] 
-            this.map.setView(marker.getLatLng());
-            marker.openPopup()
-        }
-    }
-
     plotShakemap(event: any) {
         this.smService.shakemapCheck(event).subscribe((result: any) => {
             if (result.length > 0){
                 this.loadingService.add('ShakeMap');
-                this.changeDetector.detectChanges();
+
                 // plot shakemaps
                 var sm = result[0]
                 var imageUrl = 'api/shakemaps/' + sm.shakemap_id + '/overlay';
@@ -275,7 +272,6 @@ export class MapComponent implements OnInit, OnDestroy {
                     this.notService.alert('Shakemap Error', 'Unable to retreive shakemap')
                 }
                 this.loadingService.finish('ShakeMap');
-                this.changeDetector.detectChanges();
             }
         });
     }
@@ -328,13 +324,12 @@ export class MapComponent implements OnInit, OnDestroy {
     }
 
     createFacMarker(fac: any) {
-        let alert = 'grey'
+        let alert = 'gray'
         if ((fac['shaking']) && (fac['shaking']['alert_level'] !== 'gray')) {
             alert = fac['shaking']['alert_level']
         }
 
-        //var marker = L.marker([fac.lat, fac.lon], {icon: this.impactIcons[alert]});
-        var marker = L.marker([fac.lat, fac.lon]);
+        var marker = L.marker([fac.lat, fac.lon], {icon: this.impactIcons[alert]});
         var desc: string = ''
         if (fac.html) {
             marker['popupContent'] = fac.html
@@ -441,11 +436,6 @@ export class MapComponent implements OnInit, OnDestroy {
         }
 
         delete this.facilityMarkers[fac.shakecast_id.toString()]
-        if (this._router.url == '/shakecast/dashboard') {
-            if (Object.keys(this.facilityMarkers).length == 0) {
-                this.plotLastEvent();
-            }
-        }
     }
 
     plotGroup(group: any) {
@@ -560,52 +550,42 @@ export class MapComponent implements OnInit, OnDestroy {
     }
 
     clearEventLayers() {
-        if (this.eventLayer.hasLayer(this.eventMarker)) {
-            this.eventLayer.removeLayer(this.eventMarker);
-        }
-
-        if (this.eventLayer.hasLayer(this.overlayLayer)) {
-            this.eventLayer.removeLayer(this.overlayLayer);
-            this.overlayLayer = L.imageOverlay();
-        }
+        this.clearLayers();
     }
 
     clearLayers() {
         /*
         Clear all layers besides basemaps
         */
-        this.clearEventLayers();
-
-        if (this.map.hasLayer(this.markerLayer)) {
-            this.map.removeLayer(this.markerLayer);
-            this.markerLayer = L.featureGroup();
+        if (this.layersControl) {
+            this.layersControl.remove();
         }
 
-        if (this.facilityLayer.hasLayer(this.facilityCluster)) {
-            this.facilityLayer.removeLayer(this.facilityCluster);
+        this.map.eachLayer(layer => {
+            this.map.removeLayer(layer);
+        });
 
-            /*
-            this.facilityCluster = L.markerClusterGroup({
-	                                    iconCreateFunction: this.createFacCluster
+        this.overlayLayer = L.imageOverlay();
+        this.markerLayer = L.featureGroup();
+        this.facilityCluster = L.markerClusterGroup({
+	                                iconCreateFunction: this.createFacCluster
                                     });
-
-                                    */
-            this.facilityCluster = L.featureGroup();
-        }
-
-        if (this.facilityLayer.hasLayer(this.facMarker)) {
-            this.facilityLayer.removeLayer(this.facMarker);
-            this.facMarker= L.marker();
-        }
-
-        if (this.map.hasLayer(this.groupLayers)) {
-            this.map.removeLayer(this.groupLayers);
-            this.groupLayers = L.featureGroup();
-        }
-
+        this.facMarker= L.marker();
+        this.groupLayers = L.featureGroup();
         this.eventMarkers = [];
         this.facilityMarkers = [];
         this.totalShaking = 0;
+        this.eventLayer = L.featureGroup();
+        this.facilityLayer = L.featureGroup();
+
+        let basemap = this.getBasemap();
+        basemap.addTo(this.map);
+        var layers: any  = {
+            'Facility': this.facilityLayer,
+            'Event': this.eventLayer
+        }
+        
+        this.layersControl = L.control.layers(null,layers).addTo(this.map);
     }
 
     createFacCluster(cluster: any) {

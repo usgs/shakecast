@@ -342,7 +342,7 @@ exports = module.exports = __webpack_require__("../../../../css-loader/lib/css-b
 
 
 // module
-exports.push([module.i, ".container {\n    position: fixed;\n    top: 50%;\n    left: 50%;\n    -webkit-transform: translateX(-50%) translateY(-50%);\n            transform: translateX(-50%) translateY(-50%);\n    text-align: center;\n}\n\n.spinning-icon {\n    height: 50px;\n    width: 50px;\n    border-radius: 50%;\n    position: relative;\n    border: 2px dashed white;\n    -webkit-transform: translateX(-50%);\n            transform: translateX(-50%);\n    -webkit-animation-name: spin;\n            animation-name: spin;\n    -webkit-animation-duration: 4000ms;\n            animation-duration: 4000ms;\n    -webkit-animation-iteration-count: infinite;\n            animation-iteration-count: infinite;\n    -webkit-animation-timing-function: linear;\n            animation-timing-function: linear;\n}\n\n.loading {\n    margin: 0;\n    text-align: center;\n    color: white;\n}\n\n.messages {\n    background: rgba(0,0,0,.4);\n    padding: 10px;\n    border-radius: 10px;\n}\n", ""]);
+exports.push([module.i, ".container {\n    position: fixed;\n    top: 50%;\n    left: 50%;\n    -webkit-transform: translateX(-50%) translateY(-50%);\n            transform: translateX(-50%) translateY(-50%);\n    text-align: center;\n}\n\n.spinning-icon {\n    height: 50px;\n    width: 50px;\n    border-radius: 50%;\n    position: relative;\n    border: 2px dashed white;\n    -webkit-transform: translateX(-50%);\n            transform: translateX(-50%);\n    -webkit-animation-name: spin;\n            animation-name: spin;\n    -webkit-animation-duration: 4000ms;\n            animation-duration: 4000ms;\n    -webkit-animation-iteration-count: infinite;\n            animation-iteration-count: infinite;\n    -webkit-animation-timing-function: linear;\n            animation-timing-function: linear;\n}\n\n.loading {\n    margin: 0;\n    text-align: center;\n    color: white;\n}\n\n.messages {\n    background: rgba(0,0,0,.4);\n    padding: 10px;\n    border-radius: 10px;\n}\n\n/* Safari */\n\n@-webkit-keyframes spin {\n  0% { -webkit-transform: rotate(0deg); }\n  100% { -webkit-transform: rotate(360deg); }\n}\n\n@keyframes spin {\n  0% { -webkit-transform: rotate(0deg); transform: rotate(0deg); }\n  100% { -webkit-transform: rotate(360deg); transform: rotate(360deg); }\n}", ""]);
 
 // exports
 
@@ -1224,17 +1224,10 @@ var FacilitiesComponent = /** @class */ (function () {
                 _this.facService.plotFac(facs[0]);
             }
         }));
-        this.eqService.configs['clearOnPlot'] = 'events';
         this.facService.getData();
         this.toggleRight();
     };
     FacilitiesComponent.prototype.ngAfterViewInit = function () {
-        /*
-        this.facService.clearMap()
-        if (this.facList.length > 0) {
-            this.facService.plotFac(this.facList[0]);
-        }
-        */
     };
     FacilitiesComponent.prototype.toggleLeft = function () {
         if (this.showLeft == 'hidden') {
@@ -1528,6 +1521,7 @@ var core_1 = __webpack_require__("../../../core/esm5/core.js");
 var animations_1 = __webpack_require__("../../../animations/esm5/animations.js");
 var router_1 = __webpack_require__("../../../router/esm5/router.js");
 var facility_service_1 = __webpack_require__("../../../../../src/app/shakecast-admin/pages/facilities/facility.service.ts");
+var _ = __webpack_require__("../../../../underscore/underscore.js");
 var FacilityListComponent = /** @class */ (function () {
     function FacilityListComponent(facService, element, _router) {
         this.facService = facService;
@@ -1728,16 +1722,18 @@ var FacilityService = /** @class */ (function () {
     FacilityService.prototype.getData = function (filter) {
         var _this = this;
         if (filter === void 0) { filter = {}; }
-        this.loadingService.add('Facilities');
         if (this.sub) {
             this.sub.unsubscribe();
         }
+        this.loadingService.add('Facilities');
         var params = new http_1.HttpParams().set('filter', JSON.stringify(filter));
         this.sub = this._http.get('/api/facility-data', { params: params })
             .subscribe(function (result) {
             _this.selectedFacs = [];
             _this.shakingData.next(null);
             _this.facilityData.next(result.data);
+            _this.loadingService.finish('Facilities');
+        }, function (error) {
             _this.loadingService.finish('Facilities');
         });
     };
@@ -1768,6 +1764,8 @@ var FacilityService = /** @class */ (function () {
                 _this.mapService.plotFacs(result.facilities);
             }
             _this.loadingService.finish('Facilities');
+        }, function (error) {
+            _this.loadingService.finish('Facilities');
         });
     };
     FacilityService.prototype.getFacilityShaking = function (facility, event) {
@@ -1779,6 +1777,8 @@ var FacilityService = /** @class */ (function () {
             if (result.data) {
                 _this.facilityShaking.next(result.data);
             }
+            _this.loadingService.finish('Facilities');
+        }, function (error) {
             _this.loadingService.finish('Facilities');
         });
     };
@@ -3568,7 +3568,7 @@ module.exports = module.exports.toString();
 /***/ "../../../../../src/app/shakecast/pages/dashboard/dashboard.component.html":
 /***/ (function(module, exports) {
 
-module.exports = "<div class=\"map-container\">\n    <my-map class=\"map\"></my-map>\n</div>\n\n<div class=\"right-panel\" [@showRight]=\"showRight\">\n    <div class=\"toggle\">\n        <div class=\"toggle-click\" (click)=\"toggleRight()\">\n            <span class=\"arrow-icon\" [hidden]=\"showRight=='shown'\"><i class=\"fa fa-chevron-left\"></i></span>\n            <span class=\"arrow-icon\" [hidden]=\"showRight=='hidden'\"><i class=\"fa fa-chevron-right\"></i></span>\n        </div>\n    </div>\n    <div class=\"panel-content\">\n            <h1 class=\"panel-title\">{{ earthquakeData.length }} Recent Earthquakes</h1>\n            \n            <div class=\"panel-scroll-container\">\n                <div class=\"inner-shadow\"></div>\n                <earthquake-list></earthquake-list>\n            </div>\n    </div>\n</div>\n\n<div class=\"left-panel\" [@showLeft]=\"showLeft\">\n    <div class=\"toggle\">\n        <div class=\"toggle-click\" (click)=\"toggleLeft()\">\n            <span class=\"arrow-icon\" [hidden]=\"showLeft=='shown'\"><i class=\"fa fa-chevron-right\"></i></span>\n            <span class=\"arrow-icon\" [hidden]=\"showLeft=='hidden'\"><i class=\"fa fa-chevron-left\"></i></span>\n        </div>\n    </div>\n    <div class=\"panel-content\">\n        <h1 class=\"panel-title\">Notifications:  <info [text]=\"'A list of notifications sent to specific groups for\n                                                                this event. Double check your notification group settings \n                                                                if you should have received a notification for this event, \n                                                                but did not.'\"\n                                                                [side]=\"'left'\"></info></h1>\n\n        <div class=\"not-container\">\n            <div class=\"not-dash\">\n                <notification-dash></notification-dash>\n            </div>\n        </div>\n        <div *ngIf=\"facilityData.length > 0\">\n            <h2 class=\"panel-title\">{{ facilityData.length }} Facilities Affected</h2>\n        </div>\n        <div class=\"panel-scroll-container\">\n            <div class=\"inner-shadow\"></div>\n            <facility-list></facility-list>\n        </div>\n    </div>\n</div>\n\n<div class=\"bottom-panel\" [@showBottom]=\"showBottom\">\n    <div class=\"toggle\">\n        <div class=\"toggle-click\" (click)=\"toggleBottom()\" style=\"width:0\">\n            <span class=\"arrow-icon\" [hidden]=\"showBottom=='shown'\"><i class=\"fa fa-chevron-up\"></i></span>\n            <span class=\"arrow-icon\" [hidden]=\"showBottom=='hidden'\"><i class=\"fa fa-chevron-down\"></i></span>\n        </div>\n    </div>\n\n    <div class=\"content-container\">\n        <eq-filter class=\"eq-filter\"></eq-filter>\n    </div>\n</div>\n"
+module.exports = "<div class=\"map-container\">\n    <my-map class=\"map\"></my-map>\n</div>\n\n<div class=\"right-panel\" [@showRight]=\"showRight\">\n    <div class=\"toggle\">\n        <div class=\"toggle-click\" (click)=\"toggleRight()\">\n            <span class=\"arrow-icon\" [hidden]=\"showRight=='shown'\"><i class=\"fa fa-chevron-left\"></i></span>\n            <span class=\"arrow-icon\" [hidden]=\"showRight=='hidden'\"><i class=\"fa fa-chevron-right\"></i></span>\n        </div>\n    </div>\n    <div class=\"panel-content\">\n            <h1 class=\"panel-title\">{{ earthquakeData.length }} Recent Earthquakes</h1>\n            \n            <div class=\"panel-scroll-container\">\n                <div class=\"inner-shadow\"></div>\n                <earthquake-list></earthquake-list>\n            </div>\n    </div>\n</div>\n\n<div class=\"left-panel\" [@showLeft]=\"showLeft\">\n    <div class=\"toggle\">\n        <div class=\"toggle-click\" (click)=\"toggleLeft()\">\n            <span class=\"arrow-icon\" [hidden]=\"showLeft=='shown'\"><i class=\"fa fa-chevron-right\"></i></span>\n            <span class=\"arrow-icon\" [hidden]=\"showLeft=='hidden'\"><i class=\"fa fa-chevron-left\"></i></span>\n        </div>\n    </div>\n    <div class=\"panel-content\">\n        <h1 class=\"panel-title\">Notifications:  <info [text]=\"'A list of notifications sent to specific groups for\n                                                                this event. Double check your notification group settings \n                                                                if you should have received a notification for this event, \n                                                                but did not.'\"\n                                                                [side]=\"'left'\"></info></h1>\n\n        <div class=\"not-container\">\n            <div class=\"not-dash\">\n                <notification-dash></notification-dash>\n            </div>\n        </div>\n    </div>\n</div>\n\n<div class=\"bottom-panel\" [@showBottom]=\"showBottom\">\n    <div class=\"toggle\">\n        <div class=\"toggle-click\" (click)=\"toggleBottom()\" style=\"width:0\">\n            <span class=\"arrow-icon\" [hidden]=\"showBottom=='shown'\"><i class=\"fa fa-chevron-up\"></i></span>\n            <span class=\"arrow-icon\" [hidden]=\"showBottom=='hidden'\"><i class=\"fa fa-chevron-down\"></i></span>\n        </div>\n    </div>\n\n    <div class=\"content-container\">\n        <eq-filter class=\"eq-filter\"></eq-filter>\n    </div>\n</div>\n"
 
 /***/ }),
 
@@ -3593,11 +3593,13 @@ var facility_service_1 = __webpack_require__("../../../../../src/app/shakecast-a
 var title_service_1 = __webpack_require__("../../../../../src/app/title/title.service.ts");
 var TimerObservable_1 = __webpack_require__("../../../../rxjs/_esm5/observable/TimerObservable.js");
 var animations_1 = __webpack_require__("../../../../../src/app/shared/animations/animations.ts");
+var loading_service_1 = __webpack_require__("../../../../../src/app/loading/loading.service.ts");
 var DashboardComponent = /** @class */ (function () {
-    function DashboardComponent(eqService, facService, titleService) {
+    function DashboardComponent(eqService, facService, titleService, loadingService) {
         this.eqService = eqService;
         this.facService = facService;
         this.titleService = titleService;
+        this.loadingService = loadingService;
         this.facilityData = [];
         this.earthquakeData = [];
         this.subscriptions = [];
@@ -3608,11 +3610,12 @@ var DashboardComponent = /** @class */ (function () {
     DashboardComponent.prototype.ngOnInit = function () {
         var _this = this;
         this.titleService.title.next('Dashboard');
-        if (this.facService.sub) {
-            this.facService.sub.unsubscribe();
-        }
-        this.subscriptions.push(this.facService.facilityData.subscribe(function (facs) {
-            _this.facilityData = facs;
+        this.subscriptions.push(TimerObservable_1.TimerObservable.create(0, 60000)
+            .subscribe(function (x) {
+            _this.eqService.filter['timeframe'] = 'day';
+            _this.eqService.filter['shakemap'] = true;
+            _this.eqService.filter['scenario'] = false;
+            _this.eqService.getData(_this.eqService.filter);
         }));
         this.subscriptions.push(this.eqService.earthquakeData.subscribe(function (eqs) {
             _this.earthquakeData = eqs;
@@ -3624,14 +3627,6 @@ var DashboardComponent = /** @class */ (function () {
                 _this.eqService.clearData();
             }
         }));
-        this.subscriptions.push(TimerObservable_1.TimerObservable.create(0, 60000)
-            .subscribe(function (x) {
-            _this.eqService.getData(_this.eqService.filter);
-        }));
-        this.eqService.filter['timeframe'] = 'day';
-        this.eqService.filter['shakemap'] = true;
-        this.eqService.filter['scenario'] = false;
-        this.eqService.getData(this.eqService.filter);
     };
     DashboardComponent.prototype.toggleLeft = function () {
         if (this.showLeft == 'hidden') {
@@ -3676,7 +3671,8 @@ var DashboardComponent = /** @class */ (function () {
         }),
         __metadata("design:paramtypes", [earthquake_service_1.EarthquakeService,
             facility_service_1.FacilityService,
-            title_service_1.TitleService])
+            title_service_1.TitleService,
+            loading_service_1.LoadingService])
     ], DashboardComponent);
     return DashboardComponent;
 }());
@@ -3727,9 +3723,11 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 Object.defineProperty(exports, "__esModule", { value: true });
 var core_1 = __webpack_require__("../../../core/esm5/core.js");
 var notification_service_1 = __webpack_require__("../../../../../src/app/shakecast/pages/dashboard/notification-dash/notification.service.ts");
+var earthquake_service_1 = __webpack_require__("../../../../../src/app/shakecast/pages/earthquakes/earthquake.service.ts");
 var NotificationDashComponent = /** @class */ (function () {
-    function NotificationDashComponent(notService) {
+    function NotificationDashComponent(notService, eqService) {
         this.notService = notService;
+        this.eqService = eqService;
         this.notifications = [];
         this.newEventGroups = '';
         this.inspGroups = '';
@@ -3737,6 +3735,9 @@ var NotificationDashComponent = /** @class */ (function () {
     }
     NotificationDashComponent.prototype.ngOnInit = function () {
         var _this = this;
+        this.subscriptions.push(this.eqService.selectEvent.subscribe(function (event) {
+            _this.notService.getNotifications(event);
+        }));
         this.subscriptions.push(this.notService.notifications.subscribe(function (nots) {
             _this.notifications = nots;
             _this.inspGroups = '';
@@ -3747,7 +3748,7 @@ var NotificationDashComponent = /** @class */ (function () {
                         _this.newEventGroups += nots[not]['group_name'];
                     }
                     else {
-                        _this.newEventGroups += ',' + nots[not]['group_name'];
+                        _this.newEventGroups += ', ' + nots[not]['group_name'];
                     }
                 }
                 else {
@@ -3755,7 +3756,7 @@ var NotificationDashComponent = /** @class */ (function () {
                         _this.inspGroups += nots[not]['group_name'];
                     }
                     else {
-                        _this.inspGroups += ',' + nots[not]['group_name'];
+                        _this.inspGroups += ', ' + nots[not]['group_name'];
                     }
                 }
             }
@@ -3775,7 +3776,8 @@ var NotificationDashComponent = /** @class */ (function () {
             template: __webpack_require__("../../../../../src/app/shakecast/pages/dashboard/notification-dash/notification-dash.component.html"),
             styles: [__webpack_require__("../../../../../src/app/shakecast/pages/dashboard/notification-dash/notification-dash.component.css"), __webpack_require__("../../../../../src/app/shared/css/data-list.css")]
         }),
-        __metadata("design:paramtypes", [notification_service_1.NotificationService])
+        __metadata("design:paramtypes", [notification_service_1.NotificationService,
+            earthquake_service_1.EarthquakeService])
     ], NotificationDashComponent);
     return NotificationDashComponent;
 }());
@@ -3800,8 +3802,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 var core_1 = __webpack_require__("../../../core/esm5/core.js");
-var http_1 = __webpack_require__("../../../http/esm5/http.js");
-var operators_1 = __webpack_require__("../../../../rxjs/_esm5/operators.js");
+var http_1 = __webpack_require__("../../../common/esm5/http.js");
 __webpack_require__("../../../../rxjs/_esm5/add/operator/catch.js");
 var ReplaySubject_1 = __webpack_require__("../../../../rxjs/_esm5/ReplaySubject.js");
 var NotificationService = /** @class */ (function () {
@@ -3812,9 +3813,7 @@ var NotificationService = /** @class */ (function () {
     NotificationService.prototype.getNotifications = function (eq) {
         var _this = this;
         if (eq) {
-            var params = new http_1.URLSearchParams();
             this._http.get('/api/notifications/' + eq.event_id + '/')
-                .pipe(operators_1.map(function (result) { return result.json(); }))
                 .subscribe(function (result) {
                 _this.notifications.next(result);
             });
@@ -3822,7 +3821,7 @@ var NotificationService = /** @class */ (function () {
     };
     NotificationService = __decorate([
         core_1.Injectable(),
-        __metadata("design:paramtypes", [http_1.Http])
+        __metadata("design:paramtypes", [http_1.HttpClient])
     ], NotificationService);
     return NotificationService;
 }());
@@ -3972,10 +3971,12 @@ var EarthquakeListComponent = /** @class */ (function () {
     EarthquakeListComponent.prototype.selectEq = function (eq) {
         if (this.selected) {
             this.selected['selected'] = 'false';
+            this.eqService.selectEvent.next(null);
         }
         eq['selected'] = 'true';
         this.selected = eq;
         this.eqService.selected = eq;
+        this.eqService.selectEvent.next(eq);
     };
     EarthquakeListComponent.prototype.ngOnDestroy = function () {
         this.earthquakeData = [];
@@ -4053,6 +4054,7 @@ var EarthquakeService = /** @class */ (function () {
         this.dataLoading = new ReplaySubject_1.ReplaySubject(1);
         this.plotting = new ReplaySubject_1.ReplaySubject(1);
         this.showScenarioSearch = new ReplaySubject_1.ReplaySubject(1);
+        this.selectEvent = new ReplaySubject_1.ReplaySubject(1);
         this.current = [];
         this.filter = {
             shakemap: true,
@@ -4065,6 +4067,7 @@ var EarthquakeService = /** @class */ (function () {
     EarthquakeService.prototype.getData = function (filter) {
         var _this = this;
         if (filter === void 0) { filter = {}; }
+        this.loadingService.finish('Facilities');
         if (this.facService.sub) {
             this.facService.sub.unsubscribe();
         }
@@ -4193,9 +4196,6 @@ var EarthquakeService = /** @class */ (function () {
     };
     EarthquakeService.prototype.plotEq = function (eq) {
         if (eq) {
-            // get relevant notification info... this should really be up to the page...
-            this.notService.getNotifications(eq);
-            //this.plotting.next(eq);
             // plots the eq with the relevant config to clear all data or notification
             // this could probably be done better...
             this.mapService.plotEq(eq, this.configs['clearOnPlot']);
@@ -4962,8 +4962,10 @@ var facility_service_1 = __webpack_require__("../../../../../src/app/shakecast-a
 var loading_service_1 = __webpack_require__("../../../../../src/app/loading/loading.service.ts");
 var angular2_notifications_1 = __webpack_require__("../../../../angular2-notifications/angular2-notifications.umd.js");
 var L = __webpack_require__("../../../../leaflet/dist/leaflet-src.js");
+__webpack_require__("../../../../leaflet-makimarkers/Leaflet.MakiMarkers.js");
+__webpack_require__("../../../../leaflet.markercluster/dist/leaflet.markercluster-src.js");
 var _ = __webpack_require__("../../../../underscore/underscore.js");
-//L.MakiMarkers.accessToken = //'pk.eyJ1IjoiZHNsb3NreSIsImEiOiJjaXR1aHJnY3EwMDFoMnRxZWVtcm9laWJmIn0.1C3GE0kHPGOpbVV9kTxBlQ'
+L.MakiMarkers.accessToken = 'pk.eyJ1IjoiZHNsb3NreSIsImEiOiJjaXR1aHJnY3EwMDFoMnRxZWVtcm9laWJmIn0.1C3GE0kHPGOpbVV9kTxBlQ';
 var MapComponent = /** @class */ (function () {
     function MapComponent(mapService, smService, facService, notService, _router, loadingService, changeDetector) {
         this.mapService = mapService;
@@ -4973,6 +4975,7 @@ var MapComponent = /** @class */ (function () {
         this._router = _router;
         this.loadingService = loadingService;
         this.changeDetector = changeDetector;
+        this.layersControl = null;
         this.markers = {};
         this.overlays = [];
         this.eventMarkers = [];
@@ -4983,12 +4986,10 @@ var MapComponent = /** @class */ (function () {
         this.eventMarker = L.marker();
         this.eventLayer = L.featureGroup();
         this.overlayLayer = L.layerGroup();
-        /*
-        private facilityCluster: any = L.markerClusterGroup({
-                                        iconCreateFunction: this.createFacCluster
-                                        });
-                                        */
-        this.facilityCluster = L.featureGroup();
+        this.facilityCluster = L.markerClusterGroup({
+            iconCreateFunction: this.createFacCluster
+        });
+        //private facilityCluster: any = L.featureGroup();
         this.facilityLayer = L.featureGroup();
         this.facMarker = L.marker();
         this.groupLayers = L.featureGroup();
@@ -5000,18 +5001,27 @@ var MapComponent = /** @class */ (function () {
         });
         this.shakingData = null;
         this.totalShaking = 0;
-        //public greyIcon: any = L.MakiMarkers.icon({color: "#808080", size: "m"});
-        //public greenIcon: any = L.MakiMarkers.icon({color: "#008000", size: "m"});
-        //public yellowIcon: any = L.MakiMarkers.icon({color: "#FFD700", size: "m"});
-        //public orangeIcon: any = L.MakiMarkers.icon({color: "#FFA500", size: "m"});
-        //public redIcon: any = L.MakiMarkers.icon({color: "#FF0000", size: "m"});
+        this.greyIcon = L.MakiMarkers.icon({ color: "#808080", size: "m" });
+        this.greenIcon = L.MakiMarkers.icon({ color: "#008000", size: "m" });
+        this.yellowIcon = L.MakiMarkers.icon({ color: "#FFD700", size: "m" });
+        this.orangeIcon = L.MakiMarkers.icon({ color: "#FFA500", size: "m" });
+        this.redIcon = L.MakiMarkers.icon({ color: "#FF0000", size: "m" });
         this.impactIcons = {
-            gray: L.icon({ color: "#808080", size: "m" }),
-            green: L.icon({ color: "#008000", size: "m" }),
-            yellow: L.icon({ color: "#FFD700", size: "m" }),
-            orange: L.icon({ color: "#FFA500", size: "m" }),
-            red: L.icon({ color: "#FF0000", size: "m" })
+            gray: this.greyIcon,
+            green: this.greenIcon,
+            yellow: this.yellowIcon,
+            orange: this.orangeIcon,
+            red: this.redIcon
+        }; /*
+        {
+            gray: L.icon({color: "#808080", size: "m"}),
+            green: L.icon({color: "#008000", size: "m"}),
+            yellow: L.icon({color: "#FFD700", size: "m"}),
+            orange: L.icon({color: "#FFA500", size: "m"}),
+            red: L.icon({color: "#FF0000", size: "m"})
         };
+    
+    */
     }
     MapComponent.prototype.ngOnInit = function () {
         var _this = this;
@@ -5026,13 +5036,6 @@ var MapComponent = /** @class */ (function () {
         this.map = L.map('map', {
             scrollWheelZoom: false
         }).setView([51.505, -0.09], 8);
-        L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token=' + this.mapKey, {
-            maxZoom: 18,
-            attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, ' +
-                '<a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ' +
-                'Imagery � <a href="http://mapbox.com">Mapbox</a>',
-            id: 'mapbox.streets'
-        }).addTo(this.map);
         // eslint-disable-next-line  
         delete L.Icon.Default.prototype._getIconUrl;
         // eslint-disable-next-line  
@@ -5041,11 +5044,13 @@ var MapComponent = /** @class */ (function () {
             iconUrl: __webpack_require__("../../../../leaflet/dist/images/marker-icon.png"),
             shadowUrl: __webpack_require__("../../../../leaflet/dist/images/marker-shadow.png")
         });
+        var basemap = this.getBasemap();
+        basemap.addTo(this.map);
         var layers = {
             'Facility': this.facilityLayer,
             'Event': this.eventLayer
         };
-        L.control.layers(null, layers).addTo(this.map);
+        this.layersControl = L.control.layers(null, layers).addTo(this.map);
         // subscribe to earthquake markers
         this.subscriptions.push(this.mapService.eqMarkers.subscribe(function (eqData) {
             if (eqData) {
@@ -5096,10 +5101,6 @@ var MapComponent = /** @class */ (function () {
         // subscribe to clearing the map
         this.subscriptions.push(this.mapService.clearMapNotify.subscribe(function (notification) {
             _this.clearLayers();
-            // stop fetching facilities if this is still working...
-            // if (this.facService.sub) {
-            //     this.facService.sub.unsubscribe();
-            // }
         }));
         // subscribe to facility data to create a total shaking div
         this.subscriptions.push(this.facService.shakingData.subscribe(function (shaking) {
@@ -5115,6 +5116,15 @@ var MapComponent = /** @class */ (function () {
                 _this.totalShaking = 0;
             }
         }));
+    };
+    MapComponent.prototype.getBasemap = function () {
+        return L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token=' + this.mapKey, {
+            maxZoom: 18,
+            attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, ' +
+                '<a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ' +
+                'Imagery � <a href="http://mapbox.com">Mapbox</a>',
+            id: 'mapbox.streets'
+        });
     };
     //////////////////////////////////////////////////////////////
     //////////////////// Earthquake Functions ////////////////////
@@ -5133,19 +5143,11 @@ var MapComponent = /** @class */ (function () {
         marker['popupContent'] = "<table class=\"my-table\">    \n                                <tr>\n                                    <th>ID:</th>\n                                    <td>" + event.event_id + "</td>\n                                </tr>\n                                <tr> \n                                    <th>Magnitude:</th>\n                                    <td>" + event.magnitude + "</td>\n                                </tr>\n                                <tr>\n                                    <th>Depth:</th>\n                                    <td>" + event.depth + "</td>\n                                </tr>\n                                <tr>\n                                    <th>Latitude:</th>\n                                    <td>" + event.lat + "</td>\n                                </tr>\n                                <tr>\n                                    <th>Longitude:</th>\n                                    <td>" + event.lon + "</td>\n                                </tr>\n                                <tr>\n                                    <th>Description:</th>\n                                    <td>" + event.place + "</td>\n                                </tr>\n                            </table>";
         return marker;
     };
-    MapComponent.prototype.plotLastEvent = function () {
-        if (this.eventMarkers.length > 0) {
-            var marker = this.eventMarkers[this.eventMarkers.length - 1];
-            this.map.setView(marker.getLatLng());
-            marker.openPopup();
-        }
-    };
     MapComponent.prototype.plotShakemap = function (event) {
         var _this = this;
         this.smService.shakemapCheck(event).subscribe(function (result) {
             if (result.length > 0) {
                 _this.loadingService.add('ShakeMap');
-                _this.changeDetector.detectChanges();
                 // plot shakemaps
                 var sm = result[0];
                 var imageUrl = 'api/shakemaps/' + sm.shakemap_id + '/overlay';
@@ -5165,7 +5167,6 @@ var MapComponent = /** @class */ (function () {
                     _this.notService.alert('Shakemap Error', 'Unable to retreive shakemap');
                 }
                 _this.loadingService.finish('ShakeMap');
-                _this.changeDetector.detectChanges();
             }
         });
     };
@@ -5213,12 +5214,11 @@ var MapComponent = /** @class */ (function () {
         }
     };
     MapComponent.prototype.createFacMarker = function (fac) {
-        var alert = 'grey';
+        var alert = 'gray';
         if ((fac['shaking']) && (fac['shaking']['alert_level'] !== 'gray')) {
             alert = fac['shaking']['alert_level'];
         }
-        //var marker = L.marker([fac.lat, fac.lon], {icon: this.impactIcons[alert]});
-        var marker = L.marker([fac.lat, fac.lon]);
+        var marker = L.marker([fac.lat, fac.lon], { icon: this.impactIcons[alert] });
         var desc = '';
         if (fac.html) {
             marker['popupContent'] = fac.html;
@@ -5266,11 +5266,6 @@ var MapComponent = /** @class */ (function () {
             this.facilityCluster.removeLayer(marker);
         }
         delete this.facilityMarkers[fac.shakecast_id.toString()];
-        if (this._router.url == '/shakecast/dashboard') {
-            if (Object.keys(this.facilityMarkers).length == 0) {
-                this.plotLastEvent();
-            }
-        }
     };
     MapComponent.prototype.plotGroup = function (group) {
         var groupLayer = new L.GeoJSON(group);
@@ -5319,44 +5314,38 @@ var MapComponent = /** @class */ (function () {
         groupLayer.openPopup();
     };
     MapComponent.prototype.clearEventLayers = function () {
-        if (this.eventLayer.hasLayer(this.eventMarker)) {
-            this.eventLayer.removeLayer(this.eventMarker);
-        }
-        if (this.eventLayer.hasLayer(this.overlayLayer)) {
-            this.eventLayer.removeLayer(this.overlayLayer);
-            this.overlayLayer = L.imageOverlay();
-        }
+        this.clearLayers();
     };
     MapComponent.prototype.clearLayers = function () {
+        var _this = this;
         /*
         Clear all layers besides basemaps
         */
-        this.clearEventLayers();
-        if (this.map.hasLayer(this.markerLayer)) {
-            this.map.removeLayer(this.markerLayer);
-            this.markerLayer = L.featureGroup();
+        if (this.layersControl) {
+            this.layersControl.remove();
         }
-        if (this.facilityLayer.hasLayer(this.facilityCluster)) {
-            this.facilityLayer.removeLayer(this.facilityCluster);
-            /*
-            this.facilityCluster = L.markerClusterGroup({
-                                        iconCreateFunction: this.createFacCluster
-                                    });
-
-                                    */
-            this.facilityCluster = L.featureGroup();
-        }
-        if (this.facilityLayer.hasLayer(this.facMarker)) {
-            this.facilityLayer.removeLayer(this.facMarker);
-            this.facMarker = L.marker();
-        }
-        if (this.map.hasLayer(this.groupLayers)) {
-            this.map.removeLayer(this.groupLayers);
-            this.groupLayers = L.featureGroup();
-        }
+        this.map.eachLayer(function (layer) {
+            _this.map.removeLayer(layer);
+        });
+        this.overlayLayer = L.imageOverlay();
+        this.markerLayer = L.featureGroup();
+        this.facilityCluster = L.markerClusterGroup({
+            iconCreateFunction: this.createFacCluster
+        });
+        this.facMarker = L.marker();
+        this.groupLayers = L.featureGroup();
         this.eventMarkers = [];
         this.facilityMarkers = [];
         this.totalShaking = 0;
+        this.eventLayer = L.featureGroup();
+        this.facilityLayer = L.featureGroup();
+        var basemap = this.getBasemap();
+        basemap.addTo(this.map);
+        var layers = {
+            'Facility': this.facilityLayer,
+            'Event': this.eventLayer
+        };
+        this.layersControl = L.control.layers(null, layers).addTo(this.map);
     };
     MapComponent.prototype.createFacCluster = function (cluster) {
         var childCount = cluster.getChildCount();
@@ -5492,8 +5481,6 @@ var MapService = /** @class */ (function () {
             markers[fac_id] = marker;
         }
         this.facMarkers.next(markers);
-    };
-    MapService.prototype.printFacSummary = function (summary) {
     };
     MapService.prototype.plotGroup = function (group, clear) {
         if (clear === void 0) { clear = false; }
