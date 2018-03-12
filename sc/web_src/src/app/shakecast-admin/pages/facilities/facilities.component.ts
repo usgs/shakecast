@@ -75,6 +75,7 @@ export class FacilitiesComponent implements OnInit, OnDestroy, AfterViewInit {
     ngOnDestroy() {
         this.facService.clearMap();
         this.facService.facilityData.next([]);
+        this.facService.facilityCount.next([]);
         this.endSubscriptions()
     }
 }

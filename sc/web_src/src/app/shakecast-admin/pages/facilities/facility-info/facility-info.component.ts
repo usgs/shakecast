@@ -39,12 +39,6 @@ export class FacilityInfoComponent implements OnInit, OnDestroy{
             this.facility = facility;
         }));
 
-        this.subscriptions.push(this.eqService.plotting.subscribe((eq: Earthquake) => {
-            if (this.facility) {
-                this.facService.getFacilityShaking(this.facility, eq);
-            }
-        }));
-
         this.subscriptions.push(this.facService.facilityShaking.subscribe((shaking: any) => {
             this.facilityShaking = shaking;
         }));

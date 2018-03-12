@@ -25,6 +25,7 @@ import { ScreenDimmerComponent } from './screen-dimmer/screen-dimmer.component';
 
 // in-app documentation
 import { InfoComponent } from './info/info.component';
+import { FacilityCountComponent } from './maps/facility-count/facility-count.component';
 
 @NgModule({
   imports: [
@@ -38,7 +39,8 @@ import { InfoComponent } from './info/info.component';
                  EarthquakeListComponent,
                  FacilityListComponent,
                  FacilityInfoComponent,
-                 InfoComponent],
+                 InfoComponent,
+                 FacilityCountComponent],
   providers: [
   ],
   exports: [MapComponent,

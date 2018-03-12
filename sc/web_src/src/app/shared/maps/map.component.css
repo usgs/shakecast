@@ -30,3 +30,16 @@
 .shaking-table:hover th {
   opacity: 1;
 }
+
+.facility-types {
+  position:absolute;
+  bottom: 0;
+  padding: 10px;
+  z-index: 500;
+  opacity: .5;
+  cursor: default;
+}
+
+.facility-types:hover {
+  opacity: 1;
+}

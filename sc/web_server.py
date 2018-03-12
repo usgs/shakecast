@@ -240,12 +240,15 @@ def get_fac_data():
             types_query = types_query.filter(and_(*key_filter))
     
     # get facility types
-    fac_count = {}
+    fac_count = []
     fac_types = types_query.distinct().all()
     for fac_type in fac_types:
-        fac_count[fac_type[0]] = (session.query(Facility.facility_id)
-                                    .filter(Facility.facility_type == fac_type[0])
-                                    .count())
+        fac_count += [{ 
+            'name': fac_type[0],
+            'count': (types_query
+                        .filter(Facility.facility_type == fac_type[0])
+                        .count())
+        }]
 
     if filter_.get('count', None) is None:
         facs = query.limit(50).all()

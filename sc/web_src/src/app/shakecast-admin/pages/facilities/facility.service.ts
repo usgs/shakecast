@@ -24,6 +24,7 @@ export interface Facility {
 export class FacilityService {
     public loadingData = new ReplaySubject(1);
     public facilityData = new ReplaySubject(1);
+    public facilityCount = new ReplaySubject(1);
     public facilityDataUpdate = new ReplaySubject(1);
     public facilityInfo = new ReplaySubject(1);
     public facilityShaking = new ReplaySubject(1);
@@ -51,6 +52,7 @@ export class FacilityService {
                 this.selectedFacs = [];
                 this.shakingData.next(null);
                 this.facilityData.next(result.data);
+                this.facilityCount.next(result.count);
                 this.loadingService.finish('Facilities');
             }, (error: any) => {
                 this.loadingService.finish('Facilities');

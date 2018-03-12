@@ -1261,6 +1261,7 @@ var FacilitiesComponent = /** @class */ (function () {
     FacilitiesComponent.prototype.ngOnDestroy = function () {
         this.facService.clearMap();
         this.facService.facilityData.next([]);
+        this.facService.facilityCount.next([]);
         this.endSubscriptions();
     };
     FacilitiesComponent = __decorate([
@@ -1435,11 +1436,6 @@ var FacilityInfoComponent = /** @class */ (function () {
         }));
         this.subscriptions.push(this.facService.facilityInfo.subscribe(function (facility) {
             _this.facility = facility;
-        }));
-        this.subscriptions.push(this.eqService.plotting.subscribe(function (eq) {
-            if (_this.facility) {
-                _this.facService.getFacilityShaking(_this.facility, eq);
-            }
         }));
         this.subscriptions.push(this.facService.facilityShaking.subscribe(function (shaking) {
             _this.facilityShaking = shaking;
@@ -1709,6 +1705,7 @@ var FacilityService = /** @class */ (function () {
         this.loadingService = loadingService;
         this.loadingData = new ReplaySubject_1.ReplaySubject(1);
         this.facilityData = new ReplaySubject_1.ReplaySubject(1);
+        this.facilityCount = new ReplaySubject_1.ReplaySubject(1);
         this.facilityDataUpdate = new ReplaySubject_1.ReplaySubject(1);
         this.facilityInfo = new ReplaySubject_1.ReplaySubject(1);
         this.facilityShaking = new ReplaySubject_1.ReplaySubject(1);
@@ -1732,6 +1729,7 @@ var FacilityService = /** @class */ (function () {
             _this.selectedFacs = [];
             _this.shakingData.next(null);
             _this.facilityData.next(result.data);
+            _this.facilityCount.next(result.count);
             _this.loadingService.finish('Facilities');
         }, function (error) {
             _this.loadingService.finish('Facilities');
@@ -4914,6 +4912,87 @@ exports.InfoComponent = InfoComponent;
 
 /***/ }),
 
+/***/ "../../../../../src/app/shared/maps/facility-count/facility-count.component.css":
+/***/ (function(module, exports, __webpack_require__) {
+
+exports = module.exports = __webpack_require__("../../../../css-loader/lib/css-base.js")(false);
+// imports
+
+
+// module
+exports.push([module.i, "", ""]);
+
+// exports
+
+
+/*** EXPORTS FROM exports-loader ***/
+module.exports = module.exports.toString();
+
+/***/ }),
+
+/***/ "../../../../../src/app/shared/maps/facility-count/facility-count.component.html":
+/***/ (function(module, exports) {
+
+module.exports = "<div class=\"container\" *ngIf=\"count.length > 0\">\n  <div class=\"fac\" *ngFor=\"let fac of count\">\n    {{ fac.name }}: {{ fac.count }}\n  </div>\n</div>\n"
+
+/***/ }),
+
+/***/ "../../../../../src/app/shared/maps/facility-count/facility-count.component.ts":
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+var core_1 = __webpack_require__("../../../core/esm5/core.js");
+var facility_service_1 = __webpack_require__("../../../../../src/app/shakecast-admin/pages/facilities/facility.service.ts");
+var subscription_1 = __webpack_require__("../../../../rxjs/subscription.js");
+var FacilityCountComponent = /** @class */ (function () {
+    function FacilityCountComponent(facService) {
+        this.facService = facService;
+        this.subs = new subscription_1.Subscription();
+        this.count = [];
+    }
+    FacilityCountComponent.prototype.ngOnInit = function () {
+        var _this = this;
+        this.subs.add(this.facService.facilityCount.subscribe(function (count) {
+            _this.onCount(count);
+        }));
+    };
+    FacilityCountComponent.prototype.onCount = function (count) {
+        if (!count) {
+            this.count = [];
+        }
+        else {
+            this.count = count;
+        }
+    };
+    FacilityCountComponent.prototype.ngOnDestroy = function () {
+        this.subs.unsubscribe();
+    };
+    FacilityCountComponent = __decorate([
+        core_1.Component({
+            selector: 'shared-facility-count',
+            template: __webpack_require__("../../../../../src/app/shared/maps/facility-count/facility-count.component.html"),
+            styles: [__webpack_require__("../../../../../src/app/shared/maps/facility-count/facility-count.component.css")]
+        }),
+        __metadata("design:paramtypes", [facility_service_1.FacilityService])
+    ], FacilityCountComponent);
+    return FacilityCountComponent;
+}());
+exports.FacilityCountComponent = FacilityCountComponent;
+
+
+/***/ }),
+
 /***/ "../../../../../src/app/shared/maps/map.component.css":
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -4922,7 +5001,7 @@ exports = module.exports = __webpack_require__("../../../../css-loader/lib/css-b
 
 
 // module
-exports.push([module.i, "#map {\n  height: 100%;\n}\n\n#shaking {    \n    position: fixed;\n    bottom: 50px;\n    z-index: 1000;\n    width: 100%;\n}\n\n.shaking-table {\n  width: 90%;\n  margin-left: 5%;\n  position: relative;\n  z-index: 1000;\n}\n\n.shaking-table th {\n  color: white;\n  padding-left: 5px;\n  padding-right: 5px;\n  border-radius: 5px;\n  opacity: .5;\n  box-shadow: 1px 1px 3px 1px rgba(0,0,0,0.3);\n  -webkit-box-shadow: 1px 1px 3px 1px rgba(0,0,0,0.3);\n  -moz-box-shadow: 1px 1px 3px 1px rgba(0,0,0,0.3);\n}\n\n.shaking-table:hover th {\n  opacity: 1;\n}", ""]);
+exports.push([module.i, "#map {\n  height: 100%;\n}\n\n#shaking {    \n    position: fixed;\n    bottom: 50px;\n    z-index: 1000;\n    width: 100%;\n}\n\n.shaking-table {\n  width: 90%;\n  margin-left: 5%;\n  position: relative;\n  z-index: 1000;\n}\n\n.shaking-table th {\n  color: white;\n  padding-left: 5px;\n  padding-right: 5px;\n  border-radius: 5px;\n  opacity: .5;\n  box-shadow: 1px 1px 3px 1px rgba(0,0,0,0.3);\n  -webkit-box-shadow: 1px 1px 3px 1px rgba(0,0,0,0.3);\n  -moz-box-shadow: 1px 1px 3px 1px rgba(0,0,0,0.3);\n}\n\n.shaking-table:hover th {\n  opacity: 1;\n}\n\n.facility-types {\n  position:absolute;\n  bottom: 0;\n  padding: 10px;\n  z-index: 500;\n  opacity: .5;\n  cursor: default;\n}\n\n.facility-types:hover {\n  opacity: 1;\n}", ""]);
 
 // exports
 
@@ -4935,7 +5014,7 @@ module.exports = module.exports.toString();
 /***/ "../../../../../src/app/shared/maps/map.component.html":
 /***/ (function(module, exports) {
 
-module.exports = "<div id=\"map\"></div>\n<div id=\"shaking\" *ngIf=\"totalShaking > 0\">\n    <table class=\"shaking-table\">\n        <tr>\n            <th style=\"background-color:red\" [style.width]=\"((shakingData?.red/totalShaking * 90) + 1) + '%'\">\n                {{ shakingData?.red }}\n            </th>\n            <th style=\"background-color:orange\" [style.width]=\"((shakingData?.orange/totalShaking * 90) + 1) + '%'\">\n                {{ shakingData?.orange }}\n            </th>\n            <th style=\"background-color:gold\" [style.width]=\"((shakingData?.yellow/totalShaking * 90) + 1) + '%'\"> \n                {{ shakingData?.yellow }}\n            </th>\n            <th style=\"background-color:green;\" [style.width]=\"((shakingData?.green/totalShaking * 90) + 1) + '%'\">\n                {{ shakingData?.green }}\n            </th>\n            <th style=\"background-color:gray;\" [style.width]=\"((shakingData?.gray/totalShaking * 90) + 1) + '%'\">\n                {{ shakingData?.gray }}\n            </th>\n        </tr>\n    </table>\n</div>"
+module.exports = "<div id=\"map\">\n    <h3>\n        <shared-facility-count class=\"facility-types\"></shared-facility-count>\n    </h3>\n</div>\n\n<div id=\"shaking\" *ngIf=\"totalShaking > 0\">\n    <table class=\"shaking-table\">\n        <tr>\n            <th style=\"background-color:red\" [style.width]=\"((shakingData?.red/totalShaking * 90) + 1) + '%'\">\n                {{ shakingData?.red }}\n            </th>\n            <th style=\"background-color:orange\" [style.width]=\"((shakingData?.orange/totalShaking * 90) + 1) + '%'\">\n                {{ shakingData?.orange }}\n            </th>\n            <th style=\"background-color:gold\" [style.width]=\"((shakingData?.yellow/totalShaking * 90) + 1) + '%'\"> \n                {{ shakingData?.yellow }}\n            </th>\n            <th style=\"background-color:green;\" [style.width]=\"((shakingData?.green/totalShaking * 90) + 1) + '%'\">\n                {{ shakingData?.green }}\n            </th>\n            <th style=\"background-color:gray;\" [style.width]=\"((shakingData?.gray/totalShaking * 90) + 1) + '%'\">\n                {{ shakingData?.gray }}\n            </th>\n        </tr>\n    </table>\n</div>"
 
 /***/ }),
 
@@ -5777,6 +5856,7 @@ var scroll_toggle_directive_1 = __webpack_require__("../../../../../src/app/shar
 var screen_dimmer_component_1 = __webpack_require__("../../../../../src/app/shared/screen-dimmer/screen-dimmer.component.ts");
 // in-app documentation
 var info_component_1 = __webpack_require__("../../../../../src/app/shared/info/info.component.ts");
+var facility_count_component_1 = __webpack_require__("../../../../../src/app/shared/maps/facility-count/facility-count.component.ts");
 var SharedModule = /** @class */ (function () {
     function SharedModule() {
     }
@@ -5793,7 +5873,8 @@ var SharedModule = /** @class */ (function () {
                 earthquake_list_component_1.EarthquakeListComponent,
                 facility_list_component_1.FacilityListComponent,
                 facility_info_component_1.FacilityInfoComponent,
-                info_component_1.InfoComponent],
+                info_component_1.InfoComponent,
+                facility_count_component_1.FacilityCountComponent],
             providers: [],
             exports: [map_component_1.MapComponent,
                 earthquake_blurb_component_1.EarthquakeBlurbComponent,
