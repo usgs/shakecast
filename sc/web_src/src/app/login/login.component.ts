@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, HostListener } from '@angular/core';
 import { Router } from '@angular/router';
 import { NotificationsService } from 'angular2-notifications'
 
@@ -14,24 +14,31 @@ export class LoginComponent {
                 private router: Router,
                 private notService: NotificationsService) {}
 
-    user = new User('', '')
+    public user = new User('', '');
 
     onSubmit(username, password) {
         this.userService.login(username, password).subscribe((result: any) => {
             if (result.success) {
                 this.userService.loggedIn = true;
-                this.userService.isAdmin = result.isAdmin
-                this.userService.username = username
+                this.userService.isAdmin = result.isAdmin;
+                this.userService.username = username;
 
                 this.router.navigate(['/shakecast']);
                 this.notService.success('Login', 
                             'Welcome, ' + this.userService.username);
             } else {
-                this.notService.error('Login Failed', 'Invalid Username or Password')
+                this.notService.error('Login Failed', 'Invalid Username or Password');
 
                 this.userService.loggedIn = false;
                 this.userService.isAdmin = false;
             }
         });
+    }
+
+    @HostListener('window:keydown', ['$event'])
+    keyboardInput(event: any) {
+        if (event.keyCode === 13) {
+            this.onSubmit(this.user.username, this.user.password);
+        }
     }
 }

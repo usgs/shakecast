@@ -527,6 +527,17 @@ var LoginComponent = /** @class */ (function () {
             }
         });
     };
+    LoginComponent.prototype.keyboardInput = function (event) {
+        if (event.keyCode === 13) {
+            this.onSubmit(this.user.username, this.user.password);
+        }
+    };
+    __decorate([
+        core_1.HostListener('window:keydown', ['$event']),
+        __metadata("design:type", Function),
+        __metadata("design:paramtypes", [Object]),
+        __metadata("design:returntype", void 0)
+    ], LoginComponent.prototype, "keyboardInput", null);
     LoginComponent = __decorate([
         core_1.Component({
             selector: 'login',
@@ -794,7 +805,7 @@ module.exports = module.exports.toString();
 /***/ "../../../../../src/app/nav/nav.component.html":
 /***/ (function(module, exports) {
 
-module.exports = "<div class=\"header\" [@scrollChange]=\"scrollUp\" (mouseover)=\"setHover(true)\" (mouseleave)=\"setHover(false)\">\n    <div class=\"nav-bar\">\n        <div *ngIf=\"!(router.url.indexOf('/shakecast-admin') >= 0)\">\n            <div class=\"link\" (click)=\"changeRoute('/shakecast/dashboard')\">\n                <a routerLink=\"/shakecast/dashboard\">Dashboard</a>\n            </div>\n            <div class=\"link\" (click)=\"changeRoute('/shakecast/user-profile')\">\n                <a routerLink=\"/shakecast/user-profile\">User Profile</a>\n            </div>\n            <div class=\"link\" (click)=\"changeRoute('/shakecast-admin')\">\n                <a routerLink=\"/shakecast-admin\">Admin Panel</a>\n            </div>\n            <div class=\"link\" (click)=\"logout()\">\n                <a (click)=\"logout()\">Logout</a>\n            </div>\n        </div>\n        <div *ngIf=\"router.url.indexOf('/shakecast-admin') >= 0\">\n            <div class=\"link\" (click)=\"changeRoute('/shakecast-admin/facilities')\">\n                <a routerLink=\"/shakecast-admin/facilities\">Facilities</a>\n            </div>\n            <div class=\"link\" (click)=\"changeRoute('/shakecast-admin/users')\">\n                <a routerLink=\"/shakecast-admin/users\">Users and Groups</a>\n            </div>\n            <div class=\"link\" (click)=\"changeRoute('/shakecast-admin/scenarios')\">\n                <a routerLink=\"/shakecast-admin/scenarios\">Scenarios</a>\n            </div>\n            <div class=\"link\" (click)=\"changeRoute('/shakecast-admin/notifications')\">\n                <a routerLink=\"/shakecast-admin/notifications\">Notifications</a>\n            </div>\n            <div class=\"link\" (click)=\"changeRoute('/shakecast-admin/config')\">\n                <a routerLink=\"/shakecast-admin/config\">Settings</a>\n            </div>\n            <div class=\"link\" (click)=\"changeRoute('/shakecast')\">\n                <a routerLink=\"/shakecast\">Back to ShakeCast</a>\n            </div>\n            <div class=\"link\" (click)=\"logout()\">\n                <a (click)=\"logout()\">Logout</a>\n            </div>\n        </div>\n    </div>\n    <div class=\"cont\">\n        <!-- <img class=\"sc-logo\" src=\"/images/sc_logo.png\"> -->\n        <img class=\"block-stack\" src=\"/assets/block_stack2.png\">\n        <!-- <p>ShakeCast</p> -->\n    </div>\n</div>"
+module.exports = "<div class=\"header\" [@scrollChange]=\"scrollUp\" (mouseover)=\"setHover(true)\" (mouseleave)=\"setHover(false)\">\n    <div class=\"nav-bar\">\n        <div *ngIf=\"!(router.url.indexOf('/shakecast-admin') >= 0)\">\n            <div class=\"link\" (click)=\"changeRoute('/shakecast/dashboard')\">\n                <a routerLink=\"/shakecast/dashboard\">Dashboard</a>\n            </div>\n            <div class=\"link\" (click)=\"changeRoute('/shakecast/user-profile')\">\n                <a routerLink=\"/shakecast/user-profile\">User Profile</a>\n            </div>\n            <div class=\"link\" \n                    *ngIf=\"userService.isAdmin\"\n                    (click)=\"changeRoute('/shakecast-admin')\">\n                <a routerLink=\"/shakecast-admin\">Admin Panel</a>\n            </div>\n            <div class=\"link\" (click)=\"logout()\">\n                <a (click)=\"logout()\">Logout</a>\n            </div>\n        </div>\n        <div *ngIf=\"router.url.indexOf('/shakecast-admin') >= 0\">\n            <div class=\"link\" (click)=\"changeRoute('/shakecast-admin/facilities')\">\n                <a routerLink=\"/shakecast-admin/facilities\">Facilities</a>\n            </div>\n            <div class=\"link\" (click)=\"changeRoute('/shakecast-admin/users')\">\n                <a routerLink=\"/shakecast-admin/users\">Users and Groups</a>\n            </div>\n            <div class=\"link\" (click)=\"changeRoute('/shakecast-admin/scenarios')\">\n                <a routerLink=\"/shakecast-admin/scenarios\">Scenarios</a>\n            </div>\n            <div class=\"link\" (click)=\"changeRoute('/shakecast-admin/notifications')\">\n                <a routerLink=\"/shakecast-admin/notifications\">Notifications</a>\n            </div>\n            <div class=\"link\" \n                (click)=\"changeRoute('/shakecast-admin/config')\">\n                <a routerLink=\"/shakecast-admin/config\">Settings</a>\n            </div>\n            <div class=\"link\" (click)=\"changeRoute('/shakecast')\">\n                <a routerLink=\"/shakecast\">Back to ShakeCast</a>\n            </div>\n            <div class=\"link\" (click)=\"logout()\">\n                <a (click)=\"logout()\">Logout</a>\n            </div>\n        </div>\n    </div>\n    <div class=\"cont\">\n        <!-- <img class=\"sc-logo\" src=\"/images/sc_logo.png\"> -->\n        <img class=\"block-stack\" src=\"/assets/block_stack2.png\">\n        <!-- <p>ShakeCast</p> -->\n    </div>\n</div>"
 
 /***/ }),
 
@@ -831,7 +842,7 @@ var NavComponent = /** @class */ (function () {
     }
     NavComponent.prototype.ngOnInit = function () {
         var _this = this;
-        TimerObservable_1.TimerObservable.create(0, 500)
+        TimerObservable_1.TimerObservable.create(0, 1000)
             .subscribe(function (x) {
             if (!_this.hovering) {
                 _this.ignoreTime += .5;
@@ -854,7 +865,6 @@ var NavComponent = /** @class */ (function () {
                     }
                     _this.scrolled = document.scrollingElement.scrollTop;
                 }
-                console.log(_this.scrolled);
                 // hide the header after 5 seconds of ignoreTime 
                 // unless at the top of the page
                 if ((_this.ignoreTime > 5) && (document.scrollingElement.scrollTop !== 0)) {

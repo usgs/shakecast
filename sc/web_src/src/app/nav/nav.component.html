@@ -7,7 +7,9 @@
             <div class="link" (click)="changeRoute('/shakecast/user-profile')">
                 <a routerLink="/shakecast/user-profile">User Profile</a>
             </div>
-            <div class="link" (click)="changeRoute('/shakecast-admin')">
+            <div class="link" 
+                    *ngIf="userService.isAdmin"
+                    (click)="changeRoute('/shakecast-admin')">
                 <a routerLink="/shakecast-admin">Admin Panel</a>
             </div>
             <div class="link" (click)="logout()">
@@ -27,7 +29,8 @@
             <div class="link" (click)="changeRoute('/shakecast-admin/notifications')">
                 <a routerLink="/shakecast-admin/notifications">Notifications</a>
             </div>
-            <div class="link" (click)="changeRoute('/shakecast-admin/config')">
+            <div class="link" 
+                (click)="changeRoute('/shakecast-admin/config')">
                 <a routerLink="/shakecast-admin/config">Settings</a>
             </div>
             <div class="link" (click)="changeRoute('/shakecast')">

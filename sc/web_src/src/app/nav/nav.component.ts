@@ -21,12 +21,12 @@ export class NavComponent implements OnInit {
     private ignoreTime: number = 0;
     private hovering: boolean = false;
 
-    constructor(private userService: UserService,
+    constructor(public userService: UserService,
                 private notService: NotificationsService,
                 public router: Router) {}
 
     ngOnInit() {
-        TimerObservable.create(0, 500)
+        TimerObservable.create(0, 1000)
             .subscribe(x => {
                 if (!this.hovering) {
                     this.ignoreTime += .5;
@@ -49,8 +49,6 @@ export class NavComponent implements OnInit {
 
                         this.scrolled = document.scrollingElement.scrollTop
                     }
-                    
-                    console.log(this.scrolled)
 
                     // hide the header after 5 seconds of ignoreTime 
                     // unless at the top of the page
