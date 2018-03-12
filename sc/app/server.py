@@ -144,11 +144,14 @@ class Server(object):
         try:
             new_task_dict = eval(data)
             good_data = True
+
         except:
             conn.send('Bad Command: %s' % data)
             good_data = False
+
+            logging.info('Bad Command: {}'.format(data))
             
-        if good_data is True:    
+        if good_data is True:
             for key, value in new_task_dict.iteritems():
                 task_id = int(time.time() * 1000000)
                 try:
@@ -158,6 +161,7 @@ class Server(object):
                     
                 new_task = Task(name=key, task_id=task_id, db_use=db_use, from_user=True, **value)
                 
+                logging.info('Task added to Queue: {}'.format(str(new_task)))
                 if new_task.loop is True:
                     conn.send('Received looping task. Closing connection...')
                     conn.close()
