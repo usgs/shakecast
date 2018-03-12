@@ -26,6 +26,7 @@ import { ScreenDimmerComponent } from './screen-dimmer/screen-dimmer.component';
 // in-app documentation
 import { InfoComponent } from './info/info.component';
 import { FacilityCountComponent } from './maps/facility-count/facility-count.component';
+import { ImpactComponent } from './maps/impact/impact.component';
 
 @NgModule({
   imports: [
@@ -40,7 +41,8 @@ import { FacilityCountComponent } from './maps/facility-count/facility-count.com
                  FacilityListComponent,
                  FacilityInfoComponent,
                  InfoComponent,
-                 FacilityCountComponent],
+                 FacilityCountComponent,
+                 ImpactComponent],
   providers: [
   ],
   exports: [MapComponent,

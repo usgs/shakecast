@@ -169,21 +169,6 @@ export class MapComponent implements OnInit, OnDestroy {
         this.subscriptions.push(this.mapService.clearMapNotify.subscribe(notification => {
             this.clearLayers();
         }));
-
-        // subscribe to facility data to create a total shaking div
-        this.subscriptions.push(this.facService.shakingData.subscribe((shaking: any) => {
-            this.shakingData = shaking;
-
-            if (shaking) {
-                this.totalShaking = shaking['gray'] + 
-                                        shaking['green'] + 
-                                        shaking['yellow'] + 
-                                        shaking['orange'] + 
-                                        shaking['red'];
-            } else {
-                this.totalShaking = 0;
-            }
-        }));
     }
 
     getBasemap() {
