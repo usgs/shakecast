@@ -5125,6 +5125,126 @@ exports.epicenterLayer = {
 
 /***/ }),
 
+/***/ "../../../../../src/app/shared/maps/layers/group.ts":
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+var L = __webpack_require__("../../../../leaflet/dist/leaflet-src.js");
+function generateGroupPoly(group) {
+    var groupLayer = new L.GeoJSON(makePoly(group));
+    var popupStr = generatePopup(group);
+    groupLayer.bindPopup(popupStr);
+    return groupLayer;
+}
+function makePoly(notPoly) {
+    var poly = {
+        type: '',
+        properties: {},
+        geometry: {}
+    };
+    poly.type = 'Feature';
+    poly['name'] = notPoly.name;
+    poly['info'] = notPoly.info;
+    poly['popupContent'] = notPoly.name;
+    poly.geometry['type'] = 'Polygon';
+    poly.geometry['coordinates'] = [[[notPoly.lon_min, notPoly.lat_min],
+            [notPoly.lon_max, notPoly.lat_min],
+            [notPoly.lon_max, notPoly.lat_max],
+            [notPoly.lon_min, notPoly.lat_max]]];
+    return poly;
+}
+function generatePopup(group) {
+    var popupStr = '';
+    popupStr += "\n            <table \"colors-table\" style=\"\">\n                <tr>\n                    <th><h1 style=\"text-align:center\"> " + group['name'] + "</h1></th>\n                </tr>\n                <tr>\n                    <th>\n                        <h3 style=\"margin:0;border-bottom:2px #444444 solid\">Facilities: </h3>\n                    </th>\n                </tr>\n                <tr>\n                    <td>\n                        <table>";
+    for (var fac_type in group['info']['facilities']) {
+        if (group['info']['facilities'].hasOwnProperty(fac_type)) {
+            popupStr += "\n                            <tr>\n                                <th>" + fac_type + ": </th>\n                                <td>" + group['info']['facilities'][fac_type] + "</td>\n                            </tr>";
+        }
+    }
+    popupStr += "</table>\n                </td>\n            </tr>\n            <tr>\n                <th><h3 style=\"margin:0;border-bottom:2px #444444 solid\">Notification Preferences: </h3></th>\n            </tr>\n        ";
+    if (group['info']['new_event'] > 0) {
+        popupStr += "\n            <tr>\n                <td>\n                    <table>\n                        <th>New Events with Minimum Magnitude: </th>\n                        <td>" + group['info']['new_event'] + "</td>\n                    </table>\n                </td>\n            </tr>\n        ";
+    }
+    if (group['info']['inspection'].length > 0) {
+        popupStr += "\n            <tr>\n                <th style=\"text-align:center\">Facility Alert Levels</th>\n            </tr>\n            <tr>\n                <td>\n                    <table style=\"width:100%;text-align:center\">\n        ";
+        for (var i in group['info']['inspection']) {
+            var color = group['info']['inspection'][i];
+            if (color == 'yellow') {
+                color = 'gold';
+            }
+            popupStr += '<th style="color:white;padding:3px;border-radius:5px;background:' +
+                color +
+                '">' + group['info']['inspection'][i] + '</th>';
+        }
+        popupStr += '</tr></td></table>';
+    }
+    if (group['info']['scenario'].length > 0) {
+        popupStr += "\n            <tr>\n                <th style=\"text-align:center\">Scenario Alert Levels</th>\n            </tr>\n            <tr>\n                <td>\n                    <table style=\"width:100%;text-align:center\">\n        ";
+        for (var i in group['info']['scenario']) {
+            var color = group['info']['scenario'][i];
+            if (color == 'yellow') {
+                color = 'gold';
+            }
+            popupStr += '<th style="color:white;padding:3px;border-radius:5px;background:' +
+                color +
+                '">' + group['info']['scenario'][i] + '</th>';
+        }
+        popupStr += '</tr></td></table>';
+    }
+    popupStr += "<tr>\n                    <table>\n                        <th>Template: </th>\n                        <td>" + group['info']['template'] + "</td>\n                    </table>\n                </tr>\n            </table>";
+    return popupStr;
+}
+exports.groupLayer = {
+    name: 'Group',
+    id: 'group',
+    url: function (event) {
+        return null;
+    },
+    productType: null,
+    legendImages: [],
+    generateLayer: function (group, product) {
+        if (product === void 0) { product = null; }
+        return generateGroupPoly(group);
+    }
+};
+
+
+/***/ }),
+
+/***/ "../../../../../src/app/shared/maps/layers/intensity.ts":
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+var L = __webpack_require__("../../../../leaflet/dist/leaflet-src.js");
+exports.intensityLayer = {
+    name: 'ShakeMap',
+    id: 'intensity_map',
+    url: function (event) {
+        return 'api/shakemaps/' + event.event_id;
+    },
+    productType: 'json',
+    legendImages: [],
+    generateLayer: function (event, product) {
+        if (product === void 0) { product = null; }
+        if (product == null) {
+            return null;
+        }
+        // Grab the latest map
+        product = product[0];
+        var imageUrl = 'api/shakemaps/' + product.shakemap_id + '/overlay';
+        var imageBounds = [[product.lat_min, product.lon_min], [product.lat_max, product.lon_max]];
+        var overlayLayer = L.imageOverlay(imageUrl, imageBounds, { opacity: .4 });
+        return overlayLayer;
+    }
+};
+
+
+/***/ }),
+
 /***/ "../../../../../src/app/shared/maps/layers/layer.service.ts":
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -5150,50 +5270,67 @@ var loading_service_1 = __webpack_require__("../../../../../src/app/loading/load
 //import { pgaLayer } from './cont_pga';
 //import { pgvLayer } from './cont_pgv';
 var epicenter_1 = __webpack_require__("../../../../../src/app/shared/maps/layers/epicenter.ts");
+var intensity_1 = __webpack_require__("../../../../../src/app/shared/maps/layers/intensity.ts");
+var group_1 = __webpack_require__("../../../../../src/app/shared/maps/layers/group.ts");
 //import { stationLayer } from './stations';
-var layers = [epicenter_1.epicenterLayer]; //, mmiLayer, miLayer, pgaLayer, pgvLayer, stationLayer];
+var layers = {
+    'event': [epicenter_1.epicenterLayer, intensity_1.intensityLayer],
+    'group': [group_1.groupLayer]
+};
 var LayerService = /** @class */ (function () {
     function LayerService(http, loadingService) {
         this.http = http;
         this.loadingService = loadingService;
+        this.error = null;
         this.nextLayer = new ReplaySubject_1.ReplaySubject(1);
         this.data = {};
         this.waiting = new subscription_1.Subscription();
     }
-    LayerService.prototype.genLayers = function (event) {
+    LayerService.prototype.genEventLayers = function (event) {
+        this.genLayers(event, 'event');
+    };
+    LayerService.prototype.genGroupLayers = function (group) {
+        this.genLayers(group, 'group');
+    };
+    LayerService.prototype.genLayers = function (input, type_) {
         var _this = this;
+        if (type_ === void 0) { type_ = 'event'; }
         // stop waiting on old map layers
         this.stopWaiting();
         var _loop_1 = function (layer) {
-            if (layer.url(event)) {
+            this_1.loadingService.add(layer.name);
+            if (layer.url(input)) {
                 // get the product
-                this_1.loadingService.add(layer.name);
-                this_1.waiting.add(this_1.http.get(layer.url(event), { responseType: layer['productType'] })
+                var url = layer.url(input);
+                this_1.waiting.add(this_1.http.get(url, { responseType: layer['productType'] })
                     .subscribe(function (product) {
                     // generate the layer
-                    layer['layer'] = layer.generateLayer(event, product);
+                    layer['layer'] = layer.generateLayer(input, product);
                     // let the map know it's ready
                     _this.nextLayer.next(layer);
-                    _this.loadingService.finish(layer.name);
                     // record data for later usage
                     _this.data[layer['id']] = product;
+                }, function (error) {
+                    _this.error = error;
+                    console.log(error);
                 }));
             }
             else {
-                layer['layer'] = layer.generateLayer(event);
+                layer['layer'] = layer.generateLayer(input);
                 this_1.nextLayer.next(layer);
             }
+            this_1.loadingService.finish(layer.name);
         };
         var this_1 = this;
         // try to make the layers
-        for (var _i = 0, layers_1 = layers; _i < layers_1.length; _i++) {
-            var layer = layers_1[_i];
+        for (var _i = 0, _a = layers[type_]; _i < _a.length; _i++) {
+            var layer = _a[_i];
             _loop_1(layer);
         }
     };
     LayerService.prototype.stopWaiting = function () {
         // Stop existing request for layers
-        this.waiting.unsubscribe();
+        //this.waiting.unsubscribe();
     };
     LayerService = __decorate([
         core_1.Injectable(),
@@ -5249,7 +5386,6 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 Object.defineProperty(exports, "__esModule", { value: true });
 var core_1 = __webpack_require__("../../../core/esm5/core.js");
 var router_1 = __webpack_require__("../../../router/esm5/router.js");
-var shakemap_service_1 = __webpack_require__("../../../../../src/app/shared/maps/shakemap.service.ts");
 var map_service_1 = __webpack_require__("../../../../../src/app/shared/maps/map.service.ts");
 var earthquake_service_1 = __webpack_require__("../../../../../src/app/shakecast/pages/earthquakes/earthquake.service.ts");
 var layer_service_1 = __webpack_require__("../../../../../src/app/shared/maps/layers/layer.service.ts");
@@ -5261,9 +5397,8 @@ __webpack_require__("../../../../leaflet-makimarkers/Leaflet.MakiMarkers.js");
 __webpack_require__("../../../../leaflet.markercluster/dist/leaflet.markercluster-src.js");
 var _ = __webpack_require__("../../../../underscore/underscore.js");
 var MapComponent = /** @class */ (function () {
-    function MapComponent(mapService, smService, facService, notService, _router, loadingService, changeDetector, eqService, layerService) {
+    function MapComponent(mapService, facService, notService, _router, loadingService, changeDetector, eqService, layerService) {
         this.mapService = mapService;
-        this.smService = smService;
         this.facService = facService;
         this.notService = notService;
         this._router = _router;
@@ -5279,9 +5414,7 @@ var MapComponent = /** @class */ (function () {
         this.center = {};
         this.mapKey = null;
         this.markerLayer = L.featureGroup();
-        this.eventMarker = L.marker();
-        this.eventLayer = L.featureGroup();
-        this.overlayLayer = L.layerGroup();
+        this.onMap = [];
         this.facilityCluster = L.markerClusterGroup({
             iconCreateFunction: this.createFacCluster
         });
@@ -5315,8 +5448,7 @@ var MapComponent = /** @class */ (function () {
         var basemap = this.getBasemap();
         basemap.addTo(this.map);
         var layers = {
-            'Facility': this.facilityLayer,
-            'Event': this.eventLayer
+            'Facility': this.facilityLayer
         };
         L.MakiMarkers.accessToken = this.mapKey;
         var greyIcon = L.MakiMarkers.icon({ color: "#808080", size: "m" });
@@ -5335,9 +5467,11 @@ var MapComponent = /** @class */ (function () {
         this.subscriptions.push(this.eqService.selectEvent.subscribe(function (event) {
             _this.onEvent(event);
         }));
+        this.subscriptions.push(this.mapService.groupPoly.subscribe(function (group) {
+            _this.onGroup(group);
+        }));
         this.subscriptions.push(this.layerService.nextLayer.subscribe(function (layer) {
-            _this.eventLayer.addLayer(layer['layer']);
-            _this.eventLayer.addTo(_this.map);
+            _this.onLayer(layer);
         }));
         // subscribe to center
         this.subscriptions.push(this.mapService.center.subscribe(function (center) {
@@ -5365,10 +5499,6 @@ var MapComponent = /** @class */ (function () {
         this.subscriptions.push(this.mapService.removeFacMarkers.subscribe(function (fac) {
             _this.removeFacMarker(fac);
         }));
-        // subscribe to group poly
-        this.subscriptions.push(this.mapService.groupPoly.subscribe(function (groupPoly) {
-            _this.plotGroup(groupPoly);
-        }));
         // subscribe to clearing the map
         this.subscriptions.push(this.mapService.clearMapNotify.subscribe(function (notification) {
             _this.clearLayers();
@@ -5379,8 +5509,22 @@ var MapComponent = /** @class */ (function () {
             return;
         }
         else {
-            this.layerService.genLayers(event);
+            this.layerService.genEventLayers(event);
         }
+    };
+    MapComponent.prototype.onGroup = function (group) {
+        this.layerService.genGroupLayers(group);
+    };
+    MapComponent.prototype.onLayer = function (layer) {
+        layer['layer'].addTo(this.map);
+        this.onMap.push(layer);
+        // align map
+        var layers = [];
+        for (var layer_1 in this.onMap) {
+            layers.push(this.onMap[layer_1].layer);
+        }
+        var group = L.featureGroup(layers);
+        this.map.fitBounds(group.getBounds().pad(0.1));
     };
     MapComponent.prototype.getBasemap = function () {
         return L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token=' + this.mapKey, {
@@ -5389,37 +5533,6 @@ var MapComponent = /** @class */ (function () {
                 '<a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ' +
                 'Imagery � <a href="http://mapbox.com">Mapbox</a>',
             id: 'mapbox.streets'
-        });
-    };
-    //////////////////////////////////////////////////////////////
-    //////////////////// Earthquake Functions ////////////////////
-    MapComponent.prototype.plotEventMarker = function (event) {
-    };
-    MapComponent.prototype.plotShakemap = function (event) {
-        var _this = this;
-        this.smService.shakemapCheck(event).subscribe(function (result) {
-            if (result.length > 0) {
-                _this.loadingService.add('ShakeMap');
-                // plot shakemaps
-                var sm = result[0];
-                var imageUrl = 'api/shakemaps/' + sm.shakemap_id + '/overlay';
-                var imageBounds = [[sm.lat_min, sm.lon_min], [sm.lat_max, sm.lon_max]];
-                try {
-                    if (_this.eventLayer.hasLayer(_this.overlayLayer)) {
-                        _this.eventLayer.removeLayer(_this.overlayLayer);
-                    }
-                    _this.overlayLayer = L.imageOverlay(imageUrl, imageBounds, { opacity: .6 });
-                    _this.overlayLayer.addTo(_this.eventLayer);
-                    if (_this.map.hasLayer(_this.eventLayer)) {
-                        _this.eventLayer.addTo(_this.map);
-                        _this.map.fitBounds(_this.eventLayer.getBounds());
-                    }
-                }
-                catch (e) {
-                    _this.notService.alert('Shakemap Error', 'Unable to retreive shakemap');
-                }
-                _this.loadingService.finish('ShakeMap');
-            }
         });
     };
     //////////////////////////////////////////////////////////////
@@ -5519,52 +5632,6 @@ var MapComponent = /** @class */ (function () {
         }
         delete this.facilityMarkers[fac.shakecast_id.toString()];
     };
-    MapComponent.prototype.plotGroup = function (group) {
-        var groupLayer = new L.GeoJSON(group);
-        var popupStr = '';
-        popupStr += "\n            <table \"colors-table\" style=\"\">\n                <tr>\n                    <th><h1 style=\"text-align:center\"> " + group['name'] + "</h1></th>\n                </tr>\n                <tr>\n                    <th>\n                        <h3 style=\"margin:0;border-bottom:2px #444444 solid\">Facilities: </h3>\n                    </th>\n                </tr>\n                <tr>\n                    <td>\n                        <table>";
-        for (var fac_type in group['info']['facilities']) {
-            if (group['info']['facilities'].hasOwnProperty(fac_type)) {
-                popupStr += "\n                                <tr>\n                                    <th>" + fac_type + ": </th>\n                                    <td>" + group['info']['facilities'][fac_type] + "</td>\n                                </tr>";
-            }
-        }
-        popupStr += "</table>\n                    </td>\n                </tr>\n                <tr>\n                    <th><h3 style=\"margin:0;border-bottom:2px #444444 solid\">Notification Preferences: </h3></th>\n                </tr>\n            ";
-        if (group['info']['new_event'] > 0) {
-            popupStr += "\n                <tr>\n                    <td>\n                        <table>\n                            <th>New Events with Minimum Magnitude: </th>\n                            <td>" + group['info']['new_event'] + "</td>\n                        </table>\n                    </td>\n                </tr>\n            ";
-        }
-        if (group['info']['inspection'].length > 0) {
-            popupStr += "\n                <tr>\n                    <th style=\"text-align:center\">Facility Alert Levels</th>\n                </tr>\n                <tr>\n                    <td>\n                        <table style=\"width:100%;text-align:center\">\n            ";
-            for (var i in group['info']['inspection']) {
-                var color = group['info']['inspection'][i];
-                if (color == 'yellow') {
-                    color = 'gold';
-                }
-                popupStr += '<th style="color:white;padding:3px;border-radius:5px;background:' +
-                    color +
-                    '">' + group['info']['inspection'][i] + '</th>';
-            }
-            popupStr += '</tr></td></table>';
-        }
-        if (group['info']['scenario'].length > 0) {
-            popupStr += "\n                <tr>\n                    <th style=\"text-align:center\">Scenario Alert Levels</th>\n                </tr>\n                <tr>\n                    <td>\n                        <table style=\"width:100%;text-align:center\">\n            ";
-            for (var i in group['info']['scenario']) {
-                var color = group['info']['scenario'][i];
-                if (color == 'yellow') {
-                    color = 'gold';
-                }
-                popupStr += '<th style="color:white;padding:3px;border-radius:5px;background:' +
-                    color +
-                    '">' + group['info']['scenario'][i] + '</th>';
-            }
-            popupStr += '</tr></td></table>';
-        }
-        popupStr += "<tr>\n                        <table>\n                            <th>Template: </th>\n                            <td>" + group['info']['template'] + "</td>\n                        </table>\n                    </tr>\n                </table>";
-        groupLayer.bindPopup(popupStr);
-        this.groupLayers.addLayer(groupLayer);
-        this.map.addLayer(this.groupLayers);
-        this.map.fitBounds(this.groupLayers.getBounds());
-        groupLayer.openPopup();
-    };
     MapComponent.prototype.clearEventLayers = function () {
         this.clearLayers();
     };
@@ -5579,23 +5646,20 @@ var MapComponent = /** @class */ (function () {
         this.map.eachLayer(function (layer) {
             _this.map.removeLayer(layer);
         });
-        this.overlayLayer = L.imageOverlay();
         this.markerLayer = L.featureGroup();
         this.facilityCluster = L.markerClusterGroup({
             iconCreateFunction: this.createFacCluster
         });
         this.facMarker = L.marker();
         this.groupLayers = L.featureGroup();
-        this.eventMarkers = [];
         this.facilityMarkers = [];
         this.totalShaking = 0;
-        this.eventLayer = L.featureGroup();
         this.facilityLayer = L.featureGroup();
+        this.onMap = [];
         var basemap = this.getBasemap();
         basemap.addTo(this.map);
         var layers = {
-            'Facility': this.facilityLayer,
-            'Event': this.eventLayer
+            'Facility': this.facilityLayer
         };
         this.layersControl = L.control.layers(null, layers).addTo(this.map);
     };
@@ -5655,7 +5719,6 @@ var MapComponent = /** @class */ (function () {
             styles: [__webpack_require__("../../../../../src/app/shared/maps/map.component.css")]
         }),
         __metadata("design:paramtypes", [map_service_1.MapService,
-            shakemap_service_1.ShakemapService,
             facility_service_1.FacilityService,
             angular2_notifications_1.NotificationsService,
             router_1.Router,
@@ -5735,10 +5798,8 @@ var MapService = /** @class */ (function () {
         }
         this.facMarkers.next(markers);
     };
-    MapService.prototype.plotGroup = function (group, clear) {
-        if (clear === void 0) { clear = false; }
-        var groupPoly = this.makePoly(group);
-        this.groupPoly.next(groupPoly);
+    MapService.prototype.plotGroup = function (group) {
+        this.groupPoly.next(group);
     };
     MapService.prototype.plotUser = function (user, clear) {
         if (clear === void 0) { clear = false; }
@@ -5763,23 +5824,6 @@ var MapService = /** @class */ (function () {
             marker[prop] = notMarker[prop];
         }
         return marker;
-    };
-    MapService.prototype.makePoly = function (notPoly) {
-        var poly = {
-            type: '',
-            properties: {},
-            geometry: {}
-        };
-        poly.type = 'Feature';
-        poly['name'] = notPoly.name;
-        poly['info'] = notPoly.info;
-        poly['popupContent'] = notPoly.name;
-        poly.geometry['type'] = 'Polygon';
-        poly.geometry['coordinates'] = [[[notPoly.lon_min, notPoly.lat_min],
-                [notPoly.lon_max, notPoly.lat_min],
-                [notPoly.lon_max, notPoly.lat_max],
-                [notPoly.lon_min, notPoly.lat_max]]];
-        return poly;
     };
     MapService.prototype.clearMap = function () {
         this.clearMapNotify.next(true);

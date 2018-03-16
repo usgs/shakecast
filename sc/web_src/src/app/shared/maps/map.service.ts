@@ -65,10 +65,9 @@ export class MapService {
         this.facMarkers.next(markers);
     }
 
-    plotGroup(group: Group,
-              clear: boolean = false) {
-        var groupPoly: any = this.makePoly(group);
-        this.groupPoly.next(groupPoly);
+    plotGroup(group: Group) {
+
+        this.groupPoly.next(group);
     }
 
     plotUser(user: User,
@@ -101,24 +100,7 @@ export class MapService {
         return marker;
     }
 
-    makePoly(notPoly: any) {
-        var poly: Poly = {
-            type: '',
-            properties: {},
-            geometry: {}
-        }
 
-        poly.type = 'Feature'
-        poly['name'] = notPoly.name
-        poly['info'] = notPoly.info
-        poly['popupContent'] = notPoly.name
-        poly.geometry['type'] = 'Polygon'
-        poly.geometry['coordinates'] = [[[notPoly.lon_min, notPoly.lat_min],
-                                            [notPoly.lon_max, notPoly.lat_min],
-                                            [notPoly.lon_max, notPoly.lat_max],
-                                            [notPoly.lon_min, notPoly.lat_max]]]
-        return poly
-    }
 
     clearMap() {
         this.clearMapNotify.next(true)

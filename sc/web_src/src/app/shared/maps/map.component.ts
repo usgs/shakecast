@@ -3,7 +3,6 @@ declare function require(string): string;
 import { Component, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
 import { Router } from '@angular/router'
 import { Marker } from './map.service';
-import { ShakemapService } from './shakemap.service'
 import { MapService } from './map.service'
 import { EarthquakeService } from '../../shakecast/pages/earthquakes/earthquake.service';
 import { LayerService } from './layers/layer.service'
@@ -33,9 +32,8 @@ export class MapComponent implements OnInit, OnDestroy {
     public center: any = {};
     private mapKey: string = null
     private markerLayer: any = L.featureGroup();
-    private eventMarker: any = L.marker();
-    private eventLayer: any = L.featureGroup();
-    private overlayLayer: any = L.layerGroup();
+
+    private onMap: any[] = [];
     
     private facilityCluster: any = L.markerClusterGroup({
 	                                iconCreateFunction: this.createFacCluster
@@ -58,7 +56,6 @@ export class MapComponent implements OnInit, OnDestroy {
     public impactIcons: any = {}
 
     constructor(private mapService: MapService,
-                private smService: ShakemapService,
                 private facService: FacilityService,
                 private notService: NotificationsService,
                 private _router: Router,
@@ -83,8 +80,7 @@ export class MapComponent implements OnInit, OnDestroy {
         let basemap = this.getBasemap();
         basemap.addTo(this.map);
         var layers: any  = {
-            'Facility': this.facilityLayer,
-            'Event': this.eventLayer
+            'Facility': this.facilityLayer
         }
         
         L.MakiMarkers.accessToken = this.mapKey
@@ -108,9 +104,12 @@ export class MapComponent implements OnInit, OnDestroy {
             this.onEvent(event);
         }));
 
+        this.subscriptions.push(this.mapService.groupPoly.subscribe(group => {
+            this.onGroup(group);
+        }));
+
         this.subscriptions.push(this.layerService.nextLayer.subscribe((layer) => {
-            this.eventLayer.addLayer(layer['layer']);
-            this.eventLayer.addTo(this.map);
+            this.onLayer(layer);
         }));
 
         // subscribe to center
@@ -142,11 +141,6 @@ export class MapComponent implements OnInit, OnDestroy {
             this.removeFacMarker(fac);
         }));
 
-        // subscribe to group poly
-        this.subscriptions.push(this.mapService.groupPoly.subscribe(groupPoly => {
-                this.plotGroup(groupPoly);
-        }));
-
         // subscribe to clearing the map
         this.subscriptions.push(this.mapService.clearMapNotify.subscribe(notification => {
             this.clearLayers();
@@ -157,8 +151,25 @@ export class MapComponent implements OnInit, OnDestroy {
         if (event === null) {
             return;
         } else {
-            this.layerService.genLayers(event);
+            this.layerService.genEventLayers(event);
         }
+    }
+
+    onGroup(group) {
+        this.layerService.genGroupLayers(group);
+    }
+
+    onLayer(layer) {
+        layer['layer'].addTo(this.map);
+        this.onMap.push(layer);
+
+        // align map
+        const layers = []
+        for (let layer in this.onMap) {
+            layers.push(this.onMap[layer].layer)
+        }
+        let group = L.featureGroup(layers);
+        this.map.fitBounds(group.getBounds().pad(0.1));
     }
 
     getBasemap() {
@@ -169,44 +180,6 @@ export class MapComponent implements OnInit, OnDestroy {
 				'Imagery � <a href="http://mapbox.com">Mapbox</a>',
 			id: 'mapbox.streets'
 		})
-    }
-
-    //////////////////////////////////////////////////////////////
-    //////////////////// Earthquake Functions ////////////////////
-    plotEventMarker(event: any) {
-
-    }
-
-
-    plotShakemap(event: any) {
-        this.smService.shakemapCheck(event).subscribe((result: any) => {
-            if (result.length > 0){
-                this.loadingService.add('ShakeMap');
-
-                // plot shakemaps
-                var sm = result[0]
-                var imageUrl = 'api/shakemaps/' + sm.shakemap_id + '/overlay';
-                var imageBounds = [[sm.lat_min, sm.lon_min], [sm.lat_max, sm.lon_max]];
-
-                try {
-                    if (this.eventLayer.hasLayer(this.overlayLayer)) {
-                        this.eventLayer.removeLayer(this.overlayLayer);
-                    }
-                    this.overlayLayer = L.imageOverlay(imageUrl, 
-                                    imageBounds, 
-                                    {opacity: .6})
-                    this.overlayLayer.addTo(this.eventLayer);
-                    if (this.map.hasLayer(this.eventLayer)) {
-                        this.eventLayer.addTo(this.map)
-                        this.map.fitBounds(this.eventLayer.getBounds())
-                    }
-                }
-                catch(e) {
-                    this.notService.alert('Shakemap Error', 'Unable to retreive shakemap')
-                }
-                this.loadingService.finish('ShakeMap');
-            }
-        });
     }
 
     //////////////////////////////////////////////////////////////
@@ -371,116 +344,7 @@ export class MapComponent implements OnInit, OnDestroy {
         delete this.facilityMarkers[fac.shakecast_id.toString()]
     }
 
-    plotGroup(group: any) {
-        var groupLayer: any = new L.GeoJSON(group);
-        var popupStr: string = ''
-        popupStr += `
-            <table "colors-table" style="">
-                <tr>
-                    <th><h1 style="text-align:center"> ` + group['name'] + `</h1></th>
-                </tr>
-                <tr>
-                    <th>
-                        <h3 style="margin:0;border-bottom:2px #444444 solid">Facilities: </h3>
-                    </th>
-                </tr>
-                <tr>
-                    <td>
-                        <table>`
 
-        for (var fac_type in group['info']['facilities']) {
-            if (group['info']['facilities'].hasOwnProperty(fac_type)) {
-                popupStr += `
-                                <tr>
-                                    <th>` + fac_type + `: </th>
-                                    <td>` + group['info']['facilities'][fac_type] + `</td>
-                                </tr>`
-            }
-        }
-
-        popupStr += `</table>
-                    </td>
-                </tr>
-                <tr>
-                    <th><h3 style="margin:0;border-bottom:2px #444444 solid">Notification Preferences: </h3></th>
-                </tr>
-            `
-        if (group['info']['new_event'] > 0) {
-            popupStr += `
-                <tr>
-                    <td>
-                        <table>
-                            <th>New Events with Minimum Magnitude: </th>
-                            <td>` + group['info']['new_event'] + `</td>
-                        </table>
-                    </td>
-                </tr>
-            `
-        }
-
-        if (group['info']['inspection'].length > 0) {
-            popupStr += `
-                <tr>
-                    <th style="text-align:center">Facility Alert Levels</th>
-                </tr>
-                <tr>
-                    <td>
-                        <table style="width:100%;text-align:center">
-            `
-
-            for (var i in group['info']['inspection']) {
-
-                var color = group['info']['inspection'][i]
-                if (color == 'yellow') {
-                    color = 'gold'
-                }
-
-                popupStr += '<th style="color:white;padding:3px;border-radius:5px;background:' + 
-                                color + 
-                                '">' + group['info']['inspection'][i] + '</th>';
-            }
-
-            popupStr += '</tr></td></table>'
-        }
-
-        if (group['info']['scenario'].length > 0) {
-            popupStr += `
-                <tr>
-                    <th style="text-align:center">Scenario Alert Levels</th>
-                </tr>
-                <tr>
-                    <td>
-                        <table style="width:100%;text-align:center">
-            `
-
-            for (var i in group['info']['scenario']) {
-
-                var color = group['info']['scenario'][i]
-                if (color == 'yellow') {
-                    color = 'gold'
-                }
-
-                popupStr += '<th style="color:white;padding:3px;border-radius:5px;background:' + 
-                                color + 
-                                '">' + group['info']['scenario'][i] + '</th>';
-            }
-
-            popupStr += '</tr></td></table>'
-        }
-
-        popupStr += `<tr>
-                        <table>
-                            <th>Template: </th>
-                            <td>` + group['info']['template'] + `</td>
-                        </table>
-                    </tr>
-                </table>`
-        groupLayer.bindPopup(popupStr);
-        this.groupLayers.addLayer(groupLayer);
-        this.map.addLayer(this.groupLayers);
-        this.map.fitBounds(this.groupLayers.getBounds());
-        groupLayer.openPopup()
-    }
 
     clearEventLayers() {
         this.clearLayers();
@@ -498,24 +362,22 @@ export class MapComponent implements OnInit, OnDestroy {
             this.map.removeLayer(layer);
         });
 
-        this.overlayLayer = L.imageOverlay();
         this.markerLayer = L.featureGroup();
         this.facilityCluster = L.markerClusterGroup({
 	                                iconCreateFunction: this.createFacCluster
                                     });
         this.facMarker= L.marker();
         this.groupLayers = L.featureGroup();
-        this.eventMarkers = [];
         this.facilityMarkers = [];
         this.totalShaking = 0;
-        this.eventLayer = L.featureGroup();
         this.facilityLayer = L.featureGroup();
+
+        this.onMap = []
 
         let basemap = this.getBasemap();
         basemap.addTo(this.map);
         var layers: any  = {
-            'Facility': this.facilityLayer,
-            'Event': this.eventLayer
+            'Facility': this.facilityLayer
         }
         
         this.layersControl = L.control.layers(null,layers).addTo(this.map);
