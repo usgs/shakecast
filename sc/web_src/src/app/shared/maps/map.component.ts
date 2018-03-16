@@ -5,6 +5,8 @@ import { Router } from '@angular/router'
 import { Marker } from './map.service';
 import { ShakemapService } from './shakemap.service'
 import { MapService } from './map.service'
+import { EarthquakeService } from '../../shakecast/pages/earthquakes/earthquake.service';
+import { LayerService } from './layers/layer.service'
 import { FacilityService } from '../../shakecast-admin/pages/facilities/facility.service';
 import { LoadingService } from '../../loading/loading.service';
 import { NotificationsService } from 'angular2-notifications';
@@ -12,9 +14,9 @@ import { NotificationsService } from 'angular2-notifications';
 import * as L from 'leaflet';
 import 'leaflet-makimarkers';
 import 'leaflet.markercluster';
+
 import * as _ from 'underscore';
 
-L.MakiMarkers.accessToken = 'pk.eyJ1IjoiZHNsb3NreSIsImEiOiJjaXR1aHJnY3EwMDFoMnRxZWVtcm9laWJmIn0.1C3GE0kHPGOpbVV9kTxBlQ'
 
 @Component({
     selector: 'my-map',
@@ -53,35 +55,17 @@ export class MapComponent implements OnInit, OnDestroy {
     public shakingData: any = null
     public totalShaking: number = 0;
 
-    private greyIcon: any = L.MakiMarkers.icon({color: "#808080", size: "m"});
-    private greenIcon: any = L.MakiMarkers.icon({color: "#008000", size: "m"});
-    private yellowIcon: any = L.MakiMarkers.icon({color: "#FFD700", size: "m"});
-    private orangeIcon: any = L.MakiMarkers.icon({color: "#FFA500", size: "m"});
-    private redIcon: any = L.MakiMarkers.icon({color: "#FF0000", size: "m"});
+    public impactIcons: any = {}
 
-    public impactIcons: any = {
-        gray: this.greyIcon,
-        green: this.greenIcon,
-        yellow: this.yellowIcon,
-        orange: this.orangeIcon,
-        red: this.redIcon
-    } /*
-    {
-        gray: L.icon({color: "#808080", size: "m"}),
-        green: L.icon({color: "#008000", size: "m"}),
-        yellow: L.icon({color: "#FFD700", size: "m"}),
-        orange: L.icon({color: "#FFA500", size: "m"}),
-        red: L.icon({color: "#FF0000", size: "m"})
-    };
-
-*/
     constructor(private mapService: MapService,
                 private smService: ShakemapService,
                 private facService: FacilityService,
                 private notService: NotificationsService,
                 private _router: Router,
                 private loadingService: LoadingService,
-                private changeDetector: ChangeDetectorRef) {}
+                private changeDetector: ChangeDetectorRef,
+                private eqService: EarthquakeService,
+                private layerService: LayerService) {}
 
     ngOnInit() {
         this.subscriptions.push(this.mapService.getMapKey().subscribe((key: string) => {
@@ -96,15 +80,6 @@ export class MapComponent implements OnInit, OnDestroy {
             scrollWheelZoom: false
         }).setView([51.505, -0.09], 8);
 
-        // eslint-disable-next-line  
-        delete L.Icon.Default.prototype._getIconUrl
-        // eslint-disable-next-line  
-        L.Icon.Default.mergeOptions({  
-            iconRetinaUrl: require('leaflet/dist/images/marker-icon-2x.png'),  
-            iconUrl: require('leaflet/dist/images/marker-icon.png'),  
-            shadowUrl: require('leaflet/dist/images/marker-shadow.png')  
-        })
-
         let basemap = this.getBasemap();
         basemap.addTo(this.map);
         var layers: any  = {
@@ -112,23 +87,30 @@ export class MapComponent implements OnInit, OnDestroy {
             'Event': this.eventLayer
         }
         
+        L.MakiMarkers.accessToken = this.mapKey
+        const greyIcon: any = L.MakiMarkers.icon({color: "#808080", size: "m"});
+        const greenIcon: any = L.MakiMarkers.icon({color: "#008000", size: "m"});
+        const yellowIcon: any = L.MakiMarkers.icon({color: "#FFD700", size: "m"});
+        const orangeIcon: any = L.MakiMarkers.icon({color: "#FFA500", size: "m"});
+        const redIcon: any = L.MakiMarkers.icon({color: "#FF0000", size: "m"});
+
+        this.impactIcons = {
+            gray: greyIcon,
+            green: greenIcon,
+            yellow: yellowIcon,
+            orange: orangeIcon,
+            red: redIcon
+        }
+
         this.layersControl = L.control.layers(null,layers).addTo(this.map);
 
-        // subscribe to earthquake markers
-        this.subscriptions.push(this.mapService.eqMarkers.subscribe(eqData => {
-            if (eqData) {
-                if (eqData['clear']) {
-                    if (eqData['clear'] == 'all') {
-                        // clear all layers
-                        this.clearLayers();
-                    } else if (eqData['clear'] == 'events') {
-                        this.clearEventLayers();
-                    }
-                }
-                for (var mark in eqData['events']) {
-                    this.plotEventMarker(eqData['events'][mark]);
-                }
-            }
+        this.subscriptions.push(this.eqService.selectEvent.subscribe((event) => {
+            this.onEvent(event);
+        }));
+
+        this.subscriptions.push(this.layerService.nextLayer.subscribe((layer) => {
+            this.eventLayer.addLayer(layer['layer']);
+            this.eventLayer.addTo(this.map);
         }));
 
         // subscribe to center
@@ -171,6 +153,14 @@ export class MapComponent implements OnInit, OnDestroy {
         }));
     }
 
+    onEvent(event) {
+        if (event === null) {
+            return;
+        } else {
+            this.layerService.genLayers(event);
+        }
+    }
+
     getBasemap() {
         return L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token=' + this.mapKey, {
 			maxZoom: 18,
@@ -184,51 +174,9 @@ export class MapComponent implements OnInit, OnDestroy {
     //////////////////////////////////////////////////////////////
     //////////////////// Earthquake Functions ////////////////////
     plotEventMarker(event: any) {
-        // create event marker and plot it
-        this.eventMarker = this.createEventMarker(event);
 
-        this.eventMarker.addTo(this.eventLayer);
-        this.eventLayer.addTo(this.map);
-
-        this.eventMarker.bindPopup(this.eventMarker.popupContent).openPopup();
-
-        this.eventMarkers.push(this.eventMarker)
-        // plot shakemap if available
-        this.plotShakemap(event);
     }
 
-    createEventMarker(event: any) {
-        var marker: any = L.marker([event.lat, event.lon], {icon: this.epicIcon});
-
-        marker['popupContent'] = `<table class="my-table">    
-                                <tr>
-                                    <th>ID:</th>
-                                    <td>` + event.event_id + `</td>
-                                </tr>
-                                <tr> 
-                                    <th>Magnitude:</th>
-                                    <td>` + event.magnitude + `</td>
-                                </tr>
-                                <tr>
-                                    <th>Depth:</th>
-                                    <td>` + event.depth + `</td>
-                                </tr>
-                                <tr>
-                                    <th>Latitude:</th>
-                                    <td>` + event.lat + `</td>
-                                </tr>
-                                <tr>
-                                    <th>Longitude:</th>
-                                    <td>` + event.lon + `</td>
-                                </tr>
-                                <tr>
-                                    <th>Description:</th>
-                                    <td>` + event.place + `</td>
-                                </tr>
-                            </table>`
-
-        return marker
-    }
 
     plotShakemap(event: any) {
         this.smService.shakemapCheck(event).subscribe((result: any) => {

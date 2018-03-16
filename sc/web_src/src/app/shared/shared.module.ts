@@ -27,6 +27,7 @@ import { ScreenDimmerComponent } from './screen-dimmer/screen-dimmer.component';
 import { InfoComponent } from './info/info.component';
 import { FacilityCountComponent } from './maps/facility-count/facility-count.component';
 import { ImpactComponent } from './maps/impact/impact.component';
+import { LayerService } from './maps/layers/layer.service';
 
 @NgModule({
   imports: [
@@ -44,7 +45,7 @@ import { ImpactComponent } from './maps/impact/impact.component';
                  FacilityCountComponent,
                  ImpactComponent],
   providers: [
-  ],
+  LayerService],
   exports: [MapComponent,
             EarthquakeBlurbComponent,
             FacilityListComponent,

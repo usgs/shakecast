@@ -211,6 +211,8 @@ export class EarthquakeService {
             // this could probably be done better...
             this.mapService.plotEq(eq, this.configs['clearOnPlot']);
 
+            this.selectEvent.next(eq);
+
             // get relevant facility info and plot it
             this.facService.getShakeMapData(eq);
         }

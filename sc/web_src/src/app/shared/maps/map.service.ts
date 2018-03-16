@@ -12,7 +12,7 @@ import { map } from 'rxjs/operators';
 
 @Injectable()
 export class MapService {
-    public eqMarkers = new ReplaySubject(1)
+    public eqMarker = new ReplaySubject(1)
     public facMarkers = new ReplaySubject(1)
     public groupPoly = new ReplaySubject(1)
     public removeFacMarkers = new ReplaySubject(1)
@@ -28,8 +28,7 @@ export class MapService {
         eqMarker['zoom'] = 8;
         eqMarker['draggable'] = false;
 
-        this.eqMarkers.next({events: [eqMarker], clear: clear});
-        this.center.next(eqMarker);
+        this.eqMarker.next(eqMarker);
     }
 
     plotFac(fac: Facility,
@@ -86,7 +85,7 @@ export class MapService {
     }
 
     clearMarkers() {
-        this.eqMarkers.next([]);
+        //this.eqMarkers.next([]);
     }
 
     makeMarker(notMarker: any): Marker {

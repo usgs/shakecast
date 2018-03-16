@@ -4207,6 +4207,7 @@ var EarthquakeService = /** @class */ (function () {
             // plots the eq with the relevant config to clear all data or notification
             // this could probably be done better...
             this.mapService.plotEq(eq, this.configs['clearOnPlot']);
+            this.selectEvent.next(eq);
             // get relevant facility info and plot it
             this.facService.getShakeMapData(eq);
         }
@@ -5088,6 +5089,124 @@ exports.ImpactComponent = ImpactComponent;
 
 /***/ }),
 
+/***/ "../../../../../src/app/shared/maps/layers/epicenter.ts":
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+var L = __webpack_require__("../../../../leaflet/dist/leaflet-src.js");
+var epicIcon = L.icon({
+    iconUrl: 'assets/epicenter.png',
+    iconSize: [32, 32],
+    iconAnchor: [16, 16],
+    popupAnchor: [0, 0] // point from which the popup should open relative to the iconAnchor
+});
+function createEventMarker(event) {
+    var marker = L.marker([event.lat, event.lon], { icon: epicIcon });
+    var popup = "<table class=\"my-table\">    \n                            <tr>\n                                <th>ID:</th>\n                                <td>" + event.event_id + "</td>\n                            </tr>\n                            <tr> \n                                <th>Magnitude:</th>\n                                <td>" + event.magnitude + "</td>\n                            </tr>\n                            <tr>\n                                <th>Depth:</th>\n                                <td>" + event.depth + "</td>\n                            </tr>\n                            <tr>\n                                <th>Latitude:</th>\n                                <td>" + event.lat + "</td>\n                            </tr>\n                            <tr>\n                                <th>Longitude:</th>\n                                <td>" + event.lon + "</td>\n                            </tr>\n                            <tr>\n                                <th>Description:</th>\n                                <td>" + event.place + "</td>\n                            </tr>\n                        </table>";
+    marker.bindPopup(popup);
+    return marker;
+}
+exports.epicenterLayer = {
+    name: 'Epicenter',
+    id: 'epicenter',
+    url: function (event) {
+        return null;
+    },
+    productType: null,
+    legendImages: ['assets/legend-epicenter.png'],
+    generateLayer: function (event, product) {
+        if (product === void 0) { product = null; }
+        return createEventMarker(event);
+    }
+};
+
+
+/***/ }),
+
+/***/ "../../../../../src/app/shared/maps/layers/layer.service.ts":
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+var core_1 = __webpack_require__("../../../core/esm5/core.js");
+var ReplaySubject_1 = __webpack_require__("../../../../rxjs/_esm5/ReplaySubject.js");
+var http_1 = __webpack_require__("../../../common/esm5/http.js");
+var subscription_1 = __webpack_require__("../../../../rxjs/subscription.js");
+var loading_service_1 = __webpack_require__("../../../../../src/app/loading/loading.service.ts");
+//import { mmiLayer } from './cont_mmi';
+//import { miLayer } from './cont_mi';
+//import { pgaLayer } from './cont_pga';
+//import { pgvLayer } from './cont_pgv';
+var epicenter_1 = __webpack_require__("../../../../../src/app/shared/maps/layers/epicenter.ts");
+//import { stationLayer } from './stations';
+var layers = [epicenter_1.epicenterLayer]; //, mmiLayer, miLayer, pgaLayer, pgvLayer, stationLayer];
+var LayerService = /** @class */ (function () {
+    function LayerService(http, loadingService) {
+        this.http = http;
+        this.loadingService = loadingService;
+        this.nextLayer = new ReplaySubject_1.ReplaySubject(1);
+        this.data = {};
+        this.waiting = new subscription_1.Subscription();
+    }
+    LayerService.prototype.genLayers = function (event) {
+        var _this = this;
+        // stop waiting on old map layers
+        this.stopWaiting();
+        var _loop_1 = function (layer) {
+            if (layer.url(event)) {
+                // get the product
+                this_1.loadingService.add(layer.name);
+                this_1.waiting.add(this_1.http.get(layer.url(event), { responseType: layer['productType'] })
+                    .subscribe(function (product) {
+                    // generate the layer
+                    layer['layer'] = layer.generateLayer(event, product);
+                    // let the map know it's ready
+                    _this.nextLayer.next(layer);
+                    _this.loadingService.finish(layer.name);
+                    // record data for later usage
+                    _this.data[layer['id']] = product;
+                }));
+            }
+            else {
+                layer['layer'] = layer.generateLayer(event);
+                this_1.nextLayer.next(layer);
+            }
+        };
+        var this_1 = this;
+        // try to make the layers
+        for (var _i = 0, layers_1 = layers; _i < layers_1.length; _i++) {
+            var layer = layers_1[_i];
+            _loop_1(layer);
+        }
+    };
+    LayerService.prototype.stopWaiting = function () {
+        // Stop existing request for layers
+        this.waiting.unsubscribe();
+    };
+    LayerService = __decorate([
+        core_1.Injectable(),
+        __metadata("design:paramtypes", [http_1.HttpClient,
+            loading_service_1.LoadingService])
+    ], LayerService);
+    return LayerService;
+}());
+exports.LayerService = LayerService;
+
+
+/***/ }),
+
 /***/ "../../../../../src/app/shared/maps/map.component.css":
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -5132,6 +5251,8 @@ var core_1 = __webpack_require__("../../../core/esm5/core.js");
 var router_1 = __webpack_require__("../../../router/esm5/router.js");
 var shakemap_service_1 = __webpack_require__("../../../../../src/app/shared/maps/shakemap.service.ts");
 var map_service_1 = __webpack_require__("../../../../../src/app/shared/maps/map.service.ts");
+var earthquake_service_1 = __webpack_require__("../../../../../src/app/shakecast/pages/earthquakes/earthquake.service.ts");
+var layer_service_1 = __webpack_require__("../../../../../src/app/shared/maps/layers/layer.service.ts");
 var facility_service_1 = __webpack_require__("../../../../../src/app/shakecast-admin/pages/facilities/facility.service.ts");
 var loading_service_1 = __webpack_require__("../../../../../src/app/loading/loading.service.ts");
 var angular2_notifications_1 = __webpack_require__("../../../../angular2-notifications/angular2-notifications.umd.js");
@@ -5139,9 +5260,8 @@ var L = __webpack_require__("../../../../leaflet/dist/leaflet-src.js");
 __webpack_require__("../../../../leaflet-makimarkers/Leaflet.MakiMarkers.js");
 __webpack_require__("../../../../leaflet.markercluster/dist/leaflet.markercluster-src.js");
 var _ = __webpack_require__("../../../../underscore/underscore.js");
-L.MakiMarkers.accessToken = 'pk.eyJ1IjoiZHNsb3NreSIsImEiOiJjaXR1aHJnY3EwMDFoMnRxZWVtcm9laWJmIn0.1C3GE0kHPGOpbVV9kTxBlQ';
 var MapComponent = /** @class */ (function () {
-    function MapComponent(mapService, smService, facService, notService, _router, loadingService, changeDetector) {
+    function MapComponent(mapService, smService, facService, notService, _router, loadingService, changeDetector, eqService, layerService) {
         this.mapService = mapService;
         this.smService = smService;
         this.facService = facService;
@@ -5149,6 +5269,8 @@ var MapComponent = /** @class */ (function () {
         this._router = _router;
         this.loadingService = loadingService;
         this.changeDetector = changeDetector;
+        this.eqService = eqService;
+        this.layerService = layerService;
         this.layersControl = null;
         this.markers = {};
         this.overlays = [];
@@ -5175,27 +5297,7 @@ var MapComponent = /** @class */ (function () {
         });
         this.shakingData = null;
         this.totalShaking = 0;
-        this.greyIcon = L.MakiMarkers.icon({ color: "#808080", size: "m" });
-        this.greenIcon = L.MakiMarkers.icon({ color: "#008000", size: "m" });
-        this.yellowIcon = L.MakiMarkers.icon({ color: "#FFD700", size: "m" });
-        this.orangeIcon = L.MakiMarkers.icon({ color: "#FFA500", size: "m" });
-        this.redIcon = L.MakiMarkers.icon({ color: "#FF0000", size: "m" });
-        this.impactIcons = {
-            gray: this.greyIcon,
-            green: this.greenIcon,
-            yellow: this.yellowIcon,
-            orange: this.orangeIcon,
-            red: this.redIcon
-        }; /*
-        {
-            gray: L.icon({color: "#808080", size: "m"}),
-            green: L.icon({color: "#008000", size: "m"}),
-            yellow: L.icon({color: "#FFD700", size: "m"}),
-            orange: L.icon({color: "#FFA500", size: "m"}),
-            red: L.icon({color: "#FF0000", size: "m"})
-        };
-    
-    */
+        this.impactIcons = {};
     }
     MapComponent.prototype.ngOnInit = function () {
         var _this = this;
@@ -5210,37 +5312,32 @@ var MapComponent = /** @class */ (function () {
         this.map = L.map('map', {
             scrollWheelZoom: false
         }).setView([51.505, -0.09], 8);
-        // eslint-disable-next-line  
-        delete L.Icon.Default.prototype._getIconUrl;
-        // eslint-disable-next-line  
-        L.Icon.Default.mergeOptions({
-            iconRetinaUrl: __webpack_require__("../../../../leaflet/dist/images/marker-icon-2x.png"),
-            iconUrl: __webpack_require__("../../../../leaflet/dist/images/marker-icon.png"),
-            shadowUrl: __webpack_require__("../../../../leaflet/dist/images/marker-shadow.png")
-        });
         var basemap = this.getBasemap();
         basemap.addTo(this.map);
         var layers = {
             'Facility': this.facilityLayer,
             'Event': this.eventLayer
         };
+        L.MakiMarkers.accessToken = this.mapKey;
+        var greyIcon = L.MakiMarkers.icon({ color: "#808080", size: "m" });
+        var greenIcon = L.MakiMarkers.icon({ color: "#008000", size: "m" });
+        var yellowIcon = L.MakiMarkers.icon({ color: "#FFD700", size: "m" });
+        var orangeIcon = L.MakiMarkers.icon({ color: "#FFA500", size: "m" });
+        var redIcon = L.MakiMarkers.icon({ color: "#FF0000", size: "m" });
+        this.impactIcons = {
+            gray: greyIcon,
+            green: greenIcon,
+            yellow: yellowIcon,
+            orange: orangeIcon,
+            red: redIcon
+        };
         this.layersControl = L.control.layers(null, layers).addTo(this.map);
-        // subscribe to earthquake markers
-        this.subscriptions.push(this.mapService.eqMarkers.subscribe(function (eqData) {
-            if (eqData) {
-                if (eqData['clear']) {
-                    if (eqData['clear'] == 'all') {
-                        // clear all layers
-                        _this.clearLayers();
-                    }
-                    else if (eqData['clear'] == 'events') {
-                        _this.clearEventLayers();
-                    }
-                }
-                for (var mark in eqData['events']) {
-                    _this.plotEventMarker(eqData['events'][mark]);
-                }
-            }
+        this.subscriptions.push(this.eqService.selectEvent.subscribe(function (event) {
+            _this.onEvent(event);
+        }));
+        this.subscriptions.push(this.layerService.nextLayer.subscribe(function (layer) {
+            _this.eventLayer.addLayer(layer['layer']);
+            _this.eventLayer.addTo(_this.map);
         }));
         // subscribe to center
         this.subscriptions.push(this.mapService.center.subscribe(function (center) {
@@ -5277,6 +5374,14 @@ var MapComponent = /** @class */ (function () {
             _this.clearLayers();
         }));
     };
+    MapComponent.prototype.onEvent = function (event) {
+        if (event === null) {
+            return;
+        }
+        else {
+            this.layerService.genLayers(event);
+        }
+    };
     MapComponent.prototype.getBasemap = function () {
         return L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token=' + this.mapKey, {
             maxZoom: 18,
@@ -5289,19 +5394,6 @@ var MapComponent = /** @class */ (function () {
     //////////////////////////////////////////////////////////////
     //////////////////// Earthquake Functions ////////////////////
     MapComponent.prototype.plotEventMarker = function (event) {
-        // create event marker and plot it
-        this.eventMarker = this.createEventMarker(event);
-        this.eventMarker.addTo(this.eventLayer);
-        this.eventLayer.addTo(this.map);
-        this.eventMarker.bindPopup(this.eventMarker.popupContent).openPopup();
-        this.eventMarkers.push(this.eventMarker);
-        // plot shakemap if available
-        this.plotShakemap(event);
-    };
-    MapComponent.prototype.createEventMarker = function (event) {
-        var marker = L.marker([event.lat, event.lon], { icon: this.epicIcon });
-        marker['popupContent'] = "<table class=\"my-table\">    \n                                <tr>\n                                    <th>ID:</th>\n                                    <td>" + event.event_id + "</td>\n                                </tr>\n                                <tr> \n                                    <th>Magnitude:</th>\n                                    <td>" + event.magnitude + "</td>\n                                </tr>\n                                <tr>\n                                    <th>Depth:</th>\n                                    <td>" + event.depth + "</td>\n                                </tr>\n                                <tr>\n                                    <th>Latitude:</th>\n                                    <td>" + event.lat + "</td>\n                                </tr>\n                                <tr>\n                                    <th>Longitude:</th>\n                                    <td>" + event.lon + "</td>\n                                </tr>\n                                <tr>\n                                    <th>Description:</th>\n                                    <td>" + event.place + "</td>\n                                </tr>\n                            </table>";
-        return marker;
     };
     MapComponent.prototype.plotShakemap = function (event) {
         var _this = this;
@@ -5568,7 +5660,9 @@ var MapComponent = /** @class */ (function () {
             angular2_notifications_1.NotificationsService,
             router_1.Router,
             loading_service_1.LoadingService,
-            core_1.ChangeDetectorRef])
+            core_1.ChangeDetectorRef,
+            earthquake_service_1.EarthquakeService,
+            layer_service_1.LayerService])
     ], MapComponent);
     return MapComponent;
 }());
@@ -5598,7 +5692,7 @@ var http_1 = __webpack_require__("../../../common/esm5/http.js");
 var MapService = /** @class */ (function () {
     function MapService(_http) {
         this._http = _http;
-        this.eqMarkers = new ReplaySubject_1.ReplaySubject(1);
+        this.eqMarker = new ReplaySubject_1.ReplaySubject(1);
         this.facMarkers = new ReplaySubject_1.ReplaySubject(1);
         this.groupPoly = new ReplaySubject_1.ReplaySubject(1);
         this.removeFacMarkers = new ReplaySubject_1.ReplaySubject(1);
@@ -5611,8 +5705,7 @@ var MapService = /** @class */ (function () {
         eqMarker['type'] = 'earthquake';
         eqMarker['zoom'] = 8;
         eqMarker['draggable'] = false;
-        this.eqMarkers.next({ events: [eqMarker], clear: clear });
-        this.center.next(eqMarker);
+        this.eqMarker.next(eqMarker);
     };
     MapService.prototype.plotFac = function (fac, clear) {
         if (clear === void 0) { clear = false; }
@@ -5657,7 +5750,7 @@ var MapService = /** @class */ (function () {
         this.removeFacMarkers.next(fac);
     };
     MapService.prototype.clearMarkers = function () {
-        this.eqMarkers.next([]);
+        //this.eqMarkers.next([]);
     };
     MapService.prototype.makeMarker = function (notMarker) {
         var marker = {
@@ -5939,6 +6032,7 @@ var screen_dimmer_component_1 = __webpack_require__("../../../../../src/app/shar
 var info_component_1 = __webpack_require__("../../../../../src/app/shared/info/info.component.ts");
 var facility_count_component_1 = __webpack_require__("../../../../../src/app/shared/maps/facility-count/facility-count.component.ts");
 var impact_component_1 = __webpack_require__("../../../../../src/app/shared/maps/impact/impact.component.ts");
+var layer_service_1 = __webpack_require__("../../../../../src/app/shared/maps/layers/layer.service.ts");
 var SharedModule = /** @class */ (function () {
     function SharedModule() {
     }
@@ -5958,7 +6052,9 @@ var SharedModule = /** @class */ (function () {
                 info_component_1.InfoComponent,
                 facility_count_component_1.FacilityCountComponent,
                 impact_component_1.ImpactComponent],
-            providers: [],
+            providers: [
+                layer_service_1.LayerService
+            ],
             exports: [map_component_1.MapComponent,
                 earthquake_blurb_component_1.EarthquakeBlurbComponent,
                 facility_list_component_1.FacilityListComponent,
