@@ -1,4 +1,5 @@
 import * as L from 'leaflet';
+import { Layer } from './layer';
 
 function generateGroupPoly(group) {
     var groupLayer: any = new L.GeoJSON(makePoly(group));
@@ -10,7 +11,7 @@ function generateGroupPoly(group) {
 }
 
 function makePoly(notPoly: any) {
-    var poly: Poly = {
+    var poly: any = {
         type: '',
         properties: {},
         geometry: {}
@@ -135,16 +136,11 @@ function generatePopup(group) {
     return popupStr
 }
 
-export var groupLayer = {
-    name: 'Group',
-    id: 'group',
-    url: (event) => {
-        return null;
-    },
-    productType: null,
-    legendImages: [],
-    generateLayer: function (group, product=null) {
-        return generateGroupPoly(group);
+function layerGenerator(group, product=null) {
+    return generateGroupPoly(group);
+}
 
-    }
-};
+export let groupLayer = new Layer('Group',
+                                'group',
+                                layerGenerator);
+

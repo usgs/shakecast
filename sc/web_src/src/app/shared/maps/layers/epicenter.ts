@@ -1,4 +1,5 @@
 import * as L from 'leaflet';
+import { Layer } from './layer';
 
 var epicIcon = L.icon({
     iconUrl: 'assets/epicenter.png',
@@ -42,18 +43,14 @@ function createEventMarker(event: any) {
     return marker
 }
 
-
-export var epicenterLayer = {
-    name: 'Epicenter',
-    id: 'epicenter',
-    url: (event) => {
-        return null;
-    },
-    productType: null,
-    legendImages: ['assets/legend-epicenter.png'],
-    generateLayer: function (event, product=null) {
-
+function layerGenerator(event, product=null) {
         return createEventMarker(event);
+}
 
-    }
-};
+let epiLayer = new Layer('Epicenter',
+                            'epicenter',
+                            layerGenerator);
+
+epiLayer.legendImages = ['assets/legend-epicenter.png'];
+
+export let epicenterLayer = epiLayer;
