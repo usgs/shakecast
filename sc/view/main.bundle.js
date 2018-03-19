@@ -158,7 +158,6 @@ var facility_service_1 = __webpack_require__("../../../../../src/app/shakecast-a
 var notification_service_1 = __webpack_require__("../../../../../src/app/shakecast/pages/dashboard/notification-dash/notification.service.ts");
 var shared_module_1 = __webpack_require__("../../../../../src/app/shared/shared.module.ts");
 var map_service_1 = __webpack_require__("../../../../../src/app/shared/maps/map.service.ts");
-var shakemap_service_1 = __webpack_require__("../../../../../src/app/shared/maps/shakemap.service.ts");
 var screen_dimmer_service_1 = __webpack_require__("../../../../../src/app/shared/screen-dimmer/screen-dimmer.service.ts");
 var group_service_1 = __webpack_require__("../../../../../src/app/shakecast-admin/pages/groups/group.service.ts");
 var users_service_1 = __webpack_require__("../../../../../src/app/shakecast-admin/pages/users/users.service.ts");
@@ -199,7 +198,6 @@ var AppModule = /** @class */ (function () {
                 earthquake_service_1.EarthquakeService,
                 facility_service_1.FacilityService,
                 map_service_1.MapService,
-                shakemap_service_1.ShakemapService,
                 stick_to_top_service_1.StickToTopService,
                 screen_dimmer_service_1.ScreenDimmerService,
                 notification_service_1.NotificationService,
@@ -5096,6 +5094,7 @@ exports.ImpactComponent = ImpactComponent;
 
 Object.defineProperty(exports, "__esModule", { value: true });
 var L = __webpack_require__("../../../../leaflet/dist/leaflet-src.js");
+var layer_1 = __webpack_require__("../../../../../src/app/shared/maps/layers/layer.ts");
 var epicIcon = L.icon({
     iconUrl: 'assets/epicenter.png',
     iconSize: [32, 32],
@@ -5108,19 +5107,228 @@ function createEventMarker(event) {
     marker.bindPopup(popup);
     return marker;
 }
-exports.epicenterLayer = {
-    name: 'Epicenter',
-    id: 'epicenter',
-    url: function (event) {
-        return null;
-    },
-    productType: null,
-    legendImages: ['assets/legend-epicenter.png'],
-    generateLayer: function (event, product) {
-        if (product === void 0) { product = null; }
-        return createEventMarker(event);
+function layerGenerator(event, product) {
+    if (product === void 0) { product = null; }
+    return createEventMarker(event);
+}
+var epiLayer = new layer_1.Layer('Epicenter', 'epicenter', layerGenerator);
+epiLayer.legendImages = ['assets/legend-epicenter.png'];
+exports.epicenterLayer = epiLayer;
+
+
+/***/ }),
+
+/***/ "../../../../../src/app/shared/maps/layers/facility.ts":
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+Object.defineProperty(exports, "__esModule", { value: true });
+var L = __webpack_require__("../../../../leaflet/dist/leaflet-src.js");
+var _ = __webpack_require__("../../../../underscore/underscore.js");
+__webpack_require__("../../../../leaflet-makimarkers/Leaflet.MakiMarkers.js");
+__webpack_require__("../../../../leaflet.markercluster/dist/leaflet.markercluster-src.js");
+var layer_1 = __webpack_require__("../../../../../src/app/shared/maps/layers/layer.ts");
+function initIcons() {
+    L.MakiMarkers.accessToken = this.mapKey;
+    var greyIcon = L.MakiMarkers.icon({ color: "#808080", size: "m" });
+    var greenIcon = L.MakiMarkers.icon({ color: "#008000", size: "m" });
+    var yellowIcon = L.MakiMarkers.icon({ color: "#FFD700", size: "m" });
+    var orangeIcon = L.MakiMarkers.icon({ color: "#FFA500", size: "m" });
+    var redIcon = L.MakiMarkers.icon({ color: "#FF0000", size: "m" });
+    var impactIcons = {
+        gray: greyIcon,
+        green: greenIcon,
+        yellow: yellowIcon,
+        orange: orangeIcon,
+        red: redIcon
+    };
+    return impactIcons;
+}
+function plotFacMarker(fac, silent) {
+    if (silent === void 0) { silent = false; }
+    // create event marker and plot it
+    var marker = this.createFacMarker(fac);
+    var existingMarker = this.data.facilityMarkers[fac.shakecast_id.toString()];
+    // Check if the marker already exists
+    if (_.isEqual(this.data.facMarker, marker)) {
+        // Do nothing. This facility is already selected
     }
-};
+    else if (existingMarker) {
+        if (this.data.facilityLayer.hasLayer(this.data.facMarker)) {
+            this.data.facilityLayer.removeLayer(this.data.facMarker);
+            this.data.facilityCluster.addLayer(this.data.facMarker);
+            this.data.facilityCluster.addTo(this.data.facilityLayer);
+            this.data.facilityLayer.addTo(this.map);
+        }
+        this.data.facMarker = existingMarker;
+        this.data.facilityCluster.removeLayer(this.data.facMarker);
+        this.data.facMarker.addTo(this.data.facilityLayer);
+        this.data.facilityLayer.addTo(this.map);
+        marker.bindPopup(marker.popupContent);
+    }
+    else {
+        if (this.data.facilityLayer.hasLayer(this.data.facMarker)) {
+            this.data.facilityLayer.removeLayer(this.data.facMarker);
+            this.data.facilityCluster.addLayer(this.data.facMarker);
+            this.data.facilityCluster.addTo(this.data.facilityLayer);
+            this.data.facilityLayer.addTo(this.map);
+        }
+        this.data.facMarker = marker;
+        this.data.facilityMarkers[fac.shakecast_id.toString()] = marker;
+        this.data.facMarker.addTo(this.data.facilityLayer);
+        this.data.facilityLayer.addTo(this.map);
+        marker.bindPopup(marker.popupContent);
+        //marker.openPopup();
+    }
+    if (silent === false) {
+        this.data.facMarker.openPopup();
+    }
+}
+function createFacMarker(fac) {
+    if (!this.data.impactIcons) {
+        this.data.impactIcons = this.initIcons();
+    }
+    var alert = 'gray';
+    if ((fac['shaking']) && (fac['shaking']['alert_level'] !== 'gray')) {
+        alert = fac['shaking']['alert_level'];
+    }
+    var marker = L.marker([fac.lat, fac.lon], { icon: this.data.impactIcons[alert] });
+    var desc = '';
+    if (fac.html) {
+        marker['popupContent'] = fac.html;
+    }
+    else {
+        if (fac.description) {
+            desc = fac.description;
+        }
+        else {
+            desc = 'No Description';
+        }
+        var colorTable = "\n        <table class=\"colors-table\" style=\"width:100%;text-align:center\">\n            <tr>\n                <th>Fragility</th>\n            </tr>\n            <tr>\n                <td>\n                <table style=\"width:100%\">\n                    <tr>\n                ";
+        if (fac['green'] > 0) {
+            colorTable += "<th style=\"background-color:green;padding:2px;color:white\">\n                        " + fac['metric'] + ': ' + fac['green'] + " \n                    </th>";
+        }
+        if (fac['yellow'] > 0) {
+            colorTable += "<th style=\"background-color:gold;padding:2px;color:white\">\n                        " + fac['metric'] + ': ' + fac['yellow'] + " \n                    </th>";
+        }
+        if (fac['orange'] > 0) {
+            colorTable += "<th style=\"background-color:orange;padding:2px;color:white\">\n                        " + fac['metric'] + ': ' + fac['orange'] + " \n                    </th>";
+        }
+        if (fac['red'] > 0) {
+            colorTable += "<th style=\"background-color:red;padding:2px;color:white\">\n                        " + fac['metric'] + ': ' + fac['red'] + " \n                    </th>";
+        }
+        colorTable += "</td>\n                    </tr>\n                </table>\n            </tr>\n        </table>";
+        marker['popupContent'] = "<table style=\"text-align:center;\">\n                                    <tr>\n                                        <th>" + fac.name + " </th>\n                                    </tr>\n                                    <tr>\n                                        <td style=\"font-style:italic;\">" +
+            desc + "\n                                        </td>\n                                    </tr>\n                                    <tr>\n                                        <table class=\"fragility-table\">\n                                            <tr>\n                                                " + colorTable + "\n                                            </tr>\n                                        </table>\n                                    </tr>\n                                </table>";
+    }
+    if (fac['shaking']) {
+        var shakingColor = fac['shaking']['alert_level'];
+        if (shakingColor == 'yellow') {
+            shakingColor = 'gold';
+        }
+        marker['popupContent'] += "<table style=\"border-top:2px solid #444444;width:100%;\">\n                                        <tr>\n                                            <table style=\"width:90%;margin-left:5%;border-bottom:2px solid #dedede;padding-bottom:0\">\n                                                <tr>\n                                                    <th style=\"text-align:center\">Alert Level</th>\n                                                </tr>\n                                            </table>\n                                        </tr>\n                                        <tr>\n                                            <table style=\"width:100%;text-align:center;\">\n                                                <tr style=\"background:" + shakingColor + "\">\n                                                    <th style=\"text-align:center;color:white\">" + fac['shaking']['metric'] + ": " + fac['shaking'][fac['shaking']['metric'].toLowerCase()] + "</th>\n                                                </tr>\n                                            </table>\n                                        </tr>\n                                    </table>";
+    }
+    marker['facility'] = fac;
+    return marker;
+}
+function removeFacMarker(fac) {
+    var marker = this.data.facilityMarkers[fac.shakecast_id.toString()];
+    if (this.data.facilityLayer.hasLayer(marker)) {
+        this.data.facilityLayer.removeLayer(marker);
+    }
+    else if (this.data.facilityCluster.hasLayer(marker)) {
+        this.data.facilityCluster.removeLayer(marker);
+    }
+    delete this.data.facilityMarkers[fac.shakecast_id.toString()];
+}
+function createFacCluster(cluster) {
+    var childCount = cluster.getChildCount();
+    var facs = cluster.getAllChildMarkers();
+    var c = ' marker-cluster-';
+    if (childCount < 10) {
+        c += 'small';
+    }
+    else if (childCount < 100) {
+        c += 'medium';
+    }
+    else {
+        c += 'large';
+    }
+    var color_c = '';
+    if (facs[0]['facility']['shaking']) {
+        var shaking = 'gray';
+        for (var fac_id in facs) {
+            if ((!_.contains(['green', 'yellow', 'orange', 'red'], shaking)) &&
+                (_.contains(['green', 'yellow', 'orange', 'red'], facs[fac_id]['facility']['shaking']['alert_level']))) {
+                shaking = facs[fac_id]['facility']['shaking']['alert_level'];
+            }
+            else if ((!_.contains(['yellow', 'orange', 'red'], shaking)) &&
+                (_.contains(['yellow', 'orange', 'red'], facs[fac_id]['facility']['shaking']['alert_level']))) {
+                shaking = facs[fac_id]['facility']['shaking']['alert_level'];
+            }
+            else if ((!_.contains(['orange', 'red'], shaking)) &&
+                (_.contains(['orange', 'red'], facs[fac_id]['facility']['shaking']['alert_level']))) {
+                shaking = facs[fac_id]['facility']['shaking']['alert_level'];
+            }
+            else if ((!_.contains(['red'], shaking)) &&
+                (_.contains(['red'], facs[fac_id]['facility']['shaking']['alert_level']))) {
+                shaking = facs[fac_id]['facility']['shaking']['alert_level'];
+            }
+        }
+        color_c = 'marker-cluster-' + shaking;
+    }
+    else {
+        color_c = 'marker-cluster-green';
+    }
+    return new L.DivIcon({ html: '<div><span>' + childCount + '</span></div>', className: 'marker-cluster' + c + ' ' + color_c, iconSize: new L.Point(40, 40) });
+}
+function layerGenerator() {
+    if (!this.data.impactIcons) {
+        this.data.impactIcons = this.initIcons();
+    }
+    this.data = {
+        facilityLayer: L.featureGroup(),
+        facilityCluster: L.markerClusterGroup({
+            iconCreateFunction: createFacCluster
+        }),
+        facilityMarkers: {},
+        facMarker: L.marker()
+    };
+}
+var FacilityLayer = /** @class */ (function (_super) {
+    __extends(FacilityLayer, _super);
+    function FacilityLayer() {
+        var _this = _super !== null && _super.apply(this, arguments) || this;
+        _this.addFacMarker = plotFacMarker;
+        _this.removeFacMarker = removeFacMarker;
+        _this.createFacMarker = createFacMarker;
+        _this.initIcons = initIcons;
+        _this.map = null;
+        _this.data = {
+            facilityLayer: L.featureGroup(),
+            facilityCluster: L.markerClusterGroup({
+                iconCreateFunction: createFacCluster
+            }),
+            facilityMarkers: {},
+            facMarker: L.marker()
+        };
+        return _this;
+    }
+    return FacilityLayer;
+}(layer_1.Layer));
+var fLayer = new FacilityLayer('Facility', 'facility', layerGenerator);
+exports.facilityLayer = fLayer;
 
 
 /***/ }),
@@ -5132,6 +5340,7 @@ exports.epicenterLayer = {
 
 Object.defineProperty(exports, "__esModule", { value: true });
 var L = __webpack_require__("../../../../leaflet/dist/leaflet-src.js");
+var layer_1 = __webpack_require__("../../../../../src/app/shared/maps/layers/layer.ts");
 function generateGroupPoly(group) {
     var groupLayer = new L.GeoJSON(makePoly(group));
     var popupStr = generatePopup(group);
@@ -5196,19 +5405,11 @@ function generatePopup(group) {
     popupStr += "<tr>\n                    <table>\n                        <th>Template: </th>\n                        <td>" + group['info']['template'] + "</td>\n                    </table>\n                </tr>\n            </table>";
     return popupStr;
 }
-exports.groupLayer = {
-    name: 'Group',
-    id: 'group',
-    url: function (event) {
-        return null;
-    },
-    productType: null,
-    legendImages: [],
-    generateLayer: function (group, product) {
-        if (product === void 0) { product = null; }
-        return generateGroupPoly(group);
-    }
-};
+function layerGenerator(group, product) {
+    if (product === void 0) { product = null; }
+    return generateGroupPoly(group);
+}
+exports.groupLayer = new layer_1.Layer('Group', 'group', layerGenerator);
 
 
 /***/ }),
@@ -5220,27 +5421,25 @@ exports.groupLayer = {
 
 Object.defineProperty(exports, "__esModule", { value: true });
 var L = __webpack_require__("../../../../leaflet/dist/leaflet-src.js");
-exports.intensityLayer = {
-    name: 'ShakeMap',
-    id: 'intensity_map',
-    url: function (event) {
-        return 'api/shakemaps/' + event.event_id;
-    },
-    productType: 'json',
-    legendImages: [],
-    generateLayer: function (event, product) {
-        if (product === void 0) { product = null; }
-        if (product == null) {
-            return null;
-        }
-        // Grab the latest map
-        product = product[0];
-        var imageUrl = 'api/shakemaps/' + product.shakemap_id + '/overlay';
-        var imageBounds = [[product.lat_min, product.lon_min], [product.lat_max, product.lon_max]];
-        var overlayLayer = L.imageOverlay(imageUrl, imageBounds, { opacity: .4 });
-        return overlayLayer;
+var layer_1 = __webpack_require__("../../../../../src/app/shared/maps/layers/layer.ts");
+function generateLayer(event, product) {
+    if (product === void 0) { product = null; }
+    if (product == null) {
+        return null;
     }
+    // Grab the latest map
+    product = product[0];
+    var imageUrl = 'api/shakemaps/' + product.shakemap_id + '/overlay';
+    var imageBounds = [[product.lat_min, product.lon_min], [product.lat_max, product.lon_max]];
+    var overlayLayer = L.imageOverlay(imageUrl, imageBounds, { opacity: .4 });
+    return overlayLayer;
+}
+var intLayer = new layer_1.Layer('Intensity Map', 'intensity_map', generateLayer);
+intLayer.url = function (event) {
+    return 'api/shakemaps/' + event.event_id;
 };
+intLayer.productType = 'json';
+exports.intensityLayer = intLayer;
 
 
 /***/ }),
@@ -5272,11 +5471,8 @@ var loading_service_1 = __webpack_require__("../../../../../src/app/loading/load
 var epicenter_1 = __webpack_require__("../../../../../src/app/shared/maps/layers/epicenter.ts");
 var intensity_1 = __webpack_require__("../../../../../src/app/shared/maps/layers/intensity.ts");
 var group_1 = __webpack_require__("../../../../../src/app/shared/maps/layers/group.ts");
+var facility_1 = __webpack_require__("../../../../../src/app/shared/maps/layers/facility.ts");
 //import { stationLayer } from './stations';
-var layers = {
-    'event': [epicenter_1.epicenterLayer, intensity_1.intensityLayer],
-    'group': [group_1.groupLayer]
-};
 var LayerService = /** @class */ (function () {
     function LayerService(http, loadingService) {
         this.http = http;
@@ -5285,6 +5481,12 @@ var LayerService = /** @class */ (function () {
         this.nextLayer = new ReplaySubject_1.ReplaySubject(1);
         this.data = {};
         this.waiting = new subscription_1.Subscription();
+        this.needsKey = [facility_1.facilityLayer];
+        this.needsMap = [facility_1.facilityLayer];
+        this.layers = {
+            'event': [epicenter_1.epicenterLayer, intensity_1.intensityLayer],
+            'group': [group_1.groupLayer]
+        };
     }
     LayerService.prototype.genEventLayers = function (event) {
         this.genLayers(event, 'event');
@@ -5323,10 +5525,22 @@ var LayerService = /** @class */ (function () {
         };
         var this_1 = this;
         // try to make the layers
-        for (var _i = 0, _a = layers[type_]; _i < _a.length; _i++) {
+        for (var _i = 0, _a = this.layers[type_]; _i < _a.length; _i++) {
             var layer = _a[_i];
             _loop_1(layer);
         }
+    };
+    /* Facility layers require more options */
+    LayerService.prototype.addFacMarkers = function (markers) {
+        this.loadingService.add('Facility Markers');
+        var silent = (markers.length > 1);
+        for (var mark in markers) {
+            facility_1.facilityLayer.addFacMarker(markers[mark], silent);
+        }
+        this.loadingService.finish('Facility Markers');
+    };
+    LayerService.prototype.removeFacMarker = function (facility) {
+        facility_1.facilityLayer.removeFacMarker(facility);
     };
     LayerService.prototype.stopWaiting = function () {
         // Stop existing request for layers
@@ -5340,6 +5554,40 @@ var LayerService = /** @class */ (function () {
     return LayerService;
 }());
 exports.LayerService = LayerService;
+
+
+/***/ }),
+
+/***/ "../../../../../src/app/shared/maps/layers/layer.ts":
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+var Layer = /** @class */ (function () {
+    function Layer(name, id, layerGenerator) {
+        /* Optional */
+        // Leaflet layer, ready to plot
+        this.layer = null;
+        // Map API key
+        this.mapKey = null;
+        // Images to be displayed in a legend
+        this.legendImages = [];
+        // Type of data for url request
+        this.productType = '';
+        // Function that generates a url to get specific data
+        this.url = function () {
+            return null;
+        };
+        // Data storage for persisting layers
+        this.data = {};
+        this.name = name;
+        this.id = id;
+        this.generateLayer = layerGenerator;
+    }
+    return Layer;
+}());
+exports.Layer = Layer;
 
 
 /***/ }),
@@ -5385,58 +5633,41 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 var core_1 = __webpack_require__("../../../core/esm5/core.js");
-var router_1 = __webpack_require__("../../../router/esm5/router.js");
 var map_service_1 = __webpack_require__("../../../../../src/app/shared/maps/map.service.ts");
 var earthquake_service_1 = __webpack_require__("../../../../../src/app/shakecast/pages/earthquakes/earthquake.service.ts");
 var layer_service_1 = __webpack_require__("../../../../../src/app/shared/maps/layers/layer.service.ts");
 var facility_service_1 = __webpack_require__("../../../../../src/app/shakecast-admin/pages/facilities/facility.service.ts");
 var loading_service_1 = __webpack_require__("../../../../../src/app/loading/loading.service.ts");
-var angular2_notifications_1 = __webpack_require__("../../../../angular2-notifications/angular2-notifications.umd.js");
 var L = __webpack_require__("../../../../leaflet/dist/leaflet-src.js");
 __webpack_require__("../../../../leaflet-makimarkers/Leaflet.MakiMarkers.js");
-__webpack_require__("../../../../leaflet.markercluster/dist/leaflet.markercluster-src.js");
-var _ = __webpack_require__("../../../../underscore/underscore.js");
 var MapComponent = /** @class */ (function () {
-    function MapComponent(mapService, facService, notService, _router, loadingService, changeDetector, eqService, layerService) {
+    function MapComponent(mapService, facService, loadingService, changeDetector, eqService, layerService) {
         this.mapService = mapService;
         this.facService = facService;
-        this.notService = notService;
-        this._router = _router;
         this.loadingService = loadingService;
         this.changeDetector = changeDetector;
         this.eqService = eqService;
         this.layerService = layerService;
-        this.layersControl = null;
-        this.markers = {};
-        this.overlays = [];
-        this.eventMarkers = [];
-        this.facilityMarkers = {};
         this.center = {};
         this.mapKey = null;
-        this.markerLayer = L.featureGroup();
         this.onMap = [];
-        this.facilityCluster = L.markerClusterGroup({
-            iconCreateFunction: this.createFacCluster
-        });
-        //private facilityCluster: any = L.featureGroup();
-        this.facilityLayer = L.featureGroup();
-        this.facMarker = L.marker();
-        this.groupLayers = L.featureGroup();
         this.subscriptions = [];
-        this.epicIcon = L.icon({ iconUrl: 'assets/epicenter.png',
-            iconSize: [45, 45],
-            shadowSize: [50, 64],
-            popupAnchor: [1, -25] // point from which the popup should open relative to the iconAnchor
-        });
-        this.shakingData = null;
-        this.totalShaking = 0;
-        this.impactIcons = {};
     }
     MapComponent.prototype.ngOnInit = function () {
         var _this = this;
         this.subscriptions.push(this.mapService.getMapKey().subscribe(function (key) {
             _this.mapKey = key;
             _this.initMap();
+            // set key for map layers
+            for (var _i = 0, _a = _this.layerService.needsKey; _i < _a.length; _i++) {
+                var layer = _a[_i];
+                layer.mapKey = key;
+            }
+            // allow access to map controls
+            for (var _b = 0, _c = _this.layerService.needsMap; _b < _c.length; _b++) {
+                var layer = _c[_b];
+                layer.map = _this.map;
+            }
         }));
     };
     MapComponent.prototype.initMap = function () {
@@ -5447,23 +5678,6 @@ var MapComponent = /** @class */ (function () {
         }).setView([51.505, -0.09], 8);
         var basemap = this.getBasemap();
         basemap.addTo(this.map);
-        var layers = {
-            'Facility': this.facilityLayer
-        };
-        L.MakiMarkers.accessToken = this.mapKey;
-        var greyIcon = L.MakiMarkers.icon({ color: "#808080", size: "m" });
-        var greenIcon = L.MakiMarkers.icon({ color: "#008000", size: "m" });
-        var yellowIcon = L.MakiMarkers.icon({ color: "#FFD700", size: "m" });
-        var orangeIcon = L.MakiMarkers.icon({ color: "#FFA500", size: "m" });
-        var redIcon = L.MakiMarkers.icon({ color: "#FF0000", size: "m" });
-        this.impactIcons = {
-            gray: greyIcon,
-            green: greenIcon,
-            yellow: yellowIcon,
-            orange: orangeIcon,
-            red: redIcon
-        };
-        this.layersControl = L.control.layers(null, layers).addTo(this.map);
         this.subscriptions.push(this.eqService.selectEvent.subscribe(function (event) {
             _this.onEvent(event);
         }));
@@ -5473,31 +5687,13 @@ var MapComponent = /** @class */ (function () {
         this.subscriptions.push(this.layerService.nextLayer.subscribe(function (layer) {
             _this.onLayer(layer);
         }));
-        // subscribe to center
-        this.subscriptions.push(this.mapService.center.subscribe(function (center) {
-            _this.center = center;
-            if (center['type'] === 'facility') {
-                _this.map.setView([center['lat'], center['lon']]);
-            }
-            else {
-                _this.map.setView([center['lat'] + .5, center['lon']], 8);
-            }
-        }));
         // subscribe to facility markers
         this.subscriptions.push(this.mapService.facMarkers.subscribe(function (markers) {
-            _this.loadingService.add('Facility Markers');
-            var silent = (markers.length > 1);
-            for (var mark in markers) {
-                _this.plotFacMarker(markers[mark], silent);
-            }
-            if (silent === false) {
-                _this.map.setView([markers[0]['lat'] + .5, markers[0]['lon']]);
-            }
-            _this.loadingService.finish('Facility Markers');
+            _this.layerService.addFacMarkers(markers);
         }));
         // subscribe to REMOVING facility markers
         this.subscriptions.push(this.mapService.removeFacMarkers.subscribe(function (fac) {
-            _this.removeFacMarker(fac);
+            _this.layerService.removeFacMarker(fac);
         }));
         // subscribe to clearing the map
         this.subscriptions.push(this.mapService.clearMapNotify.subscribe(function (notification) {
@@ -5535,174 +5731,20 @@ var MapComponent = /** @class */ (function () {
             id: 'mapbox.streets'
         });
     };
-    //////////////////////////////////////////////////////////////
-    ///////////////////// Facility Functions /////////////////////
-    MapComponent.prototype.plotFacMarker = function (fac, silent) {
-        if (silent === void 0) { silent = false; }
-        // create event marker and plot it
-        var marker = this.createFacMarker(fac);
-        var existingMarker = this.facilityMarkers[fac.shakecast_id.toString()];
-        // Check if the marker already exists
-        if (_.isEqual(this.facMarker, marker)) {
-            //this.facMarker.openPopup();
-        }
-        else if (existingMarker) {
-            if (this.facilityLayer.hasLayer(this.facMarker)) {
-                this.facilityLayer.removeLayer(this.facMarker);
-                this.facilityCluster.addLayer(this.facMarker);
-                this.facilityCluster.addTo(this.facilityLayer);
-                this.facilityLayer.addTo(this.map);
-            }
-            this.facMarker = existingMarker;
-            this.facilityCluster.removeLayer(this.facMarker);
-            this.facMarker.addTo(this.facilityLayer);
-            this.facilityLayer.addTo(this.map);
-            marker.bindPopup(marker.popupContent);
-            //marker.openPopup();
-        }
-        else {
-            if (this.facilityLayer.hasLayer(this.facMarker)) {
-                this.facilityLayer.removeLayer(this.facMarker);
-                this.facilityCluster.addLayer(this.facMarker);
-                this.facilityCluster.addTo(this.facilityLayer);
-                this.facilityLayer.addTo(this.map);
-            }
-            this.facMarker = marker;
-            this.facilityMarkers[fac.shakecast_id.toString()] = marker;
-            this.facMarker.addTo(this.facilityLayer);
-            this.facilityLayer.addTo(this.map);
-            marker.bindPopup(marker.popupContent);
-            //marker.openPopup();
-        }
-        if (silent === false) {
-            this.facMarker.openPopup();
-        }
-    };
-    MapComponent.prototype.createFacMarker = function (fac) {
-        var alert = 'gray';
-        if ((fac['shaking']) && (fac['shaking']['alert_level'] !== 'gray')) {
-            alert = fac['shaking']['alert_level'];
-        }
-        var marker = L.marker([fac.lat, fac.lon], { icon: this.impactIcons[alert] });
-        var desc = '';
-        if (fac.html) {
-            marker['popupContent'] = fac.html;
-        }
-        else {
-            if (fac.description) {
-                desc = fac.description;
-            }
-            else {
-                desc = 'No Description';
-            }
-            var colorTable = "\n            <table class=\"colors-table\" style=\"width:100%;text-align:center\">\n                <tr>\n                    <th>Fragility</th>\n                </tr>\n                <tr>\n                    <td>\n                    <table style=\"width:100%\">\n                        <tr>\n                    ";
-            if (fac['green'] > 0) {
-                colorTable += "<th style=\"background-color:green;padding:2px;color:white\">\n                            " + fac['metric'] + ': ' + fac['green'] + " \n                        </th>";
-            }
-            if (fac['yellow'] > 0) {
-                colorTable += "<th style=\"background-color:gold;padding:2px;color:white\">\n                            " + fac['metric'] + ': ' + fac['yellow'] + " \n                        </th>";
-            }
-            if (fac['orange'] > 0) {
-                colorTable += "<th style=\"background-color:orange;padding:2px;color:white\">\n                            " + fac['metric'] + ': ' + fac['orange'] + " \n                        </th>";
-            }
-            if (fac['red'] > 0) {
-                colorTable += "<th style=\"background-color:red;padding:2px;color:white\">\n                            " + fac['metric'] + ': ' + fac['red'] + " \n                        </th>";
-            }
-            colorTable += "</td>\n                        </tr>\n                    </table>\n                </tr>\n            </table>";
-            marker['popupContent'] = "<table style=\"text-align:center;\">\n                                        <tr>\n                                            <th>" + fac.name + " </th>\n                                        </tr>\n                                        <tr>\n                                            <td style=\"font-style:italic;\">" +
-                desc + "\n                                            </td>\n                                        </tr>\n                                        <tr>\n                                            <table class=\"fragility-table\">\n                                                <tr>\n                                                    " + colorTable + "\n                                                </tr>\n                                            </table>\n                                        </tr>\n                                    </table>";
-        }
-        if (fac['shaking']) {
-            var shakingColor = fac['shaking']['alert_level'];
-            if (shakingColor == 'yellow') {
-                shakingColor = 'gold';
-            }
-            marker['popupContent'] += "<table style=\"border-top:2px solid #444444;width:100%;\">\n                                            <tr>\n                                                <table style=\"width:90%;margin-left:5%;border-bottom:2px solid #dedede;padding-bottom:0\">\n                                                    <tr>\n                                                        <th style=\"text-align:center\">Alert Level</th>\n                                                    </tr>\n                                                </table>\n                                            </tr>\n                                            <tr>\n                                                <table style=\"width:100%;text-align:center;\">\n                                                    <tr style=\"background:" + shakingColor + "\">\n                                                        <th style=\"text-align:center;color:white\">" + fac['shaking']['metric'] + ": " + fac['shaking'][fac['shaking']['metric'].toLowerCase()] + "</th>\n                                                    </tr>\n                                                </table>\n                                            </tr>\n                                        </table>";
-        }
-        marker['facility'] = fac;
-        return marker;
-    };
-    MapComponent.prototype.removeFacMarker = function (fac) {
-        var marker = this.facilityMarkers[fac.shakecast_id.toString()];
-        if (this.facilityLayer.hasLayer(marker)) {
-            this.facilityLayer.removeLayer(marker);
-        }
-        else if (this.facilityCluster.hasLayer(marker)) {
-            this.facilityCluster.removeLayer(marker);
-        }
-        delete this.facilityMarkers[fac.shakecast_id.toString()];
-    };
     MapComponent.prototype.clearEventLayers = function () {
         this.clearLayers();
     };
     MapComponent.prototype.clearLayers = function () {
-        var _this = this;
         /*
         Clear all layers besides basemaps
         */
-        if (this.layersControl) {
-            this.layersControl.remove();
-        }
+        var _this = this;
         this.map.eachLayer(function (layer) {
             _this.map.removeLayer(layer);
         });
-        this.markerLayer = L.featureGroup();
-        this.facilityCluster = L.markerClusterGroup({
-            iconCreateFunction: this.createFacCluster
-        });
-        this.facMarker = L.marker();
-        this.groupLayers = L.featureGroup();
-        this.facilityMarkers = [];
-        this.totalShaking = 0;
-        this.facilityLayer = L.featureGroup();
         this.onMap = [];
         var basemap = this.getBasemap();
         basemap.addTo(this.map);
-        var layers = {
-            'Facility': this.facilityLayer
-        };
-        this.layersControl = L.control.layers(null, layers).addTo(this.map);
-    };
-    MapComponent.prototype.createFacCluster = function (cluster) {
-        var childCount = cluster.getChildCount();
-        var facs = cluster.getAllChildMarkers();
-        var c = ' marker-cluster-';
-        if (childCount < 10) {
-            c += 'small';
-        }
-        else if (childCount < 100) {
-            c += 'medium';
-        }
-        else {
-            c += 'large';
-        }
-        var color_c = '';
-        if (facs[0]['facility']['shaking']) {
-            var shaking = 'gray';
-            for (var fac_id in facs) {
-                if ((!_.contains(['green', 'yellow', 'orange', 'red'], shaking)) &&
-                    (_.contains(['green', 'yellow', 'orange', 'red'], facs[fac_id]['facility']['shaking']['alert_level']))) {
-                    shaking = facs[fac_id]['facility']['shaking']['alert_level'];
-                }
-                else if ((!_.contains(['yellow', 'orange', 'red'], shaking)) &&
-                    (_.contains(['yellow', 'orange', 'red'], facs[fac_id]['facility']['shaking']['alert_level']))) {
-                    shaking = facs[fac_id]['facility']['shaking']['alert_level'];
-                }
-                else if ((!_.contains(['orange', 'red'], shaking)) &&
-                    (_.contains(['orange', 'red'], facs[fac_id]['facility']['shaking']['alert_level']))) {
-                    shaking = facs[fac_id]['facility']['shaking']['alert_level'];
-                }
-                else if ((!_.contains(['red'], shaking)) &&
-                    (_.contains(['red'], facs[fac_id]['facility']['shaking']['alert_level']))) {
-                    shaking = facs[fac_id]['facility']['shaking']['alert_level'];
-                }
-            }
-            color_c = 'marker-cluster-' + shaking;
-        }
-        else {
-            color_c = 'marker-cluster-green';
-        }
-        return new L.DivIcon({ html: '<div><span>' + childCount + '</span></div>', className: 'marker-cluster' + c + ' ' + color_c, iconSize: new L.Point(40, 40) });
     };
     MapComponent.prototype.ngOnDestroy = function () {
         this.endSubscriptions();
@@ -5720,8 +5762,6 @@ var MapComponent = /** @class */ (function () {
         }),
         __metadata("design:paramtypes", [map_service_1.MapService,
             facility_service_1.FacilityService,
-            angular2_notifications_1.NotificationsService,
-            router_1.Router,
             loading_service_1.LoadingService,
             core_1.ChangeDetectorRef,
             earthquake_service_1.EarthquakeService,
@@ -5838,45 +5878,6 @@ var MapService = /** @class */ (function () {
     return MapService;
 }());
 exports.MapService = MapService;
-
-
-/***/ }),
-
-/***/ "../../../../../src/app/shared/maps/shakemap.service.ts":
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-var core_1 = __webpack_require__("../../../core/esm5/core.js");
-var http_1 = __webpack_require__("../../../common/esm5/http.js");
-__webpack_require__("../../../../rxjs/_esm5/add/operator/map.js");
-var ShakemapService = /** @class */ (function () {
-    function ShakemapService(_http) {
-        this._http = _http;
-    }
-    ShakemapService.prototype.shakemapCheck = function (eq) {
-        return this._http.get('/api/shakemaps/' + eq.event_id);
-    };
-    ShakemapService.prototype.getFacilities = function (sm) {
-        return this._http.get('/api/shakemaps/' + sm.shakemap_id + '/facilities');
-    };
-    ShakemapService = __decorate([
-        core_1.Injectable(),
-        __metadata("design:paramtypes", [http_1.HttpClient])
-    ], ShakemapService);
-    return ShakemapService;
-}());
-exports.ShakemapService = ShakemapService;
 
 
 /***/ }),

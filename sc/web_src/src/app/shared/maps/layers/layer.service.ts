@@ -12,12 +12,9 @@ import { LoadingService } from '../../../loading/loading.service';
 import { epicenterLayer } from './epicenter';
 import { intensityLayer } from './intensity';
 import { groupLayer } from './group';
+import { facilityLayer } from './facility';
 //import { stationLayer } from './stations';
 
-var layers = {
-  'event': [epicenterLayer, intensityLayer],//facilities
-  'group': [groupLayer]
-}
 
 @Injectable()
 export class LayerService {
@@ -25,6 +22,14 @@ export class LayerService {
   public nextLayer = new ReplaySubject(1);
   public data: any = {};
   public waiting = new Subscription();
+  
+  public needsKey = [facilityLayer];
+  public needsMap = [facilityLayer];
+
+  public layers = {
+      'event': [epicenterLayer, intensityLayer],//facilities
+      'group': [groupLayer]
+  }
 
   constructor(private http: HttpClient,
                 private loadingService: LoadingService) {}
@@ -43,7 +48,7 @@ export class LayerService {
     this.stopWaiting();
 
     // try to make the layers
-    for (let layer of layers[type_]) {
+    for (let layer of this.layers[type_]) {
 
       this.loadingService.add(layer.name);
 
@@ -88,7 +93,21 @@ export class LayerService {
     }
   }
 
-  getLayer()
+  /* Facility layers require more options */
+  addFacMarkers(markers) {
+    this.loadingService.add('Facility Markers');
+
+    var silent: boolean = (markers.length > 1)
+    for (var mark in markers) {
+        facilityLayer.addFacMarker(markers[mark], silent);
+    }
+
+    this.loadingService.finish('Facility Markers');
+  }
+
+  removeFacMarker(facility) {
+    facilityLayer.removeFacMarker(facility);
+  }
 
   stopWaiting() {
     // Stop existing request for layers
