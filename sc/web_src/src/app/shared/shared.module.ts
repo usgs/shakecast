@@ -4,7 +4,6 @@ import { FormsModule }         from '@angular/forms';
 
 // Map service and component
 import { MapComponent } from './maps/map.component';
-import { ShakemapService } from './maps/shakemap.service';
 
 // Facility List
 import { FacilityListComponent } from '../shakecast-admin/pages/facilities/facility-list.component';

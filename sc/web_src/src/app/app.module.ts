@@ -28,7 +28,6 @@ import { FacilityService } from './shakecast-admin/pages/facilities/facility.ser
 import { NotificationService } from './shakecast/pages/dashboard/notification-dash/notification.service';
 import { SharedModule } from './shared/shared.module';
 import { MapService } from './shared/maps/map.service';
-import { ShakemapService } from './shared/maps/shakemap.service';
 import { ScreenDimmerService } from './shared/screen-dimmer/screen-dimmer.service';
 import { GroupService } from './shakecast-admin/pages/groups/group.service';
 import { UsersService } from './shakecast-admin/pages/users/users.service';
@@ -68,7 +67,6 @@ import { LoadingComponent } from './loading/loading.component';
     EarthquakeService,
     FacilityService,
     MapService,
-    ShakemapService,
     StickToTopService,
     ScreenDimmerService,
     NotificationService,
