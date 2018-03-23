@@ -1,0 +1,12 @@
+<div class="bottom-panel" [@showBottom]="showBottom">
+    <div class="toggle">
+        <div class="toggle-click" (click)="toggleBottom()" style="width:0">
+            <span class="arrow-icon" [hidden]="showBottom=='shown'"><i class="fa fa-chevron-up"></i></span>
+            <span class="arrow-icon" [hidden]="showBottom=='hidden'"><i class="fa fa-chevron-down"></i></span>
+        </div>
+    </div>
+    <div class="panel-title">{{ title }}</div>
+    
+    <ng-content>
+    </ng-content>
+</div>

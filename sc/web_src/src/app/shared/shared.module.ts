@@ -28,9 +28,12 @@ import { FacilityCountComponent } from './maps/facility-count/facility-count.com
 import { ImpactComponent } from './maps/impact/impact.component';
 import { LayerService } from './maps/layers/layer.service';
 
+import { PanelsModule } from './panels/panels.module'
+
 @NgModule({
   imports: [
-        CommonModule
+        CommonModule,
+        PanelsModule,
         ],
   declarations: [MapComponent,
                  StickToTopDirective,
@@ -55,6 +58,7 @@ import { LayerService } from './maps/layers/layer.service';
             StickToTopDirective,
             ScrollToggleDirective,
             ScreenDimmerComponent,
-            InfoComponent]
+            InfoComponent,
+            PanelsModule]
 })
 export class SharedModule { }
