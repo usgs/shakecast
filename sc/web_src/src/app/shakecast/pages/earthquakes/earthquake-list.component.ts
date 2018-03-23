@@ -7,6 +7,7 @@ import { trigger,
          style,
          animate,
          transition } from '@angular/animations';
+import { Subscription } from 'rxjs/subscription';
 
 import { Router } from '@angular/router';
 import { EarthquakeService, Earthquake } from './earthquake.service';
@@ -41,26 +42,31 @@ export class EarthquakeListComponent implements OnInit, OnDestroy {
         shakemap: false,
         facilities: false
     }
-    private subscriptions: any[] = []
+    private subs = new Subscription();
+
     constructor(private eqService: EarthquakeService,
                 private _router: Router) {}
 
     ngOnInit() {
-        this.subscriptions.push(this.eqService.earthquakeData.subscribe((eqs: any[]) => {
-            this.earthquakeData = eqs
-            if ((eqs.length > 0) && 
-                    (this._router.url != '/shakecast-admin/facilities')) {
-                this.selectEq(eqs[0]);
-            }
+        this.subs.add(this.eqService.earthquakeData.subscribe((eqs: any[]) => {
+            this.onEqs(eqs);
         }));
 
-        this.subscriptions.push(this.eqService.dataLoading.subscribe((loading: boolean) => {
+        this.subs.add(this.eqService.dataLoading.subscribe((loading: boolean) => {
             this.dataLoading = loading
         }));
     }
 
+    onEqs(eqs) {
+        if (eqs == null) {
+            this.earthquakeData = [];
+            return
+        }
+
+        this.earthquakeData = eqs
+    }
+
     plotEq(eq: Earthquake) {
-        this.eqService.mapService.clearMap();
         this.eqService.plotEq(eq)
         this.selectEq(eq);
     }
@@ -83,9 +89,7 @@ export class EarthquakeListComponent implements OnInit, OnDestroy {
     }
 
     endSubscriptions() {
-        for (var sub in this.subscriptions) {
-            this.subscriptions[sub].unsubscribe()
-        }
+        this.subs.unsubscribe();
     }
     
 }

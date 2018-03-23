@@ -1,19 +1,14 @@
-declare function require(string): string;
+import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Subscription } from 'rxjs';
 
-import { Component, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
-import { Marker } from './map.service';
 import { MapService } from './map.service'
 import { EarthquakeService } from '../../shakecast/pages/earthquakes/earthquake.service';
 import { LayerService } from './layers/layer.service'
 import { FacilityService } from '../../shakecast-admin/pages/facilities/facility.service';
-import { LoadingService } from '../../loading/loading.service';
-import { NotificationsService } from 'angular2-notifications';
 
 import * as L from 'leaflet';
-import 'leaflet-makimarkers';
-
 import * as _ from 'underscore';
-
+import 'leaflet-makimarkers';
 
 @Component({
     selector: 'my-map',
@@ -26,18 +21,16 @@ export class MapComponent implements OnInit, OnDestroy {
     private mapKey: string = null
 
     private onMap: any[] = [];
-    private subscriptions: any = [];
+    private subscriptions = new Subscription()
     private map: any;
 
     constructor(private mapService: MapService,
                 private facService: FacilityService,
-                private loadingService: LoadingService,
-                private changeDetector: ChangeDetectorRef,
                 private eqService: EarthquakeService,
                 private layerService: LayerService) {}
 
     ngOnInit() {
-        this.subscriptions.push(this.mapService.getMapKey().subscribe((key: string) => {
+        this.mapService.getMapKey().subscribe((key: string) => {
             this.mapKey = key
             this.initMap();
 
@@ -50,7 +43,8 @@ export class MapComponent implements OnInit, OnDestroy {
             for (let layer of this.layerService.needsMap) {
                 layer.map = this.map;
             }
-        }));
+
+        });
     }
 
     initMap() {
@@ -62,35 +56,37 @@ export class MapComponent implements OnInit, OnDestroy {
         let basemap = this.getBasemap();
         basemap.addTo(this.map);
 
-        this.subscriptions.push(this.eqService.selectEvent.subscribe((event) => {
+        this.subscriptions.add(this.eqService.selectEvent.subscribe((event) => {
             this.onEvent(event);
         }));
 
-        this.subscriptions.push(this.mapService.groupPoly.subscribe(group => {
+        this.subscriptions.add(this.mapService.groupPoly.subscribe(group => {
             this.onGroup(group);
         }));
 
-        this.subscriptions.push(this.layerService.nextLayer.subscribe((layer) => {
+        this.subscriptions.add(this.layerService.nextLayer.subscribe((layer) => {
             this.onLayer(layer);
         }));
 
         // subscribe to facility markers
-        this.subscriptions.push(this.mapService.facMarkers.subscribe((markers: any[]) => {
+        this.subscriptions.add(this.mapService.facMarkers.subscribe((markers: any[]) => {
             this.layerService.addFacMarkers(markers);
         }));
 
         // subscribe to REMOVING facility markers
-        this.subscriptions.push(this.mapService.removeFacMarkers.subscribe(fac => {
+        this.subscriptions.add(this.mapService.removeFacMarkers.subscribe(fac => {
             this.layerService.removeFacMarker(fac);
         }));
 
         // subscribe to clearing the map
-        this.subscriptions.push(this.mapService.clearMapNotify.subscribe(notification => {
+        this.subscriptions.add(this.mapService.clearMapNotify.subscribe(notification => {
             this.clearLayers();
         }));
     }
 
     onEvent(event) {
+        this.clearLayers();
+
         if (event === null) {
             return;
         } else {
@@ -103,6 +99,10 @@ export class MapComponent implements OnInit, OnDestroy {
     }
 
     onLayer(layer) {
+        if ((layer.layer === null) || !layer.layer) {
+            return;
+        }
+
         layer['layer'].addTo(this.map);
         this.onMap.push(layer);
 
@@ -125,10 +125,6 @@ export class MapComponent implements OnInit, OnDestroy {
 		})
     }
 
-    clearEventLayers() {
-        this.clearLayers();
-    }
-
     clearLayers() {
         /*
         Clear all layers besides basemaps
@@ -145,13 +141,7 @@ export class MapComponent implements OnInit, OnDestroy {
     }
 
     ngOnDestroy() {
-        this.endSubscriptions();
-    }
-
-    endSubscriptions() {
-        for (var sub in this.subscriptions) {
-            this.subscriptions[sub].unsubscribe();
-        }
+        this.subscriptions.unsubscribe();
     }
 
 }

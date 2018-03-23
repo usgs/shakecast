@@ -22,29 +22,52 @@ export class NotificationDashComponent implements OnInit, OnDestroy {
 
     ngOnInit() {
         this.subscriptions.push(this.eqService.selectEvent.subscribe((event: any) => {
-            this.notService.getNotifications(event);
+            this.onEvent(event);
         }));
 
         this.subscriptions.push(this.notService.notifications.subscribe(nots => {
-            this.notifications = nots;
-            this.inspGroups = '';
+            this.onNotifications(nots);
+        }));
+    }
+
+
+    onEvent(event) {
+        if (event == null) {
             this.newEventGroups = '';
-            for (var not in nots) {
-                if (nots[not]['notification_type'] == 'NEW_EVENT') {
-                    if (this.newEventGroups === '') {
-                        this.newEventGroups += nots[not]['group_name']
-                    } else {
-                        this.newEventGroups += ', ' + nots[not]['group_name']
-                    }
+            this.inspGroups = '';
+            this.notifications = [];
+
+            return;
+        }
+
+        this.notService.getNotifications(event);
+    }
+
+    onNotifications(nots) {
+        this.inspGroups = '';
+        this.newEventGroups = '';
+
+        if (nots == null) {
+            this.notifications = [];
+            return;
+        }
+
+        this.notifications = nots;
+        for (var not in nots) {
+            if (nots[not]['notification_type'] == 'NEW_EVENT') {
+                if (this.newEventGroups === '') {
+                    this.newEventGroups += nots[not]['group_name']
                 } else {
-                    if (this.inspGroups === '') {
-                        this.inspGroups += nots[not]['group_name']
-                    } else {
-                        this.inspGroups += ', ' + nots[not]['group_name']
-                    }
+                    this.newEventGroups += ', ' + nots[not]['group_name']
+                }
+            } else {
+                if (this.inspGroups === '') {
+                    this.inspGroups += nots[not]['group_name']
+                } else {
+                    this.inspGroups += ', ' + nots[not]['group_name']
                 }
             }
-        }));
+        }
     }
 
     ngOnDestroy() {

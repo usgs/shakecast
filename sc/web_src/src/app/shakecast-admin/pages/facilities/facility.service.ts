@@ -50,7 +50,6 @@ export class FacilityService {
         this.sub = this._http.get('/api/facility-data', {params: params})
             .subscribe((result: any) => {
                 this.selectedFacs = [];
-                this.shakingData.next(null);
                 this.facilityData.next(result.data);
                 this.facilityCount.next(result.count);
                 this.loadingService.finish('Facilities');

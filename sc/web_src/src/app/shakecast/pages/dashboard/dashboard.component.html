@@ -10,7 +10,11 @@
         </div>
     </div>
     <div class="panel-content">
-            <h1 class="panel-title">{{ earthquakeData.length }} Recent Earthquakes</h1>
+        
+            <h1 *ngIf="earthquakeData as eqData" 
+                    class="panel-title">
+                {{ eqData.length }} Recent Earthquakes
+            </h1>
             
             <div class="panel-scroll-container">
                 <div class="inner-shadow"></div>

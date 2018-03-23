@@ -27,7 +27,7 @@ function initIcons() {
     return impactIcons;
 }
 
-function plotFacMarker(fac: any,
+function addFacMarker(fac: any,
                         silent: boolean = false) {
 
     // create event marker and plot it
@@ -181,7 +181,6 @@ function createFacMarker(fac: any) {
     return marker
 }
 
-
 function removeFacMarker(fac: any) {
     var marker: any = this.data.facilityMarkers[fac.shakecast_id.toString()];
 
@@ -234,24 +233,12 @@ function createFacCluster(cluster: any) {
     return new L.DivIcon({ html: '<div><span>' + childCount + '</span></div>', className: 'marker-cluster' + c + ' ' + color_c, iconSize: new L.Point(40, 40) });
 }
 
-function layerGenerator() {
-    if (!this.data.impactIcons) {
-        this.data.impactIcons = this.initIcons()
-    }
-
-    this.data = {
-        facilityLayer: L.featureGroup(),
-        facilityCluster: L.markerClusterGroup({
-                            iconCreateFunction: createFacCluster
-        }),
-        facilityMarkers: {},
-        facMarker: L.marker()
-    };
-
+function layerGenerator(event, facData) {
+    
 }
 
 class FacilityLayer extends Layer {
-    addFacMarker: any = plotFacMarker;
+    addFacMarker: any = addFacMarker;
     removeFacMarker: any = removeFacMarker;
     createFacMarker: any = createFacMarker;
     initIcons: any = initIcons;
@@ -269,5 +256,8 @@ class FacilityLayer extends Layer {
 
 let fLayer = new FacilityLayer('Facility', 'facility', layerGenerator);
 
+fLayer.url = (event) => {
+    return '/api/shakemaps/' + event.event_id + '/facilities';
+}
 
 export let facilityLayer = fLayer;

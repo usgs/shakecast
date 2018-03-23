@@ -13,6 +13,7 @@ import { epicenterLayer } from './epicenter';
 import { intensityLayer } from './intensity';
 import { groupLayer } from './group';
 import { facilityLayer } from './facility';
+import { impactLayer } from './impact';
 //import { stationLayer } from './stations';
 
 
@@ -22,12 +23,12 @@ export class LayerService {
   public nextLayer = new ReplaySubject(1);
   public data: any = {};
   public waiting = new Subscription();
-  
+
   public needsKey = [facilityLayer];
   public needsMap = [facilityLayer];
 
   public layers = {
-      'event': [epicenterLayer, intensityLayer],//facilities
+      'event': [epicenterLayer, intensityLayer, impactLayer],
       'group': [groupLayer]
   }
 
@@ -111,7 +112,7 @@ export class LayerService {
 
   stopWaiting() {
     // Stop existing request for layers
-    //this.waiting.unsubscribe();
+    // this.waiting.unsubscribe();
   }
 
 }

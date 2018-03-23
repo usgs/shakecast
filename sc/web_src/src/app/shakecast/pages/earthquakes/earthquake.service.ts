@@ -5,6 +5,7 @@ import { map } from 'rxjs/operators';
 import 'rxjs/add/operator/catch';
 import { Observable } from 'rxjs/Observable';
 import { ReplaySubject } from 'rxjs/ReplaySubject';
+import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 import { Router } from '@angular/router';
 
 import { MapService } from '../../../shared/maps/map.service'
@@ -40,11 +41,11 @@ export interface filter  {
 
 @Injectable()
 export class EarthquakeService {
-    public earthquakeData = new ReplaySubject(1);
-    public dataLoading = new ReplaySubject(1);
-    public plotting = new ReplaySubject(1);
-    public showScenarioSearch = new ReplaySubject(1);
-    public selectEvent = new ReplaySubject(1);
+    public earthquakeData = new BehaviorSubject(null);
+    public dataLoading = new BehaviorSubject(null);
+    public plotting = new BehaviorSubject(null);
+    public showScenarioSearch = new BehaviorSubject(null);
+    public selectEvent = new BehaviorSubject(null);
     public current: any = []
     
     public filter: filter = {
@@ -72,31 +73,13 @@ export class EarthquakeService {
         if (this.filter) {
             this.filter = filter
         }
+
         this.dataLoading.next(true);
         const params = new HttpParams().set('filter', JSON.stringify(filter));
         this._http.get('/api/earthquake-data', {params: params})
             .subscribe(
                 (result: any) => {
-                    // build event_id arrays
-                    var current_events = []
-                    var new_events = []
-                    for (let event_idx in this.current) {
-                        current_events.push(this.current[event_idx]['event_id'])
-                    }
-                    for (let event_idx in result.data) {
-                        new_events.push(result.data[event_idx]['event_id'])
-                    }
-
-                    if (result.data.length > 0) {
-                        if ((!_.isEqual(current_events, new_events)) || (this._router.url != '/shakecast/dashboard')) {
-                            this.current = result.data
-                            this.earthquakeData.next(result.data);
-                        }
-                    } else {
-                        this.current = []
-                        this.earthquakeData.next([]);
-                        this.notService.notifications.next([]);
-                    }
+                    this.earthquakeData.next(result.data);
                     this.dataLoading.next(false);
                 },
                 (err: any) => {
@@ -207,14 +190,7 @@ export class EarthquakeService {
     
     plotEq(eq: Earthquake) {
         if (eq) {
-            // plots the eq with the relevant config to clear all data or notification
-            // this could probably be done better...
-            this.mapService.plotEq(eq, this.configs['clearOnPlot']);
-
             this.selectEvent.next(eq);
-
-            // get relevant facility info and plot it
-            this.facService.getShakeMapData(eq);
         }
         else {
             this.clearData();

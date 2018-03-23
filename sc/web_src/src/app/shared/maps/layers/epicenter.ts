@@ -3,8 +3,8 @@ import { Layer } from './layer';
 
 var epicIcon = L.icon({
     iconUrl: 'assets/epicenter.png',
-    iconSize:     [32, 32], // size of the icon
-    iconAnchor:   [16, 16], // point of the icon which will correspond to marker's location
+    iconSize:     [40, 40], // size of the icon
+    iconAnchor:   [20, 20], // point of the icon which will correspond to marker's location
     popupAnchor:  [0, 0] // point from which the popup should open relative to the iconAnchor
 });
 

@@ -17,7 +17,7 @@ import { showLeft, showRight, showBottom } from '../../../shared/animations/anim
                   '../../../shared/css/panels.css'],
     animations: [ showLeft, showRight, showBottom ]
 })
-export class FacilitiesComponent implements OnInit, OnDestroy, AfterViewInit {
+export class FacilitiesComponent implements OnInit, OnDestroy {
     private subscriptions: any = [];
     public showBottom: string = 'hidden';
     public showLeft: string = 'hidden';
@@ -28,6 +28,8 @@ export class FacilitiesComponent implements OnInit, OnDestroy, AfterViewInit {
                 private titleService: TitleService,
                 private eqService: EarthquakeService) {}
     ngOnInit() {
+        this.eqService.clearData();
+
         this.titleService.title.next('Facilities')
         this.subscriptions.push(this.facService.facilityData.subscribe((facs: any[]) => {
             if (facs.length > 0) {
@@ -35,11 +37,9 @@ export class FacilitiesComponent implements OnInit, OnDestroy, AfterViewInit {
                 this.facService.plotFac(facs[0]);
             }
         }));
+
         this.facService.getData();
         this.toggleRight();
-    }
-
-    ngAfterViewInit() {
     }
 
     toggleLeft() {
