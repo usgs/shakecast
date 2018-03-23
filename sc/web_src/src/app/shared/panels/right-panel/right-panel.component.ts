@@ -1,5 +1,8 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, Input, OnDestroy } from '@angular/core';
 import { showRight } from '../../animations/animations'
+
+import { Subscription } from 'rxjs/subscription';
+import { PanelService } from '../panel.service';
 
 @Component({
   selector: 'panels-right-panel',
@@ -8,21 +11,39 @@ import { showRight } from '../../animations/animations'
                 '../../../shared/css/panels.css'],
   animations: [ showRight ]
 })
-export class RightPanelComponent implements OnInit {
-  public showRight: string = 'shown';
-
-  constructor() { }
+export class RightPanelComponent implements OnInit, OnDestroy {
+  public show: string = 'shown';
+  private subs = new Subscription();
+  
+  constructor(private controlService: PanelService) {}
   @Input() title: string;
+  @Input() open = false;
+  @Input() control = true;
 
   ngOnInit() {
+    this.subs.add(this.controlService.controlBottom.subscribe(command => {
+      if (command) {
+        this.show = command;
+      }
+    }));
+
+    if (this.open) {
+      this.show = 'shown'
+    } else {
+      this.show = 'hidden'
+    }
   }
 
   toggleRight() {
-    if (this.showRight == 'hidden') {
-        this.showRight = 'shown';
+    if (this.show == 'hidden') {
+        this.show = 'shown';
     } else {
-        this.showRight = 'hidden'
+        this.show = 'hidden'
     }
+  }
+
+  ngOnDestroy() {
+    this.subs.unsubscribe();
   }
 
 }

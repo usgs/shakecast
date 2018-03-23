@@ -1,5 +1,8 @@
-import { Component, OnInit, Input } from '@angular/core';
-import { showLeft } from '../../animations/animations'
+import { Component, OnInit, OnDestroy, Input } from '@angular/core';
+import { Subscription } from 'rxjs/subscription';
+
+import { showLeft } from '../../animations/animations';
+import { PanelService } from '../panel.service';
 
 @Component({
   selector: 'panels-left-panel',
@@ -9,20 +12,38 @@ import { showLeft } from '../../animations/animations'
   animations: [ showLeft ]
 })
 export class LeftPanelComponent implements OnInit {
-  public showLeft = 'hidden';
-  
-  constructor() { }
+  public show = 'hidden';
+  public subs = new Subscription();
+
+  constructor(private controlService: PanelService) {}
   @Input() title: string;
+  @Input() open = false;
+  @Input() control = true;
 
   ngOnInit() {
+    this.subs.add(this.controlService.controlLeft.subscribe(command => {
+      if (command) {
+        this.show = command;
+      }
+    }));
+
+    if (this.open) {
+      this.show = 'shown'
+    } else {
+      this.show = 'hidden'
+    }
   }
 
-  toggleLeft() {
-    if (this.showLeft == 'hidden') {
-        this.showLeft = 'shown';
+  toggle() {
+    if (this.show == 'hidden') {
+        this.show = 'shown';
     } else {
-        this.showLeft = 'hidden'
+        this.show = 'hidden'
     }
+  }
+
+  ngOnDestroy() {
+    this.subs.unsubscribe();
   }
 
 }

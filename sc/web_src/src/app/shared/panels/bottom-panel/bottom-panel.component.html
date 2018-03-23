@@ -1,10 +1,12 @@
-<div class="bottom-panel" [@showBottom]="showBottom">
-    <div class="toggle">
+<div class="bottom-panel" [@showBottom]="show">
+
+    <div class="toggle" *ngIf="control">
         <div class="toggle-click" (click)="toggleBottom()" style="width:0">
-            <span class="arrow-icon" [hidden]="showBottom=='shown'"><i class="fa fa-chevron-up"></i></span>
-            <span class="arrow-icon" [hidden]="showBottom=='hidden'"><i class="fa fa-chevron-down"></i></span>
+            <span class="arrow-icon" [hidden]="show=='shown'"><i class="fa fa-chevron-up"></i></span>
+            <span class="arrow-icon" [hidden]="show=='hidden'"><i class="fa fa-chevron-down"></i></span>
         </div>
     </div>
+
     <div class="panel-title">{{ title }}</div>
     
     <ng-content>

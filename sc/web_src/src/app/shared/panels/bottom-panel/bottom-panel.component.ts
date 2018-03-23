@@ -1,5 +1,8 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, Input, OnDestroy } from '@angular/core';
 import { showBottom } from '../../animations/animations'
+
+import { Subscription } from 'rxjs/subscription';
+import { PanelService } from '../panel.service';
 
 @Component({
   selector: 'panels-bottom-panel',
@@ -8,21 +11,39 @@ import { showBottom } from '../../animations/animations'
                 '../../../shared/css/panels.css'],
   animations: [ showBottom ]
 })
-export class BottomPanelComponent implements OnInit {
-  public showBottom = 'hidden';
+export class BottomPanelComponent implements OnInit, OnDestroy {
+  public show = 'hidden';
+  private subs = new Subscription();
 
-  constructor() { }
+  constructor(private controlService: PanelService) { }
   @Input() title: string;
+  @Input() open = false;
+  @Input() control = true;
 
   ngOnInit() {
+    this.subs.add(this.controlService.controlBottom.subscribe(command => {
+      if (command) {
+        this.show = command;
+      }
+    }));
+
+    if (this.open) {
+      this.show = 'shown'
+    } else {
+      this.show = 'hidden'
+    }
   }
 
   toggleBottom() {
-    if (this.showBottom == 'hidden') {
-        this.showBottom = 'shown';
+    if (this.show == 'hidden') {
+        this.show = 'shown';
     } else {
-        this.showBottom = 'hidden'
+        this.show = 'hidden'
     }
+  }
+
+  ngOnDestroy() {
+    this.subs.unsubscribe();
   }
 
 }
