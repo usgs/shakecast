@@ -7,21 +7,15 @@ import { FacilityService, Facility } from './facility.service'
 import { EarthquakeService } from '../../../shakecast/pages/earthquakes/earthquake.service'
 import { TitleService } from '../../../title/title.service'
 
-import { showLeft, showRight, showBottom } from '../../../shared/animations/animations';
-
 @Component({
     selector: 'facilities',
     templateUrl: './facilities.component.html',
     styleUrls: ['./facilities.component.css',
                   '../../../shared/css/data-list.css',
-                  '../../../shared/css/panels.css'],
-    animations: [ showLeft, showRight, showBottom ]
+                  '../../../shared/css/panels.css']
 })
 export class FacilitiesComponent implements OnInit, OnDestroy {
     private subscriptions: any = [];
-    public showBottom: string = 'hidden';
-    public showLeft: string = 'hidden';
-    public showRight: string = 'hidden';
     public facList: any[] = [];
     
     constructor(public facService: FacilityService,
@@ -39,31 +33,6 @@ export class FacilitiesComponent implements OnInit, OnDestroy {
         }));
 
         this.facService.getData();
-        this.toggleRight();
-    }
-
-    toggleLeft() {
-        if (this.showLeft == 'hidden') {
-            this.showLeft = 'shown';
-        } else {
-            this.showLeft = 'hidden'
-        }
-    }
-
-    toggleRight() {
-        if (this.showRight == 'hidden') {
-            this.showRight = 'shown';
-        } else {
-            this.showRight = 'hidden'
-        }
-    }
-
-    toggleBottom() {
-        if (this.showBottom == 'hidden') {
-            this.showBottom = 'shown';
-        } else {
-            this.showBottom = 'hidden'
-        }
     }
 
     endSubscriptions() {

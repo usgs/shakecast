@@ -8,15 +8,13 @@ import { FacilityService } from '../../../shakecast-admin/pages/facilities/facil
 import { TitleService } from '../../../title/title.service';
 
 import { TimerObservable } from "rxjs/observable/TimerObservable";
-import { showLeft, showRight, showBottom } from '../../../shared/animations/animations';
 import { LoadingService } from '../../../loading/loading.service';
 
 @Component({
     selector: 'dashboard',
     templateUrl: './dashboard.component.html',
     styleUrls: ['./dashboard.component.css',
-                  '../../../shared/css/panels.css'],
-    animations: [ showLeft, showRight, showBottom ]
+                  '../../../shared/css/panels.css']
 })
 export class DashboardComponent implements OnInit, OnDestroy {
     public facilityData: any = [];
