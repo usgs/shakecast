@@ -465,6 +465,26 @@ def get_affected_facilities(shakemap_id):
     Session.remove()    
     return shaking_json
 
+@app.route('/api/shakemaps/<shakemap_id>/impact')
+@login_required
+def shakemap_impact(shakemap_id):
+    session = Session()
+    shakemap = (session.query(ShakeMap)
+                    .filter(ShakeMap.shakemap_id == shakemap_id)
+                    .order_by(desc(ShakeMap.shakemap_version))
+                    .limit(1)).first()
+
+    json_file = os.path.join(shakemap.directory_name, 'impact.json')
+    Session.remove()
+
+    if os.path.exists(json_file) is True:
+        with open(json_file, 'r') as f_:
+            geoJSON = f_.read()
+    else:
+        geoJSON = json.dumps({'type': 'FeatureCollection', 'features': []})
+
+    return geoJSON
+
 @app.route('/api/shakemaps/<shakemap_id>/overlay')
 @login_required
 def shakemap_overlay(shakemap_id):
