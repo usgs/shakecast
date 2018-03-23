@@ -23,10 +23,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
     public earthquakeData: any = [];
     private subscriptions: any[] = [];
 
-    public showBottom: string = 'shown';
-    public showLeft: string = 'hidden';
-    public showRight: string = 'shown';
-
     constructor(private eqService: EarthquakeService,
                 private facService: FacilityService,
                 private titleService: TitleService,
@@ -35,11 +31,12 @@ export class DashboardComponent implements OnInit, OnDestroy {
     ngOnInit() {
         this.titleService.title.next('Dashboard')
 
+        this.eqService.filter['timeframe'] = 'day'
+        this.eqService.filter['shakemap'] = true
+        this.eqService.filter['scenario'] = false
+
         this.subscriptions.push(TimerObservable.create(0, 60000)
             .subscribe((x: any) => {
-                this.eqService.filter['timeframe'] = 'day'
-                this.eqService.filter['shakemap'] = true
-                this.eqService.filter['scenario'] = false
                 this.eqService.getData(this.eqService.filter);
         }));
 
@@ -47,35 +44,10 @@ export class DashboardComponent implements OnInit, OnDestroy {
             this.earthquakeData = eqs;
             if (eqs && eqs.length > 0) {
                 this.eqService.plotEq(eqs[0])
-                this.showRight = 'shown'
             } else {
                 this.eqService.clearData();
             }
         }));
-    }
-
-    toggleLeft() {
-        if (this.showLeft == 'hidden') {
-            this.showLeft = 'shown';
-        } else {
-            this.showLeft = 'hidden'
-        }
-    }
-
-    toggleRight() {
-        if (this.showRight == 'hidden') {
-            this.showRight = 'shown';
-        } else {
-            this.showRight = 'hidden'
-        }
-    }
-
-    toggleBottom() {
-        if (this.showBottom == 'hidden') {
-            this.showBottom = 'shown';
-        } else {
-            this.showBottom = 'hidden'
-        }
     }
   
     ngOnDestroy() {
