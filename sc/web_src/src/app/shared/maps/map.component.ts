@@ -24,6 +24,8 @@ export class MapComponent implements OnInit, OnDestroy {
     private subscriptions = new Subscription()
     private map: any;
 
+    private error: any = null;
+
     constructor(private mapService: MapService,
                 private facService: FacilityService,
                 private eqService: EarthquakeService,
@@ -65,13 +67,25 @@ export class MapComponent implements OnInit, OnDestroy {
         }));
 
         this.subscriptions.add(this.layerService.nextLayer.subscribe((layer) => {
-            this.onLayer(layer);
+            if (layer != null) {
+                this.onLayer(layer);
+            }
         }));
 
+/*
         // subscribe to facility markers
         this.subscriptions.add(this.mapService.facMarkers.subscribe((markers: any[]) => {
             this.layerService.addFacMarkers(markers);
         }));
+*/
+
+        this.subscriptions.add(this.facService.select.subscribe(fac => {
+            if (fac != null) {
+                const facMarker = this.mapService.makeFacMarker(fac);
+                this.layerService.addFacMarker(facMarker);
+            }
+        }));
+
 
         // subscribe to REMOVING facility markers
         this.subscriptions.add(this.mapService.removeFacMarkers.subscribe(fac => {
@@ -112,7 +126,12 @@ export class MapComponent implements OnInit, OnDestroy {
             layers.push(this.onMap[layer].layer)
         }
         let group = L.featureGroup(layers);
-        this.map.fitBounds(group.getBounds().pad(0.1));
+
+        try {
+            this.map.fitBounds(group.getBounds().pad(0.1));
+        } catch (e) {
+            this.error = e;
+        }
     }
 
     getBasemap() {
@@ -141,6 +160,7 @@ export class MapComponent implements OnInit, OnDestroy {
     }
 
     ngOnDestroy() {
+        this.layerService.clear();
         this.subscriptions.unsubscribe();
     }
 

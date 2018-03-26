@@ -32,6 +32,7 @@ import { ScreenDimmerService } from './shared/screen-dimmer/screen-dimmer.servic
 import { GroupService } from './shakecast-admin/pages/groups/group.service';
 import { UsersService } from './shakecast-admin/pages/users/users.service';
 import { TimeService } from './shakecast-admin/pages/config/time.service';
+import { PanelService } from './shared/panels/panel.service';
 
 import { StickToTopService } from './shared/directives/stick-to-top.service';
 import { MessagingComponent } from './messaging/messaging.component';
@@ -77,7 +78,8 @@ import { LoadingComponent } from './loading/loading.component';
     MessagesService,
     CookieService,
     LoadingService,
-    NotificationsService
+    NotificationsService,
+    PanelService
   ],
   bootstrap: [ AppComponent ]
 })

@@ -2,38 +2,18 @@
     <my-map class="map"></my-map>
 </div>
 
-<div class="right-panel" [@showRight]="showRight">
-    <div class="toggle">
-        <div class="toggle-click" (click)="toggleRight()">
-            <span class="arrow-icon" [hidden]="showRight=='shown'"><i class="fa fa-chevron-left"></i></span>
-            <span class="arrow-icon" [hidden]="showRight=='hidden'"><i class="fa fa-chevron-right"></i></span>
-        </div>
-    </div>
-    <div class="panel-content">
-            <h1 class="panel-title">Scenarios</h1>
-            <div class="panel-scroll-container">
-                <div class="inner-shadow"></div>
-                <earthquake-list></earthquake-list>
-            </div>
-    </div>
-</div>
+<panels-right-panel
+        [title]="'Scenarios'">
 
-<div class="left-panel" [@showLeft]="showLeft">
-    
-    <div class="panel-content">
-            <div class="panel-scroll-container">
-                <scenario-search></scenario-search>
-            </div>
-    </div>
-</div>
+    <earthquake-list></earthquake-list>
+</panels-right-panel>
 
-<div class="bottom-panel" [@showBottom]="showBottom">
-    <div class="toggle">
-        <div class="toggle-click" (click)="toggleBottom()" style="width:0">
-            <span class="arrow-icon" [hidden]="showBottom=='shown'"><i class="fa fa-chevron-up"></i></span>
-            <span class="arrow-icon" [hidden]="showBottom=='hidden'"><i class="fa fa-chevron-down"></i></span>
-        </div>
-    </div>
+<panels-left-panel
+        [control]="false">
+    <scenario-search></scenario-search>
+</panels-left-panel>
+
+<panels-bottom-panel>
     <div class="control">
         <div *ngIf="!searchShown">
             <h3 class="button" (click)="getMore()">Download More from the Web</h3>
@@ -48,5 +28,4 @@
             <h3 class="button" (click)="userScenarios()">Back</h3>
         </div>
     </div>
-
-</div>
+</panels-bottom-panel>

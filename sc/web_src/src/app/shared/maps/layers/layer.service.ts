@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { ReplaySubject } from 'rxjs/ReplaySubject';
+import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 import { HttpClient } from '@angular/common/http';
 import { Subscription } from 'rxjs/subscription';
 
@@ -20,7 +20,7 @@ import { impactLayer } from './impact';
 @Injectable()
 export class LayerService {
   public error: any = null;
-  public nextLayer = new ReplaySubject(1);
+  public nextLayer = new BehaviorSubject(null);
   public data: any = {};
   public waiting = new Subscription();
 
@@ -95,19 +95,20 @@ export class LayerService {
   }
 
   /* Facility layers require more options */
-  addFacMarkers(markers) {
+  addFacMarker(marker) {
     this.loadingService.add('Facility Markers');
 
-    var silent: boolean = (markers.length > 1)
-    for (var mark in markers) {
-        facilityLayer.addFacMarker(markers[mark], silent);
-    }
+    facilityLayer.addFacMarker(marker);
 
     this.loadingService.finish('Facility Markers');
   }
 
   removeFacMarker(facility) {
     facilityLayer.removeFacMarker(facility);
+  }
+
+  clear() {
+    facilityLayer.clear();
   }
 
   stopWaiting() {

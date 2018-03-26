@@ -4,7 +4,8 @@
 
 <ng-container *ngIf="earthquakeData as eqData">
     <panels-right-panel
-        [title]="eqData.length + ' Recent Earthquakes'">
+        [title]="eqData.length + ' Recent Earthquakes'"
+        [open]="true">
 
         <earthquake-list></earthquake-list>
 
@@ -13,7 +14,7 @@
 
 
 <panels-left-panel
-    [title]="Notifications">
+    [title]="'Notifications'">
     <info [text]="'A list of notifications sent to specific groups for
                                                                 this event. Double check your notification group settings 
                                                                 if you should have received a notification for this event, 

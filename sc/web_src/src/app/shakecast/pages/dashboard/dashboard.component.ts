@@ -58,5 +58,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
         for (var sub in this.subscriptions) {
             this.subscriptions[sub].unsubscribe()
         }
+
+        this.eqService.selectEvent.next(null);
     }
 }

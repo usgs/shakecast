@@ -34,7 +34,7 @@ export class RightPanelComponent implements OnInit, OnDestroy {
     }
   }
 
-  toggleRight() {
+  toggle() {
     if (this.show == 'hidden') {
         this.show = 'shown';
     } else {

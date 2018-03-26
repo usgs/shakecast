@@ -19,7 +19,6 @@ import * as _ from 'underscore';
 
 @Component({
   selector: 'facility-list',
-  host: {'(window:scroll)': 'setScrollEvent($event)'},
   templateUrl: './facility-list.component.html',
   styleUrls: ['./facility-list.component.css',
                 '../../../shared/css/data-list.css'],
@@ -43,7 +42,6 @@ export class FacilityListComponent implements OnInit, OnDestroy {
     public selectedFacs: any = [];
     public filter: filter = {};
     public initPlot: boolean = false;
-    private didScroll: boolean = false;
     private subscriptions: any[] = [];
     constructor(public facService: FacilityService,
                 private element: ElementRef,
@@ -51,6 +49,11 @@ export class FacilityListComponent implements OnInit, OnDestroy {
 
     ngOnInit() {
         this.subscriptions.push(this.facService.facilityData.subscribe(facs => {
+            if (facs === null) {
+                this.facilityData = null;
+                return
+            }
+
             this.facilityData = facs;
 
             // only display the first 50 facs
@@ -59,7 +62,6 @@ export class FacilityListComponent implements OnInit, OnDestroy {
             if (this.selectedFacs.length === 0) {
                 // add a facility if the array is empty
                 this.facService.selectedFacs = this.selectedFacs;
-                this.facService.hideFacInfo();
             }
 
             if ((this.facilityData.length > 0) && (this._router.url === '/shakecast-admin/facilities')) {
@@ -68,14 +70,15 @@ export class FacilityListComponent implements OnInit, OnDestroy {
                     this.facService.selectedFacs.push(this.facilityData[0]);
                 }
 
-                this.facService.setFacInfo(this.facilityData[0]);
                 this.facilityData[0].selected = 'yes';
             }
         }));
 
         this.subscriptions.push(this.facService.facilityDataUpdate.subscribe((facs: any) => {
-            this.facilityData = this.facilityData.concat(facs);
-            this.shownFacilityData = this.facilityData;
+            if (facs != null) {
+                this.facilityData = this.facilityData.concat(facs);
+                this.shownFacilityData = this.facilityData;
+            }
         }));
 
         this.subscriptions.push(this.facService.selection.subscribe(select => {
@@ -89,18 +92,6 @@ export class FacilityListComponent implements OnInit, OnDestroy {
             this.facService.selectedFacs = this.selectedFacs;
         }));
 
-        this.subscriptions.push(this.facService.loadingData.subscribe((loading: boolean) => {
-            this.loadingData = loading
-        }));
-
-    }
-    
-    checkScroll() {
-        console.log('check scroll position')
-    }
-
-    setScrollEvent(e: Event) {
-        this.didScroll = true;
     }
 
     clickFac(fac: Facility) {
@@ -112,7 +103,6 @@ export class FacilityListComponent implements OnInit, OnDestroy {
 
         if (fac.selected === 'yes') {
             // add it to the list
-            this.facService.setFacInfo(fac);
             this.selectedFacs.push(fac);
             this.plotFac(fac);
         } else {
@@ -123,14 +113,6 @@ export class FacilityListComponent implements OnInit, OnDestroy {
         }
 
         this.facService.selectedFacs = this.selectedFacs;
-    }
-
-    plotByIndex(index: number) {
-        if (this.facilityData[index]) {
-            this.clickFac(this.facilityData[index]);
-        } else {
-            this.initPlot = true;
-        }
     }
 
     selectAll() {
@@ -158,7 +140,7 @@ export class FacilityListComponent implements OnInit, OnDestroy {
     }
 
     plotFac(fac: Facility) {
-        this.facService.plotFac(fac);
+        this.facService.select.next(fac);
     }
 
     loadMore() {

@@ -233,6 +233,17 @@ function createFacCluster(cluster: any) {
     return new L.DivIcon({ html: '<div><span>' + childCount + '</span></div>', className: 'marker-cluster' + c + ' ' + color_c, iconSize: new L.Point(40, 40) });
 }
 
+function clear() {
+    this.data = {
+        facilityLayer: L.featureGroup(),
+        facilityCluster: L.markerClusterGroup({
+                            iconCreateFunction: createFacCluster
+        }),
+        facilityMarkers: {},
+        facMarker: L.marker()
+    };
+}
+
 function layerGenerator(event, facData) {
     
 }
@@ -243,6 +254,7 @@ class FacilityLayer extends Layer {
     createFacMarker: any = createFacMarker;
     initIcons: any = initIcons;
     map: any = null;
+    clear: any = clear;
 
     data: any = {
         facilityLayer: L.featureGroup(),
@@ -252,6 +264,8 @@ class FacilityLayer extends Layer {
         facilityMarkers: {},
         facMarker: L.marker()
     };
+
+
 }
 
 let fLayer = new FacilityLayer('Facility', 'facility', layerGenerator);

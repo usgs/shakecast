@@ -11,8 +11,7 @@ import { TitleService } from '../../../title/title.service'
     selector: 'facilities',
     templateUrl: './facilities.component.html',
     styleUrls: ['./facilities.component.css',
-                  '../../../shared/css/data-list.css',
-                  '../../../shared/css/panels.css']
+                  '../../../shared/css/data-list.css']
 })
 export class FacilitiesComponent implements OnInit, OnDestroy {
     private subscriptions: any = [];
@@ -26,13 +25,17 @@ export class FacilitiesComponent implements OnInit, OnDestroy {
 
         this.titleService.title.next('Facilities')
         this.subscriptions.push(this.facService.facilityData.subscribe((facs: any[]) => {
-            if (facs.length > 0) {
+            if ((facs != null) && (facs.length > 0)) {
                 this.facList = facs;
-                this.facService.plotFac(facs[0]);
+                this.facService.select.next(facs[0]);
             }
         }));
 
         this.facService.getData();
+    }
+
+    plotFac(fac) {
+        this.facService.select.next(fac);
     }
 
     endSubscriptions() {
@@ -45,6 +48,7 @@ export class FacilitiesComponent implements OnInit, OnDestroy {
         this.facService.clearMap();
         this.facService.facilityData.next([]);
         this.facService.facilityCount.next([]);
+        this.facService.select.next(null);
         this.endSubscriptions()
     }
 }

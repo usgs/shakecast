@@ -34,7 +34,7 @@ export class BottomPanelComponent implements OnInit, OnDestroy {
     }
   }
 
-  toggleBottom() {
+  toggle() {
     if (this.show == 'hidden') {
         this.show = 'shown';
     } else {

@@ -74,13 +74,11 @@ export class EarthquakeService {
             this.filter = filter
         }
 
-        this.dataLoading.next(true);
         const params = new HttpParams().set('filter', JSON.stringify(filter));
         this._http.get('/api/earthquake-data', {params: params})
             .subscribe(
                 (result: any) => {
                     this.earthquakeData.next(result.data);
-                    this.dataLoading.next(false);
                 },
                 (err: any) => {
                     this.toastService.alert('Event Error', 'Unable to retreive some event information')

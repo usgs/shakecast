@@ -31,7 +31,7 @@ export class MapService {
         this.eqMarker.next(eqMarker);
     }
 
-    plotFac(fac: Facility,
+    makeFacMarker(fac: Facility,
             clear: boolean = false) {
         var marker = this.makeMarker(fac);
         marker['type'] = 'facility';
@@ -42,11 +42,10 @@ export class MapService {
         marker.lat = (marker['lat_min'] + marker['lat_max']) / 2;
         marker.lon = (marker['lon_min'] + marker['lon_max']) / 2;
 
-        this.facMarkers.next([marker]);
-        this.center.next(marker);
+        return marker;
     }
 
-    plotFacs(facs: Facility[],
+    makeFacMarkers(facs: Facility[],
              clear: boolean = true) {
         var markers = Array(facs.length);
         for (var fac_id in facs) {
