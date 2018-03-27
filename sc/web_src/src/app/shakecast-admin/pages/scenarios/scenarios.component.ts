@@ -24,20 +24,26 @@ export class ScenariosComponent implements OnInit, OnDestroy {
     ngOnInit() {
         this.titleService.title.next('Scenarios');
 
-        this.subscriptions.push(this.eqService.earthquakeData.subscribe(eqs => {
-            this.eqService.plotEq(eqs[0])
-        }));
-
         this.subscriptions.push(this.eqService.showScenarioSearch.subscribe((show: boolean) => {
             this.searchShown = show;
         }));
 
+        this.subscriptions.push(this.eqService.earthquakeData.subscribe(eqs => {
+            this.onEqData(eqs);
+        }));
+
         this.eqService.getData({'scenario': true});
-        this.eqService.showScenarioSearch.next(false);
+    }
+
+    onEqData(eqs) {
+        if (eqs == null) {
+            return;
+        }
+
+        this.eqService.selectEvent.next(eqs[0]);
     }
 
     getMore() {
-        this.eqService.showScenarioSearch.next(true);
         this.eqService.earthquakeData.next([]);
         this.panelService.controlLeft.next('shown')
     }
