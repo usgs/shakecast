@@ -5,16 +5,11 @@ import { Subscription } from 'rxjs/subscription';
 
 import { LoadingService } from '../../../loading/loading.service';
 
-//import { mmiLayer } from './cont_mmi';
-//import { miLayer } from './cont_mi';
-//import { pgaLayer } from './cont_pga';
-//import { pgvLayer } from './cont_pgv';
 import { epicenterLayer } from './epicenter';
 import { intensityLayer } from './intensity';
 import { groupLayer } from './group';
 import { facilityLayer } from './facility';
 import { impactLayer } from './impact';
-//import { stationLayer } from './stations';
 
 
 @Injectable()
@@ -99,6 +94,7 @@ export class LayerService {
     this.loadingService.add('Facility Markers');
 
     facilityLayer.addFacMarker(marker);
+
 
     this.loadingService.finish('Facility Markers');
   }

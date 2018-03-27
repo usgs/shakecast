@@ -83,6 +83,9 @@ export class MapComponent implements OnInit, OnDestroy {
             if (fac != null) {
                 const facMarker = this.mapService.makeFacMarker(fac);
                 this.layerService.addFacMarker(facMarker);
+
+                this.map.panTo(new L.LatLng(facMarker.lat,
+                                                facMarker.lon));
             }
         }));
 
