@@ -135,6 +135,11 @@ export class MapComponent implements OnInit, OnDestroy {
         } catch (e) {
             this.error = e;
         }
+
+        // open epicenter popup
+        if (layer.id == 'epicenter') {
+            layer.layer.openPopup();
+        }
     }
 
     getBasemap() {
