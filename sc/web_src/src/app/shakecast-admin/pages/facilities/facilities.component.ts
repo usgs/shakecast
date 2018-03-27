@@ -49,6 +49,8 @@ export class FacilitiesComponent implements OnInit, OnDestroy {
         this.facService.facilityData.next([]);
         this.facService.facilityCount.next([]);
         this.facService.select.next(null);
+        this.eqService.selectEvent.next(null);
+        this.eqService.earthquakeData.next(null);
         this.endSubscriptions()
     }
 }
