@@ -50,10 +50,9 @@ export class DashboardComponent implements OnInit, OnDestroy {
         if (!_.isEqual(this.earthquakeData, eqs)) {
             this.earthquakeData = eqs;
             if (eqs && eqs.length > 0) {
-                this.eqService.selectEvent.next(eqs[0]);
 
-                // keep a local copy of eqData to check against
-                this.earthquakeData = eqs;
+                // select new event if it just showed up
+                this.eqService.selectEvent.next(eqs[0]);
             }
         }
     }
