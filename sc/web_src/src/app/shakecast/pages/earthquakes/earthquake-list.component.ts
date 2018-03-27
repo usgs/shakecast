@@ -55,6 +55,10 @@ export class EarthquakeListComponent implements OnInit, OnDestroy {
         this.subs.add(this.eqService.dataLoading.subscribe((loading: boolean) => {
             this.dataLoading = loading
         }));
+
+        this.subs.add(this.eqService.selectEvent.subscribe(event => {
+            this.onSelectEvent(event);
+        }));
     }
 
     onEqs(eqs) {
@@ -66,17 +70,15 @@ export class EarthquakeListComponent implements OnInit, OnDestroy {
         this.earthquakeData = eqs
     }
 
+    onSelectEvent(event) {
+        this.selected = event;
+    }
+
     plotEq(eq: Earthquake) {
-        this.eqService.plotEq(eq)
         this.selectEq(eq);
     }
 
     selectEq(eq: Earthquake) {
-        if (this.selected) {
-            this.selected['selected'] = 'false';
-            this.eqService.selectEvent.next(null);
-        }
-        eq['selected'] = 'true';
         this.selected = eq;
         this.eqService.selected = eq;
         this.eqService.selectEvent.next(eq);
