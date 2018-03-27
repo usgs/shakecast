@@ -10,6 +10,8 @@ import { TitleService } from '../../../title/title.service';
 import { TimerObservable } from "rxjs/observable/TimerObservable";
 import { LoadingService } from '../../../loading/loading.service';
 
+import * as _ from 'underscore';
+
 @Component({
     selector: 'dashboard',
     templateUrl: './dashboard.component.html',
@@ -39,26 +41,33 @@ export class DashboardComponent implements OnInit, OnDestroy {
         }));
 
         this.subscriptions.push(this.eqService.earthquakeData.subscribe((eqs: any[]) => {
-            this.earthquakeData = eqs;
-            if (eqs && eqs.length > 0) {
-                this.eqService.plotEq(eqs[0])
-            } else {
-                this.eqService.clearData();
-            }
+            this.onEqData(eqs);
         }));
     }
-  
-    ngOnDestroy() {
-        this.eqService.earthquakeData.next([]);
-        this.eqService.clearData();
-        this.endSubscriptions()
+
+    onEqData(eqs) {
+        // if the list is updated, show it
+        if (!_.isEqual(this.earthquakeData, eqs)) {
+            this.earthquakeData = eqs;
+            if (eqs && eqs.length > 0) {
+                this.eqService.selectEvent.next(eqs[0]);
+
+                // keep a local copy of eqData to check against
+                this.earthquakeData = eqs;
+            }
+        }
     }
 
     endSubscriptions() {
         for (var sub in this.subscriptions) {
             this.subscriptions[sub].unsubscribe()
         }
+    }
 
+    ngOnDestroy() {
+        this.eqService.earthquakeData.next([]);
         this.eqService.selectEvent.next(null);
+        this.eqService.clearData();
+        this.endSubscriptions()
     }
 }

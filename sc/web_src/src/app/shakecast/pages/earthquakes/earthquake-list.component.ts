@@ -14,6 +14,8 @@ import { EarthquakeService, Earthquake } from './earthquake.service';
 
 import { filter } from './earthquake.service';
 
+import * as _ from 'underscore';
+
 @Component({
     selector: 'earthquake-list',
     templateUrl: './earthquake-list.component.html',
@@ -67,7 +69,10 @@ export class EarthquakeListComponent implements OnInit, OnDestroy {
             return
         }
 
-        this.earthquakeData = eqs
+        // update data if required
+        if (!_.isEqual(this.earthquakeData, eqs)) {
+            this.earthquakeData = eqs
+        }
     }
 
     onSelectEvent(event) {

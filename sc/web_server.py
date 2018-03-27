@@ -491,6 +491,13 @@ def shakemap_impact(shakemap_id):
                     .filter(ShakeMap.shakemap_id == shakemap_id)
                     .order_by(desc(ShakeMap.shakemap_version))
                     .limit(1)).first()
+    
+    emptyJSON = json.dumps({'type': 'FeatureCollection', 'features': []})
+    
+    if shakemap is None:
+        # This shakemap does not exist
+        # return an empty feature
+        return emptyJSON
 
     json_file = os.path.join(shakemap.directory_name, 'impact.json')
     Session.remove()
@@ -499,7 +506,7 @@ def shakemap_impact(shakemap_id):
         with open(json_file, 'r') as f_:
             geoJSON = f_.read()
     else:
-        geoJSON = json.dumps({'type': 'FeatureCollection', 'features': []})
+        geoJSON = emptyJSON
 
     return geoJSON
 

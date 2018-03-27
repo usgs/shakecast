@@ -51,6 +51,7 @@ export class GroupListComponent implements OnInit, OnDestroy {
                 this.selected['selected'] = true;
             }
         }));
+
         this.subscriptions.push(this.groupService.userGroupData.subscribe((data: any) => {
             this.userGroupData = data;
             for (var group in this.userGroupData) {
@@ -71,21 +72,6 @@ export class GroupListComponent implements OnInit, OnDestroy {
             if (this.userGroupData.length > 0) {
                 this.groupService.plotGroup(this.userGroupData[0])
             }
-        }));
-/*
-        this.subscriptions.push(this.groupService.selection.subscribe(select => {
-            if (select === 'all') {
-                this.selectAll();
-            } else if (select === 'none') {
-                this.unselectAll();
-            } else if (select === 'delete') {
-            }
-
-            this.facService.selectedFacs = this.selectedFacs;
-        }));
-*/
-        this.subscriptions.push(this.groupService.loadingData.subscribe((loading: any) => {
-            this.loadingData = loading
         }));
 
         this.groupService.getData(this.filter);
