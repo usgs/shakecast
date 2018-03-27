@@ -27,7 +27,7 @@ export class FacilityService {
     public facilityDataUpdate = new BehaviorSubject(null);
     public facilityInfo = new BehaviorSubject(null);
     public facilityShaking = new BehaviorSubject(null);
-    public shakingData = new BehaviorSubject(null);
+    public impactSummary = new BehaviorSubject(null);
     public selection = new BehaviorSubject(null);
     public select = new BehaviorSubject(null);
     public selectedFacs: Facility[] = [];
@@ -65,29 +65,13 @@ export class FacilityService {
             })
     }
 
-    getShakeMapData(event: any) {
-        /* get list of facilities affected by a specific event */
-        this.loadingService.add('Facilities');
-        if (this.sub) {
-            this.sub.unsubscribe();
-        }
-        this.sub = this._http.get('/api/shakemaps/' + event.event_id + '/facilities')
+    getImpactSummary(event_id: string) {
+        this.sub = this._http.get('/api/shakemaps/' + event_id + '/impact-summary')
             .subscribe((result: any) => {
+                this.impactSummary.next(result);
 
-                if (this._router.url == '/shakecast/dashboard') {
-                    this.facilityData.next(result.facilities);
-                }
-
-                this.shakingData.next(result.alert);
-                //this.unselectAll();
-
-                if (result.facilities.length > 0) {
-                    this.mapService.plotFacs(result.facilities);
-                }
-                
-                this.loadingService.finish('Facilities');
             }, (error: any) => {
-                this.loadingService.finish('Facilities');
+                this.impactSummary.next(null);
             })
     }
 
