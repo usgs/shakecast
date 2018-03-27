@@ -435,11 +435,6 @@ def get_affected_facilities(shakemap_id):
                 .all())
     
     fac_dicts = []
-    alert = {'gray': 0,
-             'green': 0,
-             'yellow': 0,
-             'orange': 0,
-             'red': 0}
     if sms:
         sm = sms[0]
         fac_shaking = sm.facility_shaking
@@ -455,15 +450,38 @@ def get_affected_facilities(shakemap_id):
             fac_dicts[i] = fac_dict
             i += 1
 
-            # record number of facs at each alert level
-            alert[fac_dict['shaking']['alert_level']] += 1
     
-    shaking_data = {'alert': alert, 'facilities': fac_dicts, 'types': {}}
+    shaking_data = {'facilities': fac_dicts, 'types': {}}
 
     shaking_json = json.dumps(shaking_data, cls=AlchemyEncoder)
     
     Session.remove()    
     return shaking_json
+
+@app.route('/api/shakemaps/<shakemap_id>/impact-summary')
+@login_required
+def impact_summary(shakemap_id):
+    session = Session()
+    sms = (session.query(ShakeMap)
+                .filter(ShakeMap.shakemap_id == shakemap_id)
+                .order_by(ShakeMap.shakemap_version.desc())
+                .all())
+    
+    impact_sum = {'gray': 0,
+             'green': 0,
+             'yellow': 0,
+             'orange': 0,
+             'red': 0}
+    if sms:
+        sm = sms[0]
+        fac_shaking = sm.facility_shaking
+        
+        for s in fac_shaking:
+            # record number of facs at each alert level
+            impact_sum[s.alert_level] += 1
+    Session.remove()
+
+    return json.dumps(impact_sum)
 
 @app.route('/api/shakemaps/<shakemap_id>/impact')
 @login_required
