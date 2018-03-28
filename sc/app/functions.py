@@ -339,8 +339,7 @@ def makeGeoJSONDict(facility, fac_shaking):
     lon = (facility.lon_max + facility.lon_min) / 2
 
     jsonDict = {
-        'type': 'Feature', 
-        'properties': {}, 
+        'type': 'Feature',
         'geometry': {'type': 'Point', 
                         'coordinates': [lon, lat]}
     }
