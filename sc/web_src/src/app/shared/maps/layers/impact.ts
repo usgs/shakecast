@@ -16,7 +16,89 @@ var myStyle = {
 };
 
 function generatePopup(fac) {
-    return fac.facility_name
+    const selectShakingTh = "border-top:2px dashed black;border-left:2px dashed black;border-right:2px dashed black;"
+
+    const selectShakingTd = "border-bottom:2px dashed black;border-left:2px dashed black;border-right:2px dashed black;"
+
+    const selectShaking = 'border:2px dashed black'
+
+    const shakingStyles = 'top:100%;transform:translateY(-100%);position:relative;'
+
+    const popup = `
+    <div style="min-width:300px;text-align:center">
+        <h3>${fac.facility_name}</h3>
+        <p>${fac.description ? fac.description : 'No Description'}</p>
+        <p>${fac.lat}, ${fac.lon}</p>
+
+        <div style="height:4em;width:80%;left:10%;position:relative;display:flex">
+            <div style="height:100%;width:18%;margin-left:2%"
+                title="${fac.shaking.gray.toFixed(2)}%">
+                <div style="${shakingStyles}background:grey;height:${fac.shaking.gray + 5}%;${fac.shaking.alert_level === 'gray' ? selectShaking : ''}"></div>
+            </div>
+            <div style="height:100%;width:18%;margin-left:2%"
+                title="${fac.shaking.green.toFixed(2)}%">
+                <div style="${shakingStyles}background:green;height:${fac.shaking.green + 5}%;${fac.shaking.alert_level === 'green' ? selectShaking : ''}"></div>
+            </div>
+            <div style="height:100%;width:18%;margin-left:2%"
+                title="${fac.shaking.yellow.toFixed(2)}%">
+                <div style="${shakingStyles}background:gold;height:${fac.shaking.yellow + 5}%;${fac.shaking.alert_level === 'yellow' ? selectShaking : ''}"></div>
+            </div>
+            <div style="height:100%;width:18%;margin-left:2%"
+                title="${fac.shaking.orange.toFixed(2)}%">
+                <div style="${shakingStyles}background:orange;height:${fac.shaking.orange + 5}%;${fac.shaking.alert_level === 'orange' ? selectShaking : ''}"></div>
+            </div>
+            <div style="height:100%;width:18%;margin-left:2%"
+                title="${fac.shaking.red.toFixed(2)}%">
+                <div style="${shakingStyles}background:red;height:${fac.shaking.red + 5}%;${fac.shaking.alert_level === 'red' ? selectShaking : ''}"></div>
+            </div>
+        </div>
+
+        <table style="width:100%;padding:5px;margin-top: 5px;background:rgba(0,0,0,.05);border-radius: 5px;">
+            <tr>
+                <th style="padding:2px;${ fac.shaking.metric === 'MMI' ? selectShakingTh : '' }">
+                    ${fac.shaking.mmi ? fac.shaking.mmi : '-'}
+                </th>
+                <th style="padding:2px;${ fac.shaking.metric === 'PGA' ? selectShakingTh : '' }">
+                    ${fac.shaking.pga ? fac.shaking.pga : '-'}
+                </th>
+                <th style="padding:2px;${ fac.shaking.metric === 'PGV' ? selectShakingTh : '' }">
+                    ${fac.shaking.pgv ? fac.shaking.pgv : '-'}
+                </th>
+                <th style="padding:2px;${ fac.shaking.metric === 'PSA03' ? selectShakingTh : '' }">
+                    ${fac.shaking.psa03 ? fac.shaking.psa03 : '-'}
+                </th>
+                <th style="padding:2px;${ fac.shaking.metric === 'PSA10' ? selectShakingTh : '' }">
+                    ${fac.shaking.psa10 ? fac.shaking.psa10 : '-'}
+                </th>
+                <th style="padding:2px;${ fac.shaking.metric === 'PSA30' ? selectShakingTh : '' }">
+                    ${fac.shaking.psa30 ? fac.shaking.psa30 : '-'}
+                </th>
+            </tr>
+            <tr>
+                <td style="${ fac.shaking.metric === 'MMI' ? selectShakingTd : '' }">
+                    MMI
+                </td>
+                <td style="${ fac.shaking.metric === 'PGA' ? selectShakingTd : '' }">
+                    PGA
+                </td>
+                <td style="${ fac.shaking.metric === 'PGV' ? selectShakingTd : '' }">
+                    PGV
+                </td>
+                <td style="${ fac.shaking.metric === 'PSA03' ? selectShakingTd : '' }">
+                    SA(0.3 s)
+                </td>
+                <td style="${ fac.shaking.metric === 'PSA10' ? selectShakingTd : '' }">
+                    SA(1.0 s)
+                </td>
+                <td style="${ fac.shaking.metric === 'PSA30' ? selectShakingTd : '' }">
+                    SA(3.0 s)
+                </td>
+            </tr>
+        </table>
+    </div>
+    `;
+
+    return popup;
 }
 
 function onEachFeature(feature, layer) {
