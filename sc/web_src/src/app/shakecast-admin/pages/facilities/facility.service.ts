@@ -44,6 +44,10 @@ export class FacilityService {
         if (this.sub) {
             this.sub.unsubscribe();
         }
+        
+        // Unselect current facilities
+        this.unselectAll();
+
         this.loadingService.add('Facilities');
         let params = new HttpParams().set('filter', JSON.stringify(filter))
         this.sub = this._http.get('/api/facility-data', {params: params})
