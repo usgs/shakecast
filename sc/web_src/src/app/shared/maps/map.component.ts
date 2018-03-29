@@ -52,14 +52,14 @@ export class MapComponent implements OnInit, OnDestroy {
     }
 
     initMap() {
-        var this_: any = this;
         this.map = L.map('map', {
             scrollWheelZoom: false
         }).setView([51.505, -0.09], 8);
 
+        // create basemap
         let basemap = this.getBasemap();
-        
         basemap.addTo(this.map);
+
         this.layerControl = L.control.layers({'Basemap': basemap}, null).addTo(this.map);
 
         this.subscriptions.add(this.eqService.selectEvent.subscribe((event) => {
