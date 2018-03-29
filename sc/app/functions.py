@@ -345,9 +345,9 @@ def makeGeoJSONDict(facility, fac_shaking):
     }
 
     jsonDict['properties'] = {
-        'facilityName': facility.name,
+        'facility_name': facility.name,
         'description': facility.description,
-        'facilityType': facility.facility_type,
+        'facility_type': facility.facility_type,
         'lat': lat,
         'lon': lon,
         'shaking': fac_shaking
