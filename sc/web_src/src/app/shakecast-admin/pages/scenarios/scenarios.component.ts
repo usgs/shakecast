@@ -36,7 +36,7 @@ export class ScenariosComponent implements OnInit, OnDestroy {
     }
 
     onEqData(eqs) {
-        if (eqs == null) {
+        if ( (!eqs) || (eqs == null) || (eqs.length === 0)) {
             return;
         }
 
@@ -44,13 +44,15 @@ export class ScenariosComponent implements OnInit, OnDestroy {
     }
 
     getMore() {
-        this.eqService.earthquakeData.next([]);
+        this.eqService.earthquakeData.next(null);
+        this.searchShown = true;
         this.panelService.controlLeft.next('shown')
     }
 
     userScenarios() {
         this.eqService.showScenarioSearch.next(false);
         this.eqService.getData({'scenario': true});
+        this.searchShown = false;
         this.panelService.controlLeft.next('hidden')
     }
 
@@ -60,9 +62,8 @@ export class ScenariosComponent implements OnInit, OnDestroy {
 
     ngOnDestroy() {
         this.endSubscriptions();
-
-        // clear map
-        this.eqService.clearData();
+        this.eqService.selectEvent.next(null);
+        this.eqService.earthquakeData.next(null);
     }
 
     endSubscriptions() {
@@ -70,7 +71,6 @@ export class ScenariosComponent implements OnInit, OnDestroy {
             this.subscriptions[sub].unsubscribe();
         }
 
-        this.eqService.selectEvent.next(null);
     }
     
 }
