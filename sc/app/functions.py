@@ -1361,36 +1361,43 @@ def smtp_test():
     m.send(msg=msg, you=you)
 
 def system_test(add_tests=None):
-    results = {'pass': [], 'fail': [], 'errors': []}
-    tests = [{'name': 'url', 'test': url_test}, 
-             {'name': 'db', 'test': db_test},
-             {'name': 'smtp', 'test': smtp_test}]
+    tests = [{'name': 'Access to USGS web', 'test': url_test}, 
+             {'name': 'Database read/write', 'test': db_test},
+             {'name': 'Sending test email', 'test': smtp_test}]
 
+    # additional tests
     if add_tests is not None:
         tests += add_tests
 
+    results = ''
+    success_message = '{0}: Passed'
+    failure_message = '{0}: Failed (Error - {1})'
+    success = True
     for test in tests:
         try:
             test['test']()
-            results['pass'] += [test['name']]
+            result = success_message.format(test['name'])
         except Exception as e:
-            results['fail'] += [test['name']]
-            results['errors'] += [str(e)]
+            success = False
+            result = failure_message.format(test['name'], str(e))
+        
+        if results:
+            results += '\n{}'.format(result)
+        else:
+            results = result
 
     Session.remove()
 
     title = 'Tests Passed'
-    success = True
-    if len(results['fail']) > 0:
+    if success is False:
         title = 'Some Tests Failed'
-        success = False
     
     data = {'status': 'finished',
             'results': results,
             'message': {'from': 'system_test',
                         'title': title,
-                        'message': str(results),
+                        'message': results,
                         'success': success},
-            'log': 'System Test: ' + str(results)}
+            'log': 'System Test: ' + results}
 
     return data

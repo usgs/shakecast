@@ -1,8 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Http, 
-         Response,
-         RequestOptions, 
-         URLSearchParams} from '@angular/http';
+import { HttpClient, HttpParams} from '@angular/common/http';
 import { HttpHeaders } from '@angular/common/http';
 import { map } from 'rxjs/operators';
 import 'rxjs/add/operator/catch';
@@ -15,15 +12,12 @@ export class ConfigService {
     public loadingData = new ReplaySubject(1);
     public configs = new ReplaySubject(1);
 
-    constructor(private _http: Http,
+    constructor(private http: HttpClient,
                 private notService: NotificationsService) {}
 
     getConfigs() {
         this.loadingData.next(true)
-        this._http.get('/admin/api/configs')
-            .pipe(
-                map((result: Response) => result.json())
-            )
+        this.http.get('/admin/api/configs')
             .subscribe((result: any) => {
                 this.configs.next(result);
                 this.loadingData.next(false)
@@ -31,7 +25,7 @@ export class ConfigService {
     }
 
     saveConfigs(newConfigs: any) {
-        this._http.post('/admin/api/configs', 
+        this.http.post('/admin/api/configs', 
                         {configs: newConfigs}
         ).subscribe((result: any) => {
             this.notService.success('Success!', 'New Configurations Saved');
@@ -40,10 +34,7 @@ export class ConfigService {
 
     systemTest() {
         this.notService.success('System Test', 'System test starting...');
-        this._http.get('/admin/system-test')
-            .pipe(
-                map((result: Response) => result.json())
-            )
+        this.http.get('/admin/system-test')
             .subscribe((result: boolean) => {
                 if (!result) {
                     this.notService.error('System Test Failed', 'Unable to reach the ShakeCast server')
