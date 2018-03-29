@@ -24,6 +24,8 @@ export class MapComponent implements OnInit, OnDestroy {
     private subscriptions = new Subscription()
     private map: any;
 
+    private layerControl = L.control;
+
     private error: any = null;
 
     constructor(private mapService: MapService,
@@ -56,7 +58,9 @@ export class MapComponent implements OnInit, OnDestroy {
         }).setView([51.505, -0.09], 8);
 
         let basemap = this.getBasemap();
+        
         basemap.addTo(this.map);
+        this.layerControl = L.control.layers({'Basemap': basemap}, null).addTo(this.map);
 
         this.subscriptions.add(this.eqService.selectEvent.subscribe((event) => {
             this.onEvent(event);
@@ -71,13 +75,6 @@ export class MapComponent implements OnInit, OnDestroy {
                 this.onLayer(layer);
             }
         }));
-
-/*
-        // subscribe to facility markers
-        this.subscriptions.add(this.mapService.facMarkers.subscribe((markers: any[]) => {
-            this.layerService.addFacMarkers(markers);
-        }));
-*/
 
         this.subscriptions.add(this.facService.select.subscribe(fac => {
             if (fac != null) {
@@ -140,6 +137,9 @@ export class MapComponent implements OnInit, OnDestroy {
         if (layer.id == 'epicenter') {
             layer.layer.openPopup();
         }
+
+        // add to map control
+        this.layerControl.addOverlay(layer.layer, layer.name);
     }
 
     getBasemap() {
@@ -163,8 +163,12 @@ export class MapComponent implements OnInit, OnDestroy {
 
         this.onMap = [];
 
-        let basemap = this.getBasemap();
+        this.map.removeControl(this.layerControl);
+
+        const basemap = this.getBasemap();
         basemap.addTo(this.map);
+
+        this.layerControl = L.control.layers({'Basemap': basemap}, null).addTo(this.map);
     }
 
     ngOnDestroy() {
