@@ -289,7 +289,9 @@ def process_shakemaps(shakemaps=None, session=None, scenario=False):
                                             .all())
                                          for g in
                                          groups_affected]))
-        
+
+        geoJSON = {'type': 'FeatureCollection',
+                    'features': [None] * len(affected_facilities)}
         if affected_facilities:
             fac_shaking_lst = [None] * len(affected_facilities)
             f_count = 0
@@ -301,6 +303,10 @@ def process_shakemaps(shakemaps=None, session=None, scenario=False):
                     continue
                 
                 fac_shaking_lst[f_count] = FacilityShaking(**fac_shaking)
+
+                geoJSON['features'][f_count] = makeGeoJSONDict(facility,
+                                                                fac_shaking)    
+
                 f_count += 1
 
             # Remove all old shaking and add all fac_shaking_lst
@@ -309,6 +315,9 @@ def process_shakemaps(shakemaps=None, session=None, scenario=False):
 
             session.bulk_save_objects(fac_shaking_lst)
             session.commit()
+
+            saveGeoJson(shakemap, geoJSON)
+
             shakemap.status = 'processed'
         else:
             shakemap.status = 'processed - no facs'
@@ -324,7 +333,35 @@ def process_shakemaps(shakemaps=None, session=None, scenario=False):
                                         scenario=scenario)
         
         session.commit()
-        
+
+def makeGeoJSONDict(facility, fac_shaking):
+    lat = (facility.lat_max + facility.lat_min) / 2
+    lon = (facility.lon_max + facility.lon_min) / 2
+
+    jsonDict = {
+        'type': 'Feature',
+        'geometry': {'type': 'Point', 
+                        'coordinates': [lon, lat]}
+    }
+
+    jsonDict['properties'] = {
+        'facilityName': facility.name,
+        'description': facility.description,
+        'facilityType': facility.facility_type,
+        'lat': lat,
+        'lon': lon,
+        'shaking': fac_shaking
+    }
+
+    return jsonDict
+
+def saveGeoJson(shakemap, geoJSON):
+    json_file = os.path.join(shakemap.directory_name,
+                                'impact.json')
+
+    with open(json_file, 'w') as f_:
+        f_.write(json.dumps(geoJSON))
+
 def make_inspection_prios(facility=None,
                           shakemap=None,
                           grid=None):

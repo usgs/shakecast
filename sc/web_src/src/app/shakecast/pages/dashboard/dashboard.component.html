@@ -2,54 +2,28 @@
     <my-map class="map"></my-map>
 </div>
 
-<div class="right-panel" [@showRight]="showRight">
-    <div class="toggle">
-        <div class="toggle-click" (click)="toggleRight()">
-            <span class="arrow-icon" [hidden]="showRight=='shown'"><i class="fa fa-chevron-left"></i></span>
-            <span class="arrow-icon" [hidden]="showRight=='hidden'"><i class="fa fa-chevron-right"></i></span>
-        </div>
-    </div>
-    <div class="panel-content">
-            <h1 class="panel-title">{{ earthquakeData.length }} Recent Earthquakes</h1>
-            
-            <div class="panel-scroll-container">
-                <div class="inner-shadow"></div>
-                <earthquake-list></earthquake-list>
-            </div>
-    </div>
-</div>
+<ng-container *ngIf="earthquakeData as eqData">
+    <panels-right-panel
+        [title]="eqData.length + ' Recent Earthquakes'"
+        [open]="true">
 
-<div class="left-panel" [@showLeft]="showLeft">
-    <div class="toggle">
-        <div class="toggle-click" (click)="toggleLeft()">
-            <span class="arrow-icon" [hidden]="showLeft=='shown'"><i class="fa fa-chevron-right"></i></span>
-            <span class="arrow-icon" [hidden]="showLeft=='hidden'"><i class="fa fa-chevron-left"></i></span>
-        </div>
-    </div>
-    <div class="panel-content">
-        <h1 class="panel-title">Notifications:  <info [text]="'A list of notifications sent to specific groups for
+        <earthquake-list></earthquake-list>
+
+    </panels-right-panel>
+</ng-container>
+
+
+<panels-left-panel
+    [title]="'Notifications'">
+    <info [text]="'A list of notifications sent to specific groups for
                                                                 this event. Double check your notification group settings 
                                                                 if you should have received a notification for this event, 
                                                                 but did not.'"
-                                                                [side]="'left'"></info></h1>
+                                                                [side]="'left'"></info>
+    <notification-dash></notification-dash>
+</panels-left-panel>
 
-        <div class="not-container">
-            <div class="not-dash">
-                <notification-dash></notification-dash>
-            </div>
-        </div>
-    </div>
-</div>
 
-<div class="bottom-panel" [@showBottom]="showBottom">
-    <div class="toggle">
-        <div class="toggle-click" (click)="toggleBottom()" style="width:0">
-            <span class="arrow-icon" [hidden]="showBottom=='shown'"><i class="fa fa-chevron-up"></i></span>
-            <span class="arrow-icon" [hidden]="showBottom=='hidden'"><i class="fa fa-chevron-down"></i></span>
-        </div>
-    </div>
-
-    <div class="content-container">
-        <eq-filter class="eq-filter"></eq-filter>
-    </div>
-</div>
+<panels-bottom-panel>
+    <eq-filter class="eq-filter"></eq-filter>
+</panels-bottom-panel>

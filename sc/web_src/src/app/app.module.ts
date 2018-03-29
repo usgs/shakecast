@@ -28,11 +28,11 @@ import { FacilityService } from './shakecast-admin/pages/facilities/facility.ser
 import { NotificationService } from './shakecast/pages/dashboard/notification-dash/notification.service';
 import { SharedModule } from './shared/shared.module';
 import { MapService } from './shared/maps/map.service';
-import { ShakemapService } from './shared/maps/shakemap.service';
 import { ScreenDimmerService } from './shared/screen-dimmer/screen-dimmer.service';
 import { GroupService } from './shakecast-admin/pages/groups/group.service';
 import { UsersService } from './shakecast-admin/pages/users/users.service';
 import { TimeService } from './shakecast-admin/pages/config/time.service';
+import { PanelService } from './shared/panels/panel.service';
 
 import { StickToTopService } from './shared/directives/stick-to-top.service';
 import { MessagingComponent } from './messaging/messaging.component';
@@ -68,7 +68,6 @@ import { LoadingComponent } from './loading/loading.component';
     EarthquakeService,
     FacilityService,
     MapService,
-    ShakemapService,
     StickToTopService,
     ScreenDimmerService,
     NotificationService,
@@ -79,7 +78,8 @@ import { LoadingComponent } from './loading/loading.component';
     MessagesService,
     CookieService,
     LoadingService,
-    NotificationsService
+    NotificationsService,
+    PanelService
   ],
   bootstrap: [ AppComponent ]
 })

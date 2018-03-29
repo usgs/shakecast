@@ -158,4 +158,5 @@
     padding: 2.5%;
     height: 100%;
     text-align: center;
+    overflow: auto;
 }

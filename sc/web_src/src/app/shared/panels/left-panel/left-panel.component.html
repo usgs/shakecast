@@ -1,0 +1,17 @@
+<div class="left-panel" [@showLeft]="show">
+
+    <div class="toggle" *ngIf="control">
+        <div class="toggle-click" (click)="toggle()">
+            <span class="arrow-icon" [hidden]="show=='shown'"><i class="fa fa-chevron-right"></i></span>
+            <span class="arrow-icon" [hidden]="show=='hidden'"><i class="fa fa-chevron-left"></i></span>
+        </div>
+    </div>
+
+    <div class="panel-content">
+        <h1 class="panel-title">{{ title }}</h1>
+
+        <ng-content>
+        </ng-content>
+
+    </div>
+</div>

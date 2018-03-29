@@ -8,24 +8,20 @@ import { FacilityService } from '../../../shakecast-admin/pages/facilities/facil
 import { TitleService } from '../../../title/title.service';
 
 import { TimerObservable } from "rxjs/observable/TimerObservable";
-import { showLeft, showRight, showBottom } from '../../../shared/animations/animations';
 import { LoadingService } from '../../../loading/loading.service';
+
+import * as _ from 'underscore';
 
 @Component({
     selector: 'dashboard',
     templateUrl: './dashboard.component.html',
     styleUrls: ['./dashboard.component.css',
-                  '../../../shared/css/panels.css'],
-    animations: [ showLeft, showRight, showBottom ]
+                  '../../../shared/css/panels.css']
 })
 export class DashboardComponent implements OnInit, OnDestroy {
     public facilityData: any = [];
     public earthquakeData: any = [];
     private subscriptions: any[] = [];
-
-    public showBottom: string = 'shown';
-    public showLeft: string = 'hidden';
-    public showRight: string = 'shown';
 
     constructor(private eqService: EarthquakeService,
                 private facService: FacilityService,
@@ -35,58 +31,42 @@ export class DashboardComponent implements OnInit, OnDestroy {
     ngOnInit() {
         this.titleService.title.next('Dashboard')
 
+        this.eqService.filter['timeframe'] = 'day'
+        this.eqService.filter['shakemap'] = true
+        this.eqService.filter['scenario'] = false
+
         this.subscriptions.push(TimerObservable.create(0, 60000)
             .subscribe((x: any) => {
-                this.eqService.filter['timeframe'] = 'day'
-                this.eqService.filter['shakemap'] = true
-                this.eqService.filter['scenario'] = false
                 this.eqService.getData(this.eqService.filter);
         }));
 
         this.subscriptions.push(this.eqService.earthquakeData.subscribe((eqs: any[]) => {
-            this.earthquakeData = eqs;
-            if (eqs.length > 0) {
-                this.eqService.plotEq(eqs[0])
-                this.showRight = 'shown'
-            } else {
-                this.eqService.clearData();
-            }
+            this.onEqData(eqs);
         }));
     }
 
-    toggleLeft() {
-        if (this.showLeft == 'hidden') {
-            this.showLeft = 'shown';
-        } else {
-            this.showLeft = 'hidden'
-        }
-    }
+    onEqData(eqs) {
+        // if the list is updated, show it
+        if (!_.isEqual(this.earthquakeData, eqs)) {
+            this.earthquakeData = eqs;
+            if (eqs && eqs.length > 0) {
 
-    toggleRight() {
-        if (this.showRight == 'hidden') {
-            this.showRight = 'shown';
-        } else {
-            this.showRight = 'hidden'
+                // select new event if it just showed up
+                this.eqService.selectEvent.next(eqs[0]);
+            }
         }
-    }
-
-    toggleBottom() {
-        if (this.showBottom == 'hidden') {
-            this.showBottom = 'shown';
-        } else {
-            this.showBottom = 'hidden'
-        }
-    }
-  
-    ngOnDestroy() {
-        this.eqService.earthquakeData.next([]);
-        this.eqService.clearData();
-        this.endSubscriptions()
     }
 
     endSubscriptions() {
         for (var sub in this.subscriptions) {
             this.subscriptions[sub].unsubscribe()
         }
+    }
+
+    ngOnDestroy() {
+        this.eqService.earthquakeData.next([]);
+        this.eqService.selectEvent.next(null);
+        this.eqService.clearData();
+        this.endSubscriptions()
     }
 }

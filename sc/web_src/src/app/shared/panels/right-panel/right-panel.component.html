@@ -1,0 +1,24 @@
+<div class="right-panel" [@showRight]="show">
+
+    <div class="toggle" *ngIf="control">
+        <div class="toggle-click" (click)="toggle()">
+            <span class="arrow-icon" [hidden]="show=='shown'"><i class="fa fa-chevron-left"></i></span>
+            <span class="arrow-icon" [hidden]="show=='hidden'"><i class="fa fa-chevron-right"></i></span>
+        </div>
+    </div>
+    
+    <div class="panel-content">
+        
+            <h1 *ngIf="title" 
+                    class="panel-title">
+                {{ title }}
+            </h1>
+            
+            <div class="panel-scroll-container">
+                <div class="inner-shadow"></div>
+
+                <ng-content></ng-content>
+
+            </div>
+    </div>
+</div>

@@ -12,7 +12,7 @@ import { map } from 'rxjs/operators';
 
 @Injectable()
 export class MapService {
-    public eqMarkers = new ReplaySubject(1)
+    public eqMarker = new ReplaySubject(1)
     public facMarkers = new ReplaySubject(1)
     public groupPoly = new ReplaySubject(1)
     public removeFacMarkers = new ReplaySubject(1)
@@ -28,11 +28,10 @@ export class MapService {
         eqMarker['zoom'] = 8;
         eqMarker['draggable'] = false;
 
-        this.eqMarkers.next({events: [eqMarker], clear: clear});
-        this.center.next(eqMarker);
+        this.eqMarker.next(eqMarker);
     }
 
-    plotFac(fac: Facility,
+    makeFacMarker(fac: Facility,
             clear: boolean = false) {
         var marker = this.makeMarker(fac);
         marker['type'] = 'facility';
@@ -43,11 +42,10 @@ export class MapService {
         marker.lat = (marker['lat_min'] + marker['lat_max']) / 2;
         marker.lon = (marker['lon_min'] + marker['lon_max']) / 2;
 
-        this.facMarkers.next([marker]);
-        this.center.next(marker);
+        return marker;
     }
 
-    plotFacs(facs: Facility[],
+    makeFacMarkers(facs: Facility[],
              clear: boolean = true) {
         var markers = Array(facs.length);
         for (var fac_id in facs) {
@@ -66,10 +64,9 @@ export class MapService {
         this.facMarkers.next(markers);
     }
 
-    plotGroup(group: Group,
-              clear: boolean = false) {
-        var groupPoly: any = this.makePoly(group);
-        this.groupPoly.next(groupPoly);
+    plotGroup(group: Group) {
+
+        this.groupPoly.next(group);
     }
 
     plotUser(user: User,
@@ -86,7 +83,7 @@ export class MapService {
     }
 
     clearMarkers() {
-        this.eqMarkers.next([]);
+        //this.eqMarkers.next([]);
     }
 
     makeMarker(notMarker: any): Marker {
@@ -102,24 +99,7 @@ export class MapService {
         return marker;
     }
 
-    makePoly(notPoly: any) {
-        var poly: Poly = {
-            type: '',
-            properties: {},
-            geometry: {}
-        }
 
-        poly.type = 'Feature'
-        poly['name'] = notPoly.name
-        poly['info'] = notPoly.info
-        poly['popupContent'] = notPoly.name
-        poly.geometry['type'] = 'Polygon'
-        poly.geometry['coordinates'] = [[[notPoly.lon_min, notPoly.lat_min],
-                                            [notPoly.lon_max, notPoly.lat_min],
-                                            [notPoly.lon_max, notPoly.lat_max],
-                                            [notPoly.lon_min, notPoly.lat_max]]]
-        return poly
-    }
 
     clearMap() {
         this.clearMapNotify.next(true)

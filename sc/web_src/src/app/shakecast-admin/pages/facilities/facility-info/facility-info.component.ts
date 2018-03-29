@@ -27,16 +27,8 @@ export class FacilityInfoComponent implements OnInit, OnDestroy{
                 public _router: Router) {}
 
     ngOnInit() {
-        this.subscriptions.push(this.facService.showInfo.subscribe((facility: Facility) => {
-            if (facility) {
-                this.setFacility(facility)
-            } else {
-                this.show = false;
-            }
-        }));
-
-        this.subscriptions.push(this.facService.facilityInfo.subscribe((facility: Facility) => {
-            this.facility = facility;
+        this.subscriptions.push(this.facService.select.subscribe((facility: Facility) => {
+            this.onFacility(facility);
         }));
 
         this.subscriptions.push(this.facService.facilityShaking.subscribe((shaking: any) => {
@@ -44,13 +36,17 @@ export class FacilityInfoComponent implements OnInit, OnDestroy{
         }));
     }
 
+    onFacility(facility) {
+        if (facility === null) {
+                this.facility = null;
+                return
+            }
+        this.setFacility(facility);
+    }
+
     setFacility(facility: Facility) {
         this.facility = facility;
         this.eqService.getFacilityData(facility);
-    }
-
-    hide() {
-        this.facService.showInfo.next(null)
     }
 
     ngOnDestroy() {

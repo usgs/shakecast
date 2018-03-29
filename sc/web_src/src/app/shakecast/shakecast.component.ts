@@ -8,9 +8,5 @@ import { fadeAnimation }   from '../shared/animations/animations';
     animations: [ fadeAnimation ]
 })
 export class ShakeCastComponent {
-    /*
-    @HostBinding('@routeAnimation') routeAnimation = true;
-    @HostBinding('style.display')   display = 'block';
-    @HostBinding('style.position')  position = 'static';
-    */
+
 }

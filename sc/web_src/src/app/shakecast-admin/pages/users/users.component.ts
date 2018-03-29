@@ -46,28 +46,4 @@ export class UsersComponent {
     saveUsers() {
         this.usersService.saveUsersFromList.next(true);
     }
-
-    toggleLeft() {
-        if (this.showLeft == 'hidden') {
-            this.showLeft = 'shown';
-        } else {
-            this.showLeft = 'hidden'
-        }
-    }
-
-    toggleRight() {
-        if (this.showRight == 'hidden') {
-            this.showRight = 'shown';
-        } else {
-            this.showRight = 'hidden'
-        }
-    }
-
-    toggleBottom() {
-        if (this.showBottom == 'hidden') {
-            this.showBottom = 'shown';
-        } else {
-            this.showBottom = 'hidden'
-        }
-    }
 }

@@ -5,97 +5,72 @@ import { TitleService } from '../../../title/title.service';
 import { EarthquakeService, Earthquake } from '../../../shakecast/pages/earthquakes/earthquake.service';
 import { FacilityService } from '../facilities/facility.service';
 
-import { showLeft, showRight, showBottom } from '../../../shared/animations/animations';
+import { PanelService } from '../../../shared/panels/panel.service';
 
 @Component({
     selector: 'scenarios',
     templateUrl: './scenarios.component.html',
-    styleUrls: ['./scenarios.component.css',
-                  '../../../shared/css/data-list.css',
-                  '../../../shared/css/panels.css'],
-    animations: [ showLeft, showRight, showBottom ]
+    styleUrls: ['./scenarios.component.css']
 })
 export class ScenariosComponent implements OnInit, OnDestroy {
     subscriptions: any[] = [];
     searchShown: boolean = false;
 
-    public showBottom: string = 'hidden';
-    public showLeft: string = 'hidden';
-    public showRight: string = 'hidden';
-
     constructor(private titleService: TitleService,
                 public eqService: EarthquakeService,
-                private facService: FacilityService) {}
+                private facService: FacilityService,
+                private panelService: PanelService) {}
 
     ngOnInit() {
         this.titleService.title.next('Scenarios');
-
-        this.subscriptions.push(this.eqService.earthquakeData.subscribe(eqs => {
-            this.eqService.plotEq(eqs[0])
-        }));
 
         this.subscriptions.push(this.eqService.showScenarioSearch.subscribe((show: boolean) => {
             this.searchShown = show;
         }));
 
-        this.eqService.getData({'scenario': true});
-        this.eqService.showScenarioSearch.next(false);
+        this.subscriptions.push(this.eqService.earthquakeData.subscribe(eqs => {
+            this.onEqData(eqs);
+        }));
 
-        this.toggleBottom();
-        this.toggleRight();
+        this.eqService.getData({'scenario': true});
+    }
+
+    onEqData(eqs) {
+        if ( (!eqs) || (eqs == null) || (eqs.length === 0)) {
+            return;
+        }
+
+        this.eqService.selectEvent.next(eqs[0]);
     }
 
     getMore() {
-        this.eqService.showScenarioSearch.next(true);
-        this.eqService.earthquakeData.next([]);
-        this.showLeft = 'shown'
+        this.eqService.earthquakeData.next(null);
+        this.searchShown = true;
+        this.panelService.controlLeft.next('shown')
     }
 
     userScenarios() {
         this.eqService.showScenarioSearch.next(false);
         this.eqService.getData({'scenario': true});
-        this.showLeft = 'hidden';
+        this.searchShown = false;
+        this.panelService.controlLeft.next('hidden')
     }
 
     deleteScenario() {
         this.eqService.deleteScenario(this.eqService.selected.event_id);
     }
 
-  toggleLeft() {
-      if (this.showLeft == 'hidden') {
-          this.showLeft = 'shown';
-      } else {
-          this.showLeft = 'hidden'
-      }
-  }
-
-  toggleRight() {
-      if (this.showRight == 'hidden') {
-          this.showRight = 'shown';
-      } else {
-          this.showRight = 'hidden'
-      }
-  }
-
-  toggleBottom() {
-      if (this.showBottom == 'hidden') {
-          this.showBottom = 'shown';
-      } else {
-          this.showBottom = 'hidden'
-      }
-  }
-
     ngOnDestroy() {
         this.endSubscriptions();
-
-        // clear map
-        this.eqService.clearData();
+        this.eqService.selectEvent.next(null);
+        this.eqService.earthquakeData.next(null);
     }
 
     endSubscriptions() {
         for (var sub in this.subscriptions) {
             this.subscriptions[sub].unsubscribe();
         }
+
     }
     
 }

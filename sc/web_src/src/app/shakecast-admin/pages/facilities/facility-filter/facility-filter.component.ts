@@ -1,10 +1,4 @@
-import { Component, 
-         OnInit,
-         trigger,
-         state,
-         style,
-         transition,
-         animate } from '@angular/core';
+import { Component, HostListener} from '@angular/core';
 import { FacilityService, Facility } from '../facility.service'
 import { ScreenDimmerService } from '../../../../shared/screen-dimmer/screen-dimmer.service'
 
@@ -33,20 +27,15 @@ export class FacilityFilter {
 
     search() {
         this.facService.getData(this.filter);
-        this.hideFilter();
     }
 
-    cancelFilter() {
-        this.hideFilter()
+    @HostListener('window:keydown', ['$event'])
+    keyboardInput(event: any) {
+        if (event.keyCode === 13) {
+            this.facService.getData(this.filter);
+        }
     }
 
-    showFilter() {
-        this.sdService.dimScreen();
-    }
-
-    hideFilter() {
-        this.sdService.undimScreen();
-    }
 }
 
 export interface filter  {

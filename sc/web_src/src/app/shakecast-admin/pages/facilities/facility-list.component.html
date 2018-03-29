@@ -1,6 +1,6 @@
-<div class="data-list-inner-container">
+<div class="data-list-inner-container" *ngIf="facilityData as facData">
     <div *ngIf="!loadingData">
-        <div *ngIf="facilityData.length > 0">
+        <div *ngIf="facData.length > 0">
             <div class="data" 
                     [@selected]="fac?.selected" 
                     *ngFor="let fac of shownFacilityData" 
@@ -32,7 +32,7 @@
                 </div>
             </div>
         </div>
-        <div *ngIf="facilityData.length == 0">
+        <div *ngIf="facData.length == 0">
             <h1 class="data-list-no-data">No Facilities</h1>
 
             <h2 *ngIf="_router.url === '/shakecast-admin/facilities'" 
