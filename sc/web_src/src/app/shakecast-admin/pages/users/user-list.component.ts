@@ -8,8 +8,9 @@ import { Component,
          transition,
          animate } from '@angular/core';
 
-import { UsersService, User } from './users.service'
-import { GroupService, Group } from '../groups/group.service'
+import { UsersService, User } from './users.service';
+import { GroupService, Group } from '../groups/group.service';
+
 declare var _: any;
 
 @Component({

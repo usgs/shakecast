@@ -4,6 +4,7 @@ import { Directive,
 
 import { TimerObservable } from "rxjs/observable/TimerObservable";
 import { StickToTopService } from './stick-to-top.service'
+import { Subscription } from 'rxjs/Subscription';
 
 @Directive({
     selector: '[stickToTop]',
@@ -11,7 +12,6 @@ import { StickToTopService } from './stick-to-top.service'
             '[style.top.px]': 'stuckTop',
             '(window:scroll)': 'setDidScroll($event)'}
 })
-
 export class StickToTopDirective implements OnInit, OnDestroy {
     private scrolled: number = document.querySelector('body').scrollTop;
     public stuck: boolean = false;
@@ -20,6 +20,7 @@ export class StickToTopDirective implements OnInit, OnDestroy {
     private height: number = 0;
     private init: boolean = true
     private didScroll: boolean = false;
+    private subs = new Subscription();
 
     constructor(private el:ElementRef,
                 private sttService: StickToTopService) {
@@ -28,13 +29,13 @@ export class StickToTopDirective implements OnInit, OnDestroy {
 
     ngOnInit() {
         this.checkLock()
-        TimerObservable.create(0, 10)
+        this.subs.add(TimerObservable.create(0, 10)
                 .subscribe(x => {
             if(this.didScroll) {
                 this.didScroll = false;
                 this.checkLock();
             }
-        });
+        }));
     }
 
     setDidScroll(e: Event) {
@@ -50,15 +51,15 @@ export class StickToTopDirective implements OnInit, OnDestroy {
         if (this.stuck) {
             if (this.el.nativeElement.parentElement.getBoundingClientRect().top + this.height >= 
                     this.sttService.stackHeight) {
-                //console.log('Unstick it')
+
                 this.stuckTop = this.top
                 this.sttService.stackHeight -= this.height
                 this.stuck = false
             }
-        } else if (this.sttService.stackHeight >= 
+        } else if (this.sttService.stackHeight >=
                     this.el.nativeElement.parentElement.getBoundingClientRect().top) {
             if (!this.stuck) {
-                //console.log('Stick it')
+
                 this.stuckTop = this.sttService.stackHeight
                 this.sttService.stackHeight += this.height
                 this.stuck = true
@@ -70,5 +71,7 @@ export class StickToTopDirective implements OnInit, OnDestroy {
         if (this.stuck) {
             this.sttService.stackHeight -= this.height
         }
+
+        this.subs.unsubscribe();
     }
 }

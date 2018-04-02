@@ -100,8 +100,8 @@
 }
 
 .toggle-click:hover {
-    border-top: 25px solid rgba(80,150,255,.7) !important;
-    border-right: 25px solid rgba(80,150,255,.7) !important;
+    border-top: 25px solid rgba(80,150,255,.7);
+    border-right: 25px solid rgba(80,150,255,.7);
 }
 
 

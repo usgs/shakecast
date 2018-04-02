@@ -846,8 +846,6 @@ def get_inventory():
             fac_types[facility_dict['facility_type']] += 1
         else:
             fac_types[facility_dict['facility_type']] = 1
-
-    info = {'facs': facility_dicts, 'types': fac_types}
     
     facilities_json = json.dumps(facility_dicts, cls=AlchemyEncoder)
     
