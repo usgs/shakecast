@@ -16,19 +16,20 @@ var myStyle = {
 };
 
 function generatePopup(fac) {
-    const selectShakingTh = "border-top:2px dashed black;border-left:2px dashed black;border-right:2px dashed black;"
+    const selectShakingTh = "border-top:2px dashed black;border-left:2px dashed black;border-right:2px dashed black;";
 
-    const selectShakingTd = "border-bottom:2px dashed black;border-left:2px dashed black;border-right:2px dashed black;"
+    const selectShakingTd = "border-bottom:2px dashed black;border-left:2px dashed black;border-right:2px dashed black;";
 
-    const selectShaking = 'border:2px dashed black'
+    const selectShaking = 'border:2px dashed black';
 
-    const shakingStyles = 'top:100%;transform:translateY(-100%);position:relative;'
+    const shakingStyles = 'top:100%;transform:translateY(-100%);position:relative;';
 
     const popup = `
     <div style="min-width:300px;text-align:center">
-        <h3>${fac.facility_name}</h3>
-        <p>${fac.description ? fac.description : 'No Description'}</p>
-        <p>${fac.lat}, ${fac.lon}</p>
+        <h3 style="margin-bottom:0;">${fac.facility_name}</h3>
+        <p style="margin-top:0;font-size:.8em;font-style:italic;">${fac.facility_type}</p>
+        <p style="margin-bottom:0;">${fac.description ? fac.description : 'No Description'}</p>
+        <p style="margin-top:5px;">${fac.lat}, ${fac.lon}</p>
 
         <div style="height:4em;width:80%;left:10%;position:relative;display:flex">
             <div style="height:100%;width:18%;margin-left:2%"
