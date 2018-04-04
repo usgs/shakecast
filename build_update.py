@@ -3,7 +3,7 @@ import json
 from sc.app.util import SC
 
 COMMIT = 'af54dcaa7fa82bc18eef75af180942efe4199937'
-GITROOT = 'https://raw.githubusercontent.com/usgs/shakecast/master-dist/'
+GITROOT = 'https://raw.githubusercontent.com/usgs/shakecast/master/'
 
 def get_file_names():
     # git list of changed files from specific commit

@@ -32,7 +32,7 @@ npm-debug.log
 /dist-server
 /tmp
 /out-tsc
-sc/view
+#sc/view
 
 # dependencies
 /node_modules
