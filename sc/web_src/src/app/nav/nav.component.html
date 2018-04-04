@@ -1,0 +1,49 @@
+<div class="header" [@scrollChange]="scrollUp" (mouseover)="setHover(true)" (mouseleave)="setHover(false)">
+    <div class="nav-bar">
+        <div *ngIf="!(router.url.indexOf('/shakecast-admin') >= 0)">
+            <div class="link" (click)="changeRoute('/shakecast/dashboard')">
+                <a routerLink="/shakecast/dashboard">Dashboard</a>
+            </div>
+            <div class="link" (click)="changeRoute('/shakecast/user-profile')">
+                <a routerLink="/shakecast/user-profile">User Profile</a>
+            </div>
+            <div class="link" 
+                    *ngIf="userService.isAdmin"
+                    (click)="changeRoute('/shakecast-admin')">
+                <a routerLink="/shakecast-admin">Admin Panel</a>
+            </div>
+            <div class="link" (click)="logout()">
+                <a (click)="logout()">Logout</a>
+            </div>
+        </div>
+        <div *ngIf="router.url.indexOf('/shakecast-admin') >= 0">
+            <div class="link" (click)="changeRoute('/shakecast-admin/facilities')">
+                <a routerLink="/shakecast-admin/facilities">Facilities</a>
+            </div>
+            <div class="link" (click)="changeRoute('/shakecast-admin/users')">
+                <a routerLink="/shakecast-admin/users">Users and Groups</a>
+            </div>
+            <div class="link" (click)="changeRoute('/shakecast-admin/scenarios')">
+                <a routerLink="/shakecast-admin/scenarios">Scenarios</a>
+            </div>
+            <div class="link" (click)="changeRoute('/shakecast-admin/notifications')">
+                <a routerLink="/shakecast-admin/notifications">Notifications</a>
+            </div>
+            <div class="link" 
+                (click)="changeRoute('/shakecast-admin/config')">
+                <a routerLink="/shakecast-admin/config">Settings</a>
+            </div>
+            <div class="link" (click)="changeRoute('/shakecast')">
+                <a routerLink="/shakecast">Back to ShakeCast</a>
+            </div>
+            <div class="link" (click)="logout()">
+                <a (click)="logout()">Logout</a>
+            </div>
+        </div>
+    </div>
+    <div class="cont">
+        <!-- <img class="sc-logo" src="/images/sc_logo.png"> -->
+        <img class="block-stack" src="/assets/block_stack2.png">
+        <!-- <p>ShakeCast</p> -->
+    </div>
+</div>

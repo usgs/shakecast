@@ -1,0 +1,21 @@
+<div class="map-container">
+    <my-map class="map"></my-map>
+</div>
+
+<panels-left-panel
+        [title]="'Users'"
+        [open]="true">
+
+    <user-list></user-list>
+
+    <h2 class="button" (click)="deleteCurrentUser()">Delete User</h2>
+    <h2 class="button" (click)="saveUsers()">Save Data</h2>
+</panels-left-panel>
+
+
+<panels-right-panel
+        [title]="'Groups'"
+        [open]="true">
+
+    <group-list></group-list>
+</panels-right-panel>

@@ -1,0 +1,29 @@
+<table class="shaking-table" *ngIf="shakingData as sData">
+    <ng-container *ngIf="totalShaking > 0; else noImpact">
+        <tr>
+            <th style="background-color:red" [style.width]="((sData?.red/totalShaking * 90) + 1) + '%'">
+                {{ sData?.red }}
+            </th>
+            <th style="background-color:orange" [style.width]="((sData?.orange/totalShaking * 90) + 1) + '%'">
+                {{ sData?.orange }}
+            </th>
+            <th style="background-color:gold" [style.width]="((sData?.yellow/totalShaking * 90) + 1) + '%'"> 
+                {{ sData?.yellow }}
+            </th>
+            <th style="background-color:green;" [style.width]="((sData?.green/totalShaking * 90) + 1) + '%'">
+                {{ sData?.green }}
+            </th>
+            <th style="background-color:gray;" [style.width]="((sData?.gray/totalShaking * 90) + 1) + '%'">
+                {{ sData?.gray }}
+            </th>
+        </tr>
+    </ng-container>
+
+    <ng-template #noImpact>
+        <tr>
+            <th style="background-color:gray;width:90%">
+                No Impact
+            </th>
+        </tr>
+    </ng-template>
+</table>

@@ -4,6 +4,9 @@ import os
 import sys
 import io
 import json
+
+from csv import reader
+
 modules_dir = os.path.join(sc_dir(), 'modules')
 if modules_dir not in sys.path:
     sys.path += [modules_dir]
@@ -27,7 +30,7 @@ log = logging.getLogger('werkzeug')
 log.setLevel(logging.ERROR)
 
 BASE_DIR = os.path.join(sc_dir(),'view')
-STATIC_DIR = os.path.join(sc_dir(),'view','static')
+STATIC_DIR = os.path.join(sc_dir(),'view','assets')
 app = Flask(__name__,
             template_folder=BASE_DIR,
             static_folder=STATIC_DIR)
@@ -123,7 +126,7 @@ def get_eq_data():
     filter_ = json.loads(request.args.get('filter', '{}'))
     DAY = 24*60*60
     query = session.query(Event)
-    
+
     if filter_:
         if filter_.get('group', None):
             query = query.filter(Event.groups.any(Group.name.like(filter_['group'])))
@@ -207,29 +210,61 @@ def get_fac_data():
     session = Session()
     filter_ = json.loads(request.args.get('filter', '{}'))
     query = session.query(Facility)
+    types_query = session.query(Facility.facility_type)
+
+    keys = []
+    if filter_.get('keywords', None) is not None:
+        keywords = [filter_['keywords']]
+        for line in reader(keywords, delimiter=' '):
+            keys_raw = line
+
+        keys = [key.strip(' ') for key in keys_raw]
+
+    commands = {}
+    non_command = []
+    for key in keys:
+        if ':' in key:
+            command, value = key.split(':', 1)
+            commands[command] = value
+        else:
+            non_command.append(key)
 
     if filter_:
-        if filter_.get('group', None) is not None:
-            query = query.filter(Facility.groups.any(Group.name.like(filter_['group'])))
-        if filter_.get('latMax', None) is not None:
-            query = query.filter(Facility.lat_min < float(filter_['latMax']))
-        if filter_.get('latMin', None) is not None:
-            query = query.filter(Facility.lat_max > float(filter_['latMin']))
-        if filter_.get('lonMax', None) is not None:
-            query = query.filter(Facility.lon_min < float(filter_['lonMax']))
-        if filter_.get('lonMin', None) is not None:
-            query = query.filter(Facility.lon_max > float(filter_['lonMin']))
-        if filter_.get('facility_type', None) is not None:
-            query = query.filter(Facility.facility_type.like(filter_['facility_type']))
-        if filter_.get('keywords', None) is not None:
-
-            keys_raw = filter_['keywords'].lower().split(',')
-            keys = [key.strip(' ') for key in keys_raw]
-
+        if commands.get('group', None) is not None:
+            query = query.filter(Facility.groups.any(Group.name.like(commands['group'])))
+            types_query = types_query.filter(Facility.groups.any(Group.name.like(commands['group'])))
+        if commands.get('latMax', None) is not None:
+            query = query.filter(Facility.lat_min < float(commands['latMax']))
+            types_query = types_query.filter(Facility.lat_min < float(commands['latMax']))
+        if commands.get('latMin', None) is not None:
+            query = query.filter(Facility.lat_max > float(commands['latMin']))
+            types_query = types_query.filter(Facility.lat_max > float(commands['latMin']))
+        if commands.get('lonMax', None) is not None:
+            query = query.filter(Facility.lon_min < float(commands['lonMax']))
+            types_query = types_query.filter(Facility.lon_min < float(commands['lonMax']))
+        if commands.get('lonMin', None) is not None:
+            query = query.filter(Facility.lon_max > float(commands['lonMin']))
+            types_query = types_query.filter(Facility.lon_max > float(commands['lonMin']))
+        if commands.get('facilityType', None) is not None:
+            query = query.filter(Facility.facility_type.like(commands['facilityType']))
+            types_query = types_query.filter(Facility.facility_type.like(commands['facilityType']))
+        if non_command:
             key_filter = [or_(literal(key).contains(func.lower(Facility.name)),
                                             func.lower(Facility.name).contains(key),
-                                            func.lower(Facility.description).contains(key)) for key in keys]
+                                            func.lower(Facility.description).contains(key)) for key in non_command]
             query = query.filter(and_(*key_filter))
+            types_query = types_query.filter(and_(*key_filter))
+    
+    # get facility types
+    fac_count = []
+    fac_types = types_query.distinct().all()
+    for fac_type in fac_types:
+        fac_count += [{ 
+            'name': fac_type[0],
+            'count': (types_query
+                        .filter(Facility.facility_type == fac_type[0])
+                        .count())
+        }]
 
     if filter_.get('count', None) is None:
         facs = query.limit(50).all()
@@ -248,7 +283,7 @@ def get_fac_data():
         dicts += [dict_]
     
     Session.remove()
-    return jsonify(success=True, data=dicts)
+    return jsonify(success=True, data=dicts, count=fac_count)
 
 @app.route('/api/facility-shaking/<facility_id>/<eq_id>')
 @login_required
@@ -416,11 +451,6 @@ def get_affected_facilities(shakemap_id):
                 .all())
     
     fac_dicts = []
-    alert = {'gray': 0,
-             'green': 0,
-             'yellow': 0,
-             'orange': 0,
-             'red': 0}
     if sms:
         sm = sms[0]
         fac_shaking = sm.facility_shaking
@@ -436,15 +466,65 @@ def get_affected_facilities(shakemap_id):
             fac_dicts[i] = fac_dict
             i += 1
 
-            # record number of facs at each alert level
-            alert[fac_dict['shaking']['alert_level']] += 1
     
-    shaking_data = {'alert': alert, 'facilities': fac_dicts, 'types': {}}
+    shaking_data = {'facilities': fac_dicts, 'types': {}}
 
     shaking_json = json.dumps(shaking_data, cls=AlchemyEncoder)
     
     Session.remove()    
     return shaking_json
+
+@app.route('/api/shakemaps/<shakemap_id>/impact-summary')
+@login_required
+def impact_summary(shakemap_id):
+    session = Session()
+    sms = (session.query(ShakeMap)
+                .filter(ShakeMap.shakemap_id == shakemap_id)
+                .order_by(ShakeMap.shakemap_version.desc())
+                .all())
+    
+    impact_sum = {'gray': 0,
+             'green': 0,
+             'yellow': 0,
+             'orange': 0,
+             'red': 0}
+    if sms:
+        sm = sms[0]
+        fac_shaking = sm.facility_shaking
+        
+        for s in fac_shaking:
+            # record number of facs at each alert level
+            impact_sum[s.alert_level] += 1
+    Session.remove()
+
+    return json.dumps(impact_sum)
+
+@app.route('/api/shakemaps/<shakemap_id>/impact')
+@login_required
+def shakemap_impact(shakemap_id):
+    session = Session()
+    shakemap = (session.query(ShakeMap)
+                    .filter(ShakeMap.shakemap_id == shakemap_id)
+                    .order_by(desc(ShakeMap.shakemap_version))
+                    .limit(1)).first()
+    
+    emptyJSON = json.dumps({'type': 'FeatureCollection', 'features': []})
+    
+    if shakemap is None:
+        # This shakemap does not exist
+        # return an empty feature
+        return emptyJSON
+
+    json_file = os.path.join(shakemap.directory_name, 'impact.json')
+    Session.remove()
+
+    if os.path.exists(json_file) is True:
+        with open(json_file, 'r') as f_:
+            geoJSON = f_.read()
+    else:
+        geoJSON = emptyJSON
+
+    return geoJSON
 
 @app.route('/api/shakemaps/<shakemap_id>/overlay')
 @login_required
@@ -756,10 +836,16 @@ def get_inventory():
         facilities = session.query(Facility).filter(Facility.shakecast_id > request.args.get('last_id', 0)).limit(50).all()
     
     facility_dicts = []
+    fac_types = {}
     for facility in facilities:
         facility_dict = facility.__dict__.copy()
         facility_dict.pop('_sa_instance_state', None)
         facility_dicts += [facility_dict]
+
+        if facility_dict['facility_type'] in fac_types:
+            fac_types[facility_dict['facility_type']] += 1
+        else:
+            fac_types[facility_dict['facility_type']] = 1
     
     facilities_json = json.dumps(facility_dicts, cls=AlchemyEncoder)
     

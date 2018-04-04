@@ -1,0 +1,11 @@
+<div class="filter-form">
+    <input [(ngModel)]="filter.keywords" placeholder="Search...">
+</div>
+
+<div class="control">
+    <div class="buttons-container">
+        <h3 class="button" (click)="selectAll()">Select All</h3>
+        <h3 class="button" (click)="unselectAll()">Unselect All</h3>
+        <h3 class="button" (click)="deleteFacs()">Delete Selected</h3>
+    </div>
+</div>

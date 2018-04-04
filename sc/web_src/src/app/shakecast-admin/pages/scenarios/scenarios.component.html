@@ -1,0 +1,32 @@
+<div class="map-container">
+    <my-map class="map"></my-map>
+</div>
+
+<panels-right-panel
+        [title]="'Scenarios'"
+        [open]="true">
+
+    <earthquake-list></earthquake-list>
+</panels-right-panel>
+
+<panels-left-panel
+        [control]="false">
+    <scenario-search></scenario-search>
+</panels-left-panel>
+
+<panels-bottom-panel>
+    <div class="control">
+        <div *ngIf="!searchShown">
+            <h3 class="button" (click)="getMore()">Download More from the Web</h3>
+            <!--
+            <h3 class="button" (click)="getMore()">Search your Earthquake Database</h3>
+            -->
+            <h3 class="button" (click)="eqService.runScenario(eqService.selected.event_id)">Run Scenario</h3>
+            <h3 class="button" (click)="deleteScenario()">Delete Selected</h3>
+        </div>
+        <div *ngIf="searchShown">
+            <h3 class="button" (click)="eqService.downloadScenario(eqService.selected.event_id, eqService.selected.scenario)">Download Selected</h3>
+            <h3 class="button" (click)="userScenarios()">Back</h3>
+        </div>
+    </div>
+</panels-bottom-panel>

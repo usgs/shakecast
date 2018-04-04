@@ -1,6 +1,5 @@
 import threading
 import time
-import pdb
 
 class NewThread(threading.Thread):
     
@@ -15,14 +14,13 @@ class NewThread(threading.Thread):
     
     """
     
-    def __init__(self, func, args_in=None, loop=False, loop_time=5, use_pdb=False):
+    def __init__(self, func, args_in=None, loop=False, loop_time=5):
         super(NewThread, self).__init__()
         self._stop = threading.Event()
         self.func = func
         self.args_in = args_in
         self.loop = loop
         self.loop_time = loop_time
-        self.use_pdb = use_pdb
         
     def stop(self):
         """

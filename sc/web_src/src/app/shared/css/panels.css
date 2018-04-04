@@ -1,0 +1,162 @@
+.right-panel, .left-panel, .bottom-panel {
+    position: fixed;
+    background: rgba(50,50,50,0.6);
+    overflow: visible;
+    z-index: 2;
+}
+
+.toggle {
+    position: absolute;
+}
+
+.right-panel .toggle {
+    left: 0;
+    transform: translateX(-100%)
+}
+
+.left-panel .toggle {
+    right: 0;
+    transform: translateX(100%)
+}
+
+.left-panel .toggle, .right-panel .toggle {
+    height: 100%;
+    width: 0;
+}
+
+.bottom-panel .toggle {
+    width: 100%;
+    height: 0;
+    top: 0;
+    transform: translateY(-100%);
+    text-align: center;
+}
+
+.toggle-click {
+    position: relative;
+    cursor: pointer;
+    border-radius: 50%;
+}
+
+.left-panel .toggle-click, .right-panel .toggle-click {
+    top: 50%;
+}
+
+.right-panel .toggle-click {
+    transform: translateY(-50%) translateX(-50%) rotate(-135deg);
+    border-top: 25px solid rgba(50,50,50,.6);
+    border-right: 25px solid rgba(50,50,50,.6);
+    border-bottom: 25px solid transparent;
+    border-left: 25px solid transparent;
+}
+
+.left-panel .toggle-click {
+    transform: translateY(-50%) translateX(-50%) rotate(45deg);
+    border-top: 25px solid rgba(50,50,50,.6);
+    border-right: 25px solid rgba(50,50,50,.6);
+    border-bottom: 25px solid transparent;
+    border-left: 25px solid transparent;
+}
+
+.bottom-panel .toggle-click {
+    left: 50%;
+    transform: translateX(-50%) translateY(-50%) rotate(-45deg);
+    border-top: 25px solid rgba(50,50,50,.6);
+    border-right: 25px solid rgba(50,50,50,.6);    
+    border-bottom: 25px solid transparent;
+    border-left: 25px solid transparent;
+}
+
+.right-panel .toggle-click .arrow-icon {
+    position: absolute;
+    transform: translateY(-100%) translateX(15%)  rotate(135deg);
+}
+
+.left-panel .toggle-click .arrow-icon {
+    position: absolute;
+    transform: translateY(-100%) translateX(30%) rotate(-45deg);
+}
+
+.bottom-panel .toggle-click .arrow-icon {
+    position: absolute;
+    transform: translateX(107%) translateY(-100%) rotate(45deg);
+    right: 50%;
+}
+
+.arrow-icon:before {
+    content:'';
+    height: 100%;
+    display: inline-block;
+    vertical-align: middle;
+}
+
+.arrow-icon span {
+    display:inline-block;
+    vertical-align: middle;
+}
+
+.fa {
+    color:white;
+}
+
+.toggle-click:hover {
+    border-top: 25px solid rgba(80,150,255,.7) !important;
+    border-right: 25px solid rgba(80,150,255,.7) !important;
+}
+
+
+.right-panel, .left-panel {
+    height: 100%;
+    width: 25%;
+    top: 0;
+}
+
+.right-panel {
+    left: 100%;
+}
+
+.left-panel {
+    left: -25%;
+}
+
+.bottom-panel {
+    top: 100%;
+    width: 50%;
+    left: 25%;
+}
+
+.panel-title {
+    text-align: center;
+    font-size: 72;
+    color: white;
+    margin: 5px;
+}
+
+.panel-scroll-container {
+    height: 90%;
+    border-radius: 5px;
+    overflow: scroll;
+}
+
+.inner-shadow {
+    position: absolute;
+    /*
+    height: 90%;
+    width: 100%;
+    */
+    top: 0;
+    bottom: 0;
+    right: 0;
+    box-shadow: inset 0px 0px 40px 0px #000;
+    -moz-box-shadow: inset 0px 0px 40px 0px #000;
+    -webkit-box-shadow: inset 0px 0px 40px 0px #000;
+    pointer-events: none;
+    border-radius: 5px;
+}
+
+.panel-content {
+    padding: 2.5%;
+    height: 100%;
+    text-align: center;
+    overflow: auto;
+}

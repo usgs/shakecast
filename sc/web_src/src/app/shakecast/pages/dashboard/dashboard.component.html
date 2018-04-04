@@ -1,0 +1,29 @@
+<div class="map-container">
+    <my-map class="map"></my-map>
+</div>
+
+<ng-container *ngIf="earthquakeData as eqData">
+    <panels-right-panel
+        [title]="eqData.length + ' Recent Earthquakes'"
+        [open]="true">
+
+        <earthquake-list></earthquake-list>
+
+    </panels-right-panel>
+</ng-container>
+
+
+<panels-left-panel
+    [title]="'Notifications'">
+    <info [text]="'A list of notifications sent to specific groups for
+                                                                this event. Double check your notification group settings 
+                                                                if you should have received a notification for this event, 
+                                                                but did not.'"
+                                                                [side]="'left'"></info>
+    <notification-dash></notification-dash>
+</panels-left-panel>
+
+
+<panels-bottom-panel>
+    <eq-filter class="eq-filter"></eq-filter>
+</panels-bottom-panel>

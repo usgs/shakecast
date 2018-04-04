@@ -193,7 +193,7 @@ def process_events(events=None, session=None, scenario=False):
                         .all())
 
             last_day = time.time() - 60 * 60 * 5
-            filter_nots = filter(lambda x: x.event is not None and x.event.time > last_day, nots)
+            filter_nots = filter(lambda x: x.event is not None and (x.event.time > last_day or scenario is True), nots)
             new_event_notification(notifications=filter_nots,
                                     scenario=scenario)
             processed_events = [n.event for n in filter_nots]
@@ -289,7 +289,9 @@ def process_shakemaps(shakemaps=None, session=None, scenario=False):
                                             .all())
                                          for g in
                                          groups_affected]))
-        
+
+        geoJSON = {'type': 'FeatureCollection',
+                    'features': [None] * len(affected_facilities)}
         if affected_facilities:
             fac_shaking_lst = [None] * len(affected_facilities)
             f_count = 0
@@ -301,6 +303,10 @@ def process_shakemaps(shakemaps=None, session=None, scenario=False):
                     continue
                 
                 fac_shaking_lst[f_count] = FacilityShaking(**fac_shaking)
+
+                geoJSON['features'][f_count] = makeGeoJSONDict(facility,
+                                                                fac_shaking)    
+
                 f_count += 1
 
             # Remove all old shaking and add all fac_shaking_lst
@@ -309,6 +315,9 @@ def process_shakemaps(shakemaps=None, session=None, scenario=False):
 
             session.bulk_save_objects(fac_shaking_lst)
             session.commit()
+
+            saveGeoJson(shakemap, geoJSON)
+
             shakemap.status = 'processed'
         else:
             shakemap.status = 'processed - no facs'
@@ -324,7 +333,35 @@ def process_shakemaps(shakemaps=None, session=None, scenario=False):
                                         scenario=scenario)
         
         session.commit()
-        
+
+def makeGeoJSONDict(facility, fac_shaking):
+    lat = (facility.lat_max + facility.lat_min) / 2
+    lon = (facility.lon_max + facility.lon_min) / 2
+
+    jsonDict = {
+        'type': 'Feature',
+        'geometry': {'type': 'Point', 
+                        'coordinates': [lon, lat]}
+    }
+
+    jsonDict['properties'] = {
+        'facility_name': facility.name,
+        'description': facility.description,
+        'facility_type': facility.facility_type,
+        'lat': lat,
+        'lon': lon,
+        'shaking': fac_shaking
+    }
+
+    return jsonDict
+
+def saveGeoJson(shakemap, geoJSON):
+    json_file = os.path.join(shakemap.directory_name,
+                                'impact.json')
+
+    with open(json_file, 'w') as f_:
+        f_.write(json.dumps(geoJSON))
+
 def make_inspection_prios(facility=None,
                           shakemap=None,
                           grid=None):
@@ -416,7 +453,7 @@ def new_event_notification(notifications = None,
     temp_manager = TemplateManager()
     configs = temp_manager.get_configs('new_event', 
                                         name=notification.group.template)
-    logo_str = os.path.join(sc_dir(),'view','static',configs['logo'])
+    logo_str = os.path.join(sc_dir(),'view','assets',configs['logo'])
     
     # open logo and attach it to the message
     logo_file = open(logo_str, 'rb')
@@ -501,7 +538,7 @@ def inspection_notification(notification=None,
             temp_manager = TemplateManager()
             configs = temp_manager.get_configs('inspection', 
                                         name=notification.group.template)
-            logo_str = os.path.join(sc_dir(),'view','static',configs['logo'])
+            logo_str = os.path.join(sc_dir(),'view','assets',configs['logo'])
             
             # open logo and attach it to the message
             logo_file = open(logo_str, 'rb')
@@ -1324,36 +1361,43 @@ def smtp_test():
     m.send(msg=msg, you=you)
 
 def system_test(add_tests=None):
-    results = {'pass': [], 'fail': [], 'errors': []}
-    tests = [{'name': 'url', 'test': url_test}, 
-             {'name': 'db', 'test': db_test},
-             {'name': 'smtp', 'test': smtp_test}]
+    tests = [{'name': 'Access to USGS web', 'test': url_test}, 
+             {'name': 'Database read/write', 'test': db_test},
+             {'name': 'Sending test email', 'test': smtp_test}]
 
+    # additional tests
     if add_tests is not None:
         tests += add_tests
 
+    results = ''
+    success_message = '{0}: Passed'
+    failure_message = '{0}: Failed (Error - {1})'
+    success = True
     for test in tests:
         try:
             test['test']()
-            results['pass'] += [test['name']]
+            result = success_message.format(test['name'])
         except Exception as e:
-            results['fail'] += [test['name']]
-            results['errors'] += [str(e)]
+            success = False
+            result = failure_message.format(test['name'], str(e))
+        
+        if results:
+            results += '\n{}'.format(result)
+        else:
+            results = result
 
     Session.remove()
 
     title = 'Tests Passed'
-    success = True
-    if len(results['fail']) > 0:
+    if success is False:
         title = 'Some Tests Failed'
-        success = False
     
     data = {'status': 'finished',
             'results': results,
             'message': {'from': 'system_test',
                         'title': title,
-                        'message': str(results),
+                        'message': results,
                         'success': success},
-            'log': 'System Test: ' + str(results)}
+            'log': 'System Test: ' + results}
 
     return data

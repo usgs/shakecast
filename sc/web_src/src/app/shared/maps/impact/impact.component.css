@@ -1,0 +1,15 @@
+.shaking-table {
+  width: 90%;
+  left: 5%;
+  position: relative;
+}
+
+.shaking-table th {
+  color: white;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-radius: 5px;
+  box-shadow: 1px 1px 3px 1px rgba(0,0,0,0.3);
+  -webkit-box-shadow: 1px 1px 3px 1px rgba(0,0,0,0.3);
+  -moz-box-shadow: 1px 1px 3px 1px rgba(0,0,0,0.3);
+}

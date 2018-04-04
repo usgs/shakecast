@@ -1,0 +1,31 @@
+#map {
+  height: 100%;
+}
+
+.impact {    
+    position: fixed;
+    bottom: 50px;
+    z-index: 1000;
+    width: 90%;
+    left: 5%;
+    opacity: .5;
+    font-size: 1.2em;
+    cursor: default;
+}
+
+.impact:hover {
+  opacity: 1;
+}
+
+.facility-types {
+  position: absolute;
+  bottom: 0;
+  padding: 10px;
+  z-index: 500;
+  opacity: .5;
+  cursor: default;
+}
+
+.facility-types:hover {
+  opacity: 1;
+}

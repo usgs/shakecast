@@ -2,7 +2,7 @@ import os
 import json
 from sc.app.util import SC
 
-COMMIT = 'e0249bfd45a0e2b38d854784c967aa53f24fafb4'
+COMMIT = 'af54dcaa7fa82bc18eef75af180942efe4199937'
 GITROOT = 'https://raw.githubusercontent.com/usgs/shakecast/master/'
 
 def get_file_names():

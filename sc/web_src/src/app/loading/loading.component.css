@@ -1,0 +1,43 @@
+.container {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translateX(-50%) translateY(-50%);
+    text-align: center;
+}
+
+.spinning-icon {
+    height: 50px;
+    width: 50px;
+    border-radius: 50%;
+    position: relative;
+    border: 2px dashed white;
+    transform: translateX(-50%);
+    animation-name: spin;
+    animation-duration: 4000ms;
+    animation-iteration-count: infinite;
+    animation-timing-function: linear;
+}
+
+.loading {
+    margin: 0;
+    text-align: center;
+    color: white;
+}
+
+.messages {
+    background: rgba(0,0,0,.4);
+    padding: 10px;
+    border-radius: 10px;
+}
+
+/* Safari */
+@-webkit-keyframes spin {
+  0% { -webkit-transform: rotate(0deg); }
+  100% { -webkit-transform: rotate(360deg); }
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}

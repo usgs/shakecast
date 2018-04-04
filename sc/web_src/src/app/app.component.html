@@ -1,0 +1,18 @@
+<div *ngIf="router.url.indexOf('/shakecast') >= 0">
+    <navbar></navbar>
+    <page-title></page-title>
+</div>
+<div class="router-buffer">
+</div>
+
+<div class="the-view">
+    <router-outlet></router-outlet>
+</div>
+
+<messaging></messaging>
+
+<simple-notifications [options]="options"></simple-notifications>
+
+<screen-dimmer></screen-dimmer>
+
+<loading-comp></loading-comp>
