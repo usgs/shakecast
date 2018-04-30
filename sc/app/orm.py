@@ -3,6 +3,8 @@ import os
 import sys
 import inspect as inspect_mod
 import time
+from math import floor
+from functools import wraps
 
 modules_dir = os.path.join(sc_dir(), 'modules')
 if modules_dir not in sys.path:
@@ -804,7 +806,7 @@ class ShakeMap(Base):
         old_shakemaps = [row for row in result]
         
         return len(old_shakemaps)
-      
+
     def is_new(self):
         stmt = (select([ShakeMap.__table__.c.shakecast_id])
                     .where(and_(ShakeMap.__table__.c.shakemap_id == self.shakemap_id,
@@ -813,10 +815,7 @@ class ShakeMap(Base):
         result = engine.execute(stmt)
         shakemaps = [row for row in result]
         
-        if shakemaps:
-            return False
-        else:
-            return True
+        return len(shakemaps) == 0
            
     def has_products(self, req_prods):
         shakemap_prods = [prod.product_type for prod in self.products if prod.status == 'downloaded' and prod.error is None]
@@ -831,6 +830,16 @@ class ShakeMap(Base):
         map_image = shakemap_image.read()
         shakemap_image.close()
         return map_image
+
+    def get_alert_level(self):
+        alert_level = None
+        if len(self.facility_shaking) > 0:
+            insp_val = self.facility_shaking[0].weight
+            alert_levels = ['grey', 'green', 'yellow', 'orange', 'red']
+            alert_level = alert_levels[int(floor(insp_val))]
+
+        return alert_level
+
     
 class Product(Base):
     __tablename__ = 'product'
@@ -870,6 +879,35 @@ class Product(Base):
                                                      self.update_timestamp)
 
 #######################################################################
+
+# decorator for DB connection
+def dbconnect(func):
+    @wraps(func)
+    def inner(*args, **kwargs):
+        session = Session()  # with all the requirements
+        try:
+            return_val = func(*args, session=session, **kwargs)
+            session.commit()
+        except:
+            session.rollback()
+            return_val = None
+            raise
+        finally:
+            refresh(return_val, session=session)
+            session.expunge_all()
+            Session.remove()
+        return return_val
+    return inner
+
+def refresh(obj, session=None):
+    if isinstance(obj, Base):
+        session.refresh(obj)
+    elif isinstance(obj, list):
+        for o in obj:
+            if isinstance(obj, Base):
+                session.refresh(obj)
+    elif isinstance(obj, dict):
+        pass
 
 # name the database, but switch to a test database if run from test.py
 db_name = 'shakecast.db'
