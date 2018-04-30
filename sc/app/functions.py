@@ -8,7 +8,6 @@ from email.mime.multipart import MIMEMultipart
 import xmltodict
 import shutil
 import time
-from math import floor
 from orm import *
 from objects import *
 from util import *
@@ -256,12 +255,6 @@ def process_shakemaps(shakemaps=None, session=None, scenario=False):
 
             # check if the group gets inspection notifications
             if group.has_spec(not_type='DAMAGE'):
-                
-                # Check if the group gets notification for updates
-                if shakemap.old_maps():
-                    specs = [spec for spec in group.specs if spec.event_type == 'UPDATE']
-                    if not specs:
-                        continue
                     
                 notification = Notification(group=group,
                                             shakemap=shakemap,
@@ -291,7 +284,8 @@ def process_shakemaps(shakemaps=None, session=None, scenario=False):
                                          groups_affected]))
 
         geoJSON = {'type': 'FeatureCollection',
-                    'features': [None] * len(affected_facilities)}
+                    'features': [None] * len(affected_facilities),
+                    'properties': {}}
         if affected_facilities:
             fac_shaking_lst = [None] * len(affected_facilities)
             f_count = 0
@@ -305,7 +299,7 @@ def process_shakemaps(shakemaps=None, session=None, scenario=False):
                 fac_shaking_lst[f_count] = FacilityShaking(**fac_shaking)
 
                 geoJSON['features'][f_count] = makeGeoJSONDict(facility,
-                                                                fac_shaking)    
+                                                                fac_shaking)
 
                 f_count += 1
 
@@ -315,6 +309,8 @@ def process_shakemaps(shakemaps=None, session=None, scenario=False):
 
             session.bulk_save_objects(fac_shaking_lst)
             session.commit()
+
+            geoJSON['properties']['impact-summary'] = get_event_impact(shakemap)
 
             saveGeoJson(shakemap, geoJSON)
 
@@ -330,7 +326,8 @@ def process_shakemaps(shakemaps=None, session=None, scenario=False):
             # just computed
             for n in notifications:
                 inspection_notification(notification=n,
-                                        scenario=scenario)
+                                        scenario=scenario,
+                                        session=session)
         
         session.commit()
 
@@ -496,7 +493,8 @@ def new_event_notification(notifications = None,
         notification.status = 'not sent - no users'
     
 def inspection_notification(notification=None,
-                            scenario=False):
+                            scenario=False,
+                            session=None):
     '''
     Create local products and send inspection notification
     
@@ -510,24 +508,21 @@ def inspection_notification(notification=None,
     group = notification.group
     error = ''
 
-    not_builder = NotificationBuilder()
-    html = not_builder.build_insp_html(shakemap, name=group.template)
+    has_alert_level, new_inspection, update = check_notification_for_group(group, notification, session)
 
-    alert_level = None
-    if len(shakemap.facility_shaking) > 0:
-        insp_val = max(fs.weight for fs in shakemap.facility_shaking)
-        alert_levels = ['grey', 'green', 'yellow', 'orange', 'red']
-        alert_level = alert_levels[int(floor(insp_val))]
-
-    if group.has_alert_level(alert_level):
+    if has_alert_level and new_inspection:
         try:
+            # build the notification
+            not_builder = NotificationBuilder()
+            html = not_builder.build_insp_html(shakemap, name=group.template)
+
             #initiate message
             msg = MIMEMultipart()
             
             # attach html
             msg_html = MIMEText(html, 'html')
             msg.attach(msg_html)
-            
+
             # get and attach shakemap
             msg_shakemap = MIMEImage(shakemap.get_map(), _subtype='jpeg')
             msg_shakemap.add_header('Content-ID', '<shakemap{0}>'.format(shakemap.shakecast_id))
@@ -536,7 +531,7 @@ def inspection_notification(notification=None,
             
             # find the ShakeCast logo
             temp_manager = TemplateManager()
-            configs = temp_manager.get_configs('inspection', 
+            configs = temp_manager.get_configs('inspection',
                                         name=notification.group.template)
             logo_str = os.path.join(sc_dir(),'view','assets',configs['logo'])
             
@@ -557,6 +552,9 @@ def inspection_notification(notification=None,
 
                 if scenario is True:
                     subject = 'SCENARIO: ' + subject
+                elif update is True:
+                    subject = 'UPDATE: ' + subject
+                    
 
                 msg['Subject'] = subject
                 msg['To'] = ', '.join(you)
@@ -572,11 +570,59 @@ def inspection_notification(notification=None,
             error = str(e)
             notification.status = 'send failed'
             
+    elif new_inspection:
+        notification.status = 'not sent: low inspection priority'
     else:
-        notification.status = 'not sent: low insp'
+        notification.status = 'not sent: update without impact changes'
 
     return {'status': notification.status,
             'error': error}
+
+def check_notification_for_group(group, notification, session=None):
+    shakemap = notification.shakemap
+
+    # Check that the inspection status merits a sent notification
+    alert_level = shakemap.get_alert_level()
+
+    # check if inspection list has changed
+    new_inspection = True
+    update = False
+    if shakemap.old_maps():
+        update = True
+        new_inspection = False
+
+        # get the most recent map version
+        previous_map = (session.query(ShakeMap)
+            .filter(ShakeMap.shakemap_id == shakemap.shakemap_id)
+            .filter(ShakeMap.shakemap_version < shakemap.shakemap_version)
+            .order_by(ShakeMap.shakemap_version.desc())
+        ).first()
+
+        prev_alert_level = previous_map.get_alert_level()
+
+        # ignore changes if they don't merit inspection (grey and None)
+        if (((prev_alert_level is None) and 
+                (alert_level is None)) or
+                ((prev_alert_level == 'grey') and
+                (alert_level == 'grey'))):
+            new_inspection = False
+
+        # if overall inspection level changes, send notification
+        elif prev_alert_level != alert_level:
+            new_inspection = True
+
+        # trigger new inspection if the content of the facility_shaking
+        # list changes
+        elif len(previous_map.facility_shaking) != len(shakemap.facility_shaking):
+            new_inspection = True
+        else:
+            for idx in range(len(shakemap.facility_shaking)):
+                if (shakemap.facility_shaking[idx].facility.facility_id !=
+                        previous_map.facility_shaking[idx].facility.facility_id):
+                    new_inspection = True
+                    break
+
+    return group.has_alert_level(alert_level), new_inspection, update
 
 def download_scenario(shakemap_id=None, scenario=False):
     message = ''
@@ -1328,7 +1374,24 @@ def get_facility_info(group_name='', shakemap_id=''):
         if count > 0:
             f_dict[f_type[0]] = count
 
+    Session.remove()
+
     return f_dict
+
+def get_event_impact(shakemap):
+    impact_sum = {'gray': 0,
+             'green': 0,
+             'yellow': 0,
+             'orange': 0,
+             'red': 0}
+
+    fac_shaking = shakemap.facility_shaking
+    
+    for s in fac_shaking:
+        # record number of facs at each alert level
+        impact_sum[s.alert_level] += 1
+
+    return impact_sum
 
 
 
