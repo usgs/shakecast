@@ -904,8 +904,8 @@ def refresh(obj, session=None):
         session.refresh(obj)
     elif isinstance(obj, list):
         for o in obj:
-            if isinstance(obj, Base):
-                session.refresh(obj)
+            if isinstance(o, Base):
+                session.refresh(o)
     elif isinstance(obj, dict):
         pass
 

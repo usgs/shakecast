@@ -52,7 +52,7 @@ class TestDBConnet(unittest.TestCase):
         def needs_session(session=None):
             return session.query(Event).all()
 
-        self.assertTrue(type(needs_session()) is list) 
+        self.assertTrue(isinstance(needs_session(), list)) 
 
     def test_catchesError(self):
 
@@ -602,7 +602,7 @@ class TestGroupGetsNotification(unittest.TestCase):
             facility = fac3
         )
 
-        session.add_all([fac1, fs1, fs2])
+        session.add_all([fac1, fac2, fac3, fs1, fs2, fs3])
 
         session.commit()
 
