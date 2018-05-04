@@ -1275,7 +1275,7 @@ def add_facs_to_groups(session=None):
     groups = session.query(Group).all()
     for group in groups:
         query = session.query(Facility).filter(Facility.in_grid(group))
-        if group.facility_type.lower() != 'all':
+        if str(group.facility_type).lower() != 'all':
             query = query.filter(Facility.facility_type.like(group.facility_type))
 
         group.facilities = query.all()
