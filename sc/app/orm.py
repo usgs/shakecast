@@ -539,11 +539,41 @@ class Group(Base):
                     cls.lon_min <= point.lon,
                     cls.lon_max >= point.lon)
     
-    @hybrid_method    
-    def has_spec(self, not_type=''):
-        specs = [s.notification_type.lower() for s in self.specs]
-        event_types = [s.event_type.lower() for s in self.specs]
-        return bool(not_type.lower() in specs + event_types)
+    def _get_specs(self,
+            notification_type,
+            scenario=False,
+            heartbeat=False,
+            inspection=None):
+        notification_type = notification_type.lower()
+        specs = [s for s in self.specs if
+                s.notification_type.lower() == notification_type]
+        filtered = [s for s in specs if
+                (((s.event_type.lower() == 'scenario') is scenario)
+                and ((s.event_type.lower() == 'heartbeat') is heartbeat)
+                or s.event_type.lower() == 'all')]
+
+        if len(filtered) > 0 and inspection is not None:
+            filtered = [s for s in filtered if
+                    str(s.inspection_priority).lower() == inspection]
+
+        return filtered
+
+    def get_new_event_spec(self, scenario=False):
+        specs = self._get_specs('new_event', scenario=scenario)
+
+        return specs[0] if len(specs) > 0 else None
+
+    def get_inspection_spec(self, inspection, scenario=False):
+        insp = self._get_specs('damage', inspection=inspection, scenario=scenario)
+
+        return specs[0] if len(specs) > 0 else None
+
+    def gets_notification(self, notification_type, scenario=False, heartbeat=False):
+        specs = self._get_specs(notification_type,
+                scenario=scenario,
+                heartbeat=heartbeat)
+
+        return len(specs) > 0
 
     def has_alert_level(self, level):
         # grey groups get no-inspection notifications

@@ -141,7 +141,8 @@ def process_events(events=None, session=None, scenario=False):
                                         .filter(Group.point_inside(event))
                                         .all())
             groups_affected = [group for group in in_region
-                                    if group.has_spec(not_type='scenario')]
+                                    if group.gets_notification('new_event', scenario=True)]
+
             all_groups_affected.update(groups_affected)
         elif event.event_id != 'heartbeat':
             groups_affected = (session.query(Group)
@@ -149,13 +150,15 @@ def process_events(events=None, session=None, scenario=False):
                                         .all())
 
             filtered_groups = [group for group in groups_affected 
-                                    if group.has_spec(not_type='scenario') is False]
+                                    if group.gets_notification('new_event')]
 
             all_groups_affected.update(filtered_groups)
         else:
             all_groups = session.query(Group).all()
+
             groups_affected = [group for group in all_groups
-                                    if group.has_spec(not_type='heartbeat')]
+                                    if group.gets_notification('new_event', heartbeat=True)]
+
             all_groups_affected.update(groups_affected)
         
         if not groups_affected:
@@ -165,21 +168,20 @@ def process_events(events=None, session=None, scenario=False):
             event.status = 'processing_started'
         
         for group in all_groups_affected:
-            # Check if the group gets NEW_EVENT messages
-            if group.has_spec(not_type='NEW_EVENT'):
-                
-                # check new_event magnitude to make sure the group wants a 
-                # notificaiton
-                event_spec = [s for s in group.specs
-                                    if s.notification_type == 'NEW_EVENT'][0]
-                if event_spec.minimum_magnitude > event.magnitude:
-                    continue
-                
-                notification = Notification(group=group,
-                                            event=event,
-                                            notification_type='NEW_EVENT',
-                                            status='created')
-                session.add(notification)
+
+            # check new_event magnitude to make sure the group wants a 
+            # notificaiton
+            event_spec = group.get_new_event_spec()
+
+            if (event_spec is None or
+                    event_spec.minimum_magnitude > event.magnitude):
+                continue
+            
+            notification = Notification(group=group,
+                                        event=event,
+                                        notification_type='NEW_EVENT',
+                                        status='created')
+            session.add(notification)
         session.commit()
     
     if all_groups_affected:
@@ -193,14 +195,16 @@ def process_events(events=None, session=None, scenario=False):
 
             last_day = time.time() - 60 * 60 * 5
             filter_nots = filter(lambda x: x.event is not None and (x.event.time > last_day or scenario is True), nots)
-            new_event_notification(notifications=filter_nots,
-                                    scenario=scenario)
+
+            if len(filter_nots) > 0:
+                new_event_notification(notifications=filter_nots,
+                                        scenario=scenario)
+            
             processed_events = [n.event for n in filter_nots]
+
             for e in processed_events:
-                if scenario is True:
-                    e.status = 'scenario'
-                else:
-                    e.status = 'processed'
+                e.status = 'scenario' if scenario else 'processed'
+
             session.commit()
     
 def process_shakemaps(shakemaps=None, session=None, scenario=False):
@@ -237,13 +241,13 @@ def process_shakemaps(shakemaps=None, session=None, scenario=False):
                                     .filter(Group.in_grid(grid))
                                     .all())
             groups_affected = [group for group in in_region
-                                    if group.has_spec('scenario')]
+                                    if group.gets_notification('damage', scenario=True)]
         else:
             in_region = (session.query(Group)
                                         .filter(Group.in_grid(grid))
                                         .all())
             groups_affected = [group for group in in_region
-                                    if not group.has_spec('scenario')]
+                                    if group.gets_notification('damage')]
         
         if not groups_affected:
             shakemap.status = 'processed - no groups'
@@ -252,17 +256,14 @@ def process_shakemaps(shakemaps=None, session=None, scenario=False):
         
         # send out new events and create inspection notifications
         for group in groups_affected:
-
-            # check if the group gets inspection notifications
-            if group.has_spec(not_type='DAMAGE'):
                     
-                notification = Notification(group=group,
-                                            shakemap=shakemap,
-                                            event=shakemap.event,
-                                            notification_type='DAMAGE',
-                                            status='created')
-                
-                session.add(notification)
+            notification = Notification(group=group,
+                                        shakemap=shakemap,
+                                        event=shakemap.event,
+                                        notification_type='DAMAGE',
+                                        status='created')
+            
+            session.add(notification)
         session.commit()
         
         notifications = (session.query(Notification)

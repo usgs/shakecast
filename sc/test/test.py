@@ -658,9 +658,11 @@ class TestFull(unittest.TestCase):
         session = Session()
         user1 = create_user('GLOBAL', self.email)
         user2 = create_user('GLOBAL_SCENARIO', self.email)
+        user3 = create_user('NO_NEW_EVENT:NO_INSP:ALL', self.email)
 
         session.add(user1)
         session.add(user2)
+        session.add(user3)
 
         session.commit()
         Session.remove()
@@ -686,9 +688,16 @@ class TestFull(unittest.TestCase):
         scenario_group = create_group(name='GLOBAL_SCENARIO', event_type='SCENARIO')
         high_prio = create_group(name='HIGH_INSP',
                                     insp_prios=['RED'])
+        
+        no_new_event_group = create_group(name='NO_NEW_EVENT', new_event=False)
+        no_insp_group = create_group(name='NO_INSP', insp_prios=[])
+        all_group = create_group(name='ALL', event_type='all')
+
         session.add(global_group)
         session.add(scenario_group)
         session.add(high_prio)
+        session.add(no_new_event_group)
+        session.add(no_insp_group)
 
         session.commit()
         Session.remove()
@@ -1132,7 +1141,8 @@ class TestImport(unittest.TestCase):
                     failed_str += '\nIncorrect number of users: {}, {}'.format(group.name,
                                                                                len(group.users))
                     failed = True
-                self.assertTrue(group.has_spec('scenario'))
+                self.assertTrue(group.gets_notification('new_event', scenario=True))
+                self.assertTrue(group.gets_notification('damage', scenario=True))
                 self.assertTrue('green' in group.get_scenario_alert_levels())
 
             self.assertEqual('Ex1', group.updated_by)
@@ -1363,7 +1373,9 @@ def create_fac(grid=None, fac_id='AUTO_GENERATED'):
     return facility
     
 def create_group(name=None, 
-                    event_type='ACTUAL', 
+                    event_type='ACTUAL',
+                    new_event=True,
+                    heartbeat=True,
                     insp_prios=['GREY', 
                                 'GREEN', 
                                 'YELLOW', 
@@ -1377,17 +1389,19 @@ def create_group(name=None,
     group.lat_min = -90
     group.lat_max = 90
     
-    gs = Group_Specification()
-    gs.notification_type = 'NEW_EVENT'
-    gs.minimum_magnitude = 3
-    gs.notificaiton_format = 'EMAIL_HTML'
-    gs.event_type = event_type
-    group.specs.append(gs)
+    if new_event is True:
+        gs = Group_Specification()
+        gs.notification_type = 'NEW_EVENT'
+        gs.minimum_magnitude = 3
+        gs.notificaiton_format = 'EMAIL_HTML'
+        gs.event_type = event_type
+        group.specs.append(gs)
     
-    gs = Group_Specification()
-    gs.notification_type = 'heartbeat'
-    gs.event_type = 'heartbeat'
-    group.specs.append(gs)
+    if heartbeat is True:
+        gs = Group_Specification()
+        gs.notification_type = 'new_event'
+        gs.event_type = 'heartbeat'
+        group.specs.append(gs)
     
     for insp_prio in insp_prios:
         gs = Group_Specification()

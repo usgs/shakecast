@@ -585,11 +585,7 @@ def get_notification(event_id):
 
     dicts = []
     if event is not None:
-        nots = event.notifications
-        for sm in event.shakemaps:
-            nots += sm.notifications
-
-        for obj in nots:
+        for obj in event.notifications:
             dict_ = obj.__dict__.copy()
             dict_.pop('_sa_instance_state', None)
             dict_['group_name'] = obj.group.name
