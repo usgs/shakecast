@@ -62,6 +62,9 @@ node_modules
 npm-debug.log
 testem.log
 /typings
+.coverage
+htmlcov/
+
 
 # e2e
 /e2e/*.js
