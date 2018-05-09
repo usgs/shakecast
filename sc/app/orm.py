@@ -564,7 +564,7 @@ class Group(Base):
         return specs[0] if len(specs) > 0 else None
 
     def get_inspection_spec(self, inspection, scenario=False):
-        insp = self._get_specs('damage', inspection=inspection, scenario=scenario)
+        specs = self._get_specs('damage', inspection=inspection, scenario=scenario)
 
         return specs[0] if len(specs) > 0 else None
 
@@ -595,32 +595,27 @@ class Group(Base):
         return level.lower() in levels
 
     def get_alert_levels(self):
-        levels = [s.inspection_priority.lower() for s in self.specs if 
-                                s.notification_type == 'DAMAGE']
+        specs = self._get_specs('damage')
 
-        return levels
+        return [spec.inspection_priority.lower() for spec in specs
+                if spec is not None]
 
     def get_scenario_alert_levels(self):
-        levels = [s.inspection_priority.lower() for s in self.specs if 
-                                s.notification_type == 'DAMAGE' and s.event_type == 'SCENARIO']
+        specs = self._get_specs('damage', scenario=True)
 
-        return levels
+        return [spec.inspection_priority.lower() for spec in specs
+                if spec is not None]
 
-    def check_min_mag(self, mag=10):
-        min_mags = [s.minimum_magnitude for s in self.specs 
-                    if s.notification_type.lower() == 'new_event']
-        for min_mag in min_mags:
-            if mag > min_mag:
-                return True
-        return False
+    def check_min_mag(self, mag):
+        new_event = self.get_new_event_spec()
+
+        return (new_event.minimum_magnitude < mag
+                if new_event is not None else None)
 
     def get_min_mag(self):
-        mags = [s.minimum_magnitude for s in self.specs 
-                    if s.notification_type.lower() == 'new_event']
-        if len(mags) == 0:
-            return 0
-        else:
-            return min(mags)
+        new_event = self.get_new_event_spec()
+
+        return new_event.minimum_magnitude if new_event is not None else None
 
 
 class Group_Specification(Base):

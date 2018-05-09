@@ -698,6 +698,7 @@ class TestFull(unittest.TestCase):
         session.add(high_prio)
         session.add(no_new_event_group)
         session.add(no_insp_group)
+        session.add(all_group)
 
         session.commit()
         Session.remove()
