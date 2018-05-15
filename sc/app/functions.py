@@ -1465,3 +1465,35 @@ def system_test(add_tests=None):
             'log': 'System Test: ' + results}
 
     return data
+
+def sql_to_obj(sql):
+    obj = {}
+
+    if isinstance(sql, Base):
+        sql = sql.__dict__
+
+    if isinstance(sql, list):
+        for item in sql:
+            if isinstance(item, dict) or isinstance(item, list):
+                item = sql_to_obj(item)
+
+    elif isinstance(sql, dict):
+        if sql.get('_sa_instance_state', False):
+            sql.pop('_sa_instance_state')
+
+        for key in sql.keys():
+            item = sql[key]
+            if isinstance(item, Base) or isinstance(item, dict):
+                item = sql_to_obj(item)
+            
+            elif isinstance(item, list):
+                for obj in item:
+                    if isinstance(obj, Base):
+                        item = sql_to_obj(item)
+            
+            obj[key] = item
+
+    else:
+        obj = sql
+
+    return obj
