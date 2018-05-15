@@ -1101,9 +1101,9 @@ class SoftwareUpdater(object):
         """
         url_opener = URLOpener()
         json_str = url_opener.open(self.json_url)
-        update_list = json.loads(json_str)
+        update = json.loads(json_str)
 
-        return update_list
+        return update
 
     def check_update(self, testing=False):
         '''
@@ -1113,23 +1113,23 @@ class SoftwareUpdater(object):
         sc = SC()
         self.current_version = sc.dict['Server']['update']['software_version']
 
-        update_list = self.get_update_info()
+        update = self.get_update_info()
         update_required = False
         notify = False
         update_info = set()
-        for update in update_list['updates']:
-            if self.check_new_update(update['version'], self.current_version) is True:
-                update_required = True
-                update_info.add(update['info'])
 
-                if self.check_new_update(update['version'], self.current_update) is True:
-                    # update current update version in sc.conf json
-                    sc = SC()
-                    sc.dict['Server']['update']['update_version'] = update['version']
+        if self.check_new_update(update['version'], self.current_version) is True:
+            update_required = True
+            update_info.add(update['info'])
 
-                    if testing is not True:
-                        sc.save_dict()
-                    notify = True
+            if self.check_new_update(update['version'], self.current_update) is True:
+                # update current update version in sc.conf json
+                sc = SC()
+                sc.dict['Server']['update']['update_version'] = update['version']
+
+                if testing is not True:
+                    sc.save_dict()
+                notify = True
     
         return update_required, notify, update_info
 
@@ -1182,14 +1182,14 @@ class SoftwareUpdater(object):
                 sc.save_dict()
 
     def update(self, testing=False):
-        update_list = self.get_update_info()
+        update = self.get_update_info()
         version = self.current_version
         sc = SC()
         delim = get_delim()
         failed = []
         success = []
         # concatinate files if user is multiple updates behind
-        files = self.condense_files(update_list['updates'])
+        files = update.get('files', [])
         for file_ in files:
             try:
                 # download file

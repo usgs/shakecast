@@ -21,7 +21,7 @@ import datetime
 from ast import literal_eval
 from app.objects import Clock, SC, NotificationBuilder, TemplateManager, SoftwareUpdater
 from app.orm import *
-from app.functions import determine_xml, get_facility_info
+from app.functions import determine_xml, get_facility_info, sql_to_obj
 from ui import UI
 
 # setup logging
@@ -753,24 +753,32 @@ def upload():
 @app.route('/admin/api/groups/<group_id>/info')
 @admin_only
 @login_required
-def get_group_info(group_id):
-    session = Session()
-    group = (session.query(Group)
+@dbconnect
+def get_group_info(group_id, session):
+    groups = (session.query(Group)
                 .filter(Group.shakecast_id == group_id)
-                .first())
+                .options(joinedload_all('*'))
+                .all())
 
-    if group is not None:
-        group_specs = {'inspection': group.get_alert_levels(),
-                        'new_event': group.get_min_mag(),
-                        'heartbeat': group.has_spec('heartbeat'),
-                        'scenario': group.get_scenario_alert_levels(),
-                        'facilities': get_facility_info(group_name=group.name),
-                        'users': group.users,
-                        'template': group.template}
+    if groups:
+        group = groups[0]
+        inspection = group.get_alert_levels()
+        min_mag = group.get_min_mag()
+        heartbeat = group.gets_notification('heartbeat')
+        scenario = group.get_scenario_alert_levels()
+        facility_info = get_facility_info(group_name=group.name)
+        users = [sql_to_obj(user.__dict__) for user in group.users]
+        template = group.template
+
+        group_specs = {'inspection': inspection,
+                        'new_event': min_mag,
+                        'heartbeat': heartbeat,
+                        'scenario': scenario,
+                        'facilities': facility_info,
+                        'users': users,
+                        'template': template}
     
     specs_json = json.dumps(group_specs, cls=AlchemyEncoder)
-    
-    Session.remove()    
     return specs_json
 
 @app.route('/admin/get/users/<user_id>/groups')
