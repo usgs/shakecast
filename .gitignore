@@ -18,7 +18,7 @@ templates/new_event/*
 conf/sc_back.json
 *.DS_Store
 templates/
-functions-test.py
+*-test.py
 server-messages.json
 .vscode/
 sc_back.json
