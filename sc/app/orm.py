@@ -575,16 +575,18 @@ class Group(Base):
 
         return len(specs) > 0
 
-    def has_alert_level(self, level):
+    def has_alert_level(self, level, scenario=False):
         # grey groups get no-inspection notifications
         if level is None:
-            level = 'grey'
+            level = 'gray'
 
         # make sure we're only dealing with lowercase
         level = level.lower()
         
         levels = [s.inspection_priority.lower() for s in self.specs if 
-                                s.notification_type == 'DAMAGE']
+                                ((s.notification_type == 'DAMAGE') and
+                                ((s.event_type.lower() == 'scenario') is scenario) or
+                                (s.event_type.lower() == 'all'))]
 
         # need to match grey and gray... we use gray in pyCast, but
         # workbook and V3 use grey
@@ -860,7 +862,7 @@ class ShakeMap(Base):
         alert_level = None
         if len(self.facility_shaking) > 0:
             insp_val = self.facility_shaking[0].weight
-            alert_levels = ['grey', 'green', 'yellow', 'orange', 'red']
+            alert_levels = ['gray', 'green', 'yellow', 'orange', 'red']
             alert_level = alert_levels[int(floor(insp_val))]
 
         return alert_level
@@ -909,7 +911,16 @@ class Product(Base):
 def dbconnect(func):
     @wraps(func)
     def inner(*args, **kwargs):
-        session = Session()  # with all the requirements
+        remove_session = True
+
+        # get session from kwargs if available
+        if 'session' in kwargs:
+            session = kwargs.pop('session')
+            remove_session = False
+        else:
+            # if not create a new one
+            session = Session()
+
         try:
             return_val = func(*args, session=session, **kwargs)
             session.commit()
@@ -919,8 +930,12 @@ def dbconnect(func):
             raise
         finally:
             refresh(return_val, session=session)
-            session.expunge_all()
-            Session.remove()
+
+            # function-specific session, close it
+            if remove_session is True:
+                session.expunge_all()
+                Session.remove()
+
         return return_val
     return inner
 

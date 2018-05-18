@@ -58,7 +58,8 @@ def geo_json(query_period='day'):
     
     return data
 
-def check_new():
+@dbconnect
+def check_new(session=None):
     '''
     Search database for unprocessed shakemaps
     
@@ -73,20 +74,13 @@ def check_new():
     log_message = ''
     error = ''
     try:
-        session = Session()
         new_events = (session.query(Event)
                              .filter(Event.status=='new')
                              .all())
         new_shakemaps = (session.query(ShakeMap)
                                 .filter(ShakeMap.status=='new')
                                 .all())
-        
-    except Exception as e:
-        error = str(e)
-        log_message += 'failed to access database: {}'.format(error)
-        
-        
-    try:
+
         if new_events:
             process_events(new_events, session=session)
             log_message += '\nProcessed Events: %s' % [str(ne) for ne in new_events]
@@ -98,10 +92,8 @@ def check_new():
      
     except Exception as e:
         error = '{}: {}'.format(type(e), str(e))
-        log_message += 'failed to process new shakemaps: {}'.format(e)
+        log_message += 'failed to process new events/shakemaps: {}'.format(e)
         
-    
-    Session.remove()
     data = {'status': 'finished',
             'message': 'Check for new earthquakes',
             'log': log_message,
@@ -203,9 +195,11 @@ def process_events(events=None, session=None, scenario=False):
             processed_events = [n.event for n in filter_nots]
 
             for e in processed_events:
-                e.status = 'scenario' if scenario else 'processed'
+                e.status = 'processed'
 
-            session.commit()
+    if scenario is True:
+        for event in events:
+            event.status = 'scenario'
     
 def process_shakemaps(shakemaps=None, session=None, scenario=False):
     '''
@@ -291,7 +285,7 @@ def process_shakemaps(shakemaps=None, session=None, scenario=False):
             fac_shaking_lst = [None] * len(affected_facilities)
             f_count = 0
             for facility in affected_facilities:
-                fac_shaking = make_inspection_prios(facility=facility,
+                fac_shaking = make_inspection_priority(facility=facility,
                                                     shakemap=shakemap,
                                                     grid=grid)
                 if fac_shaking is False:
@@ -360,7 +354,7 @@ def saveGeoJson(shakemap, geoJSON):
     with open(json_file, 'w') as f_:
         f_.write(json.dumps(geoJSON))
 
-def make_inspection_prios(facility=None,
+def make_inspection_priority(facility=None,
                           shakemap=None,
                           grid=None):
     '''
@@ -509,7 +503,12 @@ def inspection_notification(notification=None,
     group = notification.group
     error = ''
 
-    has_alert_level, new_inspection, update = check_notification_for_group(group, notification, session)
+    has_alert_level, new_inspection, update = check_notification_for_group(
+        group,
+        notification,
+        session=session,
+        scenario=scenario
+    )
 
     if has_alert_level and new_inspection:
         try:
@@ -579,7 +578,8 @@ def inspection_notification(notification=None,
     return {'status': notification.status,
             'error': error}
 
-def check_notification_for_group(group, notification, session=None):
+@dbconnect
+def check_notification_for_group(group, notification, session=None, scenario=False):
     shakemap = notification.shakemap
 
     # Check that the inspection status merits a sent notification
@@ -604,8 +604,8 @@ def check_notification_for_group(group, notification, session=None):
         # ignore changes if they don't merit inspection (grey and None)
         if (((prev_alert_level is None) and 
                 (alert_level is None)) or
-                ((prev_alert_level == 'grey') and
-                (alert_level == 'grey'))):
+                ((prev_alert_level == 'gray') and
+                (alert_level == 'gray'))):
             new_inspection = False
 
         # if overall inspection level changes, send notification
@@ -623,7 +623,7 @@ def check_notification_for_group(group, notification, session=None):
                     new_inspection = True
                     break
 
-    return group.has_alert_level(alert_level), new_inspection, update
+    return group.has_alert_level(alert_level, scenario), new_inspection, update
 
 def download_scenario(shakemap_id=None, scenario=False):
     message = ''
@@ -650,8 +650,8 @@ def download_scenario(shakemap_id=None, scenario=False):
                         'success': success},
             'log': 'Download scenario: ' + shakemap_id + ', ' + status}
 
-def delete_scenario(shakemap_id=None):
-    session = Session()
+@dbconnect
+def delete_scenario(shakemap_id=None, session=None):
     scenario = (session.query(ShakeMap).filter(ShakeMap.shakemap_id == shakemap_id)
                                             .first())
     event = (session.query(Event).filter(Event.event_id == shakemap_id).first())
@@ -667,7 +667,6 @@ def delete_scenario(shakemap_id=None):
         session.delete(event)
 
     session.commit()
-    Session.remove()
 
     return {'status': 'finished',
             'message': {'message': 'Successfully removed scenario: ' + shakemap_id, 
@@ -689,50 +688,39 @@ def remove_dir(directory_name):
     
     return success
 
-def run_scenario(shakemap_id=None):
+@dbconnect
+def run_scenario(shakemap_id=None, session=None):
     '''
     Processes a shakemap as if it were new
     '''
-    
-    session = Session()
+    error = None
     # Check if we have the eq in db
-    event = session.query(Event).filter(Event.event_id == shakemap_id).all()
-    shakemap = session.query(ShakeMap).filter(ShakeMap.shakemap_id == shakemap_id).all()
-    
-    if event:
-        try:
+    try:
+        event = session.query(Event).filter(Event.event_id == shakemap_id).all()
+        shakemap = session.query(ShakeMap).filter(ShakeMap.shakemap_id == shakemap_id).all()
+
+        if event:
             process_events(events=[event[0]],
-                           session=session,
-                           scenario=True)
-            processed_event = True
-        except Exception:
-            processed_event = False
+                            session=session,
+                            scenario=True)
 
-    else:
-        processed_event = False
-
-    if shakemap:
-        try:
+        if shakemap:
             process_shakemaps(shakemaps=[shakemap[0]],
-                              session=session,
-                              scenario=True)
-            processed_shakemap = True
-        except Exception:
-            processed_shakemap = False
-    
-    else:
-        processed_shakemap = False
-    
-    if processed_event is False or processed_shakemap is False:
-        message = 'Scenario run failed'
-    else:
+                                session=session,
+                                scenario=True)
+        
         message = 'Scenario run complete'
+
+    except Exception as e:
+        error = str(e)
+        message = 'Scenario run failed'
     
     return {'status': 'finished',
             'message': {'from': 'scenario_run',
                         'title': 'Scenario: {}'.format(shakemap_id),
                         'message': message,
-                        'success': processed_event and processed_shakemap},
+                        'success': error is None},
+            'error': error,
             'log': 'Run scenario: ' + shakemap_id}
       
 def create_grid(shakemap=None):
@@ -851,7 +839,8 @@ def import_facility_xml(xml_file='', _user=None):
     
     return data
 
-def import_facility_dicts(facs=None, _user=None):
+@dbconnect
+def import_facility_dicts(facs=None, _user=None, session=None):
     '''
     Import a list of dicts containing facility info
     
@@ -867,7 +856,6 @@ def import_facility_dicts(facs=None, _user=None):
                     'log': message to be added to ShakeCast log
                            and should contain info on error}
     '''
-    session = Session()
     
     if isinstance(_user, int):
         _user = session.query(User).filter(User.shakecast_id == _user).first()
@@ -971,8 +959,6 @@ def import_facility_dicts(facs=None, _user=None):
         add_facs_to_groups(session=session)
         session.commit()
 
-    Session.remove()
-
     message = ''
     for key, val in count_dict.iteritems():
         message += '{}: {}\n'.format(key, val)
@@ -1015,7 +1001,8 @@ def import_group_xml(xml_file='', _user=None):
     data = import_group_dicts(groups=xml_list, _user=_user)
     return data
 
-def import_group_dicts(groups=None, _user=None):
+@dbconnect
+def import_group_dicts(groups=None, _user=None, session=None):
     '''
     Import a list of dicts containing group info
     
@@ -1031,7 +1018,6 @@ def import_group_dicts(groups=None, _user=None):
                     'log': message to be added to ShakeCast log
                            and should contain info on error}
     '''
-    session = Session()
     
     if isinstance(_user, int):
         _user = session.query(User).filter(User.shakecast_id == _user).first()
@@ -1124,7 +1110,6 @@ def import_group_dicts(groups=None, _user=None):
     add_facs_to_groups(session=session)
     add_users_to_groups(session=session)
     session.commit()
-    Session.remove()
 
     log_message = ''
     status = 'finished'
@@ -1162,7 +1147,8 @@ def import_user_xml(xml_file='', _user=None):
     
     return data
 
-def import_user_dicts(users=None, _user=None):
+@dbconnect
+def import_user_dicts(users=None, _user=None, session=None):
     '''
     Import a list of dicts containing user info
     
@@ -1178,7 +1164,6 @@ def import_user_dicts(users=None, _user=None):
                     'log': message to be added to ShakeCast log
                            and should contain info on error}
     '''
-    session = Session()
     
     if isinstance(_user, int):
         _user = session.query(User).filter(User.shakecast_id == _user).first()
@@ -1228,7 +1213,6 @@ def import_user_dicts(users=None, _user=None):
         add_users_to_groups(session=session)
         session.commit()
 
-    Session.remove()
     log_message = ''
     status = 'finished'
     data = {'status': status,
@@ -1306,7 +1290,8 @@ def add_users_to_groups(session=None):
                     if group:
                         user.groups.append(group[0])
 
-def delete_inventory_by_id(inventory_type=None, ids=None):
+@dbconnect
+def delete_inventory_by_id(inventory_type=None, ids=None, session=None):
     '''
     Function made to be run by the ShakeCast server deletes facilities
     by their shakecast_id
@@ -1324,7 +1309,6 @@ def delete_inventory_by_id(inventory_type=None, ids=None):
             plural = 'users'
             inv_table = User
 
-        session = Session()
         inventory = session.query(inv_table).filter(inv_table
                                             .shakecast_id
                                             .in_(ids)).all()
@@ -1336,8 +1320,6 @@ def delete_inventory_by_id(inventory_type=None, ids=None):
             if len(deleted) > 1:
                 inventory_type = plural
         session.commit()
-
-        Session.remove()
 
     data = {'status': 'finished',
             'message': {'from': 'delete_inventory',
@@ -1351,12 +1333,12 @@ def delete_inventory_by_id(inventory_type=None, ids=None):
     return {'status': 'finished', 'message': deleted}
 
 
-def get_facility_info(group_name='', shakemap_id=''):
+@dbconnect
+def get_facility_info(group_name='', shakemap_id='', session=None):
     '''
     Get facility overview (Facilities per facility type) for a 
     specific group or shakemap or both or none
     '''
-    session = Session()
     f_types = session.query(Facility.facility_type).distinct().all()
 
     f_dict = {}
@@ -1374,8 +1356,6 @@ def get_facility_info(group_name='', shakemap_id=''):
         count = query.count()
         if count > 0:
             f_dict[f_type[0]] = count
-
-    Session.remove()
 
     return f_dict
 
@@ -1404,8 +1384,8 @@ def url_test():
     pg = ProductGrabber()
     pg.get_json_feed()
 
-def db_test():
-    session = Session()
+@dbconnect
+def db_test(session=None):
     u = User()
     u.username = 'SC_TEST_USER'
     session.add(u)
@@ -1413,7 +1393,6 @@ def db_test():
 
     session.delete(u)
     session.commit()
-    Session.remove()
 
 def smtp_test():
     m = Mailer()
