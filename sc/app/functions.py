@@ -694,26 +694,30 @@ def run_scenario(shakemap_id=None, session=None):
     Processes a shakemap as if it were new
     '''
     error = None
-    # Check if we have the eq in db
-    try:
-        event = session.query(Event).filter(Event.event_id == shakemap_id).all()
-        shakemap = session.query(ShakeMap).filter(ShakeMap.shakemap_id == shakemap_id).all()
 
+    # Check if we have the eq in db
+    event = session.query(Event).filter(Event.event_id == shakemap_id).first()
+    shakemap = session.query(ShakeMap).filter(ShakeMap.shakemap_id == shakemap_id).first()
+    try:
         if event:
-            process_events(events=[event[0]],
+            process_events(events=[event],
                             session=session,
                             scenario=True)
 
         if shakemap:
-            process_shakemaps(shakemaps=[shakemap[0]],
+            process_shakemaps(shakemaps=[shakemap],
                                 session=session,
                                 scenario=True)
-        
+
         message = 'Scenario run complete'
 
     except Exception as e:
         error = str(e)
         message = 'Scenario run failed'
+
+        
+    if event is None and shakemap is None:
+        error = 'No events available for this event id'
     
     return {'status': 'finished',
             'message': {'from': 'scenario_run',
@@ -1260,7 +1264,8 @@ def add_facs_to_groups(session=None):
     groups = session.query(Group).all()
     for group in groups:
         query = session.query(Facility).filter(Facility.in_grid(group))
-        if str(group.facility_type).lower() != 'all':
+        if ((group.facility_type is not None) and
+                (group.facility_type.lower() != 'all')):
             query = query.filter(Facility.facility_type.like(group.facility_type))
 
         group.facilities = query.all()
