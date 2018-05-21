@@ -19,6 +19,8 @@ from sqlalchemy.ext.declarative import *
 from sqlalchemy.ext.hybrid import hybrid_method
 from sqlalchemy.orm import *
 from sqlalchemy.sql import and_, or_
+from sqlalchemy.orm.session import Session as SessionClass
+
 from werkzeug.security import generate_password_hash
 
 # Get directory location for database
@@ -585,8 +587,8 @@ class Group(Base):
         
         levels = [s.inspection_priority.lower() for s in self.specs if 
                                 ((s.notification_type == 'DAMAGE') and
-                                ((s.event_type.lower() == 'scenario') is scenario) or
-                                (s.event_type.lower() == 'all'))]
+                                (((s.event_type.lower() == 'scenario') is scenario) or
+                                (s.event_type.lower() == 'all')))]
 
         # need to match grey and gray... we use gray in pyCast, but
         # workbook and V3 use grey
@@ -911,18 +913,34 @@ class Product(Base):
 def dbconnect(func):
     @wraps(func)
     def inner(*args, **kwargs):
-        remove_session = True
+        remove_session = False
+        session = None
 
-        # get session from kwargs if available
+        # check if session is passed as arg
+        new_args = []
+        for arg in args:
+            if isinstance(arg, SessionClass):
+                session = arg
+            else:
+                new_args.append(arg)
+
+        # get session from kwargs -- will overwrite session from
+        # regular arg to ensure only one gets passed to the
+        # function
         if 'session' in kwargs:
             session = kwargs.pop('session')
-            remove_session = False
-        else:
-            # if not create a new one
+
+        # if there is no session, create one
+        if session is None:
             session = Session()
 
+            # this session is created only for this function, destroy
+            # it on completion
+            remove_session = True
+
         try:
-            return_val = func(*args, session=session, **kwargs)
+            # run the function
+            return_val = func(*new_args, session=session, **kwargs)
             session.commit()
         except:
             session.rollback()

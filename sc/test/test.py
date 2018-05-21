@@ -52,7 +52,53 @@ class TestDBConnet(unittest.TestCase):
         def needs_session(session=None):
             return session.query(Event).all()
 
-        self.assertTrue(isinstance(needs_session(), list)) 
+        self.assertTrue(isinstance(needs_session(), list))
+
+    def test_passesSessionKwarg(self):
+
+        @dbconnect
+        def needs_session(session=None):
+            return session.query(Event).all()
+
+        session = Session()
+        self.assertTrue(isinstance(needs_session(session=session), list))
+        Session.remove()
+
+    def test_passesSessionArg(self):
+
+        @dbconnect
+        def needs_session_and_args(arg1, arg2, session=None, **kwargs):
+            return session.query(Event).all()
+
+        session = Session()
+        result = needs_session_and_args(
+            'arg1',
+            'arg2',
+            session,
+            somekwarg='kwarg'
+        )
+
+        self.assertTrue(isinstance(result, list))
+        Session.remove()
+
+    def test_handlesDoubleSessionInput(self):
+
+        @dbconnect
+        def needs_session_and_args(arg1, arg2, session=None, **kwargs):
+            return session.query(Event).all()
+
+        session1 = Session()
+        session2 = Session()
+        result = needs_session_and_args(
+            'arg1',
+            'arg2',
+            session1,
+            somekwarg='kwarg',
+            session=session2
+        )
+
+        self.assertTrue(isinstance(result, list))
+        Session.remove()
 
     def test_catchesError(self):
 
@@ -240,7 +286,7 @@ class TestGroupGetsNotification(unittest.TestCase):
         has_alert_level, new_inspection, update = check_notification_for_group(
                                                     group,
                                                     n1,
-                                                    session
+                                                    session=session
                                                 )
         self.assertTrue(has_alert_level)
         self.assertTrue(new_inspection)
@@ -287,7 +333,7 @@ class TestGroupGetsNotification(unittest.TestCase):
         has_alert_level, new_inspection, update = check_notification_for_group(
                                                     group,
                                                     n2,
-                                                    session
+                                                    session=session
                                                 )
         self.assertTrue(has_alert_level)
         self.assertFalse(new_inspection)
@@ -341,7 +387,7 @@ class TestGroupGetsNotification(unittest.TestCase):
         has_alert_level, new_inspection, update = check_notification_for_group(
                                                     group,
                                                     n2,
-                                                    session
+                                                    session=session
                                                 )
         self.assertTrue(has_alert_level)
         self.assertTrue(new_inspection)
@@ -400,7 +446,7 @@ class TestGroupGetsNotification(unittest.TestCase):
         has_alert_level, new_inspection, update = check_notification_for_group(
                                                     group,
                                                     n2,
-                                                    session
+                                                    session=session
                                                 )
         self.assertTrue(has_alert_level)
         self.assertTrue(new_inspection)
@@ -464,7 +510,7 @@ class TestGroupGetsNotification(unittest.TestCase):
         has_alert_level, new_inspection, update = check_notification_for_group(
                                                     group,
                                                     n2,
-                                                    session
+                                                    session=session
                                                 )
         self.assertTrue(has_alert_level)
         self.assertFalse(new_inspection)
@@ -532,7 +578,7 @@ class TestGroupGetsNotification(unittest.TestCase):
         has_alert_level, new_inspection, update = check_notification_for_group(
                                                     group,
                                                     n2,
-                                                    session
+                                                    session=session
                                                 )
         self.assertTrue(has_alert_level)
         self.assertTrue(new_inspection)
@@ -610,7 +656,7 @@ class TestGroupGetsNotification(unittest.TestCase):
         has_alert_level, new_inspection, update = check_notification_for_group(
                                                     group,
                                                     n2,
-                                                    session
+                                                    session=session
                                                 )
         self.assertTrue(has_alert_level)
         self.assertTrue(new_inspection)
@@ -1392,14 +1438,15 @@ def create_group(name=None,
     
     if new_event is True:
         gs = Group_Specification()
+        gs.event_type = event_type
         gs.notification_type = 'NEW_EVENT'
         gs.minimum_magnitude = 3
         gs.notificaiton_format = 'EMAIL_HTML'
-        gs.event_type = event_type
         group.specs.append(gs)
     
     if heartbeat is True:
         gs = Group_Specification()
+        gs.event_type = event_type
         gs.notification_type = 'new_event'
         gs.event_type = 'heartbeat'
         group.specs.append(gs)
