@@ -14,7 +14,6 @@ import sys
 import time
 import xml.etree.ElementTree as ET
 import smtplib
-import datetime
 from email.mime.text import MIMEText
 from email.mime.image import MIMEImage
 from email.mime.multipart import MIMEMultipart
@@ -528,7 +527,8 @@ class ShakeMapGrid(object):
         
         # set the ShakeMapGrid's attributes
         all_atts = {}
-        [all_atts.update(child.attrib) for child in root]
+        for child in root:
+            all_atts.update(child.attrib)
         
         self.lat_min = float(all_atts.get('lat_min'))
         self.lat_max = float(all_atts.get('lat_max'))
