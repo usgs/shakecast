@@ -101,6 +101,7 @@ def check_new(session=None):
     
     return data
 
+@dbconnect
 def process_events(events=None, session=None, scenario=False):
     '''
     Process or reprocess events passed into the function. Will send
@@ -201,6 +202,7 @@ def process_events(events=None, session=None, scenario=False):
         for event in events:
             event.status = 'scenario'
     
+@dbconnect
 def process_shakemaps(shakemaps=None, session=None, scenario=False):
     '''
     Process or reprocess the shakemaps passed into the function
@@ -395,7 +397,7 @@ def make_inspection_priority(facility=None,
                                             shakemap=shakemap)
     return fac_shaking
     
-def new_event_notification(notifications = None,
+def new_event_notification(notifications=None,
                            scenario=False):
     """
     Build and send HTML email for a new event or scenario
@@ -486,7 +488,8 @@ def new_event_notification(notifications = None,
         
     else:
         notification.status = 'not sent - no users'
-    
+
+@dbconnect
 def inspection_notification(notification=None,
                             scenario=False,
                             session=None):
@@ -1249,7 +1252,8 @@ def determine_xml(xml_file=''):
         xml_type = 'unknown'
         
     return xml_type
-               
+
+@dbconnect
 def add_facs_to_groups(session=None):
     '''
     Associate all groups with the facilities that fall inside their
@@ -1269,7 +1273,8 @@ def add_facs_to_groups(session=None):
             query = query.filter(Facility.facility_type.like(group.facility_type))
 
         group.facilities = query.all()
-            
+
+@dbconnect
 def add_users_to_groups(session=None):
     '''
     Connect all existing groups to users who have joined that group.
