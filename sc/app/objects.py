@@ -394,7 +394,7 @@ class ProductGrabber(object):
     def make_heartbeat(self, session=None):
         '''
         Make an Event row that will only trigger a notification for
-        groups with a heartbeat group_specification
+        groups with a heartbeat group specification
         '''
         last_hb = session.query(Event).filter(Event.event_id == 'heartbeat').all()
         make_hb = False

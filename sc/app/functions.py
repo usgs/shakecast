@@ -1086,20 +1086,20 @@ def import_group_dicts(groups=None, _user=None, session=None):
 
                 # look for existing specs
                 if group['NOTIFICATION']['NOTIFICATION_TYPE'] == 'NEW_EVENT':
-                    spec = (session.query(Group_Specification)
-                                .filter(Group_Specification.notification_type == 'NEW_EVENT')
-                                .filter(Group_Specification.group == g)).all()
+                    spec = (session.query(GroupSpecification)
+                                .filter(GroupSpecification.notification_type == 'NEW_EVENT')
+                                .filter(GroupSpecification.group == g)).all()
                 else:
                     damage_level = group['NOTIFICATION'].get('DAMAGE_LEVEL', None)
-                    spec = (session.query(Group_Specification)
-                                .filter(Group_Specification.notification_type == 'DAMAGE')
-                                .filter(Group_Specification.inspection_priority == damage_level)
-                                .filter(Group_Specification.group == g)).all()
+                    spec = (session.query(GroupSpecification)
+                                .filter(GroupSpecification.notification_type == 'DAMAGE')
+                                .filter(GroupSpecification.inspection_priority == damage_level)
+                                .filter(GroupSpecification.group == g)).all()
                 if spec:
                     spec = spec[0]
 
                 else:
-                    spec = Group_Specification()
+                    spec = GroupSpecification()
                     spec.notification_type = notification_type
                     if damage_level:
                         spec.damage_level= damage_level
