@@ -435,7 +435,7 @@ class Group(Base):
                                       backref='group',
                                       cascade='save-update, delete')
     
-    specs = relationship('Group_Specification',
+    specs = relationship('GroupSpecification',
                                   backref='group',
                                   cascade='save-update, delete, delete-orphan')
     
@@ -622,7 +622,7 @@ class Group(Base):
         return new_event.minimum_magnitude if new_event is not None else None
 
 
-class Group_Specification(Base):
+class GroupSpecification(Base):
     __tablename__ = 'group_specification'
     shakecast_id = Column(Integer, primary_key=True)
     group_id = Column(Integer, ForeignKey('group.shakecast_id'))
@@ -634,7 +634,7 @@ class Group_Specification(Base):
     aggregate_name = Column(String(25))
     
     def __repr__(self):
-        return '''Group_Specification(group_id=%s,
+        return '''GroupSpecification(group_id=%s,
                                       notification_type=%s,
                                       inspection_priority=%s,
                                       minimum_magnitude=%s,

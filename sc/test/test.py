@@ -1437,7 +1437,7 @@ def create_group(name=None,
     group.lat_max = 90
     
     if new_event is True:
-        gs = Group_Specification()
+        gs = GroupSpecification()
         gs.event_type = event_type
         gs.notification_type = 'NEW_EVENT'
         gs.minimum_magnitude = 3
@@ -1445,14 +1445,14 @@ def create_group(name=None,
         group.specs.append(gs)
     
     if heartbeat is True:
-        gs = Group_Specification()
+        gs = GroupSpecification()
         gs.event_type = event_type
         gs.notification_type = 'new_event'
         gs.event_type = 'heartbeat'
         group.specs.append(gs)
     
     for insp_prio in insp_prios:
-        gs = Group_Specification()
+        gs = GroupSpecification()
         gs.event_type = event_type
         gs.notification_type = 'DAMAGE'
         gs.minimum_magnitude = 3
