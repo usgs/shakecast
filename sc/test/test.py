@@ -44,6 +44,37 @@ class TestProbCalc(unittest.TestCase):
         result = lognorm_opt(med=.5, spread=.64, shaking=0)
         self.assertTrue(0 < result < 50)
 
+class TestDictMerge(unittest.TestCase):
+    def test_deepMerge(self):
+        dict1 = {
+            'non_obj': 'val1',
+            'obj1': {
+                'non_obj': 'inner_val',
+                'inner_obj': {
+                    'non_obj': 'inner_val'
+                }
+            }
+        }
+
+        dict2 = {
+            'obj1': {
+                'inner_obj': {
+                    'non_obj': 'new_inner_val',
+                    'inner_obj': {
+                        'non_obj': 'new_inner_val'
+                    },
+                    'new_inner_obj': {}
+                }
+            }
+        }
+
+        merge_dicts(dict1, dict2)
+
+        self.assertEqual(dict1['non_obj'], 'val1')
+        self.assertEqual(dict1['obj1']['inner_obj']['non_obj'], 'new_inner_val')
+        self.assertEqual(dict1['obj1']['inner_obj']['inner_obj']['non_obj'], 'new_inner_val')
+        self.assertTrue(isinstance(dict1['obj1']['inner_obj']['new_inner_obj'], dict))
+
 class TestDBConnet(unittest.TestCase):
 
     def test_setsSession(self):
@@ -110,6 +141,32 @@ class TestDBConnet(unittest.TestCase):
             db_failure()
         except Exception as e:
             self.assertEqual(str(e), 'Testing Error')
+
+    def test_returnsSqlAlchemyObj(self):
+
+        @dbconnect
+        def db_returnsSqlA(session=None):
+            user = User()
+            user.username = 'returnedUser'
+            session.add(user)
+
+            return user
+
+    def test_returnsSqlAlchemyObjList(self):
+
+        @dbconnect
+        def db_returnsSqlA(session=None):
+            user1 = User()
+            user.username = 'returnedUser1'
+            session.add(user)
+
+            user2 = User()
+            user.username = 'returnedUser2'
+            session.add(user)
+
+            return [user1, user2]
+        
+
 
 
 class TestProductGrabber(unittest.TestCase):
@@ -694,6 +751,20 @@ class TestTask(unittest.TestCase):
         t.func = func
         t.args_in = {'some_arg': 1000}
         t.run()
+
+    def test_LoopSets(self):
+        def func():
+            for i in xrange(1000):
+                pass
+            
+        t = Task()
+        t.func = func
+        t.loop = True
+        t.interval = 100000
+        t.run()
+
+        self.assertTrue(t.next_run > time.time())
+
         
 
 class TestFull(unittest.TestCase):
@@ -1009,8 +1080,8 @@ class TestFull(unittest.TestCase):
     def step25_downloadActualScenario(self):
         download_scenario('bssc2014903_m6p09_se', scenario=True)
 
-    def step26_groupInspLevel(self):
-        session = Session()
+    @dbconnect
+    def step26_groupInspLevel(self, session=None):
         g = session.query(Group).first()
         self.assertEqual(g.has_alert_level(None), True)
         self.assertEqual(g.has_alert_level('GREY'), True)
@@ -1026,7 +1097,6 @@ class TestFull(unittest.TestCase):
         self.assertEqual(g.has_alert_level('RED'), True)
         self.assertEqual(g.has_alert_level('red'), True)
         self.assertEqual(g.has_alert_level('does_not_exist'), False)
-        Session.remove()
 
     def steps(self):
         '''

@@ -556,7 +556,7 @@ class Group(Base):
 
         if len(filtered) > 0 and inspection is not None:
             filtered = [s for s in filtered if
-                    str(s.inspection_priority).lower() == inspection]
+                    str(s.inspection_priority).lower() == inspection.lower()]
 
         return filtered
 
@@ -578,25 +578,21 @@ class Group(Base):
         return len(specs) > 0
 
     def has_alert_level(self, level, scenario=False):
-        # grey groups get no-inspection notifications
-        if level is None:
-            level = 'gray'
+        # gray groups get no-inspection notifications
+        if ((level is None) or
+                (level.lower() == 'gray') or
+                (level.lower() == 'grey')):
+            levels = ['gray', 'grey']
+        else:
+            levels = [level]
 
-        # make sure we're only dealing with lowercase
-        level = level.lower()
-        
-        levels = [s.inspection_priority.lower() for s in self.specs if 
-                                ((s.notification_type == 'DAMAGE') and
-                                (((s.event_type.lower() == 'scenario') is scenario) or
-                                (s.event_type.lower() == 'all')))]
+        for level in levels:
+            spec = self.get_inspection_spec(level, scenario)
 
-        # need to match grey and gray... we use gray in pyCast, but
-        # workbook and V3 use grey
-        if (('grey' in levels or 'gray' in levels) and 
-                (level == 'gray' or level == 'grey')):
-            return True
+            if spec is not None:
+                return True
 
-        return level.lower() in levels
+        return False
 
     def get_alert_levels(self):
         specs = self._get_specs('damage')
