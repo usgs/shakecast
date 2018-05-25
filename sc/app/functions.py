@@ -164,7 +164,7 @@ def process_events(events=None, session=None, scenario=False):
 
             # check new_event magnitude to make sure the group wants a 
             # notificaiton
-            event_spec = group.get_new_event_spec()
+            event_spec = group.get_new_event_spec(scenario=scenario)
 
             if (event_spec is None or
                     event_spec.minimum_magnitude > event.magnitude):
@@ -421,7 +421,7 @@ def new_event_notification(notifications=None,
 
     # create HTML for the event email
     not_builder = NotificationBuilder()
-    html = not_builder.build_new_event_html(events=events, notification=notification)
+    message = not_builder.build_new_event_html(events=events, notification=notification)
     
     notification.status = 'HTML success'
 
@@ -429,8 +429,9 @@ def new_event_notification(notifications=None,
     msg = MIMEMultipart()
     
     # attach html
-    msg_html = MIMEText(html.encode('utf-8'), 'html', 'utf-8')
-    msg.attach(msg_html)
+    message_type = 'html' if '<html>' in message else 'plain'
+    encoded_message = MIMEText(message.encode('utf-8'), message_type, 'utf-8')
+    msg.attach(encoded_message)
 
     # get and attach map
     for count,event in enumerate(events):
@@ -517,14 +518,15 @@ def inspection_notification(notification=None,
         try:
             # build the notification
             not_builder = NotificationBuilder()
-            html = not_builder.build_insp_html(shakemap, name=group.template)
+            message = not_builder.build_insp_html(shakemap, name=group.template)
 
             #initiate message
             msg = MIMEMultipart()
             
             # attach html
-            msg_html = MIMEText(html, 'html')
-            msg.attach(msg_html)
+            message_type = 'html' if '<html>' in message else 'plain'
+            encoded_message = MIMEText(message.encode('utf-8'), message_type, 'utf-8')
+            msg.attach(encoded_message)
 
             # get and attach shakemap
             msg_shakemap = MIMEImage(shakemap.get_map(), _subtype='jpeg')
