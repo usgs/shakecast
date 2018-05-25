@@ -1458,6 +1458,10 @@ def system_test(add_tests=None):
     return data
 
 def sql_to_obj(sql):
+    '''
+    Convert SQLAlchemy objects into dictionaries for use after
+    session closes
+    '''
     obj = {}
 
     if isinstance(sql, Base):
