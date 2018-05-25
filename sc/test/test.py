@@ -151,21 +151,27 @@ class TestDBConnet(unittest.TestCase):
             session.add(user)
 
             return user
+        
+        user = db_returnsSqlA()
+        self.assertTrue(isinstance(user, Base))
 
     def test_returnsSqlAlchemyObjList(self):
 
         @dbconnect
-        def db_returnsSqlA(session=None):
+        def db_returnsSqlAList(session=None):
             user1 = User()
-            user.username = 'returnedUser1'
-            session.add(user)
+            user1.username = 'returnedUser1'
+            session.add(user1)
 
             user2 = User()
-            user.username = 'returnedUser2'
-            session.add(user)
+            user2.username = 'returnedUser2'
+            session.add(user2)
 
             return [user1, user2]
-        
+
+        users = db_returnsSqlAList()
+        for user in users:
+            self.assertTrue(isinstance(user, Base))
 
 
 
