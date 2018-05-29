@@ -1462,17 +1462,22 @@ def sql_to_obj(sql):
     Convert SQLAlchemy objects into dictionaries for use after
     session closes
     '''
-    obj = {}
 
     if isinstance(sql, Base):
         sql = sql.__dict__
 
     if isinstance(sql, list):
+        obj = []
+
         for item in sql:
-            if isinstance(item, dict) or isinstance(item, list):
-                item = sql_to_obj(item)
+            if (isinstance(item, dict) or
+                    isinstance(item, list) or
+                    isinstance(item, Base)):
+                obj.append(sql_to_obj(item))
 
     elif isinstance(sql, dict):
+        obj = {}
+
         if sql.get('_sa_instance_state', False):
             sql.pop('_sa_instance_state')
 

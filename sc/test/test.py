@@ -185,13 +185,20 @@ class TestSqlAlchemyToObj(unittest.TestCase):
         self.assertFalse(isinstance(converted, Base))
 
     def test_convertsSqlAList(self):
-        u1 = User()
-        u2 = User()
+        u1 = User(
+            username = 'u1'
+        )
+        u2 = User(
+            username = 'u2'
+        )
 
         converted = sql_to_obj([u1, u2])
 
         for user in converted:
             self.assertFalse(isinstance(user, Base))
+
+        self.assertEqual(converted[0]['username'], 'u1')
+        self.assertEqual(converted[1]['username'], 'u2')
 
     def test_convertsSqlADict(self):
         u1 = User()
