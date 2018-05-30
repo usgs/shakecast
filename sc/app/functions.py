@@ -423,7 +423,7 @@ def new_event_notification(notifications=None,
     not_builder = NotificationBuilder()
     message = not_builder.build_new_event_html(events=events, notification=notification)
     
-    notification.status = 'HTML success'
+    notification.status = 'Message built'
 
     #initiate message
     msg = MIMEMultipart()
@@ -550,7 +550,13 @@ def inspection_notification(notification=None,
             
             mailer = Mailer()
             me = mailer.me
-            you = [user.email for user in group.users]
+
+            # get notification format
+            not_format = group.get_notification_format(notification)
+
+            # get notification destination based on notification format
+            you = [user.__dict__[not_format] for user in group.users
+                    if user.__dict__.get(not_format, False)]
             
             if len(you) > 0:
                 subject = '{0} {1}'.format('Inspection - ', shakemap.event.title)
