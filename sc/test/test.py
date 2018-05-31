@@ -820,10 +820,12 @@ class TestFull(unittest.TestCase):
         user1 = create_user('GLOBAL', self.email)
         user2 = create_user('GLOBAL_SCENARIO', self.email)
         user3 = create_user('NO_NEW_EVENT:NO_INSP:ALL', self.email)
+        user4 = create_user('MMS', self.email, self.email)
 
         session.add(user1)
         session.add(user2)
         session.add(user3)
+        session.add(user4)
 
         session.commit()
         Session.remove()
@@ -853,6 +855,11 @@ class TestFull(unittest.TestCase):
         no_new_event_group = create_group(name='NO_NEW_EVENT', new_event=False)
         no_insp_group = create_group(name='NO_INSP', insp_prios=[])
         all_group = create_group(name='ALL', event_type='all')
+        mms_group = create_group(
+            name='MMS',
+            event_type='all',
+            notification_format='mms'
+        )
 
         session.add(global_group)
         session.add(scenario_group)
@@ -860,6 +867,7 @@ class TestFull(unittest.TestCase):
         session.add(no_new_event_group)
         session.add(no_insp_group)
         session.add(all_group)
+        session.add(mms_group)
 
         session.commit()
         Session.remove()
@@ -1535,6 +1543,7 @@ def create_fac(grid=None, fac_id='AUTO_GENERATED'):
     
 def create_group(name=None, 
                     event_type='ACTUAL',
+                    notification_format=None,
                     new_event=True,
                     heartbeat=True,
                     insp_prios=['GREY', 
@@ -1544,6 +1553,7 @@ def create_group(name=None,
                                 'RED']):
     group = Group()
     group.name = name
+    group.notification_format = notification_format
     group.facility_type = 'All'
     group.lon_min = -180
     group.lon_max = 180
@@ -1576,10 +1586,11 @@ def create_group(name=None,
 
     return group
 
-def create_user(group_str=None, email=None):
+def create_user(group_str=None, email=None, mms=None):
     user = User()
     user.username = 'test_user'
     user.email = email
+    user.mms = mms
     user.user_type = 'ADMIN'
     user.group_string = group_str
 

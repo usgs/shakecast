@@ -460,7 +460,13 @@ def new_event_notification(notifications=None,
     
     mailer = Mailer()
     me = mailer.me
-    you = [user.email for user in group.users]
+
+    # get notification format
+    not_format = group.get_notification_format(notification, scenario)
+
+    # get notification destination based on notification format
+    you = [user.__dict__[not_format] for user in group.users
+            if user.__dict__.get(not_format, False)]
     
     if len(you) > 0:
         if len(events) == 1:
@@ -552,7 +558,7 @@ def inspection_notification(notification=None,
             me = mailer.me
 
             # get notification format
-            not_format = group.get_notification_format(notification)
+            not_format = group.get_notification_format(notification, scenario)
 
             # get notification destination based on notification format
             you = [user.__dict__[not_format] for user in group.users

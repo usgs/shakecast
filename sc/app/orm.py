@@ -621,8 +621,12 @@ class Group(Base):
         return new_event.minimum_magnitude if new_event is not None else None
 
     def get_notification_format(self, notification, scenario=False):
-        alert_level = notification.shakemap.get_alert_level()
-        spec = self.get_inspection_spec(alert_level, scenario)
+        if (notification.notification_type == 'DAMAGE'):
+            alert_level = notification.shakemap.get_alert_level()
+            spec = self.get_inspection_spec(alert_level, scenario)
+        else:
+            spec = self.get_new_event_spec(scenario)
+
 
         if spec is None:
             return None
