@@ -423,7 +423,7 @@ def new_event_notification(notifications=None,
     not_builder = NotificationBuilder()
     message = not_builder.build_new_event_html(events=events, notification=notification)
     
-    notification.status = 'HTML success'
+    notification.status = 'Message built'
 
     #initiate message
     msg = MIMEMultipart()
@@ -460,7 +460,13 @@ def new_event_notification(notifications=None,
     
     mailer = Mailer()
     me = mailer.me
-    you = [user.email for user in group.users]
+
+    # get notification format
+    not_format = group.get_notification_format(notification, scenario)
+
+    # get notification destination based on notification format
+    you = [user.__dict__[not_format] for user in group.users
+            if user.__dict__.get(not_format, False)]
     
     if len(you) > 0:
         if len(events) == 1:
@@ -550,7 +556,13 @@ def inspection_notification(notification=None,
             
             mailer = Mailer()
             me = mailer.me
-            you = [user.email for user in group.users]
+
+            # get notification format
+            not_format = group.get_notification_format(notification, scenario)
+
+            # get notification destination based on notification format
+            you = [user.__dict__[not_format] for user in group.users
+                    if user.__dict__.get(not_format, False)]
             
             if len(you) > 0:
                 subject = '{0} {1}'.format('Inspection - ', shakemap.event.title)
@@ -1195,7 +1207,14 @@ def import_user_dicts(users=None, _user=None, session=None):
             u.group_string = user.get('GROUP', user.get('group_string', ''))
             u.user_type = user.get('USER_TYPE', user.get('user_type', ''))
             u.full_name = user.get('FULL_NAME', user.get('full_name', ''))
-            u.phone_number = user.get('PHONE_NUMBER', user.get('group_string', ''))
+            u.phone_number = user.get('PHONE_NUMBER', user.get('phone_number', ''))
+
+            delivery = user.get('DELIVERY', user.get('delivery', False))
+            if delivery:
+                u.mms = delivery.get('MMS',
+                            delivery.get('mms',
+                            delivery.get('PAGER',
+                            delivery.get('pager', ''))))
                     
             u.updated = time.time()
             if _user is not None:

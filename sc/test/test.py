@@ -820,10 +820,12 @@ class TestFull(unittest.TestCase):
         user1 = create_user('GLOBAL', self.email)
         user2 = create_user('GLOBAL_SCENARIO', self.email)
         user3 = create_user('NO_NEW_EVENT:NO_INSP:ALL', self.email)
+        user4 = create_user('MMS', None, self.email)
 
         session.add(user1)
         session.add(user2)
         session.add(user3)
+        session.add(user4)
 
         session.commit()
         Session.remove()
@@ -853,6 +855,11 @@ class TestFull(unittest.TestCase):
         no_new_event_group = create_group(name='NO_NEW_EVENT', new_event=False)
         no_insp_group = create_group(name='NO_INSP', insp_prios=[])
         all_group = create_group(name='ALL', event_type='all')
+        mms_group = create_group(
+            name='MMS',
+            event_type='all',
+            notification_format='mms'
+        )
 
         session.add(global_group)
         session.add(scenario_group)
@@ -860,6 +867,7 @@ class TestFull(unittest.TestCase):
         session.add(no_new_event_group)
         session.add(no_insp_group)
         session.add(all_group)
+        session.add(mms_group)
 
         session.commit()
         Session.remove()
@@ -967,7 +975,8 @@ class TestFull(unittest.TestCase):
                 if (notification.status != 'sent' and 
                     notification.status != 'aggregated' and
                     notification.group.name != 'HIGH_INSP'):
-                    raise ValueError('Notification not sent... {}: {}, {}'.format(shakemap.shakemap_id,
+                    raise ValueError('Notification not sent to {}... {}: {}, {}'.format(notification.group.name,
+                                                                                  shakemap.shakemap_id,
                                                                                   notification.notification_type,
                                                                                   notification.status))
         Session.remove()
@@ -1214,21 +1223,23 @@ class TestImport(unittest.TestCase):
 
         Session.remove()
 
-    def step02_userImport(self):
+    @dbconnect
+    def step02_userImport(self, session=None):
         user_file = os.path.join(sc_dir(), 'test', 'test_users.xml')
         file_type = determine_xml(user_file)
         import_user_xml(user_file)
-        
-        session = Session()
+
         users = session.query(User).all()
         id1 = users[0].shakecast_id
         id2 = users[1].shakecast_id
-        Session.remove()
 
         import_user_xml(user_file, id1)
         import_user_xml(user_file, id2)
 
         self.assertEqual(file_type, 'user')
+        user = session.query(User).filter(User.username == 'Ex3').first()
+
+        self.assertEqual(user.mms, 'example@example.com')
 
     def step03_groupImport(self):
         group_file = os.path.join(sc_dir(), 'test', 'test_groups.xml')
@@ -1535,6 +1546,7 @@ def create_fac(grid=None, fac_id='AUTO_GENERATED'):
     
 def create_group(name=None, 
                     event_type='ACTUAL',
+                    notification_format=None,
                     new_event=True,
                     heartbeat=True,
                     insp_prios=['GREY', 
@@ -1555,13 +1567,14 @@ def create_group(name=None,
         gs.event_type = event_type
         gs.notification_type = 'NEW_EVENT'
         gs.minimum_magnitude = 3
-        gs.notificaiton_format = 'EMAIL_HTML'
+        gs.notification_format = notification_format
         group.specs.append(gs)
     
     if heartbeat is True:
         gs = GroupSpecification()
         gs.event_type = event_type
         gs.notification_type = 'new_event'
+        gs.notification_format = notification_format
         gs.event_type = 'heartbeat'
         group.specs.append(gs)
     
@@ -1570,16 +1583,17 @@ def create_group(name=None,
         gs.event_type = event_type
         gs.notification_type = 'DAMAGE'
         gs.minimum_magnitude = 3
-        gs.notificaiton_format = 'EMAIL_HTML'
+        gs.notification_format = notification_format
         gs.inspection_priority = insp_prio
         group.specs.append(gs)
 
     return group
 
-def create_user(group_str=None, email=None):
+def create_user(group_str=None, email=None, mms=None):
     user = User()
     user.username = 'test_user'
     user.email = email
+    user.mms = mms
     user.user_type = 'ADMIN'
     user.group_string = group_str
 

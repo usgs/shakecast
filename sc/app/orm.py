@@ -369,6 +369,7 @@ class User(Base):
     username = Column(String(32))
     password = Column(String(255))
     email = Column(String(255))
+    mms = Column(String(255))
     phone_number = Column(String(25))
     full_name = Column(String(32))
     user_type = Column(String(10))
@@ -384,11 +385,13 @@ class User(Base):
         return '''User(username=%s,
                        password=%s,
                        email=%s,
+                       mms=%s,
                        phone_number=%s,
                        full_name=%s,
                        user_type=%s)''' % (self.username,
                                            self.password,
                                            self.email,
+                                           self.mms,
                                            self.phone_number,
                                            self.full_name,
                                            self.user_type)
@@ -617,6 +620,25 @@ class Group(Base):
 
         return new_event.minimum_magnitude if new_event is not None else None
 
+    def get_notification_format(self, notification, scenario=False):
+        if (notification.notification_type == 'DAMAGE'):
+            alert_level = notification.shakemap.get_alert_level()
+            spec = self.get_inspection_spec(alert_level, scenario)
+        else:
+            spec = self.get_new_event_spec(scenario)
+
+
+        if spec is None:
+            return None
+
+        format_ = str(spec.notification_format).lower()
+
+        # Catch mms and sms messages
+        if (format_ == 'mms') or (format_ == 'sms'):
+            return 'mms'
+
+        # Return email as default
+        return 'email'
 
 class GroupSpecification(Base):
     __tablename__ = 'group_specification'
