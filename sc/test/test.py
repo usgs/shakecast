@@ -820,7 +820,7 @@ class TestFull(unittest.TestCase):
         user1 = create_user('GLOBAL', self.email)
         user2 = create_user('GLOBAL_SCENARIO', self.email)
         user3 = create_user('NO_NEW_EVENT:NO_INSP:ALL', self.email)
-        user4 = create_user('MMS', self.email, self.email)
+        user4 = create_user('MMS', None, self.email)
 
         session.add(user1)
         session.add(user2)
@@ -975,7 +975,8 @@ class TestFull(unittest.TestCase):
                 if (notification.status != 'sent' and 
                     notification.status != 'aggregated' and
                     notification.group.name != 'HIGH_INSP'):
-                    raise ValueError('Notification not sent... {}: {}, {}'.format(shakemap.shakemap_id,
+                    raise ValueError('Notification not sent to {}... {}: {}, {}'.format(notification.group.name,
+                                                                                  shakemap.shakemap_id,
                                                                                   notification.notification_type,
                                                                                   notification.status))
         Session.remove()
@@ -1553,7 +1554,6 @@ def create_group(name=None,
                                 'RED']):
     group = Group()
     group.name = name
-    group.notification_format = notification_format
     group.facility_type = 'All'
     group.lon_min = -180
     group.lon_max = 180
@@ -1565,13 +1565,14 @@ def create_group(name=None,
         gs.event_type = event_type
         gs.notification_type = 'NEW_EVENT'
         gs.minimum_magnitude = 3
-        gs.notificaiton_format = 'EMAIL_HTML'
+        gs.notification_format = notification_format
         group.specs.append(gs)
     
     if heartbeat is True:
         gs = GroupSpecification()
         gs.event_type = event_type
         gs.notification_type = 'new_event'
+        gs.notification_format = notification_format
         gs.event_type = 'heartbeat'
         group.specs.append(gs)
     
@@ -1580,7 +1581,7 @@ def create_group(name=None,
         gs.event_type = event_type
         gs.notification_type = 'DAMAGE'
         gs.minimum_magnitude = 3
-        gs.notificaiton_format = 'EMAIL_HTML'
+        gs.notification_format = notification_format
         gs.inspection_priority = insp_prio
         group.specs.append(gs)
 
