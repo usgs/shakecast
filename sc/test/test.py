@@ -1223,21 +1223,23 @@ class TestImport(unittest.TestCase):
 
         Session.remove()
 
-    def step02_userImport(self):
+    @dbconnect
+    def step02_userImport(self, session=None):
         user_file = os.path.join(sc_dir(), 'test', 'test_users.xml')
         file_type = determine_xml(user_file)
         import_user_xml(user_file)
-        
-        session = Session()
+
         users = session.query(User).all()
         id1 = users[0].shakecast_id
         id2 = users[1].shakecast_id
-        Session.remove()
 
         import_user_xml(user_file, id1)
         import_user_xml(user_file, id2)
 
         self.assertEqual(file_type, 'user')
+        user = session.query(User).filter(User.username == 'Ex3').first()
+
+        self.assertEqual(user.mms, 'example@example.com')
 
     def step03_groupImport(self):
         group_file = os.path.join(sc_dir(), 'test', 'test_groups.xml')
