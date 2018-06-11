@@ -1,12 +1,18 @@
 {
-    "updates": [
-        {"version": "500.0.0",
-        "info": "TEST UPDATE",
-        "files": [
-            {"url": "https://raw.githubusercontent.com/usgs/shakecast/master/sc/app/functions.py",
-             "path": "sc/app/functions-test.py"},
-            {"url": "https://raw.githubusercontent.com/usgs/shakecast/master/sc/conf/sc.json",
-             "path": "sc/conf/sc.json"}
-        ]}
-    ]
+    "info": "General Updates", 
+    "files": [
+        {
+            "url": "https://raw.githubusercontent.com/usgs/shakecast/master/build_update.py", 
+            "path": "build_update-test.py"
+        }, 
+        {
+            "url": "https://raw.githubusercontent.com/usgs/shakecast/master/sc/app/functions.py", 
+            "path": "sc/app/functions-test.py"
+        },
+        {
+            "url": "https://raw.githubusercontent.com/usgs/shakecast/master/sc/conf/sc.json",
+            "path": "sc/app/sc.json-test"
+        }
+    ], 
+    "version": "10.0.1"
 }

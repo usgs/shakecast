@@ -44,6 +44,174 @@ class TestProbCalc(unittest.TestCase):
         result = lognorm_opt(med=.5, spread=.64, shaking=0)
         self.assertTrue(0 < result < 50)
 
+class TestDictMerge(unittest.TestCase):
+    def test_deepMerge(self):
+        dict1 = {
+            'non_obj': 'val1',
+            'obj1': {
+                'non_obj': 'inner_val',
+                'inner_obj': {
+                    'non_obj': 'inner_val'
+                }
+            }
+        }
+
+        dict2 = {
+            'obj1': {
+                'inner_obj': {
+                    'non_obj': 'new_inner_val',
+                    'inner_obj': {
+                        'non_obj': 'new_inner_val'
+                    },
+                    'new_inner_obj': {}
+                }
+            }
+        }
+
+        merge_dicts(dict1, dict2)
+
+        self.assertEqual(dict1['non_obj'], 'val1')
+        self.assertEqual(dict1['obj1']['inner_obj']['non_obj'], 'new_inner_val')
+        self.assertEqual(dict1['obj1']['inner_obj']['inner_obj']['non_obj'], 'new_inner_val')
+        self.assertTrue(isinstance(dict1['obj1']['inner_obj']['new_inner_obj'], dict))
+
+class TestDBConnet(unittest.TestCase):
+
+    def test_setsSession(self):
+
+        @dbconnect
+        def needs_session(session=None):
+            return session.query(Event).all()
+
+        self.assertTrue(isinstance(needs_session(), list))
+
+    def test_passesSessionKwarg(self):
+
+        @dbconnect
+        def needs_session(session=None):
+            return session.query(Event).all()
+
+        session = Session()
+        self.assertTrue(isinstance(needs_session(session=session), list))
+        Session.remove()
+
+    def test_passesSessionArg(self):
+
+        @dbconnect
+        def needs_session_and_args(arg1, arg2, session=None, **kwargs):
+            return session.query(Event).all()
+
+        session = Session()
+        result = needs_session_and_args(
+            'arg1',
+            'arg2',
+            session,
+            somekwarg='kwarg'
+        )
+
+        self.assertTrue(isinstance(result, list))
+        Session.remove()
+
+    def test_handlesDoubleSessionInput(self):
+
+        @dbconnect
+        def needs_session_and_args(arg1, arg2, session=None, **kwargs):
+            return session.query(Event).all()
+
+        session1 = Session()
+        session2 = Session()
+        result = needs_session_and_args(
+            'arg1',
+            'arg2',
+            session1,
+            somekwarg='kwarg',
+            session=session2
+        )
+
+        self.assertTrue(isinstance(result, list))
+        Session.remove()
+
+    def test_catchesError(self):
+
+        @dbconnect
+        def db_failure(session=None):
+            raise(Exception('Testing Error'))
+        
+        try:
+            db_failure()
+        except Exception as e:
+            self.assertEqual(str(e), 'Testing Error')
+
+    def test_returnsSqlAlchemyObj(self):
+
+        @dbconnect
+        def db_returnsSqlA(session=None):
+            user = User()
+            user.username = 'returnedUser'
+            session.add(user)
+
+            return user
+        
+        user = db_returnsSqlA()
+        self.assertTrue(isinstance(user, Base))
+
+    def test_returnsSqlAlchemyObjList(self):
+
+        @dbconnect
+        def db_returnsSqlAList(session=None):
+            user1 = User()
+            user1.username = 'returnedUser1'
+            session.add(user1)
+
+            user2 = User()
+            user2.username = 'returnedUser2'
+            session.add(user2)
+
+            return [user1, user2]
+
+        users = db_returnsSqlAList()
+        for user in users:
+            self.assertTrue(isinstance(user, Base))
+
+class TestSqlAlchemyToObj(unittest.TestCase):
+    '''
+    SQLAlchemy to object encoder
+    '''
+
+    def test_convertsToObject(self):
+        u = User()
+        converted = sql_to_obj(u)
+
+        self.assertFalse(isinstance(converted, Base))
+
+    def test_convertsSqlAList(self):
+        u1 = User(
+            username = 'u1'
+        )
+        u2 = User(
+            username = 'u2'
+        )
+
+        converted = sql_to_obj([u1, u2])
+
+        for user in converted:
+            self.assertFalse(isinstance(user, Base))
+
+        self.assertEqual(converted[0]['username'], 'u1')
+        self.assertEqual(converted[1]['username'], 'u2')
+
+    def test_convertsSqlADict(self):
+        u1 = User()
+        u2 = User()
+
+        converted = sql_to_obj({
+            'user1': u1,
+            'user2': u2
+        })
+
+        self.assertFalse(isinstance(converted['user1'], Base))
+        self.assertFalse(isinstance(converted['user2'], Base))
+
 
 class TestProductGrabber(unittest.TestCase):
     '''
@@ -191,6 +359,416 @@ class TestClock(unittest.TestCase):
         c = Clock()
         c.from_time(time.time())
 
+class TestGroupGetsNotification(unittest.TestCase):
+
+    @dbconnect
+    def test_forFirstNotification(self, session=None):
+
+        sm1 = ShakeMap(
+            shakemap_id = 'shakemap1',
+            shakemap_version = 1
+        )
+
+        session.add(sm1)
+
+        group = create_group(name='GLOBAL')
+
+        session.add(group)
+
+        n1 = Notification(
+            shakemap = sm1
+        )
+
+        session.add(n1)
+
+        session.commit()
+
+        # check notification 1
+        has_alert_level, new_inspection, update = check_notification_for_group(
+                                                    group,
+                                                    n1,
+                                                    session=session
+                                                )
+        self.assertTrue(has_alert_level)
+        self.assertTrue(new_inspection)
+        self.assertFalse(update)
+
+        objs = [sm1, group ,n1]
+        for obj in objs:
+            session.delete(obj)
+
+        session.commit()
+
+    @dbconnect
+    def test_updateNotificationNoneNone(self, session=None):
+
+        sm1 = ShakeMap(
+            shakemap_id = 'shakemap1',
+            shakemap_version = 1
+        )
+
+        sm2 = ShakeMap(
+            shakemap_id = 'shakemap1',
+            shakemap_version = 2
+        )
+
+        session.add_all([sm1, sm2])
+
+        group = create_group(name='GLOBAL')
+
+        session.add(group)
+
+        n1 = Notification(
+            shakemap = sm1
+        )
+
+        n2 = Notification(
+            shakemap = sm2
+        )
+
+        session.add_all([n1, n2])
+
+        session.commit()
+
+        # check notification 1
+        has_alert_level, new_inspection, update = check_notification_for_group(
+                                                    group,
+                                                    n2,
+                                                    session=session
+                                                )
+        self.assertTrue(has_alert_level)
+        self.assertFalse(new_inspection)
+        self.assertTrue(update)
+
+        objs = [sm1, sm2, n1, n2, group]
+        for obj in objs:
+            session.delete(obj)
+        
+        session.commit()
+
+    @dbconnect
+    def test_changedNotificationNoneGrey(self, session=None):
+
+        sm1 = ShakeMap(
+            shakemap_id = 'shakemap1',
+            shakemap_version = 1
+        )
+
+        sm2 = ShakeMap(
+            shakemap_id = 'shakemap1',
+            shakemap_version = 2
+        )
+
+        session.add_all([sm1, sm2])
+
+        group = create_group(name='GLOBAL')
+
+        session.add(group)
+
+        n1 = Notification(
+            shakemap = sm1
+        )
+
+        n2 = Notification(
+            shakemap = sm2
+        )
+
+        session.add_all([n1, n2])
+
+        fs = FacilityShaking(
+            shakemap = sm2,
+            weight = .5
+        )
+
+        session.add(fs)
+
+        session.commit()
+
+        # check notification 1
+        has_alert_level, new_inspection, update = check_notification_for_group(
+                                                    group,
+                                                    n2,
+                                                    session=session
+                                                )
+        self.assertTrue(has_alert_level)
+        self.assertTrue(new_inspection)
+        self.assertTrue(update)
+
+        objs = [sm1, sm2, n1, n2, group]
+        for obj in objs:
+            session.delete(obj)
+        
+        session.commit()
+
+    @dbconnect
+    def test_changedNotificationGreyGreen(self, session=None):
+
+        sm1 = ShakeMap(
+            shakemap_id = 'shakemap1',
+            shakemap_version = 1
+        )
+
+        sm2 = ShakeMap(
+            shakemap_id = 'shakemap1',
+            shakemap_version = 2
+        )
+
+        session.add_all([sm1, sm2])
+
+        group = create_group(name='GLOBAL')
+
+        session.add(group)
+
+        n1 = Notification(
+            shakemap = sm1
+        )
+
+        n2 = Notification(
+            shakemap = sm2
+        )
+
+        session.add_all([n1, n2])
+
+        fs1 = FacilityShaking(
+            shakemap = sm1,
+            weight = .1
+        )
+
+        fs2 = FacilityShaking(
+            shakemap = sm2,
+            weight = 1
+        )
+
+        session.add_all([fs1, fs2])
+
+        session.commit()
+
+        # check notification 1
+        has_alert_level, new_inspection, update = check_notification_for_group(
+                                                    group,
+                                                    n2,
+                                                    session=session
+                                                )
+        self.assertTrue(has_alert_level)
+        self.assertTrue(new_inspection)
+        self.assertTrue(update)
+
+        objs = [sm1, sm2, n1, n2, group]
+        for obj in objs:
+            session.delete(obj)
+        
+        session.commit()
+
+    @dbconnect
+    def test_unchangedNotificationGreenGreen(self, session=None):
+        sm1 = ShakeMap(
+            shakemap_id = 'shakemap1',
+            shakemap_version = 1
+        )
+
+        sm2 = ShakeMap(
+            shakemap_id = 'shakemap1',
+            shakemap_version = 2
+        )
+
+        session.add_all([sm1, sm2])
+
+        group = create_group(name='GLOBAL')
+
+        session.add(group)
+
+        n1 = Notification(
+            shakemap = sm1
+        )
+
+        n2 = Notification(
+            shakemap = sm2
+        )
+
+        session.add_all([n1, n2])
+
+        fac1 = Facility(
+            facility_id = 1
+        )
+
+        fs1 = FacilityShaking(
+            shakemap = sm1,
+            weight = 1,
+            facility = fac1
+        )
+
+        fs2 = FacilityShaking(
+            shakemap = sm2,
+            weight = 1,
+            facility = fac1
+        )
+
+        session.add_all([fac1, fs1, fs2])
+
+        session.commit()
+
+        # check notification 1
+        has_alert_level, new_inspection, update = check_notification_for_group(
+                                                    group,
+                                                    n2,
+                                                    session=session
+                                                )
+        self.assertTrue(has_alert_level)
+        self.assertFalse(new_inspection)
+        self.assertTrue(update)
+
+        objs = [sm1, sm2, n1, n2, group, fac1]
+        for obj in objs:
+            session.delete(obj)
+        
+        session.commit()
+
+    @dbconnect
+    def test_changedNotificationGreenGreen(self, session=None):
+        sm1 = ShakeMap(
+            shakemap_id = 'shakemap1',
+            shakemap_version = 1
+        )
+
+        sm2 = ShakeMap(
+            shakemap_id = 'shakemap1',
+            shakemap_version = 2
+        )
+
+        session.add_all([sm1, sm2])
+
+        group = create_group(name='GLOBAL')
+
+        session.add(group)
+
+        n1 = Notification(
+            shakemap = sm1
+        )
+
+        n2 = Notification(
+            shakemap = sm2
+        )
+
+        session.add_all([n1, n2])
+
+        fac1 = Facility(
+            facility_id = 1
+        )
+
+        fac2 = Facility(
+            facility_id = 2
+        )
+
+        fs1 = FacilityShaking(
+            shakemap = sm1,
+            weight = 1,
+            facility = fac1
+        )
+
+        fs2 = FacilityShaking(
+            shakemap = sm2,
+            weight = 1,
+            facility = fac2
+        )
+
+        session.add_all([fac1, fs1, fs2])
+
+        session.commit()
+
+        # check notification 1
+        has_alert_level, new_inspection, update = check_notification_for_group(
+                                                    group,
+                                                    n2,
+                                                    session=session
+                                                )
+        self.assertTrue(has_alert_level)
+        self.assertTrue(new_inspection)
+        self.assertTrue(update)
+
+        objs = [sm1, sm2, n1, n2, group, fac1, fac2]
+        for obj in objs:
+            session.delete(obj)
+        
+        session.commit()
+
+    @dbconnect
+    def test_changedNotificationLength(self, session=None):
+        sm1 = ShakeMap(
+            shakemap_id = 'shakemap1',
+            shakemap_version = 1
+        )
+
+        sm2 = ShakeMap(
+            shakemap_id = 'shakemap1',
+            shakemap_version = 2
+        )
+
+        session.add_all([sm1, sm2])
+
+        group = create_group(name='GLOBAL')
+
+        session.add(group)
+
+        n1 = Notification(
+            shakemap = sm1
+        )
+
+        n2 = Notification(
+            shakemap = sm2
+        )
+
+        session.add_all([n1, n2])
+
+        fac1 = Facility(
+            facility_id = 1
+        )
+
+        fac2 = Facility(
+            facility_id = 2
+        )
+
+        fac3 = Facility(
+            facility_id = 3
+        )
+
+        fs1 = FacilityShaking(
+            shakemap = sm1,
+            weight = 1,
+            facility = fac1
+        )
+
+        fs2 = FacilityShaking(
+            shakemap = sm2,
+            weight = 1,
+            facility = fac2
+        )
+
+        fs3 = FacilityShaking(
+            shakemap = sm2,
+            weight = .1,
+            facility = fac3
+        )
+
+        session.add_all([fac1, fac2, fac3, fs1, fs2, fs3])
+
+        session.commit()
+
+        # check notification 1
+        has_alert_level, new_inspection, update = check_notification_for_group(
+                                                    group,
+                                                    n2,
+                                                    session=session
+                                                )
+        self.assertTrue(has_alert_level)
+        self.assertTrue(new_inspection)
+        self.assertTrue(update)
+
+        objs = [sm1, sm2, n1, n2, group, fac1, fac2, fac3]
+        for obj in objs:
+            session.delete(obj)
+        
+        session.commit()
+
 
 class TestTask(unittest.TestCase):
     '''
@@ -217,6 +795,20 @@ class TestTask(unittest.TestCase):
         t.func = func
         t.args_in = {'some_arg': 1000}
         t.run()
+
+    def test_LoopSets(self):
+        def func():
+            for i in xrange(1000):
+                pass
+            
+        t = Task()
+        t.func = func
+        t.loop = True
+        t.interval = 100000
+        t.run()
+
+        self.assertTrue(t.next_run > time.time())
+
         
 
 class TestFull(unittest.TestCase):
@@ -227,9 +819,13 @@ class TestFull(unittest.TestCase):
         session = Session()
         user1 = create_user('GLOBAL', self.email)
         user2 = create_user('GLOBAL_SCENARIO', self.email)
+        user3 = create_user('NO_NEW_EVENT:NO_INSP:ALL', self.email)
+        user4 = create_user('MMS', None, self.email)
 
         session.add(user1)
         session.add(user2)
+        session.add(user3)
+        session.add(user4)
 
         session.commit()
         Session.remove()
@@ -255,9 +851,23 @@ class TestFull(unittest.TestCase):
         scenario_group = create_group(name='GLOBAL_SCENARIO', event_type='SCENARIO')
         high_prio = create_group(name='HIGH_INSP',
                                     insp_prios=['RED'])
+        
+        no_new_event_group = create_group(name='NO_NEW_EVENT', new_event=False)
+        no_insp_group = create_group(name='NO_INSP', insp_prios=[])
+        all_group = create_group(name='ALL', event_type='all')
+        mms_group = create_group(
+            name='MMS',
+            event_type='all',
+            notification_format='mms'
+        )
+
         session.add(global_group)
         session.add(scenario_group)
         session.add(high_prio)
+        session.add(no_new_event_group)
+        session.add(no_insp_group)
+        session.add(all_group)
+        session.add(mms_group)
 
         session.commit()
         Session.remove()
@@ -365,7 +975,8 @@ class TestFull(unittest.TestCase):
                 if (notification.status != 'sent' and 
                     notification.status != 'aggregated' and
                     notification.group.name != 'HIGH_INSP'):
-                    raise ValueError('Notification not sent... {}: {}, {}'.format(shakemap.shakemap_id,
+                    raise ValueError('Notification not sent to {}... {}: {}, {}'.format(notification.group.name,
+                                                                                  shakemap.shakemap_id,
                                                                                   notification.notification_type,
                                                                                   notification.status))
         Session.remove()
@@ -520,10 +1131,10 @@ class TestFull(unittest.TestCase):
         self.assertEqual('failed', result['status'])
 
     def step25_downloadActualScenario(self):
-        download_scenario('bssc2014sanjacintolytlecreek_m6p72_se', scenario=True)
+        download_scenario('bssc2014903_m6p09_se', scenario=True)
 
-    def step26_groupInspLevel(self):
-        session = Session()
+    @dbconnect
+    def step26_groupInspLevel(self, session=None):
         g = session.query(Group).first()
         self.assertEqual(g.has_alert_level(None), True)
         self.assertEqual(g.has_alert_level('GREY'), True)
@@ -539,7 +1150,6 @@ class TestFull(unittest.TestCase):
         self.assertEqual(g.has_alert_level('RED'), True)
         self.assertEqual(g.has_alert_level('red'), True)
         self.assertEqual(g.has_alert_level('does_not_exist'), False)
-        Session.remove()
 
     def steps(self):
         '''
@@ -613,21 +1223,23 @@ class TestImport(unittest.TestCase):
 
         Session.remove()
 
-    def step02_userImport(self):
+    @dbconnect
+    def step02_userImport(self, session=None):
         user_file = os.path.join(sc_dir(), 'test', 'test_users.xml')
         file_type = determine_xml(user_file)
         import_user_xml(user_file)
-        
-        session = Session()
+
         users = session.query(User).all()
         id1 = users[0].shakecast_id
         id2 = users[1].shakecast_id
-        Session.remove()
 
         import_user_xml(user_file, id1)
         import_user_xml(user_file, id2)
 
         self.assertEqual(file_type, 'user')
+        user = session.query(User).filter(User.username == 'Ex3').first()
+
+        self.assertEqual(user.mms, 'example@example.com')
 
     def step03_groupImport(self):
         group_file = os.path.join(sc_dir(), 'test', 'test_groups.xml')
@@ -701,7 +1313,8 @@ class TestImport(unittest.TestCase):
                     failed_str += '\nIncorrect number of users: {}, {}'.format(group.name,
                                                                                len(group.users))
                     failed = True
-                self.assertTrue(group.has_spec('scenario'))
+                self.assertTrue(group.gets_notification('new_event', scenario=True))
+                self.assertTrue(group.gets_notification('damage', scenario=True))
                 self.assertTrue('green' in group.get_scenario_alert_levels())
 
             self.assertEqual('Ex1', group.updated_by)
@@ -932,7 +1545,10 @@ def create_fac(grid=None, fac_id='AUTO_GENERATED'):
     return facility
     
 def create_group(name=None, 
-                    event_type='ACTUAL', 
+                    event_type='ACTUAL',
+                    notification_format=None,
+                    new_event=True,
+                    heartbeat=True,
                     insp_prios=['GREY', 
                                 'GREEN', 
                                 'YELLOW', 
@@ -946,33 +1562,38 @@ def create_group(name=None,
     group.lat_min = -90
     group.lat_max = 90
     
-    gs = Group_Specification()
-    gs.notification_type = 'NEW_EVENT'
-    gs.minimum_magnitude = 3
-    gs.notificaiton_format = 'EMAIL_HTML'
-    gs.event_type = event_type
-    group.specs.append(gs)
+    if new_event is True:
+        gs = GroupSpecification()
+        gs.event_type = event_type
+        gs.notification_type = 'NEW_EVENT'
+        gs.minimum_magnitude = 3
+        gs.notification_format = notification_format
+        group.specs.append(gs)
     
-    gs = Group_Specification()
-    gs.notification_type = 'heartbeat'
-    gs.event_type = 'heartbeat'
-    group.specs.append(gs)
+    if heartbeat is True:
+        gs = GroupSpecification()
+        gs.event_type = event_type
+        gs.notification_type = 'new_event'
+        gs.notification_format = notification_format
+        gs.event_type = 'heartbeat'
+        group.specs.append(gs)
     
     for insp_prio in insp_prios:
-        gs = Group_Specification()
+        gs = GroupSpecification()
         gs.event_type = event_type
         gs.notification_type = 'DAMAGE'
         gs.minimum_magnitude = 3
-        gs.notificaiton_format = 'EMAIL_HTML'
+        gs.notification_format = notification_format
         gs.inspection_priority = insp_prio
         group.specs.append(gs)
 
     return group
 
-def create_user(group_str=None, email=None):
+def create_user(group_str=None, email=None, mms=None):
     user = User()
     user.username = 'test_user'
     user.email = email
+    user.mms = mms
     user.user_type = 'ADMIN'
     user.group_string = group_str
 

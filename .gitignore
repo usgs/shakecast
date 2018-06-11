@@ -18,7 +18,7 @@ templates/new_event/*
 conf/sc_back.json
 *.DS_Store
 templates/
-functions-test.py
+*-test.py
 server-messages.json
 .vscode/
 sc_back.json
@@ -62,6 +62,9 @@ node_modules
 npm-debug.log
 testem.log
 /typings
+.coverage
+htmlcov/
+
 
 # e2e
 /e2e/*.js

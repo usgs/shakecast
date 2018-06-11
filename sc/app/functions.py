@@ -8,7 +8,6 @@ from email.mime.multipart import MIMEMultipart
 import xmltodict
 import shutil
 import time
-from math import floor
 from orm import *
 from objects import *
 from util import *
@@ -59,7 +58,8 @@ def geo_json(query_period='day'):
     
     return data
 
-def check_new():
+@dbconnect
+def check_new(session=None):
     '''
     Search database for unprocessed shakemaps
     
@@ -74,20 +74,13 @@ def check_new():
     log_message = ''
     error = ''
     try:
-        session = Session()
         new_events = (session.query(Event)
                              .filter(Event.status=='new')
                              .all())
         new_shakemaps = (session.query(ShakeMap)
                                 .filter(ShakeMap.status=='new')
                                 .all())
-        
-    except Exception as e:
-        error = str(e)
-        log_message += 'failed to access database: {}'.format(error)
-        
-        
-    try:
+
         if new_events:
             process_events(new_events, session=session)
             log_message += '\nProcessed Events: %s' % [str(ne) for ne in new_events]
@@ -99,10 +92,8 @@ def check_new():
      
     except Exception as e:
         error = '{}: {}'.format(type(e), str(e))
-        log_message += 'failed to process new shakemaps: {}'.format(e)
+        log_message += 'failed to process new events/shakemaps: {}'.format(e)
         
-    
-    Session.remove()
     data = {'status': 'finished',
             'message': 'Check for new earthquakes',
             'log': log_message,
@@ -110,6 +101,7 @@ def check_new():
     
     return data
 
+@dbconnect
 def process_events(events=None, session=None, scenario=False):
     '''
     Process or reprocess events passed into the function. Will send
@@ -142,7 +134,8 @@ def process_events(events=None, session=None, scenario=False):
                                         .filter(Group.point_inside(event))
                                         .all())
             groups_affected = [group for group in in_region
-                                    if group.has_spec(not_type='scenario')]
+                                    if group.gets_notification('new_event', scenario=True)]
+
             all_groups_affected.update(groups_affected)
         elif event.event_id != 'heartbeat':
             groups_affected = (session.query(Group)
@@ -150,13 +143,15 @@ def process_events(events=None, session=None, scenario=False):
                                         .all())
 
             filtered_groups = [group for group in groups_affected 
-                                    if group.has_spec(not_type='scenario') is False]
+                                    if group.gets_notification('new_event')]
 
             all_groups_affected.update(filtered_groups)
         else:
             all_groups = session.query(Group).all()
+
             groups_affected = [group for group in all_groups
-                                    if group.has_spec(not_type='heartbeat')]
+                                    if group.gets_notification('new_event', heartbeat=True)]
+
             all_groups_affected.update(groups_affected)
         
         if not groups_affected:
@@ -166,21 +161,20 @@ def process_events(events=None, session=None, scenario=False):
             event.status = 'processing_started'
         
         for group in all_groups_affected:
-            # Check if the group gets NEW_EVENT messages
-            if group.has_spec(not_type='NEW_EVENT'):
-                
-                # check new_event magnitude to make sure the group wants a 
-                # notificaiton
-                event_spec = [s for s in group.specs
-                                    if s.notification_type == 'NEW_EVENT'][0]
-                if event_spec.minimum_magnitude > event.magnitude:
-                    continue
-                
-                notification = Notification(group=group,
-                                            event=event,
-                                            notification_type='NEW_EVENT',
-                                            status='created')
-                session.add(notification)
+
+            # check new_event magnitude to make sure the group wants a 
+            # notificaiton
+            event_spec = group.get_new_event_spec(scenario=scenario)
+
+            if (event_spec is None or
+                    event_spec.minimum_magnitude > event.magnitude):
+                continue
+            
+            notification = Notification(group=group,
+                                        event=event,
+                                        notification_type='NEW_EVENT',
+                                        status='created')
+            session.add(notification)
         session.commit()
     
     if all_groups_affected:
@@ -194,16 +188,21 @@ def process_events(events=None, session=None, scenario=False):
 
             last_day = time.time() - 60 * 60 * 5
             filter_nots = filter(lambda x: x.event is not None and (x.event.time > last_day or scenario is True), nots)
-            new_event_notification(notifications=filter_nots,
-                                    scenario=scenario)
+
+            if len(filter_nots) > 0:
+                new_event_notification(notifications=filter_nots,
+                                        scenario=scenario)
+            
             processed_events = [n.event for n in filter_nots]
+
             for e in processed_events:
-                if scenario is True:
-                    e.status = 'scenario'
-                else:
-                    e.status = 'processed'
-            session.commit()
+                e.status = 'processed'
+
+    if scenario is True:
+        for event in events:
+            event.status = 'scenario'
     
+@dbconnect
 def process_shakemaps(shakemaps=None, session=None, scenario=False):
     '''
     Process or reprocess the shakemaps passed into the function
@@ -238,13 +237,13 @@ def process_shakemaps(shakemaps=None, session=None, scenario=False):
                                     .filter(Group.in_grid(grid))
                                     .all())
             groups_affected = [group for group in in_region
-                                    if group.has_spec('scenario')]
+                                    if group.gets_notification('damage', scenario=True)]
         else:
             in_region = (session.query(Group)
                                         .filter(Group.in_grid(grid))
                                         .all())
             groups_affected = [group for group in in_region
-                                    if not group.has_spec('scenario')]
+                                    if group.gets_notification('damage')]
         
         if not groups_affected:
             shakemap.status = 'processed - no groups'
@@ -253,23 +252,14 @@ def process_shakemaps(shakemaps=None, session=None, scenario=False):
         
         # send out new events and create inspection notifications
         for group in groups_affected:
-
-            # check if the group gets inspection notifications
-            if group.has_spec(not_type='DAMAGE'):
-                
-                # Check if the group gets notification for updates
-                if shakemap.old_maps():
-                    specs = [spec for spec in group.specs if spec.event_type == 'UPDATE']
-                    if not specs:
-                        continue
                     
-                notification = Notification(group=group,
-                                            shakemap=shakemap,
-                                            event=shakemap.event,
-                                            notification_type='DAMAGE',
-                                            status='created')
-                
-                session.add(notification)
+            notification = Notification(group=group,
+                                        shakemap=shakemap,
+                                        event=shakemap.event,
+                                        notification_type='DAMAGE',
+                                        status='created')
+            
+            session.add(notification)
         session.commit()
         
         notifications = (session.query(Notification)
@@ -291,12 +281,13 @@ def process_shakemaps(shakemaps=None, session=None, scenario=False):
                                          groups_affected]))
 
         geoJSON = {'type': 'FeatureCollection',
-                    'features': [None] * len(affected_facilities)}
+                    'features': [None] * len(affected_facilities),
+                    'properties': {}}
         if affected_facilities:
             fac_shaking_lst = [None] * len(affected_facilities)
             f_count = 0
             for facility in affected_facilities:
-                fac_shaking = make_inspection_prios(facility=facility,
+                fac_shaking = make_inspection_priority(facility=facility,
                                                     shakemap=shakemap,
                                                     grid=grid)
                 if fac_shaking is False:
@@ -305,7 +296,7 @@ def process_shakemaps(shakemaps=None, session=None, scenario=False):
                 fac_shaking_lst[f_count] = FacilityShaking(**fac_shaking)
 
                 geoJSON['features'][f_count] = makeGeoJSONDict(facility,
-                                                                fac_shaking)    
+                                                                fac_shaking)
 
                 f_count += 1
 
@@ -315,6 +306,8 @@ def process_shakemaps(shakemaps=None, session=None, scenario=False):
 
             session.bulk_save_objects(fac_shaking_lst)
             session.commit()
+
+            geoJSON['properties']['impact-summary'] = get_event_impact(shakemap)
 
             saveGeoJson(shakemap, geoJSON)
 
@@ -330,7 +323,8 @@ def process_shakemaps(shakemaps=None, session=None, scenario=False):
             # just computed
             for n in notifications:
                 inspection_notification(notification=n,
-                                        scenario=scenario)
+                                        scenario=scenario,
+                                        session=session)
         
         session.commit()
 
@@ -362,7 +356,7 @@ def saveGeoJson(shakemap, geoJSON):
     with open(json_file, 'w') as f_:
         f_.write(json.dumps(geoJSON))
 
-def make_inspection_prios(facility=None,
+def make_inspection_priority(facility=None,
                           shakemap=None,
                           grid=None):
     '''
@@ -403,7 +397,7 @@ def make_inspection_prios(facility=None,
                                             shakemap=shakemap)
     return fac_shaking
     
-def new_event_notification(notifications = None,
+def new_event_notification(notifications=None,
                            scenario=False):
     """
     Build and send HTML email for a new event or scenario
@@ -427,16 +421,17 @@ def new_event_notification(notifications = None,
 
     # create HTML for the event email
     not_builder = NotificationBuilder()
-    html = not_builder.build_new_event_html(events=events, notification=notification)
+    message = not_builder.build_new_event_html(events=events, notification=notification)
     
-    notification.status = 'HTML success'
+    notification.status = 'Message built'
 
     #initiate message
     msg = MIMEMultipart()
     
     # attach html
-    msg_html = MIMEText(html.encode('utf-8'), 'html', 'utf-8')
-    msg.attach(msg_html)
+    message_type = 'html' if '<html>' in message else 'plain'
+    encoded_message = MIMEText(message.encode('utf-8'), message_type, 'utf-8')
+    msg.attach(encoded_message)
 
     # get and attach map
     for count,event in enumerate(events):
@@ -465,7 +460,13 @@ def new_event_notification(notifications = None,
     
     mailer = Mailer()
     me = mailer.me
-    you = [user.email for user in group.users]
+
+    # get notification format
+    not_format = group.get_notification_format(notification, scenario)
+
+    # get notification destination based on notification format
+    you = [user.__dict__[not_format] for user in group.users
+            if user.__dict__.get(not_format, False)]
     
     if len(you) > 0:
         if len(events) == 1:
@@ -494,9 +495,11 @@ def new_event_notification(notifications = None,
         
     else:
         notification.status = 'not sent - no users'
-    
+
+@dbconnect
 def inspection_notification(notification=None,
-                            scenario=False):
+                            scenario=False,
+                            session=None):
     '''
     Create local products and send inspection notification
     
@@ -510,24 +513,27 @@ def inspection_notification(notification=None,
     group = notification.group
     error = ''
 
-    not_builder = NotificationBuilder()
-    html = not_builder.build_insp_html(shakemap, name=group.template)
+    has_alert_level, new_inspection, update = check_notification_for_group(
+        group,
+        notification,
+        session=session,
+        scenario=scenario
+    )
 
-    alert_level = None
-    if len(shakemap.facility_shaking) > 0:
-        insp_val = max(fs.weight for fs in shakemap.facility_shaking)
-        alert_levels = ['grey', 'green', 'yellow', 'orange', 'red']
-        alert_level = alert_levels[int(floor(insp_val))]
-
-    if group.has_alert_level(alert_level):
+    if has_alert_level and new_inspection:
         try:
+            # build the notification
+            not_builder = NotificationBuilder()
+            message = not_builder.build_insp_html(shakemap, name=group.template)
+
             #initiate message
             msg = MIMEMultipart()
             
             # attach html
-            msg_html = MIMEText(html, 'html')
-            msg.attach(msg_html)
-            
+            message_type = 'html' if '<html>' in message else 'plain'
+            encoded_message = MIMEText(message.encode('utf-8'), message_type, 'utf-8')
+            msg.attach(encoded_message)
+
             # get and attach shakemap
             msg_shakemap = MIMEImage(shakemap.get_map(), _subtype='jpeg')
             msg_shakemap.add_header('Content-ID', '<shakemap{0}>'.format(shakemap.shakecast_id))
@@ -536,7 +542,7 @@ def inspection_notification(notification=None,
             
             # find the ShakeCast logo
             temp_manager = TemplateManager()
-            configs = temp_manager.get_configs('inspection', 
+            configs = temp_manager.get_configs('inspection',
                                         name=notification.group.template)
             logo_str = os.path.join(sc_dir(),'view','assets',configs['logo'])
             
@@ -550,13 +556,22 @@ def inspection_notification(notification=None,
             
             mailer = Mailer()
             me = mailer.me
-            you = [user.email for user in group.users]
+
+            # get notification format
+            not_format = group.get_notification_format(notification, scenario)
+
+            # get notification destination based on notification format
+            you = [user.__dict__[not_format] for user in group.users
+                    if user.__dict__.get(not_format, False)]
             
             if len(you) > 0:
                 subject = '{0} {1}'.format('Inspection - ', shakemap.event.title)
 
                 if scenario is True:
                     subject = 'SCENARIO: ' + subject
+                elif update is True:
+                    subject = 'UPDATE: ' + subject
+                    
 
                 msg['Subject'] = subject
                 msg['To'] = ', '.join(you)
@@ -572,11 +587,60 @@ def inspection_notification(notification=None,
             error = str(e)
             notification.status = 'send failed'
             
+    elif new_inspection:
+        notification.status = 'not sent: low inspection priority'
     else:
-        notification.status = 'not sent: low insp'
+        notification.status = 'not sent: update without impact changes'
 
     return {'status': notification.status,
             'error': error}
+
+@dbconnect
+def check_notification_for_group(group, notification, session=None, scenario=False):
+    shakemap = notification.shakemap
+
+    # Check that the inspection status merits a sent notification
+    alert_level = shakemap.get_alert_level()
+
+    # check if inspection list has changed
+    new_inspection = True
+    update = False
+    if shakemap.old_maps():
+        update = True
+        new_inspection = False
+
+        # get the most recent map version
+        previous_map = (session.query(ShakeMap)
+            .filter(ShakeMap.shakemap_id == shakemap.shakemap_id)
+            .filter(ShakeMap.shakemap_version < shakemap.shakemap_version)
+            .order_by(ShakeMap.shakemap_version.desc())
+        ).first()
+
+        prev_alert_level = previous_map.get_alert_level()
+
+        # ignore changes if they don't merit inspection (grey and None)
+        if (((prev_alert_level is None) and 
+                (alert_level is None)) or
+                ((prev_alert_level == 'gray') and
+                (alert_level == 'gray'))):
+            new_inspection = False
+
+        # if overall inspection level changes, send notification
+        elif prev_alert_level != alert_level:
+            new_inspection = True
+
+        # trigger new inspection if the content of the facility_shaking
+        # list changes
+        elif len(previous_map.facility_shaking) != len(shakemap.facility_shaking):
+            new_inspection = True
+        else:
+            for idx in range(len(shakemap.facility_shaking)):
+                if (shakemap.facility_shaking[idx].facility.facility_id !=
+                        previous_map.facility_shaking[idx].facility.facility_id):
+                    new_inspection = True
+                    break
+
+    return group.has_alert_level(alert_level, scenario), new_inspection, update
 
 def download_scenario(shakemap_id=None, scenario=False):
     message = ''
@@ -603,8 +667,8 @@ def download_scenario(shakemap_id=None, scenario=False):
                         'success': success},
             'log': 'Download scenario: ' + shakemap_id + ', ' + status}
 
-def delete_scenario(shakemap_id=None):
-    session = Session()
+@dbconnect
+def delete_scenario(shakemap_id=None, session=None):
     scenario = (session.query(ShakeMap).filter(ShakeMap.shakemap_id == shakemap_id)
                                             .first())
     event = (session.query(Event).filter(Event.event_id == shakemap_id).first())
@@ -620,7 +684,6 @@ def delete_scenario(shakemap_id=None):
         session.delete(event)
 
     session.commit()
-    Session.remove()
 
     return {'status': 'finished',
             'message': {'message': 'Successfully removed scenario: ' + shakemap_id, 
@@ -642,50 +705,43 @@ def remove_dir(directory_name):
     
     return success
 
-def run_scenario(shakemap_id=None):
+@dbconnect
+def run_scenario(shakemap_id=None, session=None):
     '''
     Processes a shakemap as if it were new
     '''
-    
-    session = Session()
+    error = None
+
     # Check if we have the eq in db
-    event = session.query(Event).filter(Event.event_id == shakemap_id).all()
-    shakemap = session.query(ShakeMap).filter(ShakeMap.shakemap_id == shakemap_id).all()
-    
-    if event:
-        try:
-            process_events(events=[event[0]],
-                           session=session,
-                           scenario=True)
-            processed_event = True
-        except Exception:
-            processed_event = False
+    event = session.query(Event).filter(Event.event_id == shakemap_id).first()
+    shakemap = session.query(ShakeMap).filter(ShakeMap.shakemap_id == shakemap_id).first()
+    try:
+        if event:
+            process_events(events=[event],
+                            session=session,
+                            scenario=True)
 
-    else:
-        processed_event = False
+        if shakemap:
+            process_shakemaps(shakemaps=[shakemap],
+                                session=session,
+                                scenario=True)
 
-    if shakemap:
-        try:
-            process_shakemaps(shakemaps=[shakemap[0]],
-                              session=session,
-                              scenario=True)
-            processed_shakemap = True
-        except Exception:
-            processed_shakemap = False
-    
-    else:
-        processed_shakemap = False
-    
-    if processed_event is False or processed_shakemap is False:
-        message = 'Scenario run failed'
-    else:
         message = 'Scenario run complete'
+
+    except Exception as e:
+        error = str(e)
+        message = 'Scenario run failed'
+
+        
+    if event is None and shakemap is None:
+        error = 'No events available for this event id'
     
     return {'status': 'finished',
             'message': {'from': 'scenario_run',
                         'title': 'Scenario: {}'.format(shakemap_id),
                         'message': message,
-                        'success': processed_event and processed_shakemap},
+                        'success': error is None},
+            'error': error,
             'log': 'Run scenario: ' + shakemap_id}
       
 def create_grid(shakemap=None):
@@ -804,7 +860,8 @@ def import_facility_xml(xml_file='', _user=None):
     
     return data
 
-def import_facility_dicts(facs=None, _user=None):
+@dbconnect
+def import_facility_dicts(facs=None, _user=None, session=None):
     '''
     Import a list of dicts containing facility info
     
@@ -820,7 +877,6 @@ def import_facility_dicts(facs=None, _user=None):
                     'log': message to be added to ShakeCast log
                            and should contain info on error}
     '''
-    session = Session()
     
     if isinstance(_user, int):
         _user = session.query(User).filter(User.shakecast_id == _user).first()
@@ -924,8 +980,6 @@ def import_facility_dicts(facs=None, _user=None):
         add_facs_to_groups(session=session)
         session.commit()
 
-    Session.remove()
-
     message = ''
     for key, val in count_dict.iteritems():
         message += '{}: {}\n'.format(key, val)
@@ -968,7 +1022,8 @@ def import_group_xml(xml_file='', _user=None):
     data = import_group_dicts(groups=xml_list, _user=_user)
     return data
 
-def import_group_dicts(groups=None, _user=None):
+@dbconnect
+def import_group_dicts(groups=None, _user=None, session=None):
     '''
     Import a list of dicts containing group info
     
@@ -984,7 +1039,6 @@ def import_group_dicts(groups=None, _user=None):
                     'log': message to be added to ShakeCast log
                            and should contain info on error}
     '''
-    session = Session()
     
     if isinstance(_user, int):
         _user = session.query(User).filter(User.shakecast_id == _user).first()
@@ -1046,20 +1100,20 @@ def import_group_dicts(groups=None, _user=None):
 
                 # look for existing specs
                 if group['NOTIFICATION']['NOTIFICATION_TYPE'] == 'NEW_EVENT':
-                    spec = (session.query(Group_Specification)
-                                .filter(Group_Specification.notification_type == 'NEW_EVENT')
-                                .filter(Group_Specification.group == g)).all()
+                    spec = (session.query(GroupSpecification)
+                                .filter(GroupSpecification.notification_type == 'NEW_EVENT')
+                                .filter(GroupSpecification.group == g)).all()
                 else:
                     damage_level = group['NOTIFICATION'].get('DAMAGE_LEVEL', None)
-                    spec = (session.query(Group_Specification)
-                                .filter(Group_Specification.notification_type == 'DAMAGE')
-                                .filter(Group_Specification.inspection_priority == damage_level)
-                                .filter(Group_Specification.group == g)).all()
+                    spec = (session.query(GroupSpecification)
+                                .filter(GroupSpecification.notification_type == 'DAMAGE')
+                                .filter(GroupSpecification.inspection_priority == damage_level)
+                                .filter(GroupSpecification.group == g)).all()
                 if spec:
                     spec = spec[0]
 
                 else:
-                    spec = Group_Specification()
+                    spec = GroupSpecification()
                     spec.notification_type = notification_type
                     if damage_level:
                         spec.damage_level= damage_level
@@ -1077,7 +1131,6 @@ def import_group_dicts(groups=None, _user=None):
     add_facs_to_groups(session=session)
     add_users_to_groups(session=session)
     session.commit()
-    Session.remove()
 
     log_message = ''
     status = 'finished'
@@ -1115,7 +1168,8 @@ def import_user_xml(xml_file='', _user=None):
     
     return data
 
-def import_user_dicts(users=None, _user=None):
+@dbconnect
+def import_user_dicts(users=None, _user=None, session=None):
     '''
     Import a list of dicts containing user info
     
@@ -1131,7 +1185,6 @@ def import_user_dicts(users=None, _user=None):
                     'log': message to be added to ShakeCast log
                            and should contain info on error}
     '''
-    session = Session()
     
     if isinstance(_user, int):
         _user = session.query(User).filter(User.shakecast_id == _user).first()
@@ -1154,7 +1207,14 @@ def import_user_dicts(users=None, _user=None):
             u.group_string = user.get('GROUP', user.get('group_string', ''))
             u.user_type = user.get('USER_TYPE', user.get('user_type', ''))
             u.full_name = user.get('FULL_NAME', user.get('full_name', ''))
-            u.phone_number = user.get('PHONE_NUMBER', user.get('group_string', ''))
+            u.phone_number = user.get('PHONE_NUMBER', user.get('phone_number', ''))
+
+            delivery = user.get('DELIVERY', user.get('delivery', False))
+            if delivery:
+                u.mms = delivery.get('MMS',
+                            delivery.get('mms',
+                            delivery.get('PAGER',
+                            delivery.get('pager', ''))))
                     
             u.updated = time.time()
             if _user is not None:
@@ -1181,7 +1241,6 @@ def import_user_dicts(users=None, _user=None):
         add_users_to_groups(session=session)
         session.commit()
 
-    Session.remove()
     log_message = ''
     status = 'finished'
     data = {'status': status,
@@ -1214,7 +1273,8 @@ def determine_xml(xml_file=''):
         xml_type = 'unknown'
         
     return xml_type
-               
+
+@dbconnect
 def add_facs_to_groups(session=None):
     '''
     Associate all groups with the facilities that fall inside their
@@ -1229,11 +1289,13 @@ def add_facs_to_groups(session=None):
     groups = session.query(Group).all()
     for group in groups:
         query = session.query(Facility).filter(Facility.in_grid(group))
-        if group.facility_type.lower() != 'all':
+        if ((group.facility_type is not None) and
+                (group.facility_type.lower() != 'all')):
             query = query.filter(Facility.facility_type.like(group.facility_type))
 
         group.facilities = query.all()
-            
+
+@dbconnect
 def add_users_to_groups(session=None):
     '''
     Connect all existing groups to users who have joined that group.
@@ -1259,7 +1321,8 @@ def add_users_to_groups(session=None):
                     if group:
                         user.groups.append(group[0])
 
-def delete_inventory_by_id(inventory_type=None, ids=None):
+@dbconnect
+def delete_inventory_by_id(inventory_type=None, ids=None, session=None):
     '''
     Function made to be run by the ShakeCast server deletes facilities
     by their shakecast_id
@@ -1277,7 +1340,6 @@ def delete_inventory_by_id(inventory_type=None, ids=None):
             plural = 'users'
             inv_table = User
 
-        session = Session()
         inventory = session.query(inv_table).filter(inv_table
                                             .shakecast_id
                                             .in_(ids)).all()
@@ -1289,8 +1351,6 @@ def delete_inventory_by_id(inventory_type=None, ids=None):
             if len(deleted) > 1:
                 inventory_type = plural
         session.commit()
-
-        Session.remove()
 
     data = {'status': 'finished',
             'message': {'from': 'delete_inventory',
@@ -1304,12 +1364,12 @@ def delete_inventory_by_id(inventory_type=None, ids=None):
     return {'status': 'finished', 'message': deleted}
 
 
-def get_facility_info(group_name='', shakemap_id=''):
+@dbconnect
+def get_facility_info(group_name='', shakemap_id='', session=None):
     '''
     Get facility overview (Facilities per facility type) for a 
     specific group or shakemap or both or none
     '''
-    session = Session()
     f_types = session.query(Facility.facility_type).distinct().all()
 
     f_dict = {}
@@ -1330,6 +1390,21 @@ def get_facility_info(group_name='', shakemap_id=''):
 
     return f_dict
 
+def get_event_impact(shakemap):
+    impact_sum = {'gray': 0,
+             'green': 0,
+             'yellow': 0,
+             'orange': 0,
+             'red': 0}
+
+    fac_shaking = shakemap.facility_shaking
+    
+    for s in fac_shaking:
+        # record number of facs at each alert level
+        impact_sum[s.alert_level] += 1
+
+    return impact_sum
+
 
 
 
@@ -1340,8 +1415,8 @@ def url_test():
     pg = ProductGrabber()
     pg.get_json_feed()
 
-def db_test():
-    session = Session()
+@dbconnect
+def db_test(session=None):
     u = User()
     u.username = 'SC_TEST_USER'
     session.add(u)
@@ -1349,7 +1424,6 @@ def db_test():
 
     session.delete(u)
     session.commit()
-    Session.remove()
 
 def smtp_test():
     m = Mailer()
@@ -1401,3 +1475,44 @@ def system_test(add_tests=None):
             'log': 'System Test: ' + results}
 
     return data
+
+def sql_to_obj(sql):
+    '''
+    Convert SQLAlchemy objects into dictionaries for use after
+    session closes
+    '''
+
+    if isinstance(sql, Base):
+        sql = sql.__dict__
+
+    if isinstance(sql, list):
+        obj = []
+
+        for item in sql:
+            if (isinstance(item, dict) or
+                    isinstance(item, list) or
+                    isinstance(item, Base)):
+                obj.append(sql_to_obj(item))
+
+    elif isinstance(sql, dict):
+        obj = {}
+
+        if sql.get('_sa_instance_state', False):
+            sql.pop('_sa_instance_state')
+
+        for key in sql.keys():
+            item = sql[key]
+            if isinstance(item, Base) or isinstance(item, dict):
+                item = sql_to_obj(item)
+            
+            elif isinstance(item, list):
+                for obj in item:
+                    if isinstance(obj, Base):
+                        item = sql_to_obj(item)
+            
+            obj[key] = item
+
+    else:
+        obj = sql
+
+    return obj

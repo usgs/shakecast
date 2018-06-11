@@ -3,6 +3,8 @@ import os
 import sys
 import inspect as inspect_mod
 import time
+from math import floor
+from functools import wraps
 
 modules_dir = os.path.join(sc_dir(), 'modules')
 if modules_dir not in sys.path:
@@ -17,6 +19,8 @@ from sqlalchemy.ext.declarative import *
 from sqlalchemy.ext.hybrid import hybrid_method
 from sqlalchemy.orm import *
 from sqlalchemy.sql import and_, or_
+from sqlalchemy.orm.session import Session as SessionClass
+
 from werkzeug.security import generate_password_hash
 
 # Get directory location for database
@@ -365,6 +369,7 @@ class User(Base):
     username = Column(String(32))
     password = Column(String(255))
     email = Column(String(255))
+    mms = Column(String(255))
     phone_number = Column(String(25))
     full_name = Column(String(32))
     user_type = Column(String(10))
@@ -380,11 +385,13 @@ class User(Base):
         return '''User(username=%s,
                        password=%s,
                        email=%s,
+                       mms=%s,
                        phone_number=%s,
                        full_name=%s,
                        user_type=%s)''' % (self.username,
                                            self.password,
                                            self.email,
+                                           self.mms,
                                            self.phone_number,
                                            self.full_name,
                                            self.user_type)
@@ -431,7 +438,7 @@ class Group(Base):
                                       backref='group',
                                       cascade='save-update, delete')
     
-    specs = relationship('Group_Specification',
+    specs = relationship('GroupSpecification',
                                   backref='group',
                                   cascade='save-update, delete, delete-orphan')
     
@@ -537,61 +544,103 @@ class Group(Base):
                     cls.lon_min <= point.lon,
                     cls.lon_max >= point.lon)
     
-    @hybrid_method    
-    def has_spec(self, not_type=''):
-        specs = [s.notification_type.lower() for s in self.specs]
-        event_types = [s.event_type.lower() for s in self.specs]
-        return bool(not_type.lower() in specs + event_types)
+    def _get_specs(self,
+            notification_type,
+            scenario=False,
+            heartbeat=False,
+            inspection=None):
+        notification_type = notification_type.lower()
+        specs = [s for s in self.specs if
+                s.notification_type.lower() == notification_type]
+        filtered = [s for s in specs if
+                (((s.event_type.lower() == 'scenario') is scenario)
+                and ((s.event_type.lower() == 'heartbeat') is heartbeat)
+                or s.event_type.lower() == 'all')]
 
-    def has_alert_level(self, level):
-        # grey groups get no-inspection notifications
-        if level is None:
-            level = 'grey'
+        if len(filtered) > 0 and inspection is not None:
+            filtered = [s for s in filtered if
+                    str(s.inspection_priority).lower() == inspection.lower()]
 
-        # make sure we're only dealing with lowercase
-        level = level.lower()
-        
-        levels = [s.inspection_priority.lower() for s in self.specs if 
-                                s.notification_type == 'DAMAGE']
+        return filtered
 
-        # need to match grey and gray... we use gray in pyCast, but
-        # workbook and V3 use grey
-        if (('grey' in levels or 'gray' in levels) and 
-                (level == 'gray' or level == 'grey')):
-            return True
+    def get_new_event_spec(self, scenario=False):
+        specs = self._get_specs('new_event', scenario=scenario)
 
-        return level.lower() in levels
+        return specs[0] if len(specs) > 0 else None
 
-    def get_alert_levels(self):
-        levels = [s.inspection_priority.lower() for s in self.specs if 
-                                s.notification_type == 'DAMAGE']
+    def get_inspection_spec(self, inspection, scenario=False):
+        specs = self._get_specs('damage', inspection=inspection, scenario=scenario)
 
-        return levels
+        return specs[0] if len(specs) > 0 else None
 
-    def get_scenario_alert_levels(self):
-        levels = [s.inspection_priority.lower() for s in self.specs if 
-                                s.notification_type == 'DAMAGE' and s.event_type == 'SCENARIO']
+    def gets_notification(self, notification_type, scenario=False, heartbeat=False):
+        specs = self._get_specs(notification_type,
+                scenario=scenario,
+                heartbeat=heartbeat)
 
-        return levels
+        return len(specs) > 0
 
-    def check_min_mag(self, mag=10):
-        min_mags = [s.minimum_magnitude for s in self.specs 
-                    if s.notification_type.lower() == 'new_event']
-        for min_mag in min_mags:
-            if mag > min_mag:
+    def has_alert_level(self, level, scenario=False):
+        # gray groups get no-inspection notifications
+        if ((level is None) or
+                (level.lower() == 'gray') or
+                (level.lower() == 'grey')):
+            levels = ['gray', 'grey']
+        else:
+            levels = [level]
+
+        for level in levels:
+            spec = self.get_inspection_spec(level, scenario)
+
+            if spec is not None:
                 return True
+
         return False
 
+    def get_alert_levels(self):
+        specs = self._get_specs('damage')
+
+        return [spec.inspection_priority.lower() for spec in specs
+                if spec is not None]
+
+    def get_scenario_alert_levels(self):
+        specs = self._get_specs('damage', scenario=True)
+
+        return [spec.inspection_priority.lower() for spec in specs
+                if spec is not None]
+
+    def check_min_mag(self, mag):
+        new_event = self.get_new_event_spec()
+
+        return (new_event.minimum_magnitude < mag
+                if new_event is not None else None)
+
     def get_min_mag(self):
-        mags = [s.minimum_magnitude for s in self.specs 
-                    if s.notification_type.lower() == 'new_event']
-        if len(mags) == 0:
-            return 0
+        new_event = self.get_new_event_spec()
+
+        return new_event.minimum_magnitude if new_event is not None else None
+
+    def get_notification_format(self, notification, scenario=False):
+        if (notification.notification_type == 'DAMAGE'):
+            alert_level = notification.shakemap.get_alert_level()
+            spec = self.get_inspection_spec(alert_level, scenario)
         else:
-            return min(mags)
+            spec = self.get_new_event_spec(scenario)
 
 
-class Group_Specification(Base):
+        if spec is None:
+            return None
+
+        format_ = str(spec.notification_format).lower()
+
+        # Catch mms and sms messages
+        if (format_ == 'mms') or (format_ == 'sms'):
+            return 'mms'
+
+        # Return email as default
+        return 'email'
+
+class GroupSpecification(Base):
     __tablename__ = 'group_specification'
     shakecast_id = Column(Integer, primary_key=True)
     group_id = Column(Integer, ForeignKey('group.shakecast_id'))
@@ -603,7 +652,7 @@ class Group_Specification(Base):
     aggregate_name = Column(String(25))
     
     def __repr__(self):
-        return '''Group_Specification(group_id=%s,
+        return '''GroupSpecification(group_id=%s,
                                       notification_type=%s,
                                       inspection_priority=%s,
                                       minimum_magnitude=%s,
@@ -804,7 +853,7 @@ class ShakeMap(Base):
         old_shakemaps = [row for row in result]
         
         return len(old_shakemaps)
-      
+
     def is_new(self):
         stmt = (select([ShakeMap.__table__.c.shakecast_id])
                     .where(and_(ShakeMap.__table__.c.shakemap_id == self.shakemap_id,
@@ -813,10 +862,7 @@ class ShakeMap(Base):
         result = engine.execute(stmt)
         shakemaps = [row for row in result]
         
-        if shakemaps:
-            return False
-        else:
-            return True
+        return len(shakemaps) == 0
            
     def has_products(self, req_prods):
         shakemap_prods = [prod.product_type for prod in self.products if prod.status == 'downloaded' and prod.error is None]
@@ -831,6 +877,16 @@ class ShakeMap(Base):
         map_image = shakemap_image.read()
         shakemap_image.close()
         return map_image
+
+    def get_alert_level(self):
+        alert_level = None
+        if len(self.facility_shaking) > 0:
+            insp_val = self.facility_shaking[0].weight
+            alert_levels = ['gray', 'green', 'yellow', 'orange', 'red']
+            alert_level = alert_levels[int(floor(insp_val))]
+
+        return alert_level
+
     
 class Product(Base):
     __tablename__ = 'product'
@@ -870,6 +926,64 @@ class Product(Base):
                                                      self.update_timestamp)
 
 #######################################################################
+
+# decorator for DB connection
+def dbconnect(func):
+    @wraps(func)
+    def inner(*args, **kwargs):
+        remove_session = False
+        session = None
+
+        # check if session is passed as arg
+        new_args = []
+        for arg in args:
+            if isinstance(arg, SessionClass):
+                session = arg
+            else:
+                new_args.append(arg)
+
+        # get session from kwargs -- will overwrite session from
+        # regular arg to ensure only one gets passed to the
+        # function
+        if 'session' in kwargs:
+            session = kwargs.pop('session')
+
+        # if there is no session, create one
+        if session is None:
+            session = Session()
+
+            # this session is created only for this function, destroy
+            # it on completion
+            remove_session = True
+
+        try:
+            # run the function
+            return_val = func(*new_args, session=session, **kwargs)
+            session.commit()
+        except:
+            session.rollback()
+            return_val = None
+            raise
+        finally:
+            refresh(return_val, session=session)
+
+            # function-specific session, close it
+            if remove_session is True:
+                session.expunge_all()
+                Session.remove()
+
+        return return_val
+    return inner
+
+def refresh(obj, session=None):
+    if isinstance(obj, Base):
+        session.refresh(obj)
+    elif isinstance(obj, list):
+        for o in obj:
+            if isinstance(o, Base):
+                session.refresh(o)
+    elif isinstance(obj, dict):
+        pass
 
 # name the database, but switch to a test database if run from test.py
 db_name = 'shakecast.db'

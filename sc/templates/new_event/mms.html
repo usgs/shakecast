@@ -1,0 +1,6 @@
+{% for event in events %}
+{{ event.place }}
+GPS: {{ event.lat }}, {{ event.lon }}
+{% endfor %}
+
+Reported By: {{ sc.server_name }}

@@ -21,7 +21,7 @@ import datetime
 from ast import literal_eval
 from app.objects import Clock, SC, NotificationBuilder, TemplateManager, SoftwareUpdater
 from app.orm import *
-from app.functions import determine_xml, get_facility_info
+from app.functions import determine_xml, get_facility_info, sql_to_obj
 from ui import UI
 
 # setup logging
@@ -50,21 +50,20 @@ def client_app_angular2_folder(filename):
     return send_from_directory(os.path.join(BASE_DIR), filename)
 
 @login_manager.user_loader
-def load_user(user_id):
-    session = Session()
+@dbconnect
+def load_user(user_id, session=None):
     user = session.query(User).filter(User.shakecast_id==int(user_id)).first()
 
     # Expunge here might help with Windows threading
     #session.expunge(user)
-    Session.remove()
     return user
 
 @app.route('/api/login', methods=['POST'])
-def login():
+@dbconnect
+def login(session=None):
     if request.method == 'GET':
         return render_template('login.html')
 
-    session = Session()
     username = request.json.get('username', '')
     password = request.json.get('password', '')
     
@@ -73,12 +72,10 @@ def login():
     
     if (registered_user is None or not
             check_password_hash(registered_user.password, password)):
-        Session.remove()
         return jsonify(success=False)
 
     login_user(registered_user)
     flash('Logged in successfully')
-    Session.remove()
 
     user = current_user.__dict__.copy()
     user.pop('_sa_instance_state', None)
@@ -121,8 +118,8 @@ def get_messages():
 
 @app.route('/api/earthquake-data')
 @login_required
-def get_eq_data():
-    session = Session()
+@dbconnect
+def get_eq_data(session=None):
     filter_ = json.loads(request.args.get('filter', '{}'))
     DAY = 24*60*60
     query = session.query(Event)
@@ -182,14 +179,13 @@ def get_eq_data():
         eq_dict['shakemaps'] = len(eq.shakemaps)
         eq_dict.pop('_sa_instance_state', None)
         eq_dicts += [eq_dict]
-    
-    Session.remove()
+
     return jsonify(success=True, data=eq_dicts)
 
 @app.route('/api/earthquake-data/facility/<facility_id>')
 @login_required
-def get_shaking_events(facility_id):
-    session = Session()
+@dbconnect
+def get_shaking_events(facility_id, session=None):
     fac = session.query(Facility).filter(Facility.shakecast_id == facility_id).first()
     eqs = [fs.shakemap.event for fs in fac.shaking_history if fs.shakemap is not None]
 
@@ -200,14 +196,13 @@ def get_shaking_events(facility_id):
             eq_dict['shakemaps'] = len(eq.shakemaps)
             eq_dict.pop('_sa_instance_state', None)
             eq_dicts += [eq_dict]
-    
-    Session.remove()
+
     return jsonify(success=True, data=eq_dicts)
 
 @app.route('/api/facility-data')
 @login_required
-def get_fac_data():
-    session = Session()
+@dbconnect
+def get_fac_data(session=None):
     filter_ = json.loads(request.args.get('filter', '{}'))
     query = session.query(Facility)
     types_query = session.query(Facility.facility_type)
@@ -281,14 +276,13 @@ def get_fac_data():
         dict_ = fac.__dict__.copy()
         dict_.pop('_sa_instance_state', None)
         dicts += [dict_]
-    
-    Session.remove()
+
     return jsonify(success=True, data=dicts, count=fac_count)
 
 @app.route('/api/facility-shaking/<facility_id>/<eq_id>')
 @login_required
-def get_shaking_data(facility_id, eq_id):
-    session = Session()
+@dbconnect
+def get_shaking_data(facility_id, eq_id, session=None):
     shaking = (session.query(FacilityShaking)
                     .filter(FacilityShaking
                                 .shakemap
@@ -299,8 +293,7 @@ def get_shaking_data(facility_id, eq_id):
     if shaking:
         shaking_dict = shaking.__dict__.copy()
         shaking_dict.pop('_sa_instance_state', None)
-    
-    Session.remove()
+
     return jsonify(success=True, data=shaking_dict)
 
 @app.route('/api/delete/inventory', methods=['DELETE'])
@@ -319,8 +312,8 @@ def delete_inventory():
 
 @app.route('/api/groups')
 @login_required
-def get_groups():
-    session = Session()
+@dbconnect
+def get_groups(session=None):
     filter_ = json.loads(request.args.get('filter', '{}'))
     query = session.query(Group)
     if filter_:
@@ -331,21 +324,21 @@ def get_groups():
     
     group_dicts = []
     for group in groups:
+        session.refresh(group)
         group_dict = group.__dict__.copy()
         group_dict.pop('_sa_instance_state', None)
-        group_dict['info'] = json.loads(get_group_info(group.shakecast_id))
+        group_dict['info'] = json.loads(get_group_info(group.shakecast_id, session=session))
         group_dicts += [group_dict]
         
     group_json = json.dumps(group_dicts, cls=AlchemyEncoder)
-    
-    Session.remove()    
+
     return group_json
 
 @app.route('/api/users', methods=['GET', 'POST'])
 @login_required
-def get_users():
+@dbconnect
+def get_users(session=None):
     if request.method == 'GET':
-        session = Session()
         filter_ = literal_eval(request.args.get('filter', 'None'))
         if filter_:
             if filter_.get('group', None):
@@ -372,8 +365,6 @@ def get_users():
             
         user_json = json.dumps(user_dicts, cls=AlchemyEncoder)
         
-        Session.remove()  
-        
     else:
         users = request.json.get('users', 'null')
         for user in users:
@@ -398,14 +389,12 @@ def get_current_user():
     user_dict['password'] = ''
         
     user_json = json.dumps(user_dict, cls=AlchemyEncoder)
-    Session.remove()  
-
     return user_json
 
 @app.route('/api/shakemaps')
 @login_required
-def get_shakemaps():
-    session = Session()
+@dbconnect
+def get_shakemaps(session=None):
     sms = (session.query(ShakeMap)
                 .order_by(ShakeMap.recieve_timestamp.desc())
                 .all())
@@ -417,14 +406,12 @@ def get_shakemaps():
         sm_dicts += [sm_dict]
     
     sm_json = json.dumps(sm_dicts, cls=AlchemyEncoder)
-    
-    Session.remove()    
     return sm_json
 
 @app.route('/api/shakemaps/<shakemap_id>')
 @login_required
-def get_shakemap(shakemap_id):
-    session = Session()
+@dbconnect
+def get_shakemap(shakemap_id, session=None):
     sms = (session.query(ShakeMap)
                 .filter(ShakeMap.shakemap_id == shakemap_id)
                 .order_by(ShakeMap.shakemap_version.desc())
@@ -437,14 +424,13 @@ def get_shakemap(shakemap_id):
         sm_dicts += [sm_dict]
     
     sm_json = json.dumps(sm_dicts, cls=AlchemyEncoder)
-    
-    Session.remove()    
+
     return sm_json
 
 @app.route('/api/shakemaps/<shakemap_id>/facilities')
 @login_required
-def get_affected_facilities(shakemap_id):
-    session = Session()
+@dbconnect
+def get_affected_facilities(shakemap_id, session=None):
     sms = (session.query(ShakeMap)
                 .filter(ShakeMap.shakemap_id == shakemap_id)
                 .order_by(ShakeMap.shakemap_version.desc())
@@ -470,14 +456,12 @@ def get_affected_facilities(shakemap_id):
     shaking_data = {'facilities': fac_dicts, 'types': {}}
 
     shaking_json = json.dumps(shaking_data, cls=AlchemyEncoder)
-    
-    Session.remove()    
     return shaking_json
 
 @app.route('/api/shakemaps/<shakemap_id>/impact-summary')
 @login_required
-def impact_summary(shakemap_id):
-    session = Session()
+@dbconnect
+def impact_summary(shakemap_id, session=None):
     sms = (session.query(ShakeMap)
                 .filter(ShakeMap.shakemap_id == shakemap_id)
                 .order_by(ShakeMap.shakemap_version.desc())
@@ -495,14 +479,13 @@ def impact_summary(shakemap_id):
         for s in fac_shaking:
             # record number of facs at each alert level
             impact_sum[s.alert_level] += 1
-    Session.remove()
 
     return json.dumps(impact_sum)
 
 @app.route('/api/shakemaps/<shakemap_id>/impact')
 @login_required
-def shakemap_impact(shakemap_id):
-    session = Session()
+@dbconnect
+def shakemap_impact(shakemap_id, session=None):
     shakemap = (session.query(ShakeMap)
                     .filter(ShakeMap.shakemap_id == shakemap_id)
                     .order_by(desc(ShakeMap.shakemap_version))
@@ -516,8 +499,6 @@ def shakemap_impact(shakemap_id):
         return emptyJSON
 
     json_file = os.path.join(shakemap.directory_name, 'impact.json')
-    Session.remove()
-
     if os.path.exists(json_file) is True:
         with open(json_file, 'r') as f_:
             geoJSON = f_.read()
@@ -528,8 +509,8 @@ def shakemap_impact(shakemap_id):
 
 @app.route('/api/shakemaps/<shakemap_id>/overlay')
 @login_required
-def shakemap_overlay(shakemap_id):
-    session = Session()
+@dbconnect
+def shakemap_overlay(shakemap_id, session=None):
     shakemap = (session.query(ShakeMap)
                     .filter(ShakeMap.shakemap_id == shakemap_id)
                     .order_by(desc(ShakeMap.shakemap_version))
@@ -542,14 +523,12 @@ def shakemap_overlay(shakemap_id):
         
     else:
         img = app.send_static_file('sc_logo.png')
-        
-    Session.remove()
     return send_file(img, mimetype='image/gif')
 
 @app.route('/api/shakemaps/<shakemap_id>/shakemap')
 @login_required
-def shakemap_map(shakemap_id):
-    session = Session()
+@dbconnect
+def shakemap_map(shakemap_id, session=None):
     shakemap = (session.query(ShakeMap)
                     .filter(ShakeMap.shakemap_id == shakemap_id)
                     .order_by(desc(ShakeMap.shakemap_version))
@@ -561,8 +540,8 @@ def shakemap_map(shakemap_id):
 
 @app.route('/api/events/<event_id>/image')
 @login_required
-def event_image(event_id):
-    session = Session()
+@dbconnect
+def event_image(event_id, session=None):
     event = (session.query(Event)
                     .filter(Event.event_id == event_id)
                     .limit(1)).first()
@@ -573,30 +552,24 @@ def event_image(event_id):
         
     else:
         img = app.send_static_file('sc_logo.png')
-        
-    Session.remove()
+
     return send_file(img, mimetype='image/gif')
 
 @app.route('/api/notifications/<event_id>/')
 @login_required
-def get_notification(event_id):
-    session = Session()
+@dbconnect
+def get_notification(event_id, session=None):
     event = session.query(Event).filter(Event.event_id == event_id).first()
 
     dicts = []
     if event is not None:
-        nots = event.notifications
-        for sm in event.shakemaps:
-            nots += sm.notifications
-
-        for obj in nots:
+        for obj in event.notifications:
             dict_ = obj.__dict__.copy()
             dict_.pop('_sa_instance_state', None)
             dict_['group_name'] = obj.group.name
             dicts += [dict_]
     
     json_ = json.dumps(dicts, cls=AlchemyEncoder)
-    Session.remove()    
     return json_
 
 @app.route('/api/images/')
@@ -638,10 +611,9 @@ def admin_only(func):
 @app.route('/api/notification-html/<notification_type>/<name>', methods=['GET','POST'])
 @admin_only
 @login_required
-def notification_html(notification_type, name):
+@dbconnect
+def notification_html(notification_type, name, session=None):
     config = json.loads(request.args.get('config', 'null'))
-    
-    session = Session()
     not_builder = NotificationBuilder()
 
     if notification_type == 'new_event':
@@ -654,7 +626,6 @@ def notification_html(notification_type, name):
         sms = session.query(ShakeMap).all()
         sm = sms[-1]
         html = not_builder.build_insp_html(sm, name=name, web=True, config=config)
-    Session.remove()
     return html
 
 @app.route('/api/notification-config/<notification_type>/<name>', methods=['GET','POST'])
@@ -757,31 +728,39 @@ def upload():
 @app.route('/admin/api/groups/<group_id>/info')
 @admin_only
 @login_required
-def get_group_info(group_id):
-    session = Session()
+@dbconnect
+def get_group_info(group_id, session=None):
+
     group = (session.query(Group)
                 .filter(Group.shakecast_id == group_id)
                 .first())
 
-    if group is not None:
-        group_specs = {'inspection': group.get_alert_levels(),
-                        'new_event': group.get_min_mag(),
-                        'heartbeat': group.has_spec('heartbeat'),
-                        'scenario': group.get_scenario_alert_levels(),
-                        'facilities': get_facility_info(group_name=group.name),
-                        'users': group.users,
-                        'template': group.template}
+    if group:
+
+        users = [sql_to_obj(user.__dict__.copy()) for user in group.users]
+        inspection = group.get_alert_levels()
+        min_mag = group.get_min_mag()
+        heartbeat = group.gets_notification('heartbeat')
+        scenario = group.get_scenario_alert_levels()
+        facility_info = get_facility_info(group_name=group.name, session=session)
+        template = group.template
+
+        group_specs = {'inspection': inspection,
+                        'new_event': min_mag,
+                        'heartbeat': heartbeat,
+                        'scenario': scenario,
+                        'facilities': facility_info,
+                        'users': users,
+                        'template': template}
     
     specs_json = json.dumps(group_specs, cls=AlchemyEncoder)
-    
-    Session.remove()    
     return specs_json
 
 @app.route('/admin/get/users/<user_id>/groups')
 @admin_only
 @login_required
-def get_user_groups(user_id):
-    session = Session()
+@dbconnect
+def get_user_groups(user_id, session=None):
     user = session.query(User).filter(User.shakecast_id == user_id).first()
     
     groups = []
@@ -793,7 +772,6 @@ def get_user_groups(user_id):
     
     groups_json = json.dumps(groups, cls=AlchemyEncoder)
     
-    Session.remove()    
     return groups_json
 
 @app.route('/admin/new-template/<name>')
@@ -808,8 +786,8 @@ def new_not_template(name):
 @app.route('/admin/get/inventory')
 @admin_only
 @login_required
-def get_inventory():
-    session = Session()
+@dbconnect
+def get_inventory(session=None):
     filter_ = json.loads(request.args.get('filter', '{}'))
     if filter_:
         if filter_.get('group', None) is not None:
@@ -849,7 +827,6 @@ def get_inventory():
     
     facilities_json = json.dumps(facility_dicts, cls=AlchemyEncoder)
     
-    Session.remove()    
     return facilities_json
 
 @app.route('/admin/system-test')

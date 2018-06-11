@@ -14,7 +14,6 @@ import sys
 import time
 import xml.etree.ElementTree as ET
 import smtplib
-import datetime
 from email.mime.text import MIMEText
 from email.mime.image import MIMEImage
 from email.mime.multipart import MIMEMultipart
@@ -22,7 +21,7 @@ from util import *
 from jinja2 import Template
 import socks
 import types
-from orm import Session, Event, ShakeMap, Product, User, DeclarativeMeta, Group, SC
+from orm import Event, ShakeMap, Product, User, DeclarativeMeta, Group, SC, dbconnect
 modules_dir = os.path.join(sc_dir(), 'modules')
 if modules_dir not in sys.path:
     sys.path += [modules_dir]
@@ -105,12 +104,12 @@ class ProductGrabber(object):
                 except Exception:
                     continue
         return
-        
-    def get_new_events(self, scenario=False):
+    
+    @dbconnect
+    def get_new_events(self, session=None, scenario=False):
         """
         Checks the json feed for new earthquakes
         """
-        session = Session()
         sc = SC()
 
         self.read_json_feed()
@@ -205,7 +204,6 @@ class ProductGrabber(object):
             new_events += [event]
             event_str += 'Event: %s\n' % event.event_id
         
-        Session.remove()
         # print event_str
         return new_events, event_str
 
@@ -230,12 +228,12 @@ class ProductGrabber(object):
             image = open(image_loc, 'wb')
             image.write(gmap)
             image.close()
-            
-    def get_new_shakemaps(self, scenario=False):
+    
+    @dbconnect
+    def get_new_shakemaps(self, session=None, scenario=False):
         """
         Checks the json feed for new earthquakes
         """
-        session = Session()
         url_opener = URLOpener()
         
         shakemap_str = ''
@@ -260,14 +258,22 @@ class ProductGrabber(object):
             if ('shakemap' not in eq_info['properties']['products'].keys() and
                     'shakemap-scenario' not in eq_info['properties']['products'].keys()):
                 continue
-            
-            # pulls the first shakemap associated with the event
-            shakemap = ShakeMap()
 
+            # check for downloaded event whose id or one of its old ids
+            # matches the shakemap id
             if scenario is False:
-                shakemap.shakemap_id = eq_id
+                event = session.query(Event).filter(Event.all_event_ids.contains(eq_id)).first()
             else:
-                shakemap.shakemap_id = eq_id + '_scenario'
+                eq_id += '_scenario'
+                event = session.query(Event).filter(Event.event_id == eq_id).first()
+
+            # skips maps for events that weren't downloaded
+            if event is None:
+                continue
+            
+            # pull the first shakemap associated with the event
+            shakemap = ShakeMap()
+            shakemap.shakemap_id = eq_id
 
             if 'shakemap-scenario' in eq_info['properties']['products'].keys():
                 sm_str = 'shakemap-scenario'
@@ -303,7 +309,8 @@ class ProductGrabber(object):
             dep_shakemaps = (
                 session.query(ShakeMap)
                     .filter(ShakeMap.shakemap_id == shakemap.shakemap_id)
-                    .filter(ShakeMap.status == 'new')).all()
+                    .filter(ShakeMap.status == 'new')
+                    .filter(ShakeMap.shakemap_version <= shakemap.shakemap_version)).all()
             for dep_shakemap in dep_shakemaps:
                 dep_shakemap.status = 'depricated'
             
@@ -366,17 +373,8 @@ class ProductGrabber(object):
                     product.status = 'download failed'
                     product.error = '{}: {}'.format(type(e), e)
                     self.log += 'Failed to download: %s %s' % (eq_id, product_name)
-            
-            # check for event whose id or one of its old ids matches the shakemap id
-            if scenario is False:
-                event = session.query(Event).filter(Event.all_event_ids.contains(shakemap.shakemap_id)).all()
-            else:
-                event = session.query(Event).filter(Event.event_id == shakemap.shakemap_id).all()
 
-            if event:
-                event = event[0]
-                event.shakemaps.append(shakemap)
-
+            event.shakemaps.append(shakemap)
             if (scenario is False and 
                     shakemap.has_products(self.req_products) and 
                     shakemap.status == 'downloading'):
@@ -390,15 +388,14 @@ class ProductGrabber(object):
             shakemap_str += 'Wrote %s to disk.\n' % shakemap.shakemap_id
         
         self.log += shakemap_str
-        Session.remove()
         return new_shakemaps, shakemap_str
 
-    def make_heartbeat(self):
+    @dbconnect
+    def make_heartbeat(self, session=None):
         '''
         Make an Event row that will only trigger a notification for
-        groups with a heartbeat group_specification
+        groups with a heartbeat group specification
         '''
-        session = Session()
         last_hb = session.query(Event).filter(Event.event_id == 'heartbeat').all()
         make_hb = False
         if last_hb:
@@ -424,7 +421,6 @@ class ProductGrabber(object):
             
             self.get_event_map(e)
             
-        Session.remove()
         
     def get_scenario(self, shakemap_id='', scenario=False):
         '''
@@ -531,7 +527,8 @@ class ShakeMapGrid(object):
         
         # set the ShakeMapGrid's attributes
         all_atts = {}
-        [all_atts.update(child.attrib) for child in root]
+        for child in root:
+            all_atts.update(child.attrib)
         
         self.lat_min = float(all_atts.get('lat_min'))
         self.lat_max = float(all_atts.get('lat_max'))
@@ -1101,9 +1098,9 @@ class SoftwareUpdater(object):
         """
         url_opener = URLOpener()
         json_str = url_opener.open(self.json_url)
-        update_list = json.loads(json_str)
+        update = json.loads(json_str)
 
-        return update_list
+        return update
 
     def check_update(self, testing=False):
         '''
@@ -1113,23 +1110,23 @@ class SoftwareUpdater(object):
         sc = SC()
         self.current_version = sc.dict['Server']['update']['software_version']
 
-        update_list = self.get_update_info()
+        update = self.get_update_info()
         update_required = False
         notify = False
         update_info = set()
-        for update in update_list['updates']:
-            if self.check_new_update(update['version'], self.current_version) is True:
-                update_required = True
-                update_info.add(update['info'])
 
-                if self.check_new_update(update['version'], self.current_update) is True:
-                    # update current update version in sc.conf json
-                    sc = SC()
-                    sc.dict['Server']['update']['update_version'] = update['version']
+        if self.check_new_update(update['version'], self.current_version) is True:
+            update_required = True
+            update_info.add(update['info'])
 
-                    if testing is not True:
-                        sc.save_dict()
-                    notify = True
+            if self.check_new_update(update['version'], self.current_update) is True:
+                # update current update version in sc.conf json
+                sc = SC()
+                sc.dict['Server']['update']['update_version'] = update['version']
+
+                if testing is not True:
+                    sc.save_dict()
+                notify = True
     
         return update_required, notify, update_info
 
@@ -1182,14 +1179,14 @@ class SoftwareUpdater(object):
                 sc.save_dict()
 
     def update(self, testing=False):
-        update_list = self.get_update_info()
+        update = self.get_update_info()
         version = self.current_version
         sc = SC()
         delim = get_delim()
         failed = []
         success = []
         # concatinate files if user is multiple updates behind
-        files = self.condense_files(update_list['updates'])
+        files = update.get('files', [])
         for file_ in files:
             try:
                 # download file
@@ -1261,7 +1258,8 @@ class SoftwareUpdater(object):
         return file_list
 
     @staticmethod
-    def send_update_notification(update_info=None):
+    @dbconnect
+    def send_update_notification(update_info=None, session=None):
         '''
         Create notification to alert admin of software updates
         '''
@@ -1288,8 +1286,7 @@ class SoftwareUpdater(object):
             mailer = Mailer()
             me = mailer.me
 
-            # get admin with emails
-            session = Session()
+            # get admin emails
             admin = session.query(User).filter(User.user_type.like('admin')).filter(User.email != '').all()
             emails = [a.email for a in admin]
 
