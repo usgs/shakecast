@@ -71,3 +71,11 @@ def get_intersection(seg1, seg2):
         return {'x': seg1[0]['x'] + t * dx1, 'y': seg1[0]['y'] + t * dy1};
     else:
       return False
+
+def weight_intersections(intersections, line1, line2):
+    #on_top = []
+    #inter_idx = 0
+    #for idx in range(len(line1)):
+    #    if line1[idx]['x'] > intersections[inter_idx]['x']:
+    #        on_top += [line1] if line1[idx]['']
+    return

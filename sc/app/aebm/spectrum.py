@@ -66,7 +66,6 @@ def build_spectrum(input, pref, insert=None, start_val=None, finish_val=None):
           
         
 def interpolate(interpX, p1, p2):
-
     # swap input points if they're in the wrong order
     if p1['x'] > p2['x']:
       p1, p2 = p2, p1

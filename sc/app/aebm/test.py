@@ -278,6 +278,14 @@ pref = [
 ]
 
 capacity = {
+    'mbt': 'C2',
+    'sdl': 'pre',
+    'perf_rating': 'baseline',
+    'floors_ag': 4,
+    'height': 45,
+    'alpha1': .8,
+    'alpha2': .75,
+    'bid': 2,
     'curve': [],
     'd_y': .9390,
     'a_y': .666,
@@ -287,6 +295,7 @@ capacity = {
     't_e': .38,
     't_u': .93
 }
+
 
 for i in range(len(capacity_x)):
     capacity['curve'] += [{'x': capacity_x[i], 'y': capacity_y[i]}]
