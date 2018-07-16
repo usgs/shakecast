@@ -2,14 +2,14 @@
 interstory_drift = {
   'special_high_baseline': {
     'C1': {
-      'slight': .006,
-      'moderate': .013,
+      'slight': .0063,
+      'moderate': .0125,
       'extensive': .038,
       'complete': .1
     },
     'C2': {
       'slight': .005,
-      'moderate': .013,
+      'moderate': .0125,
       'extensive': .038,
       'complete': .1
     },
@@ -29,19 +29,19 @@ interstory_drift = {
       'slight': .005,
       'moderate': .01,
       'extensive': .03,
-      'complete': .088
+      'complete': .0875
     },
     'PC2': {
       'slight': .005,
       'moderate': .01,
       'extensive': .03,
-      'complete': .088
+      'complete': .0875
     },
     'RM1': {
       'slight': .005,
       'moderate': .01,
       'extensive': .03,
-      'complete': .088
+      'complete': .0875
     },
     'RM2': {
       'slight': .005,
@@ -50,28 +50,28 @@ interstory_drift = {
       'complete': .088
     },
     'S1': {
-      'slight': .008,
+      'slight': .0075,
       'moderate': .015,
-      'extensive': .038,
+      'extensive': .0375,
       'complete': .1 
     },
     'S2': {
-      'slight': .006,
+      'slight': .0063,
       'moderate': .013,
-      'extensive': .038,
+      'extensive': .0375,
       'complete': .1 
     },
     'S3': {
       'slight': .005,
       'moderate': .01,
       'extensive': .03,
-      'complete': .088 
+      'complete': .0875 
     },
     'S4': {
       'slight': .005,
       'moderate': .01,
       'extensive': .03,
-      'complete': .088
+      'complete': .0875
     },
     'S5': {
       'slight': .003,
@@ -940,20 +940,20 @@ interstory_drift = {
     'C1': {
       'slight': .004,
       'moderate': .006,
-      'extensive': .012,
+      'extensive': .0115,
       'complete': .03
     },
     'C2': {
       'slight': .003,
       'moderate': .006,
-      'extensive': .012,
+      'extensive': .0115,
       'complete': .03
     },
     'C3': {
       'slight': .002,
       'moderate': .005,
       'extensive': .008,
-      'complete': .018
+      'complete': .0175
     },
     'MH': {
       'slight': .004,
@@ -964,25 +964,25 @@ interstory_drift = {
     'PC1': {
       'slight': .003,
       'moderate': .005,
-      'extensive': .01,
-      'complete': .027
+      'extensive': .0095,
+      'complete': .0265
     },
     'PC2': {
       'slight': .003,
       'moderate': .005,
-      'extensive': .01,
-      'complete': .027
+      'extensive': .0095,
+      'complete': .0265
     },
     'RM1': {
       'slight': .003,
       'moderate': .005,
-      'extensive': .01,
-      'complete': .027
+      'extensive': .0095,
+      'complete': .0265
     },
     'RM2': {
       'slight': .003,
       'moderate': .005,
-      'extensive': .01,
+      'extensive': .0095,
       'complete': .027
     },
     'S1': {
@@ -1000,26 +1000,26 @@ interstory_drift = {
     'S3': {
       'slight': .003,
       'moderate': .005,
-      'extensive': .01,
-      'complete': .027 
+      'extensive': .0095,
+      'complete': .0265 
     },
     'S4': {
       'slight': .003,
       'moderate': .005,
-      'extensive': .01,
-      'complete': .027
+      'extensive': .0095,
+      'complete': .0265
     },
     'S5': {
       'slight': .002,
       'moderate': .005,
-      'extensive': .008,
-      'complete': .018
+      'extensive': .0075,
+      'complete': .0175
     },
     'URM': {
       'slight': .002,
       'moderate': .005,
-      'extensive': .008,
-      'complete': .018
+      'extensive': .0075,
+      'complete': .0175
     },
     'W1': {
       'slight': .003,
@@ -1038,26 +1038,26 @@ interstory_drift = {
       'moderate': .008,
       'extensive': .018,
       'complete': .045
-    },
+    }
   },
   'moderate_very_poor': {
     'C1': {
       'slight': .004,
       'moderate': .006,
-      'extensive': .012,
+      'extensive': .0115,
       'complete': .03
     },
     'C2': {
       'slight': .003,
       'moderate': .006,
-      'extensive': .012,
+      'extensive': .0115,
       'complete': .03
     },
     'C3': {
       'slight': .002,
       'moderate': .005,
       'extensive': .008,
-      'complete': .018
+      'complete': .0175
     },
     'MH': {
       'slight': .004,
@@ -1068,25 +1068,25 @@ interstory_drift = {
     'PC1': {
       'slight': .003,
       'moderate': .005,
-      'extensive': .01,
-      'complete': .027
+      'extensive': .0095,
+      'complete': .0265
     },
     'PC2': {
       'slight': .003,
       'moderate': .005,
-      'extensive': .01,
-      'complete': .027
+      'extensive': .0095,
+      'complete': .0265
     },
     'RM1': {
       'slight': .003,
       'moderate': .005,
-      'extensive': .01,
-      'complete': .027
+      'extensive': .0095,
+      'complete': .0265
     },
     'RM2': {
       'slight': .003,
       'moderate': .005,
-      'extensive': .01,
+      'extensive': .0095,
       'complete': .027
     },
     'S1': {
@@ -1104,26 +1104,26 @@ interstory_drift = {
     'S3': {
       'slight': .003,
       'moderate': .005,
-      'extensive': .01,
-      'complete': .027 
+      'extensive': .0095,
+      'complete': .0265 
     },
     'S4': {
       'slight': .003,
       'moderate': .005,
-      'extensive': .01,
-      'complete': .027
+      'extensive': .0095,
+      'complete': .0265
     },
     'S5': {
       'slight': .002,
       'moderate': .005,
-      'extensive': .008,
-      'complete': .018
+      'extensive': .0075,
+      'complete': .0175
     },
     'URM': {
       'slight': .002,
       'moderate': .005,
-      'extensive': .008,
-      'complete': .018
+      'extensive': .0075,
+      'complete': .0175
     },
     'W1': {
       'slight': .003,
@@ -1160,8 +1160,8 @@ interstory_drift = {
     'C3': {
       'slight': .002,
       'moderate': .005,
-      'extensive': .008,
-      'complete': .018
+      'extensive': .0075,
+      'complete': .0175
     },
     'MH': {
       'slight': .004,
@@ -1220,32 +1220,32 @@ interstory_drift = {
     'S5': {
       'slight': .002,
       'moderate': .005,
-      'extensive': .008,
-      'complete': .018
+      'extensive': .0075,
+      'complete': .0175
     },
     'URM': {
       'slight': .002,
       'moderate': .005,
-      'extensive': .008,
-      'complete': .018
+      'extensive': .0075,
+      'complete': .0175
     },
     'W1': {
       'slight': .003,
       'moderate': .008,
       'extensive': .015,
-      'complete': .038
+      'complete': .0375
     },
     'W1A': {
       'slight': .003,
       'moderate': .008,
       'extensive': .015,
-      'complete': .038
+      'complete': .0375
     },
     'W2': {
       'slight': .003,
       'moderate': .008,
       'extensive': .015,
-      'complete': .038
+      'complete': .0375
     }
   },
   'pre_very_poor': {
@@ -1264,7 +1264,7 @@ interstory_drift = {
     'C3': {
       'slight': .002,
       'moderate': .005,
-      'extensive': .008,
+      'extensive': .0075,
       'complete': .014
     },
     'MH': {
@@ -1277,25 +1277,25 @@ interstory_drift = {
       'slight': .003,
       'moderate': .005,
       'extensive': .008,
-      'complete': .018
+      'complete': .0175
     },
     'PC2': {
       'slight': .003,
       'moderate': .005,
       'extensive': .008,
-      'complete': .018
+      'complete': .0175
     },
     'RM1': {
       'slight': .003,
       'moderate': .005,
       'extensive': .008,
-      'complete': .018
+      'complete': .0175
     },
     'RM2': {
       'slight': .003,
       'moderate': .005,
       'extensive': .008,
-      'complete': .018
+      'complete': .0175
     },
     'S1': {
       'slight': .005,
@@ -1313,24 +1313,24 @@ interstory_drift = {
       'slight': .003,
       'moderate': .005,
       'extensive': .008,
-      'complete': .018
+      'complete': .0175
     },
     'S4': {
       'slight': .003,
       'moderate': .005,
       'extensive': .008,
-      'complete': .018
+      'complete': .0175
     },
     'S5': {
       'slight': .002,
       'moderate': .005,
-      'extensive': .008,
+      'extensive': .0075,
       'complete': .014
     },
     'URM': {
       'slight': .002,
       'moderate': .005,
-      'extensive': .008,
+      'extensive': .0075,
       'complete': .014
     },
     'W1': {
