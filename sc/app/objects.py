@@ -652,8 +652,9 @@ class ShakeMapGrid(object):
             self.sort_grid('LON')
         
         # figure out where in the point list we should look for shaking
-        start = int((lon_min - self.grid[0].info['LON']) / self.nom_lon_spacing) - 1
-        end = int((lon_max - self.grid[0].info['LON']) / self.nom_lon_spacing) + 1
+        in_each = len(self.grid) / self.num_lon
+        start = int((lon_min - self.grid[0].info['LON']) / self.nom_lon_spacing * in_each)
+        end = int((lon_max - self.grid[0].info['LON']) / self.nom_lon_spacing * in_each)
         if start < 0:
             start = 0
         

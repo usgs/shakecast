@@ -918,6 +918,11 @@ class TestFull(unittest.TestCase):
                 session.add(f)
 
                 f = create_fac(grid=grid)
+                f.name = 'No Metric'
+                f.metric = 'PSA-Not-In-ShakeMap'
+                session.add(f)
+
+                f = create_fac(grid=grid)
                 f.name = 'GREY FAC'
                 f.grey = 0
                 f.green = 10
@@ -926,14 +931,18 @@ class TestFull(unittest.TestCase):
                 f.red = 13
                 session.add(f)
 
-                f = create_fac(grid=grid)
-                f.name = 'No Metric'
-                f.metric = 'PSA-Not-In-ShakeMap'
-                session.add(f)
-
             session.commit()
 
-        grid.in_grid(facility=f)
+        self.assertTrue(grid.in_grid(facility=f))
+
+        # quick check of shaking point
+        shaking_point = grid.max_shaking(facility=f)
+        self.assertTrue(
+                shaking_point['LAT'] > f.lat_min and
+                shaking_point['LAT'] < f.lat_max and
+                shaking_point['LON'] > f.lon_min and
+                shaking_point['LON'] < f.lon_max
+        )
     
     def step07_addFacsToGroups(self):
         session = Session()
