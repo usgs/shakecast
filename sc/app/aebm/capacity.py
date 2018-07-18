@@ -1,1358 +1,5 @@
-# interstory drift ratio
-interstory_drift = {
-  'special_high_baseline': {
-    'C1': {
-      'slight': .0063,
-      'moderate': .0125,
-      'extensive': .038,
-      'complete': .1
-    },
-    'C2': {
-      'slight': .005,
-      'moderate': .0125,
-      'extensive': .038,
-      'complete': .1
-    },
-    'C3': {
-      'slight': .003,
-      'moderate': .006,
-      'extensive': .015,
-      'complete': .035
-    },
-    'MH': {
-      'slight': .004,
-      'moderate': .012,
-      'extensive': .04,
-      'complete': .1
-    },
-    'PC1': {
-      'slight': .005,
-      'moderate': .01,
-      'extensive': .03,
-      'complete': .0875
-    },
-    'PC2': {
-      'slight': .005,
-      'moderate': .01,
-      'extensive': .03,
-      'complete': .0875
-    },
-    'RM1': {
-      'slight': .005,
-      'moderate': .01,
-      'extensive': .03,
-      'complete': .0875
-    },
-    'RM2': {
-      'slight': .005,
-      'moderate': .01,
-      'extensive': .03,
-      'complete': .088
-    },
-    'S1': {
-      'slight': .0075,
-      'moderate': .015,
-      'extensive': .0375,
-      'complete': .1 
-    },
-    'S2': {
-      'slight': .0063,
-      'moderate': .013,
-      'extensive': .0375,
-      'complete': .1 
-    },
-    'S3': {
-      'slight': .005,
-      'moderate': .01,
-      'extensive': .03,
-      'complete': .0875 
-    },
-    'S4': {
-      'slight': .005,
-      'moderate': .01,
-      'extensive': .03,
-      'complete': .0875
-    },
-    'S5': {
-      'slight': .003,
-      'moderate': .006,
-      'extensive': .015,
-      'complete': .035
-    },
-    'URM': {
-      'slight': .003,
-      'moderate': .006,
-      'extensive': .015,
-      'complete': .035
-    },
-    'W1': {
-      'slight': .005,
-      'moderate': .015,
-      'extensive': .05,
-      'complete': .125
-    },
-    'W1A': {
-      'slight': .005,
-      'moderate': .015,
-      'extensive': .05,
-      'complete': .125
-    },
-    'W2': {
-      'slight': .005,
-      'moderate': .015,
-      'extensive': .05,
-      'complete': .125
-    }
-  },
-  'high_baseline': {
-    'C1': {
-      'slight': .005,
-      'moderate': .01,
-      'extensive': .03,
-      'complete': .8
-    },
-    'C2': {
-      'slight': .004,
-      'moderate': .01,
-      'extensive': .03,
-      'complete': .8
-    },
-    'C3': {
-      'slight': .003,
-      'moderate': .006,
-      'extensive': .015,
-      'complete': .035
-    },
-    'MH': {
-      'slight': .004,
-      'moderate': .012,
-      'extensive': .04,
-      'complete': .1
-    },
-    'PC1': {
-      'slight': .004,
-      'moderate': .008,
-      'extensive': .024,
-      'complete': .07
-    },
-    'PC2': {
-      'slight': .004,
-      'moderate': .008,
-      'extensive': .024,
-      'complete': .07
-    },
-    'RM1': {
-      'slight': .004,
-      'moderate': .008,
-      'extensive': .024,
-      'complete': .07
-    },
-    'RM2': {
-      'slight': .004,
-      'moderate': .008,
-      'extensive': .024,
-      'complete': .07
-    },
-    'S1': {
-      'slight': .006,
-      'moderate': .012,
-      'extensive': .03,
-      'complete': .08
-    },
-    'S2': {
-      'slight': .005,
-      'moderate': .01,
-      'extensive': .03,
-      'complete': .08
-    },
-    'S3': {
-      'slight': .004,
-      'moderate': .008,
-      'extensive': .024,
-      'complete': .07 
-    },
-    'S4': {
-      'slight': .004,
-      'moderate': .008,
-      'extensive': .024,
-      'complete': .07
-    },
-    'S5': {
-      'slight': .003,
-      'moderate': .006,
-      'extensive': .015,
-      'complete': .035
-    },
-    'URM': {
-      'slight': .003,
-      'moderate': .006,
-      'extensive': .015,
-      'complete': .035
-    },
-    'W1': {
-      'slight': .004,
-      'moderate': .012,
-      'extensive': .04,
-      'complete': .1
-    },
-    'W1A': {
-      'slight': .004,
-      'moderate': .012,
-      'extensive': .04,
-      'complete': .1
-    },
-    'W2': {
-      'slight': .004,
-      'moderate': .012,
-      'extensive': .04,
-      'complete': .1
-    }
-  },
-  'moderate_baseline': {
-    'C1': {
-      'slight': .005,
-      'moderate': .009,
-      'extensive': .023,
-      'complete': .06
-    },
-    'C2': {
-      'slight': .004,
-      'moderate': .008,
-      'extensive': .023,
-      'complete': .06
-    },
-    'C3': {
-      'slight': .003,
-      'moderate': .006,
-      'extensive': .015,
-      'complete': .035
-    },
-    'MH': {
-      'slight': .004,
-      'moderate': .012,
-      'extensive': .04,
-      'complete': .1
-    },
-    'PC1': {
-      'slight': .004,
-      'moderate': .007,
-      'extensive': .019,
-      'complete': .053
-    },
-    'PC2': {
-      'slight': .004,
-      'moderate': .007,
-      'extensive': .019,
-      'complete': .053
-    },
-    'RM1': {
-      'slight': .004,
-      'moderate': .007,
-      'extensive': .019,
-      'complete': .053
-    },
-    'RM2': {
-      'slight': .004,
-      'moderate': .007,
-      'extensive': .019,
-      'complete': .053
-    },
-    'S1': {
-      'slight': .006,
-      'moderate': .01,
-      'extensive': .024,
-      'complete': .06
-    },
-    'S2': {
-      'slight': .005,
-      'moderate': .009,
-      'extensive': .023,
-      'complete': .06
-    },
-    'S3': {
-      'slight': .004,
-      'moderate': .007,
-      'extensive': .019,
-      'complete': .053
-    },
-    'S4': {
-      'slight': .004,
-      'moderate': .007,
-      'extensive': .019,
-      'complete': .053
-    },
-    'S5': {
-      'slight': .003,
-      'moderate': .006,
-      'extensive': .015,
-      'complete': .035
-    },
-    'URM': {
-      'slight': .003,
-      'moderate': .006,
-      'extensive': .015,
-      'complete': .035
-    },
-    'W1': {
-      'slight': .004,
-      'moderate': .01,
-      'extensive': .031,
-      'complete': .075
-    },
-    'W1A': {
-      'slight': .004,
-      'moderate': .01,
-      'extensive': .031,
-      'complete': .075
-    },
-    'W2': {
-      'slight': .004,
-      'moderate': .01,
-      'extensive': .031,
-      'complete': .075
-    }
-  },
-  'high_poor': {
-    'C1': {
-      'slight': .005,
-      'moderate': .009,
-      'extensive': .023,
-      'complete': .06
-    },
-    'C2': {
-      'slight': .004,
-      'moderate': .008,
-      'extensive': .023,
-      'complete': .06
-    },
-    'C3': {
-      'slight': .003,
-      'moderate': .006,
-      'extensive': .015,
-      'complete': .035
-    },
-    'MH': {
-      'slight': .004,
-      'moderate': .012,
-      'extensive': .04,
-      'complete': .1
-    },
-    'PC1': {
-      'slight': .004,
-      'moderate': .007,
-      'extensive': .019,
-      'complete': .053
-    },
-    'PC2': {
-      'slight': .004,
-      'moderate': .007,
-      'extensive': .019,
-      'complete': .053
-    },
-    'RM1': {
-      'slight': .004,
-      'moderate': .007,
-      'extensive': .019,
-      'complete': .053
-    },
-    'RM2': {
-      'slight': .004,
-      'moderate': .007,
-      'extensive': .019,
-      'complete': .053
-    },
-    'S1': {
-      'slight': .006,
-      'moderate': .01,
-      'extensive': .024,
-      'complete': .06
-    },
-    'S2': {
-      'slight': .005,
-      'moderate': .009,
-      'extensive': .023,
-      'complete': .06
-    },
-    'S3': {
-      'slight': .004,
-      'moderate': .007,
-      'extensive': .019,
-      'complete': .053
-    },
-    'S4': {
-      'slight': .004,
-      'moderate': .007,
-      'extensive': .019,
-      'complete': .053
-    },
-    'S5': {
-      'slight': .003,
-      'moderate': .006,
-      'extensive': .015,
-      'complete': .035
-    },
-    'URM': {
-      'slight': .003,
-      'moderate': .006,
-      'extensive': .015,
-      'complete': .035
-    },
-    'W1': {
-      'slight': .004,
-      'moderate': .01,
-      'extensive': .031,
-      'complete': .075
-    },
-    'W1A': {
-      'slight': .004,
-      'moderate': .01,
-      'extensive': .031,
-      'complete': .075
-    },
-    'W2': {
-      'slight': .004,
-      'moderate': .01,
-      'extensive': .031,
-      'complete': .075
-    }
-  },
-  'low_baseline': {
-    'C1': {
-      'slight': .005,
-      'moderate': .008,
-      'extensive': .02,
-      'complete': .05
-    },
-    'C2': {
-      'slight': .004,
-      'moderate': .008,
-      'extensive': .02,
-      'complete': .05
-    },
-    'C3': {
-      'slight': .003,
-      'moderate': .006,
-      'extensive': .015,
-      'complete': .035
-    },
-    'MH': {
-      'slight': .004,
-      'moderate': .012,
-      'extensive': .04,
-      'complete': .1
-    },
-    'PC1': {
-      'slight': .004,
-      'moderate': .006,
-      'extensive': .016,
-      'complete': .044
-    },
-    'PC2': {
-      'slight': .004,
-      'moderate': .006,
-      'extensive': .016,
-      'complete': .044
-    },
-    'RM1': {
-      'slight': .004,
-      'moderate': .006,
-      'extensive': .016,
-      'complete': .044
-    },
-    'RM2': {
-      'slight': .004,
-      'moderate': .006,
-      'extensive': .016,
-      'complete': .044
-    },
-    'S1': {
-      'slight': .006,
-      'moderate': .01,
-      'extensive': .02,
-      'complete': .05
-    },
-    'S2': {
-      'slight': .005,
-      'moderate': .008,
-      'extensive': .02,
-      'complete': .05
-    },
-    'S3': {
-      'slight': .004,
-      'moderate': .006,
-      'extensive': .016,
-      'complete': .044
-    },
-    'S4': {
-      'slight': .004,
-      'moderate': .006,
-      'extensive': .016,
-      'complete': .044
-    },
-    'S5': {
-      'slight': .003,
-      'moderate': .006,
-      'extensive': .015,
-      'complete': .035
-    },
-    'URM': {
-      'slight': .003,
-      'moderate': .006,
-      'extensive': .015,
-      'complete': .035
-    },
-    'W1': {
-      'slight': .004,
-      'moderate': .01,
-      'extensive': .025,
-      'complete': .06
-    },
-    'W1A': {
-      'slight': .004,
-      'moderate': .01,
-      'extensive': .025,
-      'complete': .06
-    },
-    'W2': {
-      'slight': .004,
-      'moderate': .01,
-      'extensive': .025,
-      'complete': .06
-    },
-  },
-  'moderate_poor': {
-    'C1': {
-      'slight': .005,
-      'moderate': .008,
-      'extensive': .02,
-      'complete': .05
-    },
-    'C2': {
-      'slight': .004,
-      'moderate': .008,
-      'extensive': .02,
-      'complete': .05
-    },
-    'C3': {
-      'slight': .003,
-      'moderate': .006,
-      'extensive': .015,
-      'complete': .035
-    },
-    'MH': {
-      'slight': .004,
-      'moderate': .012,
-      'extensive': .04,
-      'complete': .1
-    },
-    'PC1': {
-      'slight': .004,
-      'moderate': .006,
-      'extensive': .016,
-      'complete': .044
-    },
-    'PC2': {
-      'slight': .004,
-      'moderate': .006,
-      'extensive': .016,
-      'complete': .044
-    },
-    'RM1': {
-      'slight': .004,
-      'moderate': .006,
-      'extensive': .016,
-      'complete': .044
-    },
-    'RM2': {
-      'slight': .004,
-      'moderate': .006,
-      'extensive': .016,
-      'complete': .044
-    },
-    'S1': {
-      'slight': .006,
-      'moderate': .01,
-      'extensive': .02,
-      'complete': .05
-    },
-    'S2': {
-      'slight': .005,
-      'moderate': .008,
-      'extensive': .02,
-      'complete': .05
-    },
-    'S3': {
-      'slight': .004,
-      'moderate': .006,
-      'extensive': .016,
-      'complete': .044
-    },
-    'S4': {
-      'slight': .004,
-      'moderate': .006,
-      'extensive': .016,
-      'complete': .044
-    },
-    'S5': {
-      'slight': .003,
-      'moderate': .006,
-      'extensive': .015,
-      'complete': .035
-    },
-    'URM': {
-      'slight': .003,
-      'moderate': .006,
-      'extensive': .015,
-      'complete': .035
-    },
-    'W1': {
-      'slight': .004,
-      'moderate': .01,
-      'extensive': .025,
-      'complete': .06
-    },
-    'W1A': {
-      'slight': .004,
-      'moderate': .01,
-      'extensive': .025,
-      'complete': .06
-    },
-    'W2': {
-      'slight': .004,
-      'moderate': .01,
-      'extensive': .025,
-      'complete': .06
-    }
-  },
-  'pre_baseline': {
-    'C1': {
-      'slight': .004,
-      'moderate': .006,
-      'extensive': .016,
-      'complete': .04
-    },
-    'C2': {
-      'slight': .003,
-      'moderate': .006,
-      'extensive': .016,
-      'complete': .04
-    },
-    'C3': {
-      'slight': .002,
-      'moderate': .005,
-      'extensive': .012,
-      'complete': .028
-    },
-    'MH': {
-      'slight': .004,
-      'moderate': .012,
-      'extensive': .04,
-      'complete': .1
-    },
-    'PC1': {
-      'slight': .003,
-      'moderate': .005,
-      'extensive': .013,
-      'complete': .035
-    },
-    'PC2': {
-      'slight': .003,
-      'moderate': .005,
-      'extensive': .013,
-      'complete': .035
-    },
-    'RM1': {
-      'slight': .003,
-      'moderate': .005,
-      'extensive': .013,
-      'complete': .035
-    },
-    'RM2': {
-      'slight': .003,
-      'moderate': .005,
-      'extensive': .013,
-      'complete': .035
-    },
-    'S1': {
-      'slight': .005,
-      'moderate': .008,
-      'extensive': .016,
-      'complete': .04
-    },
-    'S2': {
-      'slight': .004,
-      'moderate': .006,
-      'extensive': .016,
-      'complete': .04
-    },
-    'S3': {
-      'slight': .003,
-      'moderate': .005,
-      'extensive': .013,
-      'complete': .035
-    },
-    'S4': {
-      'slight': .003,
-      'moderate': .005,
-      'extensive': .013,
-      'complete': .035
-    },
-    'S5': {
-      'slight': .002,
-      'moderate': .005,
-      'extensive': .012,
-      'complete': .028
-    },
-    'URM': {
-      'slight': .002,
-      'moderate': .005,
-      'extensive': .012,
-      'complete': .028
-    },
-    'W1': {
-      'slight': .003,
-      'moderate': .008,
-      'extensive': .02,
-      'complete': .05
-    },
-    'W1A': {
-      'slight': .003,
-      'moderate': .008,
-      'extensive': .02,
-      'complete': .05
-    },
-    'W2': {
-      'slight': .003,
-      'moderate': .008,
-      'extensive': .02,
-      'complete': .05
-    }
-  },
-  'low_poor': {
-    'C1': {
-      'slight': .004,
-      'moderate': .006,
-      'extensive': .016,
-      'complete': .04
-    },
-    'C2': {
-      'slight': .003,
-      'moderate': .006,
-      'extensive': .016,
-      'complete': .04
-    },
-    'C3': {
-      'slight': .002,
-      'moderate': .005,
-      'extensive': .012,
-      'complete': .028
-    },
-    'MH': {
-      'slight': .004,
-      'moderate': .012,
-      'extensive': .04,
-      'complete': .1
-    },
-    'PC1': {
-      'slight': .003,
-      'moderate': .005,
-      'extensive': .013,
-      'complete': .035
-    },
-    'PC2': {
-      'slight': .003,
-      'moderate': .005,
-      'extensive': .013,
-      'complete': .035
-    },
-    'RM1': {
-      'slight': .003,
-      'moderate': .005,
-      'extensive': .013,
-      'complete': .035
-    },
-    'RM2': {
-      'slight': .003,
-      'moderate': .005,
-      'extensive': .013,
-      'complete': .035
-    },
-    'S1': {
-      'slight': .005,
-      'moderate': .008,
-      'extensive': .016,
-      'complete': .04
-    },
-    'S2': {
-      'slight': .004,
-      'moderate': .006,
-      'extensive': .016,
-      'complete': .04
-    },
-    'S3': {
-      'slight': .003,
-      'moderate': .005,
-      'extensive': .013,
-      'complete': .035
-    },
-    'S4': {
-      'slight': .003,
-      'moderate': .005,
-      'extensive': .013,
-      'complete': .035
-    },
-    'S5': {
-      'slight': .002,
-      'moderate': .005,
-      'extensive': .012,
-      'complete': .028
-    },
-    'URM': {
-      'slight': .002,
-      'moderate': .005,
-      'extensive': .012,
-      'complete': .028
-    },
-    'W1': {
-      'slight': .003,
-      'moderate': .008,
-      'extensive': .02,
-      'complete': .05
-    },
-    'W1A': {
-      'slight': .003,
-      'moderate': .008,
-      'extensive': .02,
-      'complete': .05
-    },
-    'W2': {
-      'slight': .003,
-      'moderate': .008,
-      'extensive': .02,
-      'complete': .05
-    }
-  },
-  'high_very_poor': {
-    'C1': {
-      'slight': .004,
-      'moderate': .006,
-      'extensive': .016,
-      'complete': .04
-    },
-    'C2': {
-      'slight': .003,
-      'moderate': .006,
-      'extensive': .016,
-      'complete': .04
-    },
-    'C3': {
-      'slight': .002,
-      'moderate': .005,
-      'extensive': .012,
-      'complete': .028
-    },
-    'MH': {
-      'slight': .004,
-      'moderate': .012,
-      'extensive': .04,
-      'complete': .1
-    },
-    'PC1': {
-      'slight': .003,
-      'moderate': .005,
-      'extensive': .013,
-      'complete': .035
-    },
-    'PC2': {
-      'slight': .003,
-      'moderate': .005,
-      'extensive': .013,
-      'complete': .035
-    },
-    'RM1': {
-      'slight': .003,
-      'moderate': .005,
-      'extensive': .013,
-      'complete': .035
-    },
-    'RM2': {
-      'slight': .003,
-      'moderate': .005,
-      'extensive': .013,
-      'complete': .035
-    },
-    'S1': {
-      'slight': .005,
-      'moderate': .008,
-      'extensive': .016,
-      'complete': .04
-    },
-    'S2': {
-      'slight': .004,
-      'moderate': .006,
-      'extensive': .016,
-      'complete': .04
-    },
-    'S3': {
-      'slight': .003,
-      'moderate': .005,
-      'extensive': .013,
-      'complete': .035
-    },
-    'S4': {
-      'slight': .003,
-      'moderate': .005,
-      'extensive': .013,
-      'complete': .035
-    },
-    'S5': {
-      'slight': .002,
-      'moderate': .005,
-      'extensive': .012,
-      'complete': .028
-    },
-    'URM': {
-      'slight': .002,
-      'moderate': .005,
-      'extensive': .012,
-      'complete': .028
-    },
-    'W1': {
-      'slight': .003,
-      'moderate': .008,
-      'extensive': .02,
-      'complete': .05
-    },
-    'W1A': {
-      'slight': .003,
-      'moderate': .008,
-      'extensive': .02,
-      'complete': .05
-    },
-    'W2': {
-      'slight': .003,
-      'moderate': .008,
-      'extensive': .02,
-      'complete': .05
-    }
-  },
-  'pre_poor': {
-    'C1': {
-      'slight': .004,
-      'moderate': .006,
-      'extensive': .0115,
-      'complete': .03
-    },
-    'C2': {
-      'slight': .003,
-      'moderate': .006,
-      'extensive': .0115,
-      'complete': .03
-    },
-    'C3': {
-      'slight': .002,
-      'moderate': .005,
-      'extensive': .008,
-      'complete': .0175
-    },
-    'MH': {
-      'slight': .004,
-      'moderate': .012,
-      'extensive': .04,
-      'complete': .1
-    },
-    'PC1': {
-      'slight': .003,
-      'moderate': .005,
-      'extensive': .0095,
-      'complete': .0265
-    },
-    'PC2': {
-      'slight': .003,
-      'moderate': .005,
-      'extensive': .0095,
-      'complete': .0265
-    },
-    'RM1': {
-      'slight': .003,
-      'moderate': .005,
-      'extensive': .0095,
-      'complete': .0265
-    },
-    'RM2': {
-      'slight': .003,
-      'moderate': .005,
-      'extensive': .0095,
-      'complete': .027
-    },
-    'S1': {
-      'slight': .005,
-      'moderate': .008,
-      'extensive': .012,
-      'complete':.03 
-    },
-    'S2': {
-      'slight': .004,
-      'moderate': .006,
-      'extensive': .012,
-      'complete':.03 
-    },
-    'S3': {
-      'slight': .003,
-      'moderate': .005,
-      'extensive': .0095,
-      'complete': .0265 
-    },
-    'S4': {
-      'slight': .003,
-      'moderate': .005,
-      'extensive': .0095,
-      'complete': .0265
-    },
-    'S5': {
-      'slight': .002,
-      'moderate': .005,
-      'extensive': .0075,
-      'complete': .0175
-    },
-    'URM': {
-      'slight': .002,
-      'moderate': .005,
-      'extensive': .0075,
-      'complete': .0175
-    },
-    'W1': {
-      'slight': .003,
-      'moderate': .008,
-      'extensive': .018,
-      'complete': .045
-    },
-    'W1A': {
-      'slight': .003,
-      'moderate': .008,
-      'extensive': .018,
-      'complete': .045
-    },
-    'W2': {
-      'slight': .003,
-      'moderate': .008,
-      'extensive': .018,
-      'complete': .045
-    }
-  },
-  'moderate_very_poor': {
-    'C1': {
-      'slight': .004,
-      'moderate': .006,
-      'extensive': .0115,
-      'complete': .03
-    },
-    'C2': {
-      'slight': .003,
-      'moderate': .006,
-      'extensive': .0115,
-      'complete': .03
-    },
-    'C3': {
-      'slight': .002,
-      'moderate': .005,
-      'extensive': .008,
-      'complete': .0175
-    },
-    'MH': {
-      'slight': .004,
-      'moderate': .012,
-      'extensive': .04,
-      'complete': .1
-    },
-    'PC1': {
-      'slight': .003,
-      'moderate': .005,
-      'extensive': .0095,
-      'complete': .0265
-    },
-    'PC2': {
-      'slight': .003,
-      'moderate': .005,
-      'extensive': .0095,
-      'complete': .0265
-    },
-    'RM1': {
-      'slight': .003,
-      'moderate': .005,
-      'extensive': .0095,
-      'complete': .0265
-    },
-    'RM2': {
-      'slight': .003,
-      'moderate': .005,
-      'extensive': .0095,
-      'complete': .027
-    },
-    'S1': {
-      'slight': .005,
-      'moderate': .008,
-      'extensive': .012,
-      'complete':.03 
-    },
-    'S2': {
-      'slight': .004,
-      'moderate': .006,
-      'extensive': .012,
-      'complete':.03 
-    },
-    'S3': {
-      'slight': .003,
-      'moderate': .005,
-      'extensive': .0095,
-      'complete': .0265 
-    },
-    'S4': {
-      'slight': .003,
-      'moderate': .005,
-      'extensive': .0095,
-      'complete': .0265
-    },
-    'S5': {
-      'slight': .002,
-      'moderate': .005,
-      'extensive': .0075,
-      'complete': .0175
-    },
-    'URM': {
-      'slight': .002,
-      'moderate': .005,
-      'extensive': .0075,
-      'complete': .0175
-    },
-    'W1': {
-      'slight': .003,
-      'moderate': .008,
-      'extensive': .018,
-      'complete': .045
-    },
-    'W1A': {
-      'slight': .003,
-      'moderate': .008,
-      'extensive': .018,
-      'complete': .045
-    },
-    'W2': {
-      'slight': .003,
-      'moderate': .008,
-      'extensive': .018,
-      'complete': .045
-    }
-  },
-  'low_very_poor': {
-    'C1': {
-      'slight': .004,
-      'moderate': .006,
-      'extensive': .01,
-      'complete': .025
-    },
-    'C2': {
-      'slight': .003,
-      'moderate': .006,
-      'extensive': .01,
-      'complete': .025
-    },
-    'C3': {
-      'slight': .002,
-      'moderate': .005,
-      'extensive': .0075,
-      'complete': .0175
-    },
-    'MH': {
-      'slight': .004,
-      'moderate': .012,
-      'extensive': .04,
-      'complete': .1
-    },
-    'PC1': {
-      'slight': .003,
-      'moderate': .005,
-      'extensive': .008,
-      'complete': .022
-    },
-    'PC2': {
-      'slight': .003,
-      'moderate': .005,
-      'extensive': .008,
-      'complete': .022
-    },
-    'RM1': {
-      'slight': .003,
-      'moderate': .005,
-      'extensive': .008,
-      'complete': .022
-    },
-    'RM2': {
-      'slight': .003,
-      'moderate': .005,
-      'extensive': .008,
-      'complete': .022
-    },
-    'S1': {
-      'slight': .005,
-      'moderate': .008,
-      'extensive': .01,
-      'complete': .025
-    },
-    'S2': {
-      'slight': .004,
-      'moderate': .006,
-      'extensive': .01,
-      'complete': .025
-    },
-    'S3': {
-      'slight': .003,
-      'moderate': .005,
-      'extensive': .008,
-      'complete': .022
-    },
-    'S4': {
-      'slight': .003,
-      'moderate': .005,
-      'extensive': .008,
-      'complete': .022
-    },
-    'S5': {
-      'slight': .002,
-      'moderate': .005,
-      'extensive': .0075,
-      'complete': .0175
-    },
-    'URM': {
-      'slight': .002,
-      'moderate': .005,
-      'extensive': .0075,
-      'complete': .0175
-    },
-    'W1': {
-      'slight': .003,
-      'moderate': .008,
-      'extensive': .015,
-      'complete': .0375
-    },
-    'W1A': {
-      'slight': .003,
-      'moderate': .008,
-      'extensive': .015,
-      'complete': .0375
-    },
-    'W2': {
-      'slight': .003,
-      'moderate': .008,
-      'extensive': .015,
-      'complete': .0375
-    }
-  },
-  'pre_very_poor': {
-    'C1': {
-      'slight': .004,
-      'moderate': .006,
-      'extensive': .01,
-      'complete': .02
-    },
-    'C2': {
-      'slight': .003,
-      'moderate': .006,
-      'extensive': .01,
-      'complete': .02
-    },
-    'C3': {
-      'slight': .002,
-      'moderate': .005,
-      'extensive': .0075,
-      'complete': .014
-    },
-    'MH': {
-      'slight': .004,
-      'moderate': .012,
-      'extensive': .04,
-      'complete': .1
-    },
-    'PC1': {
-      'slight': .003,
-      'moderate': .005,
-      'extensive': .008,
-      'complete': .0175
-    },
-    'PC2': {
-      'slight': .003,
-      'moderate': .005,
-      'extensive': .008,
-      'complete': .0175
-    },
-    'RM1': {
-      'slight': .003,
-      'moderate': .005,
-      'extensive': .008,
-      'complete': .0175
-    },
-    'RM2': {
-      'slight': .003,
-      'moderate': .005,
-      'extensive': .008,
-      'complete': .0175
-    },
-    'S1': {
-      'slight': .005,
-      'moderate': .008,
-      'extensive': .01,
-      'complete': .02
-    },
-    'S2': {
-      'slight': .004,
-      'moderate': .006,
-      'extensive': .01,
-      'complete': .02
-    },
-    'S3': {
-      'slight': .003,
-      'moderate': .005,
-      'extensive': .008,
-      'complete': .0175
-    },
-    'S4': {
-      'slight': .003,
-      'moderate': .005,
-      'extensive': .008,
-      'complete': .0175
-    },
-    'S5': {
-      'slight': .002,
-      'moderate': .005,
-      'extensive': .0075,
-      'complete': .014
-    },
-    'URM': {
-      'slight': .002,
-      'moderate': .005,
-      'extensive': .0075,
-      'complete': .014
-    },
-    'W1': {
-      'slight': .003,
-      'moderate': .008,
-      'extensive': .015,
-      'complete': .03
-    },
-    'W1A': {
-      'slight': .003,
-      'moderate': .008,
-      'extensive': .015,
-      'complete': .03
-    },
-    'W2': {
-      'slight': .003,
-      'moderate': .008,
-      'extensive': .015,
-      'complete': .03
-    }
-  }
-}
+from damage import get_damage_state_medians
+import math
 
 # modal weight factor
 modal_weight = {
@@ -1743,12 +390,7 @@ def get_modal_response(mbt, bid, stories):
 
     return shape
 
-def get_drift(mbt, sdl, perf, state):
-    '''
-    =IF(OR(sdl="",mbt="",perf_rating=""),"",IF(AND(sdl="Special High",perf_rating="Baseline"),LOOKUP(mbt,$LP$5:$LP$21,$LS$5:$LS$21),IF(AND(sdl="High Code",perf_rating="Baseline"),LOOKUP(mbt,$LP$24:$LP$40,$LS$24:$LS$40),IF(OR(AND(sdl="Moderate Code",perf_rating="Baseline"),AND(sdl="High Code",perf_rating="Poor")),LOOKUP(mbt,$LP$43:$LP$59,$LS$43:$LS$59),IF(OR(AND(sdl="Low Code",perf_rating="Baseline"),AND(sdl="Moderate Code",perf_rating="Poor")),LOOKUP(mbt,$LP$62:$LP$78,$LS$62:$LS$78),IF(OR(AND(sdl="Pre-Code",perf_rating="Baseline"), AND(sdl="Low Code",perf_rating="Poor"),AND(sdl="High Code",perf_rating="Very Poor")),LOOKUP(mbt,$LP$81:$LP$97,$LS$81:$LS$97),IF(OR(AND(sdl="Pre-Code",perf_rating="Poor"),AND(sdl="Moderate Code",perf_rating="Very Poor")),LOOKUP(mbt,$LP$100:$LP$116,$LS$100:$LS$116),IF(AND(sdl="Low Code",perf_rating="Very Poor"),LOOKUP(mbt,$LP$119:$LP$135,$LS$119:$LS$135),LOOKUP(mbt,$LP$138:$LP$154,$LS$138:$LS$154)))))))))
-    '''
 
-    return interstory_drift['{}_{}'.format(sdl, perf)][mbt][state]
 
 def get_modal_height(mbt, stories):
     return modal_height[stories].get(
@@ -1761,3 +403,341 @@ def get_modal_weight(mbt, stories):
         mbt,
         modal_weight[stories].get('other', None)
     )
+
+def get_seismic_design(design_period, mbt, sdl):
+
+    mbt_factor = {
+        'S1': 12,
+        'C1': 12,
+        'S4': 10,
+        'RM1': 6,
+        'RM2': 6,
+        'URM': 6,
+        'W1': 6,
+        'W1A': 6,
+        'other': 8
+    }
+
+    design_factor = {
+        'MH': 1/1.375,
+        'special': 1.5,
+        'high': 1,
+        'moderate': .5,
+        'low': .25,
+        'other': .25
+    }
+
+    design_val = 2.75 if design_period**(2/3) > 2.75 else 1.25 * 1.5 / design_period**(2/3)
+
+    return (
+        design_val / 
+        mbt_factor.get(mbt, mbt_factor['other']) *
+        design_factor.get(mbt, design_factor.get(sdl), design_factor['other'])
+    )
+
+def get_default_period(mbt, sdl, height):
+    c_u = {
+        'special': 1.4,
+        'high': 1.4,
+        'moderate': 1.5,
+        'low': 1.6,
+        'other': 1.7
+    }
+
+    x = {
+        'C1': .9,
+        'C2': .75,
+        'C3': .75,
+        'MH': .75,
+        'PC1': .75,
+        'PC2': .75,
+        'RM1': .75,
+        'RM2': .75,
+        'S1': .8,
+        'S2': .75,
+        'S3': .75,
+        'S4': .75,
+        'S5': .75,
+        'URM': .75,
+        'W1': .75,
+        'W1A': .75,
+        'W2': .75,
+        'other': .75
+    }
+
+    c_r = {
+        'C1': .016,
+        'C2': .0215,
+        'C3': .0215,
+        'MH': .025,
+        'PC1': .025,
+        'PC2': .0215,
+        'RM1': .0215,
+        'RM2': .0125,
+        'S1': .028,
+        'S2': .0285,
+        'S3': .025,
+        'S4': .0215,
+        'S5': .0215,
+        'URM': .0215,
+        'W1': .025,
+        'W1A': .025,
+        'W2': .025,
+        'other': .025
+    }
+
+    elastic_period = (
+            c_u.get(sdl, c_u['other']) *
+            c_r.get(mbt, c_r['other']) * 
+            height ** x.get(mbt, x['other'])
+    )
+
+    return elastic_period
+
+def get_design_period(mbt, sdl, height):
+
+    x = {
+        'C1': .9,
+        'C2': .75,
+        'C3': .75,
+        'MH': .75,
+        'PC1': .75,
+        'PC2': .75,
+        'RM1': .75,
+        'RM2': .75,
+        'S1': .8,
+        'S2': .75,
+        'S3': .75,
+        'S4': .75,
+        'S5': .75,
+        'URM': .75,
+        'W1': .75,
+        'W1A': .75,
+        'W2': .75,
+        'other': .75
+    }
+
+    c_r = {
+        'C1': .016,
+        'C2': .0215,
+        'C3': .0215,
+        'MH': .025,
+        'PC1': .025,
+        'PC2': .0215,
+        'RM1': .0215,
+        'RM2': .0125,
+        'S1': .028,
+        'S2': .0285,
+        'S3': .025,
+        'S4': .0215,
+        'S5': .0215,
+        'URM': .0215,
+        'W1': .025,
+        'W1A': .025,
+        'W2': .025,
+        'other': .025
+    }
+
+    design_period = (
+            c_r.get(mbt, c_r['other']) * 
+            height ** x.get(mbt, x['other'])
+    )
+
+    return design_period
+
+def get_pre_yield(stories):
+    lookup = {
+        1:	2.70,
+        2:	2.50,
+        3:	2.25,
+        4:	2.00,
+        5:	1.88,
+        6:	1.80,
+        7:	1.75,
+        8:	1.71,
+        9:	1.69,
+        10:	1.67,
+        11:	1.65,
+        12:	1.65,
+        13:	1.65,
+        14:	1.65,
+        15:	1.65
+    }
+
+    if stories > 15:
+        stories = 15
+
+    return lookup.get(stories, None)
+
+def get_post_yield(mbt, bid):
+    post_yield = 0
+    if (mbt == 'W1' or mbt == 'W1A' or mbt == 'S1' or 
+            mbt == 'C1' or mbt == 'W2' or mbt == 'C2'):
+        if bid == 5 or bid == 6:
+            post_yield = 1.75
+        elif bid == 7:
+            post_yield = 1.5
+        else:
+            post_yield = 2.0
+
+    elif mbt == 'S4' or mbt == 'C3':
+        if bid == 5 or bid == 6:
+            post_yield = 1.63
+        elif bid == 7:
+            post_yield = 1.42
+        else:
+            post_yield = 1.83
+
+    elif mbt == 'PC1' or mbt == 'URM':
+        if bid == 5 or bid == 6:
+            post_yield = 1.25
+        elif bid == 7:
+            post_yield = 1.17
+        else: 
+            post_yield = 1.33
+      
+    else:
+        if bid == 5 or bid == 6:
+            post_yield = 1.5
+        elif bid == 7:
+            post_yield = 1.33
+        else:
+            post_yield = 1.67
+      
+    return post_yield
+    
+def get_design_coefficient(design_period, mbt, sdl):
+    mbt_lookup = {
+      'S1': 12,
+      'C1': 12,
+      'S4': 10,
+      'RM1': 6,
+      'RM2': 6,
+      'URM': 6,
+      'W1': 6,
+      'W1A': 6,
+      'other': 8
+    }
+
+    sdl_lookup = {
+        'MH': 1/1.375,
+        'special': 1.5,
+        'high': 1,
+        'moderate': .5,
+        'low': .25,
+        'other': .25
+    }
+
+    design_val = 1.25 * 1.5 / design_period ** (2.0/3.0)
+    if design_val > 2.75:
+        design_val = 2.75
+
+    mbt_val = mbt_lookup.get(mbt, mbt_lookup['other'])
+    sdl_val = sdl_lookup.get(mbt, sdl_lookup.get(sdl, sdl_lookup['other']))
+
+    return 8 / 5.5 * .4 * design_val / mbt_val * sdl_val
+
+def get_max_strength(pre_yield, post_yield, modal_weight, design_coefficient):
+    return design_coefficient * pre_yield * post_yield / modal_weight
+
+def get_ductility(stories):
+    if stories > 15:
+        stories = 15
+
+    lookup = {
+        1: 6.00,
+        2: 6.00,
+        3: 4.94,
+        4: 4.41,
+        5: 4.07,
+        6: 3.82,
+        7: 3.63,
+        8: 3.48,
+        9: 3.35,
+        10:	3.24,
+        11:	3.15,
+        12:	3.07,
+        13:	3.00,
+        14:	3.00,
+        15:	3.00
+    }
+
+    return lookup[stories]
+
+def get_yield_point(design_coefficient, elastic_period, modal_weight, pre_yield):
+  a_y = design_coefficient * pre_yield / modal_weight
+  d_y = 386.08858 / (4 * math.pi**2) * a_y * elastic_period**2
+
+  return {'x': d_y, 'y': a_y}
+
+def get_ultimate_point(ductility, a_y, d_y, post_yield):
+  a_u = a_y * post_yield
+  d_u = ductility * d_y * post_yield
+
+  return {'x': d_u, 'y': a_u}
+
+def get_capacity_curve(d_y, a_y, d_u, a_u):
+    k = (a_u**2 - a_y**2 + a_y**2 * (d_y - d_u) / d_y) / (2 * (a_u - a_y) + (a_y / d_y) * (d_y - d_u))
+    b = a_u - k
+    a = math.sqrt(d_y / a_y * b**2 * (d_u - d_y) / (a_y - k))
+
+    # pick 10 points between dy and du
+    incr = (d_u - d_y) / 10
+
+    d = d_y + incr
+    points = [{'x': 0, 'y': 0}, {'x': d_y, 'y': a_y}]
+    while d < d_u:
+        point = {
+            'x': d,
+            'y': b * math.sqrt((1 - (d - d_u)**2 / a**2)) + k
+        }
+
+        points += [point]
+        d += incr
+    
+    points += [{'x': d_u, 'y': a_u}, {'x': d_u * 100, 'y': a_u}]
+
+    return points
+
+def get_capacity(mbt, sdl, bid, performance_rating, height, stories, elastic_period=None,
+        design_period=None, design_coefficient=None, modal_weight=None,
+        modal_height=None, modal_response=None, pre_yield=None, post_yield=None,
+        max_strength=None, ductility=None):
+
+    elastic_period = get_default_period(mbt, sdl, height) if not elastic_period else elastic_period
+    design_period = get_design_period(mbt, sdl, height) if not design_period else design_period
+    design_coefficient = get_design_coefficient(design_period, mbt, sdl) if not design_coefficient else design_coefficient
+    modal_weight = get_modal_weight(mbt, stories) if not modal_weight else modal_weight
+    modal_height = get_modal_height(mbt, stories) if not modal_height else modal_height
+    modal_response = get_modal_response(mbt, bid, stories) if not modal_response else modal_response
+    pre_yield = get_pre_yield(stories) if not pre_yield else pre_yield
+    post_yield = get_post_yield(mbt, bid) if not post_yield else post_yield
+    max_strength = get_max_strength(pre_yield, post_yield, modal_weight, design_coefficient) if not max_strength else max_strength
+    ductility = get_ductility(stories) if not ductility else ductility
+    
+    yield_point = get_yield_point(design_coefficient, elastic_period, modal_weight, pre_yield)
+    ultimate_point = get_ultimate_point(ductility, yield_point['x'], yield_point['y'], post_yield)
+    damage_state_medians = get_damage_state_medians(mbt, sdl, performance_rating, height, modal_height, modal_response)
+    capacity_curve = get_capacity_curve(yield_point['x'], yield_point['y'], ultimate_point['x'], ultimate_point['y'])
+
+    return {
+          'elastic_period': elastic_period,
+          'design_period': design_period,
+          'design_coefficient': design_coefficient,
+          'modal_weight': modal_weight,
+          'modal_height': modal_height,
+          'modal_response': modal_response,
+          'pre_yield': pre_yield,
+          'post_yield': post_yield,
+          'max_strength': max_strength,
+          'ductility': ductility,
+          'damage_state_medians': damage_state_medians,
+          'yield_point': yield_point,
+          'ultimate_point': ultimate_point,
+          'curve': capacity_curve
+    }
+
+
+if __name__ == '__main__':
+    # tests....
+    get_capacity('W1', 'high', 1, 'baseline', 24, 2)
