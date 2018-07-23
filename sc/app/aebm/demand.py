@@ -7,7 +7,6 @@ def make_demand_spectrum(input):
     for point in input:
         disp = point['y'] * point['x']**2 * 9.779738
         acc = disp/(9.779738 * (point['x']**2))
-        acc = 0
         point['disp'] = disp
         point['y'] = acc
 

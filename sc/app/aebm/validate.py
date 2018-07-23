@@ -64,28 +64,28 @@ hazard_x = [
 ]
 
 hazard_y = [
-    0.482,
-    0.484,
-    0.498,
-    0.562,
-    0.676,
-    0.785,
-    0.970,
-    1.083,
-    1.138,
-    1.146,
-    1.142,
-    1.139,
-    1.110,
-    1.085,
-    1.045,
-    1.009,
-    0.976,
-    0.945,
-    0.917,
-    0.891,
-    0.843,
-    0.800,
+    0.4824,
+    0.4836,
+    0.4980,
+    0.5615,
+    0.6765,
+    0.7848,
+    0.9696,
+    1.0827,
+    1.1377,
+    1.1456,
+    1.1399,
+    1.1385,
+    1.1103,
+    1.0850,
+    1.0454,
+    1.0093,
+    0.9761,
+    0.9453,
+    0.9166,
+    0.8905,
+    0.8302,
+    0.8002,
     0.759,
     0.721,
     0.686,
@@ -404,8 +404,8 @@ def validate_damage_states():
                 print '{}: {} off by {}... expected {}, got {} \n\n{}\n'.format(name, state, diff, test['expected'][state], d_states[state], test)
 
 if __name__ == '__main__':
-    capacity = get_capacity('W1', 'high', 1, 'baseline', 'best', 24, 2, 1975)
-    capacity, demand, lower_demand, upper_demand, med_intersections, lower_intersections, upper_intersections = capacity, demand, lower_demand, upper_demand, med_intersections, lower_intersections, upper_intersections = aebm.run(capacity, hazard, hazard_beta, pref_periods, mag, rRup)
+    capacity = get_capacity('PC1', 'high', 7, 'very_poor', 'poor', 24, 2, 1990)
+    capacity, demand, lower_demand, upper_demand, med_intersections, lower_intersections, upper_intersections = aebm.run(capacity, hazard, hazard_beta, pref_periods, mag, rRup)
 
     plt.figure()
     plt.plot([p['disp'] for p in demand],
@@ -433,7 +433,18 @@ if __name__ == '__main__':
     plt.show()
 
     plt.figure()
-    
+    plt.title('Capacity Check')
+    plt.xlabel('Spectral Displacement')
+    plt.ylabel('Spectral Acceleration')
+    plt.plot([p['x'] for p in capacity['curve']],
+    [p['y'] for p in capacity['curve']], 'b', label='Computed Capacity Curve')
+    plt.plot(capacity_x, capacity_y, 'r', label='Capacity Curve Check')
+
+    plt.xlim(0,10)
+    plt.legend()
+    plt.show()
+
+    plt.figure()
     acc_difs = []
     for dem in demand:
         for c in check:
@@ -442,6 +453,13 @@ if __name__ == '__main__':
                 break
 
     plt.plot([p['x'] for p in acc_difs], [p['y'] * 100 for p in acc_difs], 'o')
+
+    plt.plot([p['x'] for p in demand],
+        [p['y'] for p in demand], '-ro', label='Calculated Curve')
+
+    plt.plot([p['x'] for p in check],
+        [p['y'] for p in check], '-go', label='Validation')
+    
     plt.title('Acceleration Check')
     plt.xlabel('Period (s)')
     plt.ylabel('% Difference')
@@ -460,6 +478,14 @@ if __name__ == '__main__':
                 break
   
     plt.plot([p['x'] for p in disp_difs][1:], [p['y'] * 100 for p in disp_difs][1:], 'o')
+
+
+    plt.plot([p['x'] for p in demand],
+        [p['y'] for p in demand], '-ro', label='Calculated Curve')
+
+    plt.plot([p['x'] for p in check],
+        [p['y'] for p in check], '-go', label='Validation')
+    
     plt.title('Displacement Check')
     plt.xlabel('Period (s)')
     plt.ylabel('% Difference')

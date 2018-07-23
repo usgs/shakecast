@@ -1,6 +1,7 @@
 import math
 import sanaz
-from spectrum import build_spectrum
+from spectrum import build_spectrum, interpolate
+from data_tables import degradation_factor
 
 def get_b_eff(capacity, kappa):
     last_b_h = 0;
@@ -44,12 +45,12 @@ def get_dsf(beta, mag, rRup):
 
     return dsf
 
-def damp(demand, capacity, mag, rRup):
-    kappa = get_kappa(capacity, mag, rRup)
+def damp(demand, capacity, mag, r_rup):
+    kappa = get_kappa(capacity['performance_rating'], capacity['year'], mag, r_rup)
     b_eff = get_b_eff(capacity, kappa)
 
     beta = build_spectrum(b_eff, sanaz.t);
-    dsf = get_dsf(beta, mag, rRup)
+    dsf = get_dsf(beta, mag, r_rup)
 
     # expand dsf to match demand spectrum periods
     dsf = build_spectrum(dsf, [point['x'] for point in demand])
@@ -62,7 +63,52 @@ def damp(demand, capacity, mag, rRup):
 
     return demand
 
-def get_kappa(capacity, mag, rRup):
-    '''=IF(OR($Q5="",$N5="",$I5=""),"",IF($Q5="baseline",IF($N5>1975,LOOKUP($I5,$ER$6:$ER$29,$ET$6:$ET$29),IF(AND($N5<=1975,$N5>1960),LOOKUP($I5,$EZ$6:$EZ$29,$FB$6:$FB$29),IF(AND($N5<=1960,$N5>1941),LOOKUP($I5,$FH$6:$FH$29,$FJ$6:$FJ$29),LOOKUP($I5,$FP$6:$FP$29,$FR$6:$FR$29)))),IF($N5>1975,LOOKUP($I5,$FH$6:$FH$29,$FJ$6:$FJ$29),IF(AND($N5<=1975,$N5>1960),LOOKUP($I5,$FP$6:$FP$29,$FR$6:$FR$29),IF(AND($N5<=1960,$N5>1941),LOOKUP($I5,$FX$6:$FX$29,$FZ$6:$FZ$29),LOOKUP($I5,$GF$6:$GF$29,$GH$6:$GH$29))))))'''
-    return .5
+def get_kappa(spr, year, mag, r_rup):
+    if year > 1975:
+        str_year = 'post-1975'
+    elif year > 1960:
+        str_year = '1960-1975'
+    elif year > 1941:
+        str_year = '1941-1959'
+    else:
+        str_year = 'pre-1941'
+
+    if mag <= 6.25:
+        str_mag = '<=6.25'
+    elif mag <= 6.5:
+        str_mag = '<=6.5'
+        prev = '<=6.25'
+        lower_mag = 6.25
+        upper_mag = 6.5
+    elif mag <= 6.75:
+        str_mag = '<=6.75'
+        prev = '<=6.5'
+        lower_mag = 6.5
+        upper_mag = 6.75
+    elif mag <= 7:
+        str_mag = '<=7'
+        prev = '<=6.75'
+        lower_mag = 6.75
+        upper_mag = 7
+    else:
+        str_mag = '>=7.25'
+        prev = '<=7'
+        lower_mag = 7
+        upper_mag = 7.25
+
+    r_rup = int(round(r_rup)) if r_rup < 50 else 50
+    spr = 'non-baseline' if spr != 'baseline' else spr
+
+    if mag <= 6.25 or mag >= 7.25:
+        kappa = degradation_factor[spr][str_year][str_mag][r_rup]
+    else:
+        kappa1 = degradation_factor[spr][str_year][prev][r_rup]
+        kappa2 = degradation_factor[spr][str_year][str_mag][r_rup]
+
+        point1 = {'x': lower_mag, 'y': kappa1}
+        point2 = {'x': upper_mag, 'y': kappa2}
+
+        kappa = interpolate(mag, point1, point2)
+
+    return kappa
 

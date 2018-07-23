@@ -426,14 +426,14 @@ def get_yield_point(design_coefficient, elastic_period, modal_weight, pre_yield)
 
   return {'x': d_y, 'y': a_y}
 
-def get_ultimate_point(ductility, a_y, d_y, post_yield):
+def get_ultimate_point(ductility, d_y, a_y, post_yield):
   a_u = a_y * post_yield
   d_u = ductility * d_y * post_yield
 
   return {'x': d_u, 'y': a_u}
 
 def get_ultimate_period(d, a):
-    return math.sqrt(a / (d * 9.779738))
+    return math.sqrt(d / (a * 9.779738))
 def get_elastic_damping(mbt):
     lookup = {
         'C1': .07,
