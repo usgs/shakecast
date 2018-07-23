@@ -3,10 +3,12 @@ matplotlib.use('TkAgg')
 
 import matplotlib.pyplot as plt
 
-import aebm
+from performance_point import performance_point
+from demand import get_demand
 from spectrum import build_spectrum
 from damage import *
 from capacity import *
+import aebm
 
 hazard_x = [
     0.010,
@@ -114,9 +116,9 @@ hazard_y = [
     0.054,
 ]
 
-input = []
+hazard = []
 for i in range(len(hazard_x)):
-    input += [{'x': hazard_x[i], 'y': hazard_y[i]}]
+    hazard += [{'x': hazard_x[i], 'y': hazard_y[i]}]
 
 capacity_x = [
     0.00,
@@ -226,7 +228,7 @@ capacity_y = [
     0.777
 ]
 
-pref = [
+pref_periods = [
     0.0100,
     0.0200,
     0.0300,
@@ -279,32 +281,9 @@ pref = [
    10.0000
 ]
 
-capacity = {
-    'mbt': 'C2',
-    'sdl': 'pre',
-    'perf_rating': 'baseline',
-    'floors_ag': 4,
-    'height': 45,
-    'alpha1': .8,
-    'alpha2': .75,
-    'bid': 2,
-    'curve': [],
-    'd_y': .9390,
-    'a_y': .666,
-    'd_u': 6.57,
-    'a_u': .777,
-    'b_e': .07,
-    't_e': .38,
-    't_u': .93
-}
-
-
-for i in range(len(capacity_x)):
-    capacity['curve'] += [{'x': capacity_x[i], 'y': capacity_y[i]}]
-
-
 kappa = .5
 mag = 7.9
+hazard_beta = .4
 rRup = 11.18
 
 check = [
@@ -425,17 +404,23 @@ def validate_damage_states():
                 print '{}: {} off by {}... expected {}, got {} \n\n{}\n'.format(name, state, diff, test['expected'][state], d_states[state], test)
 
 if __name__ == '__main__':
-    demand = aebm.run(input, pref, capacity, mag, rRup)
-    intersections = aebm.performance_point(capacity['curve'], demand)
+    capacity = get_capacity('W1', 'high', 1, 'baseline', 'best', 24, 2, 1975)
+    capacity, demand, lower_demand, upper_demand, med_intersections, lower_intersections, upper_intersections = capacity, demand, lower_demand, upper_demand, med_intersections, lower_intersections, upper_intersections = aebm.run(capacity, hazard, hazard_beta, pref_periods, mag, rRup)
 
     plt.figure()
     plt.plot([p['disp'] for p in demand],
         [p['y'] for p in demand], '-ro', label='Calculated Curve')
+    plt.plot([p['disp'] for p in upper_demand],
+        [p['y'] for p in upper_demand], label='Upper bound demand')
+    plt.plot([p['disp'] for p in lower_demand],
+        [p['y'] for p in lower_demand], label='Lower bound demand')
     plt.plot([p['x'] for p in capacity['curve']],
         [p['y'] for p in capacity['curve']], 'b', label='Capacity Curve')
     plt.plot([p['disp'] for p in check],
         [p['y'] for p in check], '-go', label='Validation')
 
+
+    intersections = med_intersections + lower_intersections + upper_intersections
     # intersections
     plt.plot([p['x'] for p in intersections],
         [p['y'] for p in intersections], 'yo', label='Intersections')

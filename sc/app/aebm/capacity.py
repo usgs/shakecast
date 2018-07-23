@@ -1,251 +1,7 @@
-from damage import get_damage_state_medians
+from damage import get_damage_state_medians, get_default_damage_state_beta
+from data_tables import modal_height, modal_weight, modal_shape_factor
+
 import math
-
-# modal weight factor
-modal_weight = {
-  1: {
-    'S1': .75,
-    'C1': .75,
-    'PC1': .75,
-    'URM': .75,
-    'MH': 1.0,
-    'other': .8
-  },
-  2: {
-    'S1': .75,
-    'C1': .75,
-    'PC1': .75,
-    'URM': .75,
-    'other': .8
-  },
-  3: {
-    'S1': .75,
-    'C1': .75,
-    'PC1': .75,
-    'URM': .75,
-    'MH': 1.0,
-    'other': .8
-  },
-  4: {
-    'S1': .75,
-    'C1': .75,
-    'MH': 1.0,
-    'other': .8
-  },
-  5: {
-    'S1': .75,
-    'C1': .75,
-    'MH': 1.0,
-    'other': .8
-  },
-  6: {
-    'S1': .73,
-    'C1': .73,
-    'other': .79
-  },
-  7: {
-    'S1': .71,
-    'C1': .71,
-    'other': .78
-  },
-  8: {
-    'S1': .69,
-    'C1': .69,
-    'other': .77
-  },
-  9: {
-    'S1': .67,
-    'C1': .67,
-    'other': .76
-  },
-  10: {
-    'S1': .65,
-    'C1': .65,
-    'other': .75
-  },
-  11: {
-    'S1': .65,
-    'C1': .65,
-    'other': .75
-  },
-  12: {
-    'S1': .65,
-    'C1': .65,
-    'other': .75
-  },
-  13: {
-    'S1': .65,
-    'C1': .65,
-    'other': .75
-  },
-  14: {
-    'S1': .65,
-    'C1': .65,
-    'other': .75
-  },
-  15: {
-    'S1': .65,
-    'C1': .65,
-    'other': .75
-  },
-  100: {
-    'S1': .65,
-    'C1': .65,
-    'other': .75
-  },
-}
-
-# modal height factor
-modal_height = {
-  1: {
-    'MH': 1.0,
-    'other': .75
-  },
-  2: {
-    'other': .75
-  },
-  3: {
-    'other': .75
-  },
-  4: {
-    'other': .75
-  },
-  5: {
-    'other': .75
-  },
-  6: {
-    'other': .72
-  },
-  7: {
-    'other': .69
-  },
-  8: {
-    'other': .66
-  },
-  9: {
-    'other': .63
-  },
-  10: {
-    'other': .60
-  },
-  11: {
-    'other': .60
-  },
-  12: {
-    'other': .60
-  },
-  13: {
-    'other': .60
-  },
-  14: {
-    'other': .60
-  },
-  15: {
-    'other': .60
-  },
-  100: {
-    'other': .60
-  }
-}
-
-modal_shape_factor = {
-    1: {
-        'slight': 1.0,
-        'moderate': 1.0,
-        'extensive': None,
-        'complete': None,
-    },
-    2: {
-        'slight': 1.21,
-        'moderate': 1.21,
-        'extensive': None,
-        'complete': None,
-    },
-    3: {
-        'slight': 1.35,
-        'moderate': 1.35,
-        'extensive': None,
-        'complete': None,
-    },
-    4: {
-        'slight': 1.45,
-        'moderate': 1.45,
-        'extensive': None,
-        'complete': None,
-    },
-    5: {
-        'slight': 1.54,
-        'moderate': 1.54,
-        'extensive': None,
-        'complete': None,
-    },
-    6: {
-        'slight': 1.62,
-        'moderate': 1.62,
-        'extensive': None,
-        'complete': None,
-    },
-    7: {
-        'slight': 1.69,
-        'moderate': 1.69,
-        'extensive': None,
-        'complete': None,
-    },
-    8: {
-        'slight': 1.75,
-        'moderate': 1.75,
-        'extensive': None,
-        'complete': None,
-    },
-    9: {
-        'slight': 1.81,
-        'moderate': 1.81,
-        'extensive': None,
-        'complete': None,
-    },
-    10: {
-        'slight': 1.86,
-        'moderate': 1.86,
-        'extensive': None,
-        'complete': None,
-    },
-    11: {
-        'slight': 1.91,
-        'moderate': 1.91,
-        'extensive': None,
-        'complete': None,
-    },
-    12: {
-        'slight': 1.96,
-        'moderate': 1.96,
-        'extensive': None,
-        'complete': None,
-    },
-    13: {
-        'slight': 2.0,
-        'moderate': 2.0,
-        'extensive': None,
-        'complete': None,
-    },
-    14: {
-        'slight': 2.04,
-        'moderate': 2.04,
-        'extensive': None,
-        'complete': None,
-    },
-    15: {
-        'slight': 2.08,
-        'moderate': 2.08,
-        'extensive': None,
-        'complete': None,
-    },
-    100: {
-        'slight': 2.08,
-        'moderate': 2.08,
-        'extensive': None,
-        'complete': None,
-    },
-}
 
 def get_modal_response(mbt, bid, stories):
     complete = {}
@@ -676,6 +432,30 @@ def get_ultimate_point(ductility, a_y, d_y, post_yield):
 
   return {'x': d_u, 'y': a_u}
 
+def get_ultimate_period(d, a):
+    return math.sqrt(a / (d * 9.779738))
+def get_elastic_damping(mbt):
+    lookup = {
+        'C1': .07,
+        'C2': .07,
+        'C3': .07,
+        'MH': .05,
+        'PC1': .07,
+        'PC2': .07,
+        'RM1': .07,
+        'RM2': .07,
+        'S1': .05,
+        'S2': .05,
+        'S3': .05,
+        'S4': .05,
+        'S5': .05,
+        'URM': .07,
+        'W1': .1,
+        'W1A': .1,
+        'W2': .1
+    }
+
+    return lookup.get(mbt, .07)
 def get_capacity_curve(d_y, a_y, d_u, a_u):
     k = (a_u**2 - a_y**2 + a_y**2 * (d_y - d_u) / d_y) / (2 * (a_u - a_y) + (a_y / d_y) * (d_y - d_u))
     b = a_u - k
@@ -699,29 +479,36 @@ def get_capacity_curve(d_y, a_y, d_u, a_u):
 
     return points
 
-def get_capacity(mbt, sdl, bid, performance_rating, height, stories, elastic_period=None,
-        design_period=None, design_coefficient=None, modal_weight=None,
+def get_capacity(mbt, sdl, bid, performance_rating, quality_rating, height, stories, year, elastic_period=None, 
+        elastic_damping=None, design_period=None, ultimate_period=None, design_coefficient=None, modal_weight=None,
         modal_height=None, modal_response=None, pre_yield=None, post_yield=None,
-        max_strength=None, ductility=None):
+        max_strength=None, ductility=None, default_damage_state_beta=None):
 
-    elastic_period = get_default_period(mbt, sdl, height) if not elastic_period else elastic_period
-    design_period = get_design_period(mbt, sdl, height) if not design_period else design_period
-    design_coefficient = get_design_coefficient(design_period, mbt, sdl) if not design_coefficient else design_coefficient
-    modal_weight = get_modal_weight(mbt, stories) if not modal_weight else modal_weight
-    modal_height = get_modal_height(mbt, stories) if not modal_height else modal_height
-    modal_response = get_modal_response(mbt, bid, stories) if not modal_response else modal_response
-    pre_yield = get_pre_yield(stories) if not pre_yield else pre_yield
-    post_yield = get_post_yield(mbt, bid) if not post_yield else post_yield
-    max_strength = get_max_strength(pre_yield, post_yield, modal_weight, design_coefficient) if not max_strength else max_strength
-    ductility = get_ductility(stories) if not ductility else ductility
-    
+    elastic_period = elastic_period if elastic_period else get_default_period(mbt, sdl, height)
+    design_period = design_period if design_period else get_design_period(mbt, sdl, height)
+    design_coefficient = design_coefficient if design_coefficient else get_design_coefficient(design_period, mbt, sdl)
+    elastic_damping = get_elastic_damping(mbt)
+    modal_weight = modal_weight if modal_weight else get_modal_weight(mbt, stories)
+    modal_height = modal_height if modal_height else get_modal_height(mbt, stories)
+    modal_response = modal_response if modal_response else get_modal_response(mbt, bid, stories)
+    pre_yield = pre_yield if pre_yield else get_pre_yield(stories)
+    post_yield = post_yield if post_yield else get_post_yield(mbt, bid)
+    max_strength = max_strength if max_strength else get_max_strength(pre_yield, post_yield, modal_weight, design_coefficient)
+    ductility = ductility if ductility else get_ductility(stories)
+    default_damage_state_beta = (
+        default_damage_state_beta if default_damage_state_beta else 
+        get_default_damage_state_beta(quality_rating, performance_rating, year, stories)
+    )
+
     yield_point = get_yield_point(design_coefficient, elastic_period, modal_weight, pre_yield)
     ultimate_point = get_ultimate_point(ductility, yield_point['x'], yield_point['y'], post_yield)
+    ultimate_period = ultimate_period if ultimate_period else get_ultimate_period(ultimate_point['x'], ultimate_point['y'])
     damage_state_medians = get_damage_state_medians(mbt, sdl, performance_rating, height, modal_height, modal_response)
     capacity_curve = get_capacity_curve(yield_point['x'], yield_point['y'], ultimate_point['x'], ultimate_point['y'])
 
     return {
           'elastic_period': elastic_period,
+          'elastic_damping': elastic_damping,
           'design_period': design_period,
           'design_coefficient': design_coefficient,
           'modal_weight': modal_weight,
@@ -734,10 +521,16 @@ def get_capacity(mbt, sdl, bid, performance_rating, height, stories, elastic_per
           'damage_state_medians': damage_state_medians,
           'yield_point': yield_point,
           'ultimate_point': ultimate_point,
-          'curve': capacity_curve
+          'ultimate_period': ultimate_period,
+          'curve': capacity_curve,
+          'year': year,
+          'default_damage_state_beta': default_damage_state_beta,
+          'stories': stories,
+          'quality_rating': quality_rating,
+          'performance_rating': performance_rating
     }
 
 
 if __name__ == '__main__':
     # tests....
-    get_capacity('W1', 'high', 1, 'baseline', 24, 2)
+    get_capacity('W1', 'high', 1, 'baseline', 'best', 24, 2, 1975)
