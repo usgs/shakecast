@@ -162,3 +162,22 @@ def get_damage_state_beta(default_beta, default_median, lower_bound_demand_disp,
     beta_t = uncertainty_lookup[quality_rating][performance_rating]['beta_t']
 
     return min(1.1 * default_beta, max(.9 * default_beta, math.sqrt(min(max(math.log(min(upper_bound_demand_disp, 1.2 * default_median) / min(lower_bound_demand_disp, 1.2 * default_median))/2, demand_uncertainty / 2), demand_uncertainty * 2)**2) + min(max(math.log(min(upper_bound_demand_acc, 1.2 * default_median) / min(lower_bound_demand_acc, 1.2 * default_median))/2, beta_c / 2), 2 * beta_c)**2 + beta_t**2))
+
+def get_damage_probabilities(damage_state_medians, damage_state_beta, displacement):
+    complete = lognorm(damage_state_medians['complete'], damage_state_beta, displacement)
+    extensive = lognorm(damage_state_medians['extensive'], damage_state_beta, displacement) - complete
+    moderate = lognorm(damage_state_medians['moderate'], damage_state_beta, displacement) - complete - extensive
+    slight = lognorm(damage_state_medians['slight'], damage_state_beta, displacement) - complete - extensive - moderate
+    none = 1 - complete - extensive - moderate - slight
+
+    return {
+        'complete': complete,
+        'extensive': extensive,
+        'moderate': moderate,
+        'slight': slight,
+        'none': none
+    }
+
+def lognorm(med, spread, value):
+    p_norm = (math.erf((value-med)/(math.sqrt(2) * spread)) + 1)/2
+    return p_norm

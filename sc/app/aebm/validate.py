@@ -9,6 +9,7 @@ from spectrum import build_spectrum
 from damage import *
 from capacity import *
 import aebm
+from data_tables import pref_periods
 
 hazard_x = [
     0.010,
@@ -228,65 +229,14 @@ capacity_y = [
     0.777
 ]
 
-pref_periods = [
-    0.0100,
-    0.0200,
-    0.0300,
-    0.0500,
-    0.0750,
-    0.1000,
-    0.1500,
-    0.2000,
-    0.2500,
-    0.3000,
-    0.3500,
-    0.4000,
-    0.4500,
-    0.5000,
-    0.5500,
-    0.6000,
-    0.6500,
-    0.7000,
-    0.7500,
-    0.8000,
-    0.9000,
-    1.0000,
-    1.1000,
-    1.2000,
-    1.3000,
-    1.4000,
-    1.5000,
-    1.6000,
-    1.8000,
-    2.0000,
-    2.2000,
-    2.4000,
-    2.6000,
-    2.8000,
-    3.0000,
-    3.2000,
-    3.4000,
-    3.6000,
-    3.8000,
-    4.0000,
-    4.5000,
-    5.0000,
-    5.5000,
-    6.0000,
-    6.5000,
-    7.0000,
-    7.5000,
-    8.0000,
-    9.0000,
-   10.0000
-]
+
 
 kappa = .5
 mag = 7.9
 hazard_beta = .4
-rRup = 11.18
+r_rup = 11.18
 
-check = [
+demand_check = [
     {'x': .01, 'disp': 0, 'y': 0.4800},
     {'x': .02, 'disp': 0.0020, 'y': 0.4800},
     {'x': .03, 'disp': 0.0040, 'y': 0.4900},
@@ -342,70 +292,24 @@ check = [
 def isclose(a, b, rel_tol=1e-09, abs_tol=0.0):
     return abs(a-b) <= max(rel_tol * max(abs(a), abs(b)), abs_tol)
 
-def validate_damage_states():
-    # validation
-    validation = {
-      '1': {
-          'mbt': 'C2',
-          'sdl': 'pre',
-          'perf_rating': 'baseline',
-          'floors_ag': 4,
-          'height': 45,
-          'alpha1': .8,
-          'alpha2': .75,
-          'bid': 1,
-          'expected': {
-            'slight': .84,
-            'moderate': 1.67,
-            'extensive': 4.46,
-            'complete': 11.14
-          }
-      },
-      '2': {
-          'mbt': 'C2',
-          'sdl': 'low',
-          'perf_rating': 'baseline',
-          'floors_ag': 4,
-          'height': 45,
-          'alpha1': .8,
-          'alpha2': .75,
-          'bid': 2,
-          'expected': {
-            'slight': 1.11,
-            'moderate': 2.23,
-            'extensive': 5.57,
-            'complete': 13.93
-          }
-      },
-      '3': {
-          'mbt': 'C2',
-          'sdl': 'pre',
-          'perf_rating': 'poor',
-          'floors_ag': 4,
-          'height': 45,
-          'alpha1': .8,
-          'alpha2': .75,
-          'bid': 2,
-          'expected': {
-            'slight': .84,
-            'moderate': 1.67,
-            'extensive': 2.44,
-            'complete': 5.14
-          }
-      }
-    }
+def shakemap_example():
+    # run shakemap example
+    hazard = [
+        {'x': .03, 'y': 1.1377},
+        {'x': 1.0, 'y': .8302},
+        {'x': 3.0, 'y': .348}
+    ]
 
-    for name, test in validation.iteritems():
-        d_states = get_damage_states(test)
+    hazard_beta = .5
 
-        for state in d_states.keys():
-            diff = abs(d_states[state] - test['expected'][state]) / test['expected'][state]
-            if diff > .01:
-                print '{}: {} off by {}... expected {}, got {} \n\n{}\n'.format(name, state, diff, test['expected'][state], d_states[state], test)
+    mag = 6.7
 
-if __name__ == '__main__':
-    capacity = get_capacity('PC1', 'high', 7, 'very_poor', 'poor', 24, 2, 1990)
-    capacity, demand, lower_demand, upper_demand, med_intersections, lower_intersections, upper_intersections = aebm.run(capacity, hazard, hazard_beta, pref_periods, mag, rRup)
+    r_rup = 20
+
+    capacity = get_capacity('C2', 'high', 1, 'baseline', 'poor', 24, 2, 1990)
+    capacity, demand, lower_demand, upper_demand, med_intersections, lower_intersections, upper_intersections = aebm.run(capacity, hazard, hazard_beta, pref_periods, mag, r_rup)
+
+    damage_probs = get_damage_probabilities(capacity['damage_state_medians'], capacity['calcucated_beta'], med_intersections[0]['x'])
 
     plt.figure()
     plt.plot([p['disp'] for p in demand],
@@ -416,8 +320,45 @@ if __name__ == '__main__':
         [p['y'] for p in lower_demand], label='Lower bound demand')
     plt.plot([p['x'] for p in capacity['curve']],
         [p['y'] for p in capacity['curve']], 'b', label='Capacity Curve')
-    plt.plot([p['disp'] for p in check],
-        [p['y'] for p in check], '-go', label='Validation')
+
+
+    intersections = med_intersections + lower_intersections + upper_intersections
+    # intersections
+    plt.plot([p['x'] for p in intersections],
+        [p['y'] for p in intersections], 'yo', label='Intersections')
+
+    plt.xlim(xmax=demand[-1]['x'] * 2)
+    plt.title('Performance Point: "C2", "high", 1, "baseline", "poor", 24, 2, 1990')
+    plt.xlabel('Spectral Displacement')
+    plt.ylabel('Spectral Acceleration')
+    plt.legend()
+    plt.show()
+
+    plt.figure()
+    n, s, m, e, c = plt.bar([1,2,3,4,5], [damage_probs['none'], damage_probs['slight'], damage_probs['moderate'], damage_probs['extensive'] + .01, damage_probs['complete'] + .01])
+    n.set_facecolor('gray')
+    s.set_facecolor('g')
+    m.set_facecolor('gold')
+    e.set_facecolor('orange')
+    c.set_facecolor('r')
+    plt.title('Potential Impact: "C2", "high", 1, "baseline", "poor", 24, 2, 1990')
+    plt.show()
+
+if __name__ == '__main__':
+    capacity = get_capacity('PC1', 'high', 7, 'very_poor', 'poor', 24, 2, 1990)
+    capacity, demand, lower_demand, upper_demand, med_intersections, lower_intersections, upper_intersections = aebm.run(capacity, hazard, hazard_beta, pref_periods, mag, r_rup)
+
+    plt.figure()
+    plt.plot([p['disp'] for p in demand],
+        [p['y'] for p in demand], '-ro', label='Calculated Curve')
+    plt.plot([p['disp'] for p in upper_demand],
+        [p['y'] for p in upper_demand], label='Upper bound demand')
+    plt.plot([p['disp'] for p in lower_demand],
+        [p['y'] for p in lower_demand], label='Lower bound demand')
+    plt.plot([p['x'] for p in capacity['curve']],
+        [p['y'] for p in capacity['curve']], 'b', label='Capacity Curve')
+    plt.plot([p['disp'] for p in demand_check],
+        [p['y'] for p in demand_check], '-go', label='Validation')
 
 
     intersections = med_intersections + lower_intersections + upper_intersections
@@ -447,7 +388,7 @@ if __name__ == '__main__':
     plt.figure()
     acc_difs = []
     for dem in demand:
-        for c in check:
+        for c in demand_check:
             if isclose(c['x'], dem['x']):
                 acc_difs += [{'x': dem['x'], 'y': abs(c['y'] - dem['y'])/c['y']}]
                 break
@@ -457,8 +398,8 @@ if __name__ == '__main__':
     plt.plot([p['x'] for p in demand],
         [p['y'] for p in demand], '-ro', label='Calculated Curve')
 
-    plt.plot([p['x'] for p in check],
-        [p['y'] for p in check], '-go', label='Validation')
+    plt.plot([p['x'] for p in demand_check],
+        [p['y'] for p in demand_check], '-go', label='Validation')
     
     plt.title('Acceleration Check')
     plt.xlabel('Period (s)')
@@ -469,7 +410,7 @@ if __name__ == '__main__':
     disp_difs = []
     acc_difs = []
     for dem in demand:
-        for c in check:
+        for c in demand_check:
             if isclose(c['x'], dem['x']):
                 diff = abs(c['disp'] - dem['disp'])
                 ratio = 0 if diff < .001 else diff / c['disp']
@@ -483,8 +424,8 @@ if __name__ == '__main__':
     plt.plot([p['x'] for p in demand],
         [p['y'] for p in demand], '-ro', label='Calculated Curve')
 
-    plt.plot([p['x'] for p in check],
-        [p['y'] for p in check], '-go', label='Validation')
+    plt.plot([p['x'] for p in demand_check],
+        [p['y'] for p in demand_check], '-go', label='Validation')
     
     plt.title('Displacement Check')
     plt.xlabel('Period (s)')
