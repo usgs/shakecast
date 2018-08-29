@@ -1,4 +1,5 @@
 from util import *
+from impact import get_impact
 import os
 import sys
 import inspect as inspect_mod
@@ -16,7 +17,7 @@ if app_dir not in sys.path:
 
 from sqlalchemy import *
 from sqlalchemy.ext.declarative import *
-from sqlalchemy.ext.hybrid import hybrid_method
+from sqlalchemy.ext.hybrid import hybrid_method, hybrid_property
 from sqlalchemy.orm import *
 from sqlalchemy.sql import and_, or_
 from sqlalchemy.orm.session import Session as SessionClass
@@ -77,6 +78,12 @@ class Facility(Base):
     shaking_history = relationship('FacilityShaking',
                         backref='facility',
                         cascade='save-update, delete, delete-orphan')
+
+    
+    aebm = relationship('Aebm',
+                        backref='facility',
+                        uselist=False,
+                        cascade='save-update, delete, delete-orphan')
     
     def __repr__(self):
         return '''Facility(facility_id=%s,
@@ -123,78 +130,24 @@ class Facility(Base):
         return self.name
     
     
-    def make_alert_level(self, shaking_point=None, shakemap=None):
+    def make_alert_level(self, shaking_point=None, shakemap=None, aebm=False):
         '''
         Create a dictionary that contains all the information for a
         FacilityShaking entry in the database
         '''
-        shaking_level = shaking_point.get(self.metric, None)
+        impact = get_impact(self, shaking_point, shakemap, aebm)
 
-        fac_shake = {'gray': 0,
-                     'green': 0,
-                     'yellow': 0,
-                     'orange': 0,
-                     'red': 0,
-                     'alert_level': '',
-                     'weight': 0,
-                     'MMI': 0,
-                     'PGA': 0,
-                     'PSA03': 0,
-                     'PSA10': 0,
-                     'PSA30': 0,
-                     'PGV': 0,
-                     'metric': self.metric,
-                     'facility_id': self.shakecast_id,
-                     'shakemap_id': shakemap.shakecast_id}
-        
-        if shaking_level is None:
-            fac_shake['alert_level'] = 'gray'
-        
-        else:
-            # add shaking levels to fac_shake for record in db
-            for metric in shaking_point.keys():
-                fac_shake[metric] = shaking_point[metric]
-                
-            # get_exceedence green
-            fragility = [{'med': self.red, 'spread': self.red_beta, 'level': 'red', 'rank': 4},
-                         {'med': self.orange, 'spread': self.orange_beta, 'level': 'orange', 'rank': 3},
-                         {'med': self.yellow, 'spread': self.yellow_beta, 'level': 'yellow', 'rank': 2},
-                         {'med': self.green, 'spread': self.green_beta, 'level': 'green', 'rank': 1}]
-                        
-            prob_sum = 0
-            large_prob = 0
-            for level in fragility:
-                
-                # skips non-user-defined levels 
-                if level['med'] < 0 or level['spread'] < 0:
-                    continue
-                
-                # calculate probability of exceedence
-                p = lognorm_opt(med=level['med'],
-                                spread=level['spread'],
-                                shaking=shaking_level)
-                
-                # alter based on total probability of higher states
-                p -= prob_sum
-                prob_sum += p
-                fac_shake[level['level']] = p
-                
-                # keep track of the largest probability
-                if p > large_prob:
-                    large_prob = p
-                    fac_shake['alert_level'] = level['level']
-                    fac_shake['weight'] = level['rank'] + (p / 100)
-            
-            # put remaining exceedance into grey damage state
-            fac_shake['gray'] = 100 - prob_sum
-            if fac_shake['gray'] > large_prob:
-                fac_shake['alert_level'] = 'gray'
-                fac_shake['weight'] = (fac_shake['gray'] / 100)
-        
-        # make fac_shake keys lowercase
-        fac_shake = dict((k.lower(), v) for 
-                                k,v in fac_shake.iteritems())
-        return fac_shake
+        return impact
+
+
+    @hybrid_property
+    def lat(self):
+        return (self.lat_max + self.lat_min) / 2
+
+
+    @hybrid_property
+    def lon(self):
+        return (self.lon_max + self.lon_min) / 2
 
  
     @hybrid_method    
@@ -232,8 +185,8 @@ class Facility(Base):
                     self.lon_max > grid.lon_max and
                     self.lat_min < grid.lat_min and
                     self.lat_max > grid.lat_max))
-        
-    @in_grid.expression   
+    
+    @in_grid.expression
     def in_grid(cls, grid):
         # check if a point is within the boundaries of the grid
         return  or_(and_(cls.lon_min > grid.lon_min,
@@ -268,7 +221,37 @@ class Facility(Base):
                         cls.lon_max > grid.lon_max,
                         cls.lat_min < grid.lat_max,
                         cls.lat_max > grid.lat_max))
-  
+
+
+class Aebm(Base):
+    __tablename__ = 'aebm'
+    facility_id = Column(Integer, ForeignKey('facility.shakecast_id'), primary_key=True)
+    mbt = Column(String(20))
+    sdl = Column(String(50))
+    bid = Column(Integer)
+    height = Column(Integer)
+    stories = Column(Integer)
+    year = Column(Integer)
+    performance_rating = Column(String(50))
+    quality_rating = Column(String(50))
+    elastic_period = Column(Float)
+    elastic_damping = Column(Float)
+    design_period = Column(Float)
+    ultimate_period = Column(Float)
+    design_coefficient = Column(Float)
+    modal_weight = Column(Float)
+    modal_height = Column(Float)
+    modal_response = Column(Float)
+    pre_yield = Column(Float)
+    post_yield = Column(Float)
+    max_strength = Column(Float)
+    ductility = Column(Float)
+    default_damage_state_beta = Column(Float)
+
+    def has_required(self):
+        return (self.mbt and self.sdl and self.bid and
+                self.height and self.stories and self.year)
+
     
 class FacilityShaking(Base):
     __tablename__ = 'facility_shaking'

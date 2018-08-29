@@ -887,7 +887,7 @@ class TestFull(unittest.TestCase):
 
         # grab some prepackaged geoJSON to ensure we have some 
         # events and shakemaps for testing
-        json_file = os.path.join(sc_dir(), 'test', 'test_json_feed.json')
+        json_file = os.path.join(sc_dir(), 'test', 'data', 'test_json_feed.json')
         with open(json_file, 'r') as file_:
             json_feed = json.loads(file_.read())
         pg = ProductGrabber()
@@ -997,7 +997,7 @@ class TestFull(unittest.TestCase):
 
         # grab some prepackaged geoJSON to ensure we have some 
         # events and shakemaps for testing
-        json_file = os.path.join(sc_dir(), 'test', 'test_json_feed.json')
+        json_file = os.path.join(sc_dir(), 'test', 'data', 'test_json_feed.json')
         with open(json_file, 'r') as file_:
             json_feed = json.loads(file_.read())
         pg = ProductGrabber()
@@ -1079,7 +1079,8 @@ class TestFull(unittest.TestCase):
         s = SoftwareUpdater()
         s.json_url = os.path.normpath(delim.join(['file://', 
                                                     sc_dir(), 
-                                                    'test', 
+                                                    'test',
+                                                    'data',
                                                     'update_test.json']))
         s.check_update(testing=True)
     
@@ -1087,7 +1088,8 @@ class TestFull(unittest.TestCase):
         s = SoftwareUpdater()
         s.json_url = os.path.normpath(delim.join(['file://', 
                                                     sc_dir(), 
-                                                    'test', 
+                                                    'test',
+                                                    'data',
                                                     'update_test.json']))
         s.update(testing=True)
 
@@ -1234,7 +1236,7 @@ class TestImport(unittest.TestCase):
 
     @dbconnect
     def step02_userImport(self, session=None):
-        user_file = os.path.join(sc_dir(), 'test', 'test_users.xml')
+        user_file = os.path.join(sc_dir(), 'test', 'data', 'test_users.xml')
         file_type = determine_xml(user_file)
         import_user_xml(user_file)
 
@@ -1251,13 +1253,13 @@ class TestImport(unittest.TestCase):
         self.assertEqual(user.mms, 'example@example.com')
 
     def step03_groupImport(self):
-        group_file = os.path.join(sc_dir(), 'test', 'test_groups.xml')
+        group_file = os.path.join(sc_dir(), 'test', 'data', 'test_groups.xml')
         file_type = determine_xml(group_file)
         import_group_xml(group_file, 1)
         self.assertEqual(file_type, 'group')
         
     def step04_facImport(self):
-        fac_file = os.path.join(sc_dir(), 'test', 'test_facs.xml')
+        fac_file = os.path.join(sc_dir(), 'test', 'data', 'test_facs.xml')
         file_type = determine_xml(fac_file)
         import_facility_xml(fac_file, 1)
         self.assertEqual(file_type, 'facility')
@@ -1375,7 +1377,7 @@ class TestImport(unittest.TestCase):
         self.step01_clearData()
 
     def step12_masterImport(self):
-        file_ = os.path.join(sc_dir(), 'test', 'test_master.xml')
+        file_ = os.path.join(sc_dir(), 'test', 'data', 'test_master.xml')
         file_type = determine_xml(file_)
         import_master_xml(file_)
 
