@@ -272,6 +272,7 @@ class FacilityShaking(Base):
     psa03 = Column(Float)
     psa10 = Column(Float)
     psa30 = Column(Float)
+    aebm = Column(String(50))
 
     def __init__(self, **kwargs):
         '''

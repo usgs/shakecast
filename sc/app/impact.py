@@ -67,7 +67,7 @@ class ImpactInterface(dict):
             if level['rank'] >= rank:
                 self['weight'] += self[level['level']] / 100
 
-def get_impact(facility, shaking_point=None, shakemap=None, aebm=False):
+def get_impact(facility, shaking_point, shakemap, aebm=False):
     impact = None
     if facility.aebm and facility.aebm.has_required():
         impact = compute_aebm_impact(facility, shaking_point, shakemap)
@@ -88,7 +88,7 @@ def compute_aebm_impact(facility, shaking_point, shakemap):
 
     hazard = get_psa_spectrum(shaking_point)
     capacity = aebm.capacity.get_capacity(**non_null(facility.aebm.__dict__))
-    rRup = get_r_rup(
+    r_rup = get_gps_distance(
         facility.lat,
         facility.lon,
         shakemap.event.lat,
@@ -100,14 +100,14 @@ def compute_aebm_impact(facility, shaking_point, shakemap):
     demand,
     lower_demand,
     upper_demand,
-    med_intersections,
+    median_intersections,
     lower_intersections,
     upper_intersections) = aebm.run(
         capacity,
         hazard,
         shaking_point.get('URAT', .5),
         shakemap.event.magnitude,
-        rRup
+        r_rup
     )
 
     fac_shake['gray'] = damage_probabilities['none'] * 100
@@ -119,6 +119,17 @@ def compute_aebm_impact(facility, shaking_point, shakemap):
     fac_shake.update(shaking_point)
     fac_shake.set_alert_level()
     fac_shake.set_weight()
+
+    fac_shake['aebm'] = 'psa: {}'.format(median_intersections[0]['y'])
+    fac_shake['aebm_extras'] = {
+        'capacity': capacity,
+        'demand': demand,
+        'lower_demand': lower_demand,
+        'upper_demand': upper_demand,
+        'median_intersections': median_intersections,
+        'lower_intersections':  lower_intersections,
+        'upper_intersections': upper_intersections
+    }
 
     return fac_shake
 
@@ -195,7 +206,7 @@ def degreesToRadians(degrees):
   return degrees * math.pi / 180
 
 
-def get_r_rup(lat1, lon1, lat2, lon2):
+def get_gps_distance(lat1, lon1, lat2, lon2):
   earthRadiusKm = 6371
   latDiff = degreesToRadians(lat2-lat1)
   lonDiff = degreesToRadians(lon2-lon1)
