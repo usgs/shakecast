@@ -975,7 +975,7 @@ testing = False
 insp = inspect_mod.stack()
 for stack in insp:
     for entry in stack:
-        if 'test.py' in str(entry):
+        if 'test' in str(entry):
             db_name = 'test.db'
             testing = True
         

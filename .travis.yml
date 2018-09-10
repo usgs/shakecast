@@ -7,7 +7,7 @@ install:
   - python sc/app/sc_config.py --smtpu testing.only.shakecast@gmail.com --smtpp testingpass
 
 script:
-  - python sc/test/test.py dslosky@usgs.gov
+  - python -m sc.tests.bundle dslosky@usgs.gov
 
 branches:
   only:

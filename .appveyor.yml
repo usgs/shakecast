@@ -35,10 +35,10 @@ build: off
 
 test_script:
   # Run the project tests
-   - "cd %APPVEYOR_BUILD_FOLDER%\\sc"
+   - "cd %APPVEYOR_BUILD_FOLDER%"
    - "set"
-   - "python app\\sc_config.py --smtpu testing.only.shakecast@gmail.com --smtpp testingpass"
-   - "coverage run test\\test.py dslosky@usgs.gov"
+   - "python sc\\app\\sc_config.py --smtpu testing.only.shakecast@gmail.com --smtpp testingpass"
+   - "coverage run -m sc.tests.bundle dslosky@usgs.gov"
 
 after_test:
   - "codecov"
