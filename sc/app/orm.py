@@ -130,12 +130,12 @@ class Facility(Base):
         return self.name
     
     
-    def make_alert_level(self, shaking_point=None, shakemap=None, aebm=False):
+    def make_alert_level(self, shaking_point=None, shakemap=None):
         '''
         Create a dictionary that contains all the information for a
         FacilityShaking entry in the database
         '''
-        impact = get_impact(self, shaking_point, shakemap, aebm)
+        impact = get_impact(self, shaking_point, shakemap)
 
         return impact
 

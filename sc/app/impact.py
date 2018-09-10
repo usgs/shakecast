@@ -26,6 +26,7 @@ class ImpactInterface(dict):
             'PSA10': 0,
             'PSA30': 0,
             'PGV': 0,
+            'aebm_extras': None,
             'metric': metric,
             'facility_id': facility_id,
             'shakemap_id': shakemap_id
@@ -67,7 +68,7 @@ class ImpactInterface(dict):
             if level['rank'] >= rank:
                 self['weight'] += self[level['level']] / 100
 
-def get_impact(facility, shaking_point, shakemap, aebm=False):
+def get_impact(facility, shaking_point, shakemap):
     impact = None
     if facility.aebm and facility.aebm.has_required():
         impact = compute_aebm_impact(facility, shaking_point, shakemap)
@@ -120,7 +121,10 @@ def compute_aebm_impact(facility, shaking_point, shakemap):
     fac_shake.set_alert_level()
     fac_shake.set_weight()
 
-    fac_shake['aebm'] = 'psa: {}'.format(median_intersections[0]['y'])
+    pp = median_intersections[0]
+    rounded_period = round(pp['period'] * 100) / 100
+    fac_shake['aebm'] = ('PSA ({} sec): {}'
+            .format(rounded_period, pp['acc']))
     fac_shake['aebm_extras'] = {
         'capacity': capacity,
         'demand': demand,
