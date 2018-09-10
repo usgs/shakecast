@@ -1142,7 +1142,8 @@ class TestFull(unittest.TestCase):
 
     @dbconnect
     def step26_groupInspLevel(self, session=None):
-        g = session.query(Group).first()
+        g = session.query(Group).filter(Group.name == 'ALL').first()
+
         self.assertEqual(g.has_alert_level(None), True)
         self.assertEqual(g.has_alert_level('GREY'), True)
         self.assertEqual(g.has_alert_level('grey'), True)
