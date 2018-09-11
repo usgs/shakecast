@@ -10,3 +10,4 @@ SQLAlchemy==1.0.14
 Werkzeug==0.11.10
 wheel==0.26.0
 xmltodict==0.10.2
+shakecast-aebm==0.0a5

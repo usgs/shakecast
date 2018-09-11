@@ -65,7 +65,7 @@ class UI(object):
         input to the server
         """
         try:
-            input_check = select.select([sys.stdin], [], [], 0)[0]
+            input_check = select_.select([sys.stdin], [], [], 0)[0]
         except:
             input_check = []
             
@@ -177,7 +177,7 @@ class UI(object):
             for conn in self.conns:
             
                 try:
-                    mess = select.select([conn], [], [], 0)[0]
+                    mess = select_.select([conn], [], [], 0)[0]
                 except:
                     mess = []
                 if len(mess) > 0:
