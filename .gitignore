@@ -1,4 +1,5 @@
 data/
+!sc/tests/data
 tmp/
 logs/
 docs/

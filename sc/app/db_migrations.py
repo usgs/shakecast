@@ -49,6 +49,20 @@ def migrate_2to3(engine):
 
     return engine
 
+def migrate_3to4(engine):
+    '''
+    Add updated and updated_by columns to keep track of which users
+    are updating inventory
+    '''
+    aebm = Column('aebm', String(50))
+
+    try:
+        add_column(engine, 'facility_shaking', aebm)
+    except Exception:
+        pass
+
+    return engine
+
 def add_column(engine, table_name, column):
     '''
     Add a column to an existing table
@@ -62,4 +76,4 @@ def add_column(engine, table_name, column):
         engine.execute('ALTER TABLE `%s` ADD COLUMN %s %s' % (table_name, column_name, column_type))
 
 # List of database migrations for export
-migrations = [migrate_1to2, migrate_2to3]
+migrations = [migrate_1to2, migrate_2to3, migrate_3to4]

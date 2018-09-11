@@ -329,21 +329,20 @@ def process_shakemaps(shakemaps=None, session=None, scenario=False):
         session.commit()
 
 def makeGeoJSONDict(facility, fac_shaking):
-    lat = (facility.lat_max + facility.lat_min) / 2
-    lon = (facility.lon_max + facility.lon_min) / 2
-
     jsonDict = {
         'type': 'Feature',
-        'geometry': {'type': 'Point', 
-                        'coordinates': [lon, lat]}
+        'geometry': {
+            'type': 'Point',
+            'coordinates': [facility.lon, facility.lat]
+        }
     }
 
     jsonDict['properties'] = {
         'facility_name': facility.name,
         'description': facility.description,
         'facility_type': facility.facility_type,
-        'lat': lat,
-        'lon': lon,
+        'lat': facility.lat,
+        'lon': facility.lon,
         'shaking': fac_shaking
     }
 
