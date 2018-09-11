@@ -443,7 +443,7 @@ class ProductGrabber(object):
         return scenario_ready
 
     
-class Point(object):
+class Point(dict):
     
     '''
     Keeps track of shaking data associated with a location. A list of
@@ -452,20 +452,11 @@ class Point(object):
     '''
     
     sort_by = ''
-    def __init__(self):
-        self.info = {}
 
     def __cmp__(self, other):
-        #if hasattr(other, 'info'):
-            #return (int(self.shaking[self.sort_by]).
-            #            __cmp__(int(other.shaking[self.sort_by])))
-
-            
-        #return (int(self.info[self.sort_by] * 10000).
-        #            __cmp__(int(other.info[self.sort_by] * 10000)))
-        if int(self.info[self.sort_by] * 10000) > int(other.info[self.sort_by] * 10000):
+        if int(self[self.sort_by] * 10000) > int(other[self.sort_by] * 10000):
             return 1
-        elif int(self.info[self.sort_by] * 10000) < int(other.info[self.sort_by] * 10000):
+        elif int(self[self.sort_by] * 10000) < int(other[self.sort_by] * 10000):
             return -1
         else:
             return 0
@@ -568,7 +559,7 @@ class ShakeMapGrid(object):
         
             point = Point()
             for count, field in enumerate(self.fields):
-                point.info[field] = float(point_lst[count])
+                point[field] = float(point_lst[count])
                     
             self.grid += [point]
         
@@ -643,7 +634,7 @@ class ShakeMapGrid(object):
             return {facility.metric: 0}
         
         # check if the facility's metric exists in the grid
-        if not self.grid[0].info.get(facility.metric, None):
+        if not self.grid[0].get(facility.metric, None):
             return {facility.metric: None}
         
         # sort the grid in an attempt to speed up processing on
@@ -653,16 +644,16 @@ class ShakeMapGrid(object):
         
         # figure out where in the point list we should look for shaking
         in_each = len(self.grid) / self.num_lon
-        start = int((lon_min - self.grid[0].info['LON']) / self.nom_lon_spacing * in_each)
-        end = int((lon_max - self.grid[0].info['LON']) / self.nom_lon_spacing * in_each)
+        start = int((lon_min - self.grid[0]['LON']) / self.nom_lon_spacing * in_each)
+        end = int((lon_max - self.grid[0]['LON']) / self.nom_lon_spacing * in_each)
         if start < 0:
             start = 0
         
         shaking = []
         while not shaking:
             shaking = [point for point in self.grid[start:end] if
-                                        (point.info['LAT'] > lat_min and
-                                         point.info['LAT'] < lat_max)]
+                                        (point['LAT'] > lat_min and
+                                         point['LAT'] < lat_max)]
             
             # make the rectangle we're searching in larger to encompass
             # more points
@@ -674,7 +665,7 @@ class ShakeMapGrid(object):
         
         Point.sort_by = metric
         shaking = sorted(shaking)
-        return shaking[-1].info
+        return shaking[-1]
 
        
 class Mailer(object):

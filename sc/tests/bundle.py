@@ -6,6 +6,7 @@ import time
 from sc.app.functions import *
 from sc.app.task import Task
 from util import create_fac, create_group, create_user
+from .impact import *
 
 class SystemTest(unittest.TestCase):
     '''
