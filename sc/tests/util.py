@@ -35,11 +35,16 @@ def create_group(name=None,
                     notification_format=None,
                     new_event=True,
                     heartbeat=True,
-                    insp_prios=['GREY', 
-                                'GREEN', 
-                                'YELLOW', 
-                                'ORANGE', 
-                                'RED']):
+                    insp_prios=None):
+
+    insp_prios = insp_prios if insp_prios else [
+        'GREY',
+        'GREEN',
+        'YELLOW',
+        'ORANGE',
+        'RED'
+    ]
+
     group = Group()
     group.name = name
     group.facility_type = 'All'

@@ -10,7 +10,7 @@ class ImpactInterface(dict):
     a dictionary
     '''
     def __init__(self, metric=None, facility_id=None, shakemap_id=None, **kwargs):
-        super(ImpactInterface, self).__init__
+        super(ImpactInterface, self).__init__()
 
         self.update({
             'gray': 0,
