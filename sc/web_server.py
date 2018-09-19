@@ -105,7 +105,7 @@ def index():
 @app.route('/api/messages')
 @login_required
 def get_messages():
-    fname = os.path.join(sc_dir(), 'app', 'server-messages.json')
+    fname = os.path.join(sc_dir(), 'tmp', 'server-messages.json')
     
     # ignore if file doesn't exist
     if os.path.isfile(fname):
@@ -833,9 +833,10 @@ def get_inventory(session=None):
 @admin_only
 @login_required
 def system_test():
-    ui.send("{'System Test': {'func': f.system_test, 'args_in': {}, 'db_use': True, 'loop': False}}")
+    ui = UI()
+    result = ui.send("{'System Test': {'func': f.system_test, 'args_in': {}, 'db_use': True, 'loop': False}}")
 
-    return json.dumps(True)
+    return json.dumps(result)
 
 def shutdown_server():
     func = request.environ.get('werkzeug.server.shutdown')

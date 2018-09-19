@@ -1010,7 +1010,7 @@ if testing is True:
     drop_sql = metadata.drop_all(engine)
 
 # create database schema that doesn't exist
-db_sql = metadata.create_all(engine)
+db_sql = metadata.create_all(engine, checkfirst=True)
 
 ############# Check for required DB migrations #############
 def db_migration(engine):

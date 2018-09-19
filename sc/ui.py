@@ -32,10 +32,10 @@ class UI(object):
         self.conns = []
         self._get_message = True
         self.print_queue = []
-        self.port = 1981
         
         sc = SC()
         self.port = sc.dict['port']
+        self.host = sc.dict['host']
     def start(self):
         """
         Starts the CLI loop
@@ -129,7 +129,7 @@ class UI(object):
         """
         self.conn = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.conn.settimeout(3)
-        self.conn.connect(('localhost', self.port))
+        self.conn.connect((self.host, self.port))
         
     def get_message(self):
         """

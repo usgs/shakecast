@@ -1,0 +1,30 @@
+version: '3.1'
+
+services:
+  sc-server:
+    build:
+      context: .
+      dockerfile: sc-server.dockerfile
+    networks:
+      - sc-network
+    volumes:
+      - "/data/test2/db:/usr/local/shakecast/sc/db"
+      - "/data/test2/eq_data:/usr/local/shakecast/sc/data"
+      - "/data/test2/tmp:/usr/local/shakecast/sc/tmp"
+  
+  web-server:
+    build:
+      context: .
+      dockerfile: web-server.dockerfile
+    ports:
+      - "80:80"
+    networks:
+      - sc-network
+    volumes:
+      - "/data/test2/db:/usr/local/shakecast/sc/db"
+      - "/data/test2/eq_data:/usr/local/shakecast/sc/data"
+      - "/data/test2/tmp:/usr/local/shakecast/sc/tmp"
+
+networks:
+  sc-network:
+    driver: bridge
