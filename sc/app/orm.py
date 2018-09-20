@@ -1032,7 +1032,7 @@ def db_init():
     # create database schema that doesn't exist
     try:
         metadata.create_all(engine, checkfirst=True)
-    except:
+    except Exception:
         # another service  might be initializing the db,
         # wait a sec for it to be done occurs during
         # docker init

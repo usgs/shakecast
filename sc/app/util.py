@@ -100,7 +100,7 @@ class SC(object):
 
         try:
             self.load()
-        except:
+        except Exception:
             # unable to load, try to generate a config file
             self.generate()
             self.load()
