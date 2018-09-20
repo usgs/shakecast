@@ -969,51 +969,10 @@ def refresh(obj, session=None):
     elif isinstance(obj, dict):
         pass
 
-# name the database, but switch to a test database if run from test.py
-db_name = 'shakecast.db'
-testing = False
-insp = inspect_mod.stack()
-if 'tests' in str(insp):
-    db_name = 'test.db'
-    testing = True
-        
-# logging from DB
-#logging.basicConfig(level=logging.DEBUG)
-#logging.getLogger('sqlalchemy.engine.base').setLevel(logging.DEBUG)
-
-# SETUP DATABASE
-sc = SC()
-if sc.dict['DBConnection']['type'] == 'sqlite' or testing is True:
-    engine = create_engine('sqlite:///%s' % os.path.join(directory, db_name))
-elif sc.dict['DBConnection']['type'] == 'mysql':
-    try:
-        db_str = 'mysql://{}:{}@{}/pycast'.format(sc.dict['DBConnection']['username'],
-                                                         sc.dict['DBConnection']['password'],
-                                                         sc.dict['DBConnection']['server'])
-        
-    except Exception:
-        # db doesn't exist yet, let's create it
-        server_str = 'mysql://{}:{}@{}'.format(sc.dict['DBConnection']['username'],
-                                                      sc.dict['DBConnection']['password'],
-                                                      sc.dict['DBConnection']['server'])
-        engine = create_engine(server_str)
-        engine.execute("CREATE DATABASE pycast")
-
-    finally:
-        # try to get that connection going again
-        engine = create_engine(db_str, pool_recycle=3600)
-        engine.execute('USE pycast')
-
-# if we're testing, we want to drop all existing database info to test
-# from scratch
-if testing is True:
-    drop_sql = metadata.drop_all(engine)
-
-# create database schema that doesn't exist
-db_sql = metadata.create_all(engine, checkfirst=True)
-
-############# Check for required DB migrations #############
 def db_migration(engine):
+    '''
+    Check for required database migrations
+    '''
     from db_migrations import migrations
     from util import SC
     sc = SC()
@@ -1032,19 +991,70 @@ def db_migration(engine):
     sc.save_dict()
     return engine, Session
 
-engine, Session = db_migration(engine)
+def db_init():
+    # SETUP DATABASE
+    sc = SC()
+    # name the database, but switch to a test database if run from test.py
+    db_name = sc.dict['DBConnection']['database'] + '.db'
+    testing = False
+    insp = inspect_mod.stack()
+    if 'tests' in str(insp):
+        db_name = 'test.db'
+        testing = True
 
-# create scadmin if there are no other users
-session = Session()
-us = session.query(User).filter(User.user_type.like('admin')).all()
-if not us:
-    u = User()
-    u.username = 'scadmin'
-    u.password = generate_password_hash('scadmin', method='pbkdf2:sha512')
-    u.user_type = 'ADMIN'
-    u.updated = time.time()
-    u.updated_by = 'shakecast'
-    session.add(u)
-    session.commit()
-Session.remove()
+    if sc.dict['DBConnection']['type'] == 'sqlite' or testing is True:
+        engine = create_engine('sqlite:///%s' % os.path.join(directory, db_name))
+    elif sc.dict['DBConnection']['type'] == 'mysql':
+        try:
+            db_str = 'mysql://{}:{}@{}/{}'.format(sc.dict['DBConnection']['username'],
+                                                            sc.dict['DBConnection']['password'],
+                                                            sc.dict['DBConnection']['server'],
+                                                            sc.dict['DBConnection']['database'])
+            
+        except Exception:
+            # db doesn't exist yet, let's create it
+            server_str = 'mysql://{}:{}@{}'.format(sc.dict['DBConnection']['username'],
+                                                        sc.dict['DBConnection']['password'],
+                                                        sc.dict['DBConnection']['server'])
+            engine = create_engine(server_str)
+            engine.execute('CREATE DATABASE {}'.format(sc.dict['DBConnection']['database']))
 
+        finally:
+            # try to get that connection going again
+            engine = create_engine(db_str, pool_recycle=3600)
+            engine.execute('USE {}'.format(sc.dict['DBConnection']['database']))
+
+    # if we're testing, we want to drop all existing database info to test
+    # from scratch
+    if testing is True:
+        metadata.drop_all(engine)
+
+    # create database schema that doesn't exist
+    try:
+        metadata.create_all(engine, checkfirst=True)
+    except:
+        # another service  might be initializing the db,
+        # wait a sec for it to be done occurs during
+        # docker init
+        time.sleep(5)
+        metadata.create_all(engine, checkfirst=True)
+
+    engine, Session = db_migration(engine)
+
+    # create scadmin if there are no other users
+    session = Session()
+    us = session.query(User).filter(User.user_type.like('admin')).all()
+    if not us:
+        u = User()
+        u.username = 'scadmin'
+        u.password = generate_password_hash('scadmin', method='pbkdf2:sha512')
+        u.user_type = 'ADMIN'
+        u.updated = time.time()
+        u.updated_by = 'shakecast'
+        session.add(u)
+        session.commit()
+    Session.remove()
+
+    return engine, Session
+
+engine, Session = db_init()

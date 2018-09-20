@@ -94,8 +94,16 @@ class SC(object):
         self.json = ''
         self.conf_file_location = ''
         self.map_key = ''
-    
-        self.load()
+        
+        conf_dir = self.get_conf_dir()
+        self.conf_file_location = os.path.join(conf_dir, 'sc.json')
+
+        try:
+            self.load()
+        except:
+            # unable to load, try to generate a config file
+            self.generate()
+            self.load()
     
     def load(self):
         """
@@ -104,10 +112,6 @@ class SC(object):
         Returns:
             None
         """
-        
-        conf_dir = self.get_conf_dir()
-        self.conf_file_location = os.path.join(conf_dir, 'sc.json')
-            
         conf_file = open(self.conf_file_location, 'r')
         conf_str = conf_file.read()
         self.json = conf_str
@@ -208,6 +212,84 @@ class SC(object):
                  os.path.join(conf_dir, 'sc.json'))
         self.load()
 
+    def generate(self):
+        self.dict = {
+            'Logging': {
+                'level': 'info'
+            }, 
+            'web_port': 80, 
+            'DBConnection': {
+                'username': '',
+                'retry_interval': 0, 
+                'server': 'localhost', 
+                'retry_count': 0, 
+                'password': '', 
+                'type': 'sqlite',
+                'database': 'shakecast'
+            }, 
+            'Notification': {
+                'default_template_new_event': 'default_ne.json', 
+                'default_template_inspection': 'default_insp.json', 
+                'default_template_pdf': 'default_pdf.json'
+            }, 
+            'SMTP': {
+                'username': '', 
+                'from': '', 
+                'envelope_from': '', 
+                'server': 'smtp.gmail.com', 
+                'security': 'TLS', 
+                'password': '', 
+                'port': 587
+            }, 
+            'Server': {
+                'update': {
+                    'json_url': 'https://raw.githubusercontent.com/usgs/shakecast/master/update.json', 
+                    'db_version': 0, 
+                    'update_version': '4.0.3', 
+                    'software_version': '4.0.3', 
+                    'admin_notified': False
+                }, 
+                'DNS': 'https://localhost', 
+                'name': 'ShakeCast'
+            }, 
+            'map_key': 'pk.eyJ1IjoiZHNsb3NreSIsImEiOiJjaXR1aHJnY3EwMDFoMnRxZWVtcm9laWJmIn0.1C3GE0kHPGOpbVV9kTxBlQ', 
+            'host': 'localhost', 
+            'extensions': [], 
+            'Proxy': {
+                'username': '', 
+                'use': False, 
+                'password': '', 
+                'port': 0, 
+                'server': ''
+            }, 
+            'Services': {
+                'use_geo_json': True, 
+                'ignore_nets': 'at,pt', 
+                'new_eq_mag_cutoff': 3, 
+                'keep_eq_for': 60, 
+                'check_new_int': 3, 
+                'nighttime': 18, 
+                'eq_pref_products': [
+                    'grid.xml', 
+                    'stationlist.xml', 
+                    'intensity.jpg', 
+                    'ii_overlay.png'
+                ], 
+                'night_eq_mag_cutoff': 0, 
+                'geo_json_web': 'https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/2.5_{}.geojson', 
+                'eq_req_products': [
+                    'grid.xml', 
+                    'intensity.jpg'
+                ], 
+                'morning': 9, 
+                'archive_mag': 5, 
+                'geo_json_int': 60
+            }, 
+            'timezone': 0, 
+            'port': 1981
+        }
+
+        self.save_dict()
 
 class Clock(object):
     '''
