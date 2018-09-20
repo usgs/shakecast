@@ -8,9 +8,11 @@ services:
     networks:
       - sc-network
     volumes:
-      - "/data/test2/db:/usr/local/shakecast/sc/db"
-      - "/data/test2/eq_data:/usr/local/shakecast/sc/data"
-      - "/data/test2/tmp:/usr/local/shakecast/sc/tmp"
+      - "/data/pycast/db:/usr/local/shakecast/sc/db"
+      - "/data/pycast/eq_data:/usr/local/shakecast/sc/data"
+      - "/data/pycast/tmp:/usr/local/shakecast/sc/tmp"
+      - "/data/pycast/conf:/usr/local/shakecast/sc/conf"
+      - "/data/pycast/templates:/usr/local/shakecast/sc/templates"
   
   web-server:
     build:
@@ -21,9 +23,11 @@ services:
     networks:
       - sc-network
     volumes:
-      - "/data/test2/db:/usr/local/shakecast/sc/db"
-      - "/data/test2/eq_data:/usr/local/shakecast/sc/data"
-      - "/data/test2/tmp:/usr/local/shakecast/sc/tmp"
+      - "/data/pycast/db:/usr/local/shakecast/sc/db"
+      - "/data/pycast/eq_data:/usr/local/shakecast/sc/data"
+      - "/data/pycast/tmp:/usr/local/shakecast/sc/tmp"
+      - "/data/pycast/conf:/usr/local/shakecast/sc/conf"
+      - "/data/pycast/templates:/usr/local/shakecast/sc/templates"
 
 networks:
   sc-network:

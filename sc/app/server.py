@@ -9,6 +9,7 @@ from newthread import NewThread
 from task import Task
 import functions as f
 from util import *
+from startup import startup
 import logging
 
 split_sc_dir = sc_dir().split(os.sep)
@@ -507,6 +508,7 @@ class Server(object):
 
 if __name__ == '__main__':
     logging.info('start')
+    startup()
     sc_server = Server()
     # start shakecast
     sc_server.start_shakecast()

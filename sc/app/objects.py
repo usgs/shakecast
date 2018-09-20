@@ -1226,8 +1226,6 @@ class SoftwareUpdater(object):
         merge_dicts(new_dict, sc.dict)
         sc.dict = new_dict
         sc.save_dict()
-        
-
 
     def condense_files(self, update_list):
         files = {}
