@@ -13,4 +13,4 @@ def docker_init():
     docker_templates = os.path.join(dir_, 'backups', 'templates')
     templates = os.path.join(dir_, 'templates')
 
-    os.system('mv {}/* {}'.format(docker_templates, templates))
+    os.system('cp -r {}/* {}'.format(docker_templates, templates))

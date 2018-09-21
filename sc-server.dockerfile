@@ -8,7 +8,7 @@ RUN curl https://bootstrap.pypa.io/get-pip.py | python
 RUN pip install -r requirements.txt
 
 RUN mkdir sc/backups
-RUN mv sc/templates sc/backups/
+RUN cp -r sc/templates sc/backups/
 
 ENV SC_DOCKER 1
 
