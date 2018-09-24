@@ -15,7 +15,7 @@
                                 {% if web is sameas false %}
                                     <img style="border-radius:50%;max-height:100%;max-width:100%;" src="cid:sc_logo{{ shakemap.shakecast_id }}">
                                 {% else %}
-                                    <img style="border-radius:50%;max-height:100%;max-width:100%;" src="/assets/{{ config.logo }}">
+                                    <img style="border-radius:50%;max-height:100%;max-width:100%;" src="assets/{{ config.logo }}">
                                 {% endif %}
                             </div>
                         </td>
@@ -81,7 +81,7 @@
                 {% if web is sameas false %}
                     <img src="cid:shakemap{{ shakemap.shakecast_id }}">
                 {% else %}
-                    <img src="/api/shakemaps/{{ shakemap.shakemap_id }}/shakemap">
+                    <img src="api/shakemaps/{{ shakemap.shakemap_id }}/shakemap">
                 {% endif %}
             </td>
         </tr>

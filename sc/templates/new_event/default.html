@@ -15,7 +15,7 @@
                                 {% if web is sameas false %}
                                     <img style="border-radius:50%;max-height:100%;max-width:100%;" src="cid:sc_logo_{{ notification.shakecast_id }}">
                                 {% else %}
-                                    <img style="border-radius:50%;max-height:100%;max-width:100%;" src="/assets/{{ config.logo }}">
+                                    <img style="border-radius:50%;max-height:100%;max-width:100%;" src="assets/{{ config.logo }}">
                                 {% endif %}
                             </div>
                         </td>
@@ -75,7 +75,7 @@
                                 {% if web is sameas false %}
                                     <img src="cid:gmap{{ loop.index0 }}_{{ notification.shakecast_id }}">
                                 {% else %}
-                                    <img src="/api/events/{{ event.event_id }}/image">
+                                    <img src="api/events/{{ event.event_id }}/image">
                                 {% endif %}
                             </td>
                             <td style="border: 2px solid #444444;padding: 5px;">{{ event.event_id }}</td>
