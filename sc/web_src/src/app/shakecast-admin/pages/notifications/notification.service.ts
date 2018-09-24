@@ -51,7 +51,7 @@ export class NotificationHTMLService {
     }
 
     newTemplate(name: string) {
-        this._http.get('/admin/new-template/' + name)
+        this._http.get('admin/new-template/' + name)
             .subscribe((result: any) => {
                 if (result === true) {
                     this.notService.success('Template Created', 'Created ' + name + ' template');
