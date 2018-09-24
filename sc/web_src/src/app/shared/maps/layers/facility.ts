@@ -271,7 +271,7 @@ class FacilityLayer extends Layer {
 let fLayer = new FacilityLayer('Facility', 'facility', layerGenerator);
 
 fLayer.url = (event) => {
-    return '/api/shakemaps/' + event.event_id + '/facilities';
+    return 'api/shakemaps/' + event.event_id + '/facilities';
 }
 
 export let facilityLayer = fLayer;

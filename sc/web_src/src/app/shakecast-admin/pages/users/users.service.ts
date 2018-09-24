@@ -29,7 +29,7 @@ export class UsersService {
         this.loadingData.next(true)
         let params = new URLSearchParams();
         params.set('filter', JSON.stringify(filter))
-        this._http.get('/api/users', {search: params})
+        this._http.get('api/users', {search: params})
             .map((result: Response) => result.json())
             .subscribe((result: any) => {
                 this.userData.next(result);
@@ -39,7 +39,7 @@ export class UsersService {
     }
 
     getCurrentUser() {
-        this._http.get('/api/users/current')
+        this._http.get('api/users/current')
             .map((result: Response) => result.json())
             .subscribe((result: any) => {
                 this.userData.next([result]);
@@ -59,7 +59,7 @@ export class UsersService {
         let headers = new Headers();
         this.notService.success('User Info', 'Saving your changes...');
         headers.append('Content-Type', 'application/json');
-        this._http.post('/api/users', 
+        this._http.post('api/users', 
                         JSON.stringify({users: users}),
                         {headers}
         )
@@ -76,7 +76,7 @@ export class UsersService {
         let params = new URLSearchParams();
         params.set('inventory', JSON.stringify(users))
         params.set('inventory_type', 'user')
-        this._http.delete('/api/delete/inventory', {search: params})
+        this._http.delete('api/delete/inventory', {search: params})
             .map((result: Response) => result.json())
             .subscribe((result: any) => {
                 this.getData();

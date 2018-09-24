@@ -17,7 +17,7 @@ export class ConfigService {
 
     getConfigs() {
         this.loadingData.next(true)
-        this.http.get('/admin/api/configs')
+        this.http.get('admin/api/configs')
             .subscribe((result: any) => {
                 this.configs.next(result);
                 this.loadingData.next(false)
@@ -25,7 +25,7 @@ export class ConfigService {
     }
 
     saveConfigs(newConfigs: any) {
-        this.http.post('/admin/api/configs', 
+        this.http.post('admin/api/configs', 
                         {configs: newConfigs}
         ).subscribe((result: any) => {
             this.notService.success('Success!', 'New Configurations Saved');
@@ -34,7 +34,7 @@ export class ConfigService {
 
     systemTest() {
         this.notService.success('System Test', 'System test starting...');
-        this.http.get('/admin/system-test')
+        this.http.get('admin/system-test')
             .subscribe((result: boolean) => {
                 if (!result) {
                     this.notService.error('System Test Failed', 'Unable to reach the ShakeCast server')

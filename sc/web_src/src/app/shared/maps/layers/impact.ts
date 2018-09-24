@@ -171,7 +171,7 @@ function layerGenerator(event, facData) {
 let fLayer = new Layer('Facility Shaking', 'impact', layerGenerator);
 
 fLayer.url = (event) => {
-    return '/api/shakemaps/' + event.event_id + '/impact';
+    return 'api/shakemaps/' + event.event_id + '/impact';
 }
 
 export let impactLayer = fLayer;

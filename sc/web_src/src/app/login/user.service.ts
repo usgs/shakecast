@@ -25,22 +25,22 @@ export class UserService {
   constructor(private _http: HttpClient,
               private router: Router) {}
 
-  
+
   login(username: string, password: string) {
-    return this._http.post('/api/login', {username: username,
-                                         password: password},{})
+    return this._http.post('api/login', {username: username,
+                                         password: password}, {});
   }
 
    logout() {
-    this._http.get('/logout')
+    this._http.get('logout')
       .subscribe(resp => {
-        this.loggedIn = false
-        this.router.navigate(['/login'])
+        this.loggedIn = false;
+        this.router.navigate(['/login']);
     });
   }
 
   checkLoggedIn() {
-    return this._http.get('/logged_in')
+    return this._http.get('logged_in');
   }
 
   private handleError (error: any) {

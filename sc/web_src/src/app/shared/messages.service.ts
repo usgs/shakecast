@@ -11,7 +11,7 @@ export class MessagesService {
                 private notService: NotificationsService) {}
 
     getMessages() {
-        this._http.get('/api/messages')
+        this._http.get('api/messages')
             .subscribe((result: any) => {
                 this.messages.next(result);
             });

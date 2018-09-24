@@ -24,7 +24,7 @@ import { ScreenDimmerService } from '../../shared/screen-dimmer/screen-dimmer.se
     ]
 })
 export class UploadComponent implements OnInit, OnDestroy{
-    public uploader:FileUploader = new FileUploader({url: '/admin/upload/'});
+    public uploader:FileUploader = new FileUploader({url: 'admin/upload/'});
     public hasBaseDropZoneOver:boolean = false;
     public hasAnotherDropZoneOver:boolean = false;
     public show: string = 'no';
