@@ -12,14 +12,14 @@ export class UpdateService {
                 private notService: NotificationsService) {}
 
     getData() {
-        this._http.get('/api/software-update')
+        this._http.get('api/software-update')
             .subscribe((result: any) => {
                 this.info.next(result);
             });
     }
 
     updateShakecast() {
-        this._http.post('/api/software-update', {})
+        this._http.post('api/software-update', {})
             .pipe(
                 map((result: Response) => result.json())
             )

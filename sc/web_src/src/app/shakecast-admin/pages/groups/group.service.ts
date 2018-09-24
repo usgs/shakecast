@@ -32,7 +32,7 @@ export class GroupService {
         this.loadingData.next(true)
         let params = new HttpParams();
         params = params.set('filter', JSON.stringify(filter))
-        this._http.get('/api/groups', { params })
+        this._http.get('api/groups', { params })
             .subscribe((result: any) => {
                 if (filter['user']) {
                     this.userGroupData.next(result)
@@ -64,7 +64,7 @@ export class GroupService {
         let params = new HttpParams();
         params = params.append('inventory', JSON.stringify(group))
         params = params.append('inventory_type', 'group')
-        this._http.delete('/api/delete/inventory', { params })
+        this._http.delete('api/delete/inventory', { params })
             .subscribe((result: any) => {
                 this.getData();
                 this.loadingData.next(false)

@@ -50,7 +50,7 @@ export class FacilityService {
 
         this.loadingService.add('Facilities');
         let params = new HttpParams().set('filter', JSON.stringify(filter))
-        this.sub = this._http.get('/api/facility-data', {params: params})
+        this.sub = this._http.get('api/facility-data', {params: params})
             .subscribe((result: any) => {
                 this.selectedFacs = [];
                 this.facilityData.next(result.data);
@@ -63,14 +63,14 @@ export class FacilityService {
 
     updateData(filter: any = {}) {
         let params = new HttpParams().set('filter', JSON.stringify(filter))
-        this._http.get('/api/facility-data', {params: params})
+        this._http.get('api/facility-data', {params: params})
             .subscribe((result: any) => {
                 this.facilityDataUpdate.next(result.data);
             })
     }
 
     getImpactSummary(event_id: string) {
-        this.sub = this._http.get('/api/shakemaps/' + event_id + '/impact-summary')
+        this.sub = this._http.get('api/shakemaps/' + event_id + '/impact-summary')
             .subscribe((result: any) => {
                 this.impactSummary.next(result);
 
@@ -83,7 +83,7 @@ export class FacilityService {
         /* Get shaking history for a specific event and facility */
 
         this.loadingService.add('Facilities');
-        this._http.get('/api/facility-shaking/' + facility['shakecast_id'] + '/' + event['event_id'])
+        this._http.get('api/facility-shaking/' + facility['shakecast_id'] + '/' + event['event_id'])
             .subscribe((result: any) => {
                 if (result.data) {
                     this.facilityShaking.next(result.data);
@@ -106,7 +106,7 @@ export class FacilityService {
         this.notService.success('Deleting Facilities', 'Deleting ' + this.selectedFacs.length + ' facilities')
         let params = new HttpParams().set('inventory', JSON.stringify(this.selectedFacs))
         params = params.append('inventory_type', 'facility')
-        this._http.delete('/api/delete/inventory', {params: params})
+        this._http.delete('api/delete/inventory', {params: params})
             .subscribe((result: any) => {
                 this.getData();
             })

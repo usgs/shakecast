@@ -23,7 +23,7 @@ export class NotificationHTMLService {
                     config: any = null) {
         this.loadingData.next(true);
         let params = new HttpParams().set('config', JSON.stringify(config));
-        this._http.get('/api/notification-html/' + notType + '/' + name, {params: params, responseType: 'text'})
+        this._http.get('api/notification-html/' + notType + '/' + name, {params: params, responseType: 'text'})
             .subscribe((result: any) => {
                 this.name.next(name);
                 this.notification.next(result);
@@ -34,7 +34,7 @@ export class NotificationHTMLService {
     getConfigs(notType: string,
                 name: string) {
         this.loadingData.next(true);
-        this._http.get('/api/notification-config/' + notType + '/' + name)
+        this._http.get('api/notification-config/' + notType + '/' + name)
             .subscribe((result: any) => {
                 this.config.next(result);
                 this.loadingData.next(false);
@@ -43,7 +43,7 @@ export class NotificationHTMLService {
 
     getTemplateNames() {
         this.loadingData.next(true);
-        this._http.get('/api/template-names')
+        this._http.get('api/template-names')
             .subscribe((result: any) => {
                 this.tempNames.next(result);
                 this.loadingData.next(false);
@@ -65,7 +65,7 @@ export class NotificationHTMLService {
 
     saveConfigs(name: string,
                 config: any) {
-        this._http.post('/api/notification-config/' + config.type + '/' + name, 
+        this._http.post('api/notification-config/' + config.type + '/' + name, 
                             {config: config}
         ).subscribe((result: any) => {
             this.notService.success('Success!', 'New Configurations Saved');
@@ -73,7 +73,7 @@ export class NotificationHTMLService {
     }
 
     getImageNames() {
-        this._http.get('/api/images/')
+        this._http.get('api/images/')
             .subscribe((result: any) => {
                 this.imageNames.next(result);
             });

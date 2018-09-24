@@ -27,7 +27,7 @@ export class UserService {
 
   
   login(username: string, password: string) {
-    return this._http.post('/api/login', {username: username,
+    return this._http.post('api/login', {username: username,
                                          password: password},{})
   }
 

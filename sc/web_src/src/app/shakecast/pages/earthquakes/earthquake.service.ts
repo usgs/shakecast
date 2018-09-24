@@ -75,7 +75,7 @@ export class EarthquakeService {
         }
 
         const params = new HttpParams().set('filter', JSON.stringify(filter));
-        this._http.get('/api/earthquake-data', {params: params})
+        this._http.get('api/earthquake-data', {params: params})
             .subscribe(
                 (result: any) => {
                     this.earthquakeData.next(result.data);
@@ -158,28 +158,28 @@ export class EarthquakeService {
 
     downloadScenario(scenario_id: string, scenario:boolean = false) {
         let params = new HttpParams().set('scenario', JSON.stringify(scenario))
-        this._http.get('/api/scenario-download/' + scenario_id, {params: params})
+        this._http.get('api/scenario-download/' + scenario_id, {params: params})
             .subscribe((result: any) => {
                 this.toastService.success('Scenario: ' + scenario_id, 'Download starting...')
             });
     }
 
     deleteScenario(scenario_id: string) {
-        this._http.delete('/api/scenario-delete/' + scenario_id)
+        this._http.delete('api/scenario-delete/' + scenario_id)
             .subscribe((result: any) => {
                 this.toastService.success('Delete Scenario: ' + scenario_id, 'Deleting... This may take a moment')
             });
     }
 
     runScenario(scenario_id: string) {
-        this._http.post('/api/scenario-run/' + scenario_id, {})
+        this._http.post('api/scenario-run/' + scenario_id, {})
             .subscribe((result: any) => {
                 this.toastService.success('Run Scenario: ' + scenario_id, 'Running Scenario... This may take a moment')
             });
     }
 
     getFacilityData(facility: any) {
-        this._http.get('/api/earthquake-data/facility/' + facility['shakecast_id'])
+        this._http.get('api/earthquake-data/facility/' + facility['shakecast_id'])
             .subscribe((result: any) => {
                 this.earthquakeData.next(result.data);
                 this.current = result.data

@@ -106,7 +106,7 @@ export class MapService {
     }
 
     getMapKey() {
-        return this._http.get('/api/map-key')
+        return this._http.get('api/map-key')
     }
 }
 
