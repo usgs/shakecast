@@ -7,6 +7,7 @@ def startup():
 def docker_init():
     sc = SC()
     sc.dict['host'] = 'sc-server'
+    sc.dict['web_port'] = 5000
     sc.save_dict()
 
     dir_ = sc_dir()
