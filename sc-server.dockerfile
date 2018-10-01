@@ -1,10 +1,12 @@
-FROM usgs/centos
+FROM shakecast/centos
 
 COPY . /usr/local/shakecast
 
 WORKDIR /usr/local/shakecast
 
-RUN curl https://bootstrap.pypa.io/get-pip.py | python;pip install -r requirements.txt;mkdir sc/backups;cp -r sc/templates sc/backups/
+RUN mkdir sc/backups; \
+    cp -r sc/templates sc/backups/; \
+    cp -r sc/conf sc/backups/
 
 ENV SC_DOCKER 1
 
