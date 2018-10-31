@@ -11,6 +11,7 @@ import time
 from orm import *
 from objects import *
 from util import *
+from productgrabber import ProductGrabber
 
 modules_dir = os.path.join(sc_dir() + 'modules')
 if modules_dir not in sys.path:
