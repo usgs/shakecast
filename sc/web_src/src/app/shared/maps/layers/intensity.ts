@@ -1,24 +1,25 @@
 import * as L from 'leaflet';
 import { Layer } from './layer';
 
-function generateLayer(event, product=null) {
-    if (product == null) {
+function generateLayer(event, product = null) {
+    // Grab the latest map
+    const latestProduct = product[0];
+
+    if (!latestProduct) {
         return null;
     }
 
-    // Grab the latest map
-    product = product[0];
-    var imageUrl = 'api/shakemaps/' + product.shakemap_id + '/overlay';
-    var imageBounds = [[product.lat_min, product.lon_min], [product.lat_max, product.lon_max]];
+    const imageUrl = 'api/shakemaps/' + latestProduct.shakemap_id + '/overlay';
+    const imageBounds = [[latestProduct.lat_min, latestProduct.lon_min], [latestProduct.lat_max, latestProduct.lon_max]];
 
-    const overlayLayer = L.imageOverlay(imageUrl, 
-                    imageBounds, 
-                    {opacity: .4})
+    const overlayLayer = L.imageOverlay(imageUrl,
+                    imageBounds,
+                    {opacity: .4});
 
     return overlayLayer;
 }
 
-let intLayer = new Layer('Intensity Map',
+const intLayer = new Layer('Intensity Map',
                             'intensity_map',
                             generateLayer);
 

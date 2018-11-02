@@ -1,7 +1,7 @@
 import * as L from 'leaflet';
 import { Layer } from './layer';
 
-var epicIcon = L.icon({
+const epicIcon = L.icon({
     iconUrl: 'assets/epicenter.png',
     iconSize:     [40, 40], // size of the icon
     iconAnchor:   [20, 20], // point of the icon which will correspond to marker's location
@@ -11,7 +11,7 @@ var epicIcon = L.icon({
 function createEventMarker(event: any) {
     const marker: any = L.marker([event.lat, event.lon], {icon: epicIcon});
 
-    const popup = `<table class="my-table">    
+    const popup = `<table class="my-table">
                             <tr>
                                 <th>ID:</th>
                                 <td>` + event.event_id + `</td>
@@ -40,17 +40,17 @@ function createEventMarker(event: any) {
 
     marker.bindPopup(popup);
 
-    return marker
+    return marker;
 }
 
-function layerGenerator(event, product=null) {
+function layerGenerator(event, product = null) {
         return createEventMarker(event);
 }
 
-let epiLayer = new Layer('Epicenter',
+const epiLayer = new Layer('Epicenter',
                             'epicenter',
                             layerGenerator);
 
 epiLayer.legendImages = ['assets/legend-epicenter.png'];
 
-export let epicenterLayer = epiLayer;
+export const epicenterLayer = epiLayer;

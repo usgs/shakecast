@@ -9,8 +9,7 @@
     <earthquake-list></earthquake-list>
 </panels-right-panel>
 
-<panels-left-panel
-        [control]="false">
+<panels-left-panel *ngIf="searchShown" [open]="true">
     <scenario-search></scenario-search>
 </panels-left-panel>
 

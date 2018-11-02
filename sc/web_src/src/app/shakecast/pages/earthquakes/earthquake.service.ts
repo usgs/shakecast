@@ -46,13 +46,12 @@ export class EarthquakeService {
     public plotting = new BehaviorSubject(null);
     public showScenarioSearch = new BehaviorSubject(null);
     public selectEvent = new BehaviorSubject(null);
-    public current: any = []
-    
+    public current: any = [];
     public filter: filter = {
         shakemap: true,
         facilities: false,
         timeframe: 'week'
-    }
+    };
 
     public configs: any = {clearOnPlot: 'all'};
     public selected: Earthquake = null;
@@ -71,7 +70,7 @@ export class EarthquakeService {
             this.facService.sub.unsubscribe();
         }
         if (this.filter) {
-            this.filter = filter
+            this.filter = filter;
         }
 
         const params = new HttpParams().set('filter', JSON.stringify(filter));
@@ -95,56 +94,59 @@ export class EarthquakeService {
             this.facService.sub.unsubscribe();
         }
 
-        this.loadingService.add('Scenarios')
-        var scenario = filter['scenariosOnly'];
+        this.loadingService.add('Scenarios');
+        const scenario = filter['scenariosOnly'];
 
-        var usgs: string;
+        let usgs: string;
         if (scenario) {
             usgs = 'https://earthquake.usgs.gov/fdsnws/scenario/1/query';
         } else {
             usgs = 'https://earthquake.usgs.gov/fdsnws/event/1/query';
         }
 
-        //delete filter['scenariosOnly'];
-
-        filter['format'] = 'geojson'
+        filter['format'] = 'geojson';
 
         // get params from filter
         if (!filter['starttime']) {
-            filter['starttime'] = '2005-01-01'
+            filter['starttime'] = '2005-01-01';
         }
 
         if (!filter['minmagnitude']) {
-            filter['minmagnitude'] = '6'
+            filter['minmagnitude'] = '6';
         }
 
         // only get events with shakemaps
         if (!scenario) {
-            filter['producttype'] = 'shakemap'
+            filter['producttype'] = 'shakemap';
         } else {
-            filter['producttype'] = 'shakemap-scenario'
+            filter['producttype'] = 'shakemap-scenario';
         }
 
+        // get bounds
+        filter['maxlatitude'] = this.mapService.bounds.getNorth();
+        filter['minlatitude'] = this.mapService.bounds.getSouth();
+        filter['maxlongitude'] = this.mapService.bounds.getEast();
+        filter['minlongitude'] = this.mapService.bounds.getWest();
 
         let params = new HttpParams();
-        for (var search in filter) {
-            if ((search != 'scenariosOnly') && (filter[search])) {
-                params = params.set(search, filter[search])
+        for (const search in filter) {
+            if ((search !== 'scenariosOnly') && (filter[search])) {
+                params = params.set(search, filter[search]);
             }
         }
-        
+
         this._http.get(usgs, {params: params})
             .subscribe((result: any) => {
                 // convert from geoJSON to sc conventions
-                var data: any[] = []
+                let data: any[] = [];
                 if (result.hasOwnProperty('features')) {
                     data = this.geoJsonToSc(result['features']);
                 } else {
                     data = this.geoJsonToSc([result]);
                 }
 
-                for (var eq in data) {
-                    data[eq]['scenario'] = scenario;
+                for (const eq of data) {
+                    eq['scenario'] = scenario;
                 }
 
                 this.earthquakeData.next(data);
@@ -157,7 +159,7 @@ export class EarthquakeService {
     }
 
     downloadScenario(scenario_id: string, scenario:boolean = false) {
-        let params = new HttpParams().set('scenario', JSON.stringify(scenario))
+        const params = new HttpParams().set('scenario', JSON.stringify(scenario))
         this._http.get('api/scenario-download/' + scenario_id, {params: params})
             .subscribe((result: any) => {
                 this.toastService.success('Scenario: ' + scenario_id, 'Download starting...')
@@ -182,41 +184,39 @@ export class EarthquakeService {
         this._http.get('api/earthquake-data/facility/' + facility['shakecast_id'])
             .subscribe((result: any) => {
                 this.earthquakeData.next(result.data);
-                this.current = result.data
-            })
+                this.current = result.data;
+            });
     }
-    
+
     plotEq(eq: Earthquake) {
         if (eq) {
             this.selectEvent.next(eq);
-        }
-        else {
+        } else {
             this.clearData();
         }
     }
 
     geoJsonToSc(geoJson: any[]) {
-        /* 
+        /*
         Change field names from geoJson events to what we would
-        Expect from the ShakeCast database 
+        Expect from the ShakeCast database
         */
 
-        for (var eq_id in geoJson) {
-            var eq = geoJson[eq_id]
-            geoJson[eq_id]['shakecast_id'] = null;
-            geoJson[eq_id]['event_id'] = eq['id'];
-            geoJson[eq_id]['magnitude'] = eq['properties']['mag']
-            geoJson[eq_id]['lon'] = eq['geometry']['coordinates'][0]
-            geoJson[eq_id]['lat'] = eq['geometry']['coordinates'][1]
-            geoJson[eq_id]['depth'] = eq['geometry']['coordinates'][2]
-            geoJson[eq_id]['place'] = eq['properties']['place']
+        for (const eq of geoJson) {
+            eq['shakecast_id'] = null;
+            eq['event_id'] = eq['id'];
+            eq['magnitude'] = eq['properties']['mag'];
+            eq['lon'] = eq['geometry']['coordinates'][0];
+            eq['lat'] = eq['geometry']['coordinates'][1];
+            eq['depth'] = eq['geometry']['coordinates'][2];
+            eq['place'] = eq['properties']['place'];
 
             if (eq['properties']['types'].indexOf('shakemap') > 0) {
-                geoJson[eq_id]['shakemaps'] = 1
+                eq['shakemaps'] = 1;
             } else {
-                geoJson[eq_id]['shakemaps'] = 0
-            }       
+                eq['shakemaps'] = 0;
+            }
         }
-        return geoJson
+        return geoJson;
     }
 }
