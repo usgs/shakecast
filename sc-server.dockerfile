@@ -10,4 +10,6 @@ RUN mkdir sc/backups; \
 
 ENV SC_DOCKER 1
 
+EXPOSE 1981
+
 ENTRYPOINT ["python", "sc/app/server.py", "start"]
