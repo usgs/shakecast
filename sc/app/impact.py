@@ -101,9 +101,9 @@ def compute_aebm_impact(facility, shaking_point, shakemap):
     demand,
     lower_demand,
     upper_demand,
-    median_intersections,
-    lower_intersections,
-    upper_intersections) = aebm.run(
+    median_intersection,
+    lower_intersection,
+    upper_intersection) = aebm.run(
         capacity,
         hazard,
         shaking_point.get('URAT', .5),
@@ -121,7 +121,7 @@ def compute_aebm_impact(facility, shaking_point, shakemap):
     fac_shake.set_alert_level()
     fac_shake.set_weight()
 
-    pp = median_intersections[0]
+    pp = median_intersection
     rounded_period = round(pp['period'] * 100) / 100
     fac_shake['aebm'] = ('PSA ({} sec): {}'
             .format(rounded_period, pp['acc']))
@@ -130,9 +130,9 @@ def compute_aebm_impact(facility, shaking_point, shakemap):
         'demand': demand,
         'lower_demand': lower_demand,
         'upper_demand': upper_demand,
-        'median_intersections': median_intersections,
-        'lower_intersections':  lower_intersections,
-        'upper_intersections': upper_intersections
+        'median_intersections': median_intersection,
+        'lower_intersections':  lower_intersection,
+        'upper_intersections': upper_intersection
     }
 
     return fac_shake
