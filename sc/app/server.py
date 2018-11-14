@@ -9,6 +9,7 @@ from newthread import NewThread
 from task import Task
 import functions as f
 from util import *
+from startup import startup
 import logging
 
 split_sc_dir = sc_dir().split(os.sep)
@@ -55,6 +56,12 @@ class Server(object):
         self.last_task = 0
         self.db_open = True
         self.messages = {}
+        self.debug_only = [
+            'fast_geo_json',
+            'check_new',
+            'check_for_updates',
+            'record_messages'
+        ]
         
         self.log_file = os.path.join(sc_dir(),
                                     'logs',
@@ -192,9 +199,7 @@ class Server(object):
                     
                     self.last_task = time.time()
                     
-                    if ((task.name != 'fast_geo_json' and 
-                                    task.name != 'check_new' and 
-                                    task.name != 'check_for_updates')):
+                    if ((task.name not in self.debug_only)):
                         logging.info('Running task: {}'.format(task.name))
                     else:
                         logging.debug('Running task: {}'.format(task.name))
@@ -241,17 +246,14 @@ class Server(object):
                 conn.send(str(self.messages))
                 conn.close()
 
-            self.record_messages()
             task.status = 'complete'
 
         else:
             task.status = 'stopped'
 
         # only log results from failed normal tasks or abnormal tasks
-        if ((task.name != 'fast_geo_json' and 
-                task.name != 'check_new' and 
-                task.name != 'check_for_updates') or 
-                    task.error or task.output['error']):
+        if ((task.name not in self.debug_only) or
+                    task.error or (task.output and task.output['error'])):
             logging.info('{}: \n\tSTATUS: {} \n\tOUTPUT: {}'.format(task.name,
                                                                     task.status,
                                                                     task.output))
@@ -377,6 +379,17 @@ class Server(object):
                 self.queue += [task]
                 message += "Looking for updates"
 
+            if 'record_messages' not in task_names:
+                task = Task()
+                task.id = int(time.time() * 1000000)
+                task.func = self.record_messages
+                task.loop = True
+                task.interval = 5
+                task.name = 'record_messages'
+
+                self.queue += [task]
+                message += "Recording messages"
+
             status = 'finished'
         except:
             status = 'failed'
@@ -465,7 +478,7 @@ class Server(object):
 
 
     def record_messages(self):
-        fname = os.path.join(sc_dir(), 'app', 'server-messages.json')
+        fname = os.path.join(sc_dir(), 'tmp', 'server-messages.json')
 
         # initialize file if it doesn't exist
         if not os.path.isfile(fname):
@@ -491,10 +504,11 @@ class Server(object):
         keep_messages_str = json.dumps(keep_messages, indent=4)
         with open(fname, 'w') as file_:
             file_.write(keep_messages_str)
-        
-            
+
+
 if __name__ == '__main__':
     logging.info('start')
+    startup()
     sc_server = Server()
     # start shakecast
     sc_server.start_shakecast()

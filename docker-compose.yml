@@ -1,0 +1,42 @@
+version: '3'
+
+services:
+  sc-server:
+    build:
+      context: .
+      dockerfile: sc-server.dockerfile
+    ports:
+      - "1981:1981"
+    networks:
+      - sc-network
+    volumes:
+      - "/data/pycast/db:/usr/local/shakecast/sc/db"
+      - "/data/pycast/eq_data:/usr/local/shakecast/sc/data"
+      - "/data/pycast/tmp:/usr/local/shakecast/sc/tmp"
+      - "/data/pycast/conf:/usr/local/shakecast/sc/conf"
+      - "/data/pycast/templates:/usr/local/shakecast/sc/templates"
+      - "/data/pycast/logs:/usr/local/shakecast/sc/logs"
+    user: "${DOCKER_UID}:${DOCKER_GID}"
+    restart: unless-stopped
+  
+  web-server:
+    build:
+      context: .
+      dockerfile: web-server.dockerfile
+    ports:
+      - "80:5000"
+    networks:
+      - sc-network
+    volumes:
+      - "/data/pycast/db:/usr/local/shakecast/sc/db"
+      - "/data/pycast/eq_data:/usr/local/shakecast/sc/data"
+      - "/data/pycast/tmp:/usr/local/shakecast/sc/tmp"
+      - "/data/pycast/conf:/usr/local/shakecast/sc/conf"
+      - "/data/pycast/templates:/usr/local/shakecast/sc/templates"
+      - "/data/pycast/logs:/usr/local/shakecast/sc/logs"
+    user: "${DOCKER_UID}:${DOCKER_GID}"
+    restart: unless-stopped
+
+networks:
+  sc-network:
+    driver: bridge

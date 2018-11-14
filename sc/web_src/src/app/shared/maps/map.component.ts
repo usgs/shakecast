@@ -1,9 +1,9 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Subscription } from 'rxjs';
 
-import { MapService } from './map.service'
+import { MapService } from './map.service';
 import { EarthquakeService } from '../../shakecast/pages/earthquakes/earthquake.service';
-import { LayerService } from './layers/layer.service'
+import { LayerService } from './layers/layer.service';
 import { FacilityService } from '../../shakecast-admin/pages/facilities/facility.service';
 
 import * as L from 'leaflet';
@@ -14,14 +14,13 @@ import 'leaflet-makimarkers';
     selector: 'my-map',
     templateUrl: './map.component.html',
     styleUrls: ['./map.component.css']
-}) 
-
+})
 export class MapComponent implements OnInit, OnDestroy {
     public center: any = {};
-    private mapKey: string = null
+    private mapKey: string = null;
 
     private onMap: any[] = [];
-    private subscriptions = new Subscription()
+    private subscriptions = new Subscription();
     private map: any;
 
     private layerControl = L.control;
@@ -56,8 +55,10 @@ export class MapComponent implements OnInit, OnDestroy {
             scrollWheelZoom: false
         }).setView([51.505, -0.09], 8);
 
+        this.map.on('moveend', this.updateBounds);
+
         // create basemap
-        let basemap = this.getBasemap();
+        const basemap = this.getBasemap();
         basemap.addTo(this.map);
 
         this.layerControl = L.control.layers({'Basemap': basemap}, null).addTo(this.map);
@@ -96,6 +97,8 @@ export class MapComponent implements OnInit, OnDestroy {
         this.subscriptions.add(this.mapService.clearMapNotify.subscribe(notification => {
             this.clearLayers();
         }));
+
+        this.updateBounds();
     }
 
     onEvent(event) {
@@ -121,11 +124,11 @@ export class MapComponent implements OnInit, OnDestroy {
         this.onMap.push(layer);
 
         // align map
-        const layers = []
-        for (let layer in this.onMap) {
-            layers.push(this.onMap[layer].layer)
-        }
-        let group = L.featureGroup(layers);
+        const layers = this.onMap.map((layer_) => {
+            return layer_.layer;
+        });
+
+        const group = L.featureGroup(layers);
 
         try {
             this.map.fitBounds(group.getBounds().pad(0.1));
@@ -134,22 +137,26 @@ export class MapComponent implements OnInit, OnDestroy {
         }
 
         // open epicenter popup
-        if (layer.id == 'epicenter') {
+        if (layer.id === 'epicenter') {
             layer.layer.openPopup();
         }
 
         // add to map control
         this.layerControl.addOverlay(layer.layer, layer.name);
+        this.updateBounds();
     }
 
     getBasemap() {
-        return L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token=' + this.mapKey, {
-			maxZoom: 18,
-			attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, ' +
-				'<a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ' +
-				'Imagery � <a href="http://mapbox.com">Mapbox</a>',
-			id: 'mapbox.streets'
-		})
+        return L.tileLayer(
+            'https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token=' + this.mapKey,
+            {
+                maxZoom: 18,
+                attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, ' +
+                '<a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ' +
+                'Imagery � <a href="http://mapbox.com">Mapbox</a>',
+                id: 'mapbox.streets'
+            }
+        );
     }
 
     clearLayers() {
@@ -174,6 +181,14 @@ export class MapComponent implements OnInit, OnDestroy {
     ngOnDestroy() {
         this.layerService.clear();
         this.subscriptions.unsubscribe();
+    }
+
+    updateBounds() {
+        if (!this.map) {
+            return;
+        }
+
+        this.mapService.bounds = this.map.getBounds();
     }
 
 }

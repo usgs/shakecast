@@ -12,12 +12,13 @@ import { map } from 'rxjs/operators';
 
 @Injectable()
 export class MapService {
-    public eqMarker = new ReplaySubject(1)
-    public facMarkers = new ReplaySubject(1)
-    public groupPoly = new ReplaySubject(1)
-    public removeFacMarkers = new ReplaySubject(1)
-    public clearMapNotify = new ReplaySubject(1)
-    public center = new ReplaySubject(1)
+    public bounds = null;
+    public eqMarker = new ReplaySubject(1);
+    public facMarkers = new ReplaySubject(1);
+    public groupPoly = new ReplaySubject(1);
+    public removeFacMarkers = new ReplaySubject(1);
+    public clearMapNotify = new ReplaySubject(1);
+    public center = new ReplaySubject(1);
     
     constructor(private _http: HttpClient) {}
 
@@ -106,7 +107,7 @@ export class MapService {
     }
 
     getMapKey() {
-        return this._http.get('/api/map-key')
+        return this._http.get('api/map-key')
     }
 }
 

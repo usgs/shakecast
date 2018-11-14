@@ -50,44 +50,6 @@
         </div>
     </div>
 
-
-
-    <div class="section">
-        <h2 class="title">Bounding Location</h2>
-        <div class="item">
-            <table class="pos-table">
-                <tr>
-                    <th>Minimum Latitude:</th>
-                    <td><select [(ngModel)]="filter.minlatitude">
-                    <option *ngFor="let lat of lats" [value]="lat">{{ lat }}</option>
-                </select></td>
-                </tr>
-                
-                <tr>
-                    <th>Maximum Latitude:</th>
-                    <td><select [(ngModel)]="filter.maxlatitude">
-                    <option *ngFor="let lat of lats" [value]="lat">{{ lat }}</option>
-                </select></td>
-                </tr>
-                
-                <tr>
-                    <th>Minimum Longitude:</th>
-                    <td><select [(ngModel)]="filter.minlongitude">
-                    <option *ngFor="let lon of lons" [value]="lon">{{ lon }}</option>
-                </select></td>
-                </tr>
-                
-                <tr>
-                    <th>Maximum Longitude:</th>
-                    <td><select [(ngModel)]="filter.maxlongitude">
-                    <option *ngFor="let lon of lons" [value]="lon">{{ lon }}</option>
-                </select></td>
-                </tr>
-            
-            </table>
-        </div>
-    </div>
-
     <h2 class="search button" (click)="eqService.getDataFromWeb(filter)">Search</h2>
 
 </div>

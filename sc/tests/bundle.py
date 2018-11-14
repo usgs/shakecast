@@ -889,6 +889,7 @@ class TestFull(unittest.TestCase):
             json_feed = json.loads(file_.read())
         pg = ProductGrabber()
         pg.json_feed = json_feed
+        pg.read_json_feed()
         new_events, log_message = pg.get_new_events()
         new_shakemaps, log_message = pg.get_new_shakemaps()
 

@@ -7,7 +7,7 @@ import { trigger,
          style,
          animate,
          transition } from '@angular/animations';
-import { Subscription } from 'rxjs/subscription';
+import { Subscription } from 'rxjs/Subscription';
 
 import { Router } from '@angular/router';
 import { EarthquakeService, Earthquake } from './earthquake.service';

@@ -1,6 +1,6 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { FacilityService } from '../../../shakecast-admin/pages/facilities/facility.service';
-import { Subscription } from 'rxjs/subscription';
+import { Subscription } from 'rxjs/Subscription';
 
 @Component({
   selector: 'shared-facility-count',

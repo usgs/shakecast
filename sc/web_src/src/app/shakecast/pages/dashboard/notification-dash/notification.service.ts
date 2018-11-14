@@ -17,7 +17,7 @@ export class NotificationService {
 
     getNotifications(eq: any) {
         if (eq) {
-            this._http.get('/api/notifications/' + eq.event_id + '/')
+            this._http.get('api/notifications/' + eq.event_id + '/')
                 .subscribe((result: any) => {
                     this.notifications.next(result);
                 });
