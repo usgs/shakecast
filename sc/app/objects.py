@@ -391,7 +391,7 @@ class NotificationBuilder(object):
         for fs in facility_shaking:
             fac_details['all'] += 1
             fac_details[fs.alert_level] += 1
-        
+
         return template.render(shakemap=shakemap,
                                facility_shaking=facility_shaking,
                                fac_details=fac_details,
@@ -419,12 +419,21 @@ class NotificationBuilder(object):
             fac_details['all'] += 1
             fac_details[fs.alert_level] += 1
 
+        colors = {
+            'red': 'FF0000',
+            'orange': 'FFA500',
+            'yellow': 'FFFF00',
+            'green': '50C878',
+            'gray': 'AAAAAA'
+        }
+
         return template.render(shakemap=shakemap,
                                facility_shaking=facility_shaking,
                                fac_details=fac_details,
                                sc=SC(),
                                config=config,
-                               web=web)
+                               web=web,
+                               colors=colors)
 
     @staticmethod
     def build_update_html(update_info=None):
