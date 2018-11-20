@@ -137,8 +137,6 @@ def compute_aebm_impact(facility, shaking_point, shakemap):
 
     return fac_shake
 
-
-
 def compute_hazus_impact(facility, shaking_point, shakemap):
     '''
     Computing damage calculations with a single metric
@@ -209,7 +207,6 @@ def get_psa_spectrum(shaking):
 def degreesToRadians(degrees):
   return degrees * math.pi / 180
 
-
 def get_gps_distance(lat1, lon1, lat2, lon2):
   earthRadiusKm = 6371
   latDiff = degreesToRadians(lat2-lat1)
@@ -224,3 +221,59 @@ def get_gps_distance(lat1, lon1, lat2, lon2):
 
   c = 2 * math.atan2(math.sqrt(a), math.sqrt(1-a))
   return earthRadiusKm * c
+
+def get_event_impact(shakemap):
+    impact_sum = {'gray': 0,
+             'green': 0,
+             'yellow': 0,
+             'orange': 0,
+             'red': 0}
+
+    fac_shaking = shakemap.facility_shaking
+    
+    for s in fac_shaking:
+        # record number of facs at each alert level
+        impact_sum[s.alert_level] += 1
+
+    return impact_sum
+
+def make_inspection_priority(facility=None,
+                          shakemap=None,
+                          grid=None):
+    '''
+    Determines inspection priorities for the input facility
+    
+    Args:
+        facility (Facility): A facility to be processed
+        shakemap (ShakeMap): The ShakeMap which is associated with the shaking
+        grid (ShakeMapGrid): The grid built from the ShakeMap
+        notifications (list): List of Notification objects which should be associated with the shaking
+        
+    Returns:
+        dict: A dictionary with all the parameters needed to make a FacilityShaking entry in the database
+        ::
+            fac_shaking = {'gray': PDF Value,
+                           'green': PDF Value,
+                           'yellow': PDF Value,
+                           'orange': PDF Value,
+                           'red': PDF Value,
+                           'metric': which metric is used to compute PDF values,
+                           'facility_id': shakecast_id of the facility that's shaking,
+                           'shakemap_id': shakecast_id of the associated ShakeMap,
+                           '_shakecast_id': ID for the FacilityShaking entry that will be created,
+                           'update': bool -- True if an ID already exists for this FacilityShaking,
+                           'alert_level': string ('gray', 'green', 'yellow' ...),
+                           'weight': float that determines inspection priority,
+                           'notifications': list of notifications associated with this shaking}
+    '''
+    
+    # get the largest shaking level affecting the facility
+    shaking_point = grid.max_shaking(facility=facility)
+    if shaking_point is None:
+        return False
+    
+    # use the max shaking value to create fragility curves for the
+    # damage states
+    fac_shaking = facility.make_alert_level(shaking_point=shaking_point,
+                                            shakemap=shakemap)
+    return fac_shaking
