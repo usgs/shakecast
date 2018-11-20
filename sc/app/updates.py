@@ -5,7 +5,7 @@ import json
 import os
 
 from notifications import Mailer, NotificationBuilder, TemplateManager
-from objects import URLOpener
+from urlopener import URLOpener
 from orm import dbconnect, User
 from util import merge_dicts, root_dir, SC, sc_dir
 

@@ -13,7 +13,8 @@ import time
 
 from grid import ShakeMapGrid
 from orm import *
-from objects import URLOpener, AlchemyEncoder
+from objects import AlchemyEncoder
+from urlopener import URLOpener
 from notifications import NotificationBuilder, TemplateManager, Mailer
 from updates import SoftwareUpdater
 from util import *
