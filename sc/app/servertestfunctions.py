@@ -1,6 +1,6 @@
 from email.mime.text import MIMEText
 
-from productgrabber import ProductGrabber
+from productdownload import ProductGrabber
 from notifications import Mailer
 from orm import dbconnect, User
 
