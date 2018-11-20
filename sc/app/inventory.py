@@ -1,17 +1,21 @@
 import json
+import os
 import re
+import shutil
 import time
 from werkzeug.security import generate_password_hash
 import xml.etree.ElementTree as ET
 import xmltodict
 
 from orm import (
+    dbconnect,
+    Event,
     Facility,
     FacilityShaking,
     Group,
     GroupSpecification,
     User,
-    dbconnect
+    ShakeMap
 )
 
 def import_master_xml(xml_file='', _user=None):
@@ -620,3 +624,40 @@ def get_facility_info(group_name='', shakemap_id='', session=None):
 
     return f_dict
 
+@dbconnect
+def delete_scenario(shakemap_id=None, session=None):
+    scenario = (session.query(ShakeMap).filter(ShakeMap.shakemap_id == shakemap_id)
+                                            .first())
+    event = (session.query(Event).filter(Event.event_id == shakemap_id).first())
+
+    if scenario is not None:
+        # remove files
+        remove_dir(scenario.directory_name)
+        session.delete(scenario)
+
+    if event is not None:
+        # remove files
+        remove_dir(event.directory_name)
+        session.delete(event)
+
+    session.commit()
+
+    return {'status': 'finished',
+            'message': {'message': 'Successfully removed scenario: ' + shakemap_id, 
+                        'title': 'Scenario Deleted',
+                        'success': True},
+            'log': 'Deleted scenario: ' + shakemap_id}
+
+def remove_dir(directory_name):
+    '''
+    Remove any directory given its path -- used when deleting earthquake
+    data and testing
+    '''
+
+    if os.path.exists(directory_name):
+        shutil.rmtree(directory_name)
+        success = True
+    else:
+        success = False
+    
+    return success

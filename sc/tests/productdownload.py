@@ -1,6 +1,6 @@
 import unittest
 
-from sc.app.productdownload import ProductGrabber, geo_json
+from sc.app.productdownload import *
 
 class TestProductGrabber(unittest.TestCase):
     '''
@@ -26,3 +26,11 @@ class TestProductGrabber(unittest.TestCase):
     def test_geoJSON(self):
         result = geo_json('hour')
         self.assertEqual(result['error'], '')
+
+class TestScenarioDownload(unittest.TestCase):
+    def test_downloadBadScenario(self):
+        result = download_scenario('not_a_real_scenario')
+        self.assertEqual('failed', result['status'])
+
+    def test_downloadActualScenario(self):
+        download_scenario('bssc2014903_m6p09_se', scenario=True)

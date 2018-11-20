@@ -1,6 +1,7 @@
+import json
 import unittest
 
-from sc.app.jsonencoders import sql_to_obj
+from sc.app.jsonencoders import *
 from sc.app.orm import Base, User
 
 class TestSqlAlchemyToObj(unittest.TestCase):
@@ -41,4 +42,17 @@ class TestSqlAlchemyToObj(unittest.TestCase):
 
         self.assertFalse(isinstance(converted['user1'], Base))
         self.assertFalse(isinstance(converted['user2'], Base))
+
+class TestAlchemyEncoder(unittest.TestCase):
+
+    def test_AlchemyEncoder(self):
+        '''
+        Runs through a default use case of the Alchemy Encoder
+        '''
+        user = User()
+        user.username = 'TEST'
+        user_json = json.dumps(user, cls=AlchemyEncoder)
+
+        user_dict = json.loads(user_json)
+        self.assertTrue(user_dict['username'] == 'TEST')
 
