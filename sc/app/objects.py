@@ -47,57 +47,20 @@ class URLOpener(object):
             ctx = None
 
         try:
-            sc = SC()
-            if sc.use_proxy is True:
-                if sc.proxy_username and sc.proxy_password:
-                    proxy = urllib2.ProxyHandler({
-                                'http': "http://{0}:{1}@{2}:{3}".format(sc.proxy_username,
-                                                                        sc.proxy_password,
-                                                                        sc.proxy_server,
-                                                                        sc.proxy_port),
-                                'https': "http://{0}:{1}@{2}:{3}".format(sc.proxy_username,
-                                                                         sc.proxy_password,
-                                                                         sc.proxy_server,
-                                                                         sc.proxy_port)})
-                    auth = urllib2.HTTPBasicAuthHandler()
-                    opener = urllib2.build_opener(proxy, auth, urllib2.HTTPHandler)
-                    
-                    if ctx is not None:
-                        url_obj = opener.open(url, timeout=60, context=ctx)
-                    else:
-                        url_obj = opener.open(url, timeout=60)
-
-                    url_read = url_obj.read()
-                    url_obj.close()
-                    return url_read
-                    
-                else:
-                    proxy = urllib2.ProxyHandler({'http': 'http://{0}:{1}'.format(sc.proxy_server,sc.proxy_port),
-                                                  'https': 'https://{0}:{1}'.format(sc.proxy_server,sc.proxy_port)})
-                    opener = urllib2.build_opener(proxy)
-                    
-                    if ctx is not None:
-                        url_obj = opener.open(url, timeout=60, context=ctx)
-                    else:
-                        url_obj = opener.open(url, timeout=60)
-                        
-                    url_read = url_obj.read()
-                    url_obj.close()
-                    return url_read
-    
+            if ctx is not None:
+                url_obj = urllib2.urlopen(url, timeout=60, context=ctx)
             else:
-                if ctx is not None:
-                    url_obj = urllib2.urlopen(url, timeout=60, context=ctx)
-                else:
-                    url_obj = urllib2.urlopen(url, timeout=60)
+                url_obj = urllib2.urlopen(url, timeout=60)
                     
-                url_read = url_obj.read()
-                url_obj.close()
-                return url_read
+            url_read = url_obj.read()
+            url_obj.close()
+
         except Exception as e:
             raise Exception('URLOpener Error({}: {}, url: {})'.format(type(e),
                                                              e,
                                                              url))
+
+        return url_read
 
   
 class AlchemyEncoder(json.JSONEncoder):
