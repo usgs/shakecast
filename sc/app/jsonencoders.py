@@ -1,5 +1,7 @@
 import json
 import types
+import os
+
 from orm import DeclarativeMeta
 
 class AlchemyEncoder(json.JSONEncoder):
@@ -32,3 +34,30 @@ class AlchemyEncoder(json.JSONEncoder):
             return fields
     
         return json.JSONEncoder.default(self, obj)
+
+def makeImpactGeoJSONDict(facility, fac_shaking):
+    jsonDict = {
+        'type': 'Feature',
+        'geometry': {
+            'type': 'Point',
+            'coordinates': [facility.lon, facility.lat]
+        }
+    }
+
+    jsonDict['properties'] = {
+        'facility_name': facility.name,
+        'description': facility.description,
+        'facility_type': facility.facility_type,
+        'lat': facility.lat,
+        'lon': facility.lon,
+        'shaking': fac_shaking
+    }
+
+    return jsonDict
+
+def saveImpactGeoJson(shakemap, geoJSON):
+    json_file = os.path.join(shakemap.directory_name,
+                                'impact.json')
+
+    with open(json_file, 'w') as f_:
+        f_.write(json.dumps(geoJSON))
