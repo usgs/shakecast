@@ -32,11 +32,11 @@ from werkzeug.security import generate_password_hash, check_password_hash
 
 from app.functions import determine_xml, get_facility_info, sql_to_obj
 from app.notifications import NotificationBuilder, TemplateManager
-from app.objects import AlchemyEncoder, Clock
+from app.jsonencoders import AlchemyEncoder
 from app.orm import *
 from ui import UI
 from app.updates import SoftwareUpdater
-from app.util import SC
+from app.util import SC, Clock
 
 # setup logging
 import logging

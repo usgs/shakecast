@@ -1,22 +1,7 @@
-"""
-This program holds all the non-database objects used necessary for
-ShakeCast to run. These objects are used in the functions.py program
-"""
 import json
-import os
-import sys
-import time
-import xml.etree.ElementTree as ET
-from util import *
-import socks
 import types
-from orm import Event, ShakeMap, Product, User, DeclarativeMeta, Group, SC, dbconnect
-from notifications import NotificationBuilder, Mailer
-modules_dir = os.path.join(sc_dir(), 'modules')
-if modules_dir not in sys.path:
-    sys.path += [modules_dir]
+from orm import DeclarativeMeta
 
-  
 class AlchemyEncoder(json.JSONEncoder):
     '''
     Use as the JSON encoder when passing SQLAlchemy objects to the 
