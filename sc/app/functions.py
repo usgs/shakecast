@@ -8,7 +8,7 @@ import shutil
 import sys
 import time
 
-from grid import ShakeMapGrid
+from grid import create_grid
 from inventory import (
     import_facility_dicts,
     import_facility_xml,
@@ -740,21 +740,6 @@ def run_scenario(shakemap_id=None, session=None):
                         'success': error is None},
             'error': error,
             'log': 'Run scenario: ' + shakemap_id}
-      
-def create_grid(shakemap=None):
-    """
-    Creates a grid object from a specific ShakeMap
-    
-    Args:
-        shakemap (ShakeMap): A ShakeMap with a grid.xml to laod
-    
-    Returns:
-        ShakeMapGrid: With loaded grid.xml
-    """
-    grid = ShakeMapGrid()
-    grid.load(shakemap.directory_name + get_delim() + 'grid.xml')
-    
-    return grid
 
 def get_event_impact(shakemap):
     impact_sum = {'gray': 0,

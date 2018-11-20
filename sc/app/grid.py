@@ -1,3 +1,4 @@
+import os
 import xml.etree.ElementTree as ET
 
 class Point(dict):
@@ -223,3 +224,20 @@ class ShakeMapGrid(object):
         Point.sort_by = metric
         shaking = sorted(shaking)
         return shaking[-1]
+
+
+def create_grid(shakemap=None):
+    """
+    Creates a grid object from a specific ShakeMap
+    
+    Args:
+        shakemap (ShakeMap): A ShakeMap with a grid.xml to laod
+    
+    Returns:
+        ShakeMapGrid: With loaded grid.xml
+    """
+    grid = ShakeMapGrid()
+    grid_location = os.path.join(shakemap.directory_name, 'grid.xml')
+    grid.load(grid_location)
+    
+    return grid
