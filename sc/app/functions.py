@@ -12,6 +12,7 @@ import shutil
 import time
 from orm import *
 from objects import *
+from notifications import NotificationBuilder, TemplateManager, Mailer
 from util import *
 from productgrabber import ProductGrabber
 
