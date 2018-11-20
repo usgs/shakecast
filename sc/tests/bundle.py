@@ -5,11 +5,13 @@ from email.mime.text import MIMEText
 import time
 from sc.app.functions import *
 from sc.app.inventory import add_facs_to_groups, add_users_to_groups
+from sc.app.productdownload import geo_json
 from sc.app.task import Task
 from util import create_fac, create_group, create_user
 from .impact import *
 from .jsonencoders import *
 from .inventory import *
+from .productdownload import *
 from .updates import *
 
 class SystemTest(unittest.TestCase):
@@ -174,31 +176,6 @@ class TestDBConnet(unittest.TestCase):
         for user in users:
             self.assertTrue(isinstance(user, Base))
 
-
-class TestProductGrabber(unittest.TestCase):
-    '''
-    Test functions for the ProductGrabber class
-    '''
-    def test_initProductGrabber(self):
-        '''
-        Test product grabber initialization
-        Fails when there is an error in the code
-        '''
-        pg = ProductGrabber()
-        
-    def test_getJSONFeed(self):
-        '''
-        Tests access to the USGS JSON feed. Failure points to error in
-        code, lack of internet access, or a down USGS server
-        '''
-        pg = ProductGrabber()
-        pg.get_json_feed()
-        
-        self.assertNotEqual(pg.json_feed, '')
-
-    def test_geoJSON(self):
-        result = geo_json('hour')
-        self.assertEqual(result['error'], '')
 
 class TestMailer(unittest.TestCase):
     '''

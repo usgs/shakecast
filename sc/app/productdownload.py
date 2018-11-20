@@ -493,3 +493,69 @@ def grab_from_directory(directory, session=None):
         'log': log,
         'message': 'File scrape for new earthquakes'
     }
+
+
+def geo_json(query_period='day'):
+    '''Get earthquake feed from USGS and check for new earthquakes
+    Gets new earthquakes from the JSON feed and logs them in the DB
+    Returns:
+        dict: a dictionary that contains information about the function run
+        ::
+            data = {'status': either 'finished' or 'failed',
+                    'message': message to be returned to the UI,
+                    'log': message to be added to ShakeCast log
+                           and should contain info on error}
+    '''
+    error = ''
+    log_message = ''
+    status = 'failed'
+    new_events = []
+    new_shakemaps = []
+    try:
+        pg = ProductGrabber()
+        pg.query_period = query_period
+        pg.get_json_feed()
+        new_events, log_message = pg.get_new_events()
+        new_shakemaps, log_message = pg.get_new_shakemaps()
+        pg.make_heartbeat()
+        status = 'finished'
+    except Exception as e:
+        log_message = 'Failed to download ShakeMap products: Check internet connection and firewall settings'
+        error = str(e)
+        log_message += '\nError: %s' % error
+    
+    log_message = pg.log
+    
+    data = {'status': status,
+            'message': 'Check for new earthquakes',
+            'log': log_message,
+            'error': error,
+            'new_events': len(new_events),
+            'new_shakemaps': len(new_shakemaps)}
+    
+    return data
+
+def download_scenario(shakemap_id=None, scenario=False):
+    message = ''
+    success = False
+    try:
+        if shakemap_id is not None:
+            pg = ProductGrabber()
+            success = pg.get_scenario(shakemap_id=shakemap_id, scenario=scenario)
+            if success is True:
+                status = 'finished'
+                message = 'Downloaded scenario: ' + shakemap_id
+                success = True
+            else:
+                status = 'failed'
+                message = 'Failed scenario download: ' + shakemap_id
+                success = False
+    except Exception as e:
+        message = str(e)
+
+    return {'status': status,
+            'message': {'from': 'scenario_download',
+                        'title': 'Scenario Download Finished',
+                        'message': message,
+                        'success': success},
+            'log': 'Download scenario: ' + shakemap_id + ', ' + status}
