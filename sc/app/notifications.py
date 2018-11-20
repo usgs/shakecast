@@ -86,11 +86,11 @@ class NotificationBuilder(object):
             fac_details[fs.alert_level] += 1
 
         colors = {
-            'red': 'FF0000',
-            'orange': 'FFA500',
-            'yellow': 'FFFF00',
-            'green': '50C878',
-            'gray': 'AAAAAA'
+            'red': '#FF0000',
+            'orange': '#FFA500',
+            'yellow': '#FFFF00',
+            'green': '#50C878',
+            'gray': '#AAAAAA'
         }
 
         return template.render(shakemap=shakemap,

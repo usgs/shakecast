@@ -1,7 +1,7 @@
 from fpdf import FPDF, HTMLMixin
 import os
 
-from objects import NotificationBuilder
+from notifications import NotificationBuilder
 from orm import ShakeMap, Session
 
 class Pdf(FPDF, HTMLMixin):
