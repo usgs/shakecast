@@ -10,16 +10,15 @@ from email.mime.application import MIMEApplication
 import xmltodict
 import shutil
 import time
+
+from grid import ShakeMapGrid
 from orm import *
-from objects import *
+from objects import URLOpener, AlchemyEncoder
 from notifications import NotificationBuilder, TemplateManager, Mailer
 from updates import SoftwareUpdater
 from util import *
 from productgrabber import ProductGrabber
 
-modules_dir = os.path.join(sc_dir() + 'modules')
-if modules_dir not in sys.path:
-    sys.path += [modules_dir]
 from werkzeug.security import generate_password_hash
 
 

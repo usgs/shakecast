@@ -3,7 +3,8 @@ import json
 import os
 import time
 
-from objects import ShakeMapGrid, URLOpener
+from objects import URLOpener
+from grid import ShakeMapGrid
 from orm import Event, Group, Product, ShakeMap, dbconnect
 from util import SC
 
