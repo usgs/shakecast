@@ -1,7 +1,7 @@
 import math
 
 import shakecastaebm as aebm
-from util import lognorm_opt, lower_case_keys, non_null
+from util import lower_case_keys, non_null
 
 class ImpactInterface(dict):
     '''
@@ -236,6 +236,22 @@ def get_event_impact(shakemap):
         impact_sum[s.alert_level] += 1
 
     return impact_sum
+
+def lognorm_opt(med=0, spread=0, shaking=0):
+    '''
+    Lognormal calculation to determine probability of exceedance
+
+    Args:
+        med (float): Median value that might be exceeded
+        spread (float): Uncertainty in the median value
+        shaking (float): recorded shaking value
+
+    Returns:
+        float: probability of exceedance as a human readable percentage
+    '''
+
+    p_norm = (math.erf((shaking-med)/(math.sqrt(2) * spread)) + 1)/2
+    return p_norm * 100
 
 def make_inspection_priority(facility=None,
                           shakemap=None,

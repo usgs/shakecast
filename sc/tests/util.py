@@ -1,4 +1,5 @@
 from sc.app.orm import Facility, Group, GroupSpecification, User
+
 def create_fac(grid=None, fac_id='AUTO_GENERATED'):
     '''
     Create a facility that is inside of a grid with generic fragility

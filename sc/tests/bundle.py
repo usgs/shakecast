@@ -180,8 +180,7 @@ class TestDBConnet(unittest.TestCase):
         users = db_returnsSqlAList()
         for user in users:
             self.assertTrue(isinstance(user, Base))
-        
-        
+
 class TestSC(unittest.TestCase):
     '''
     Test the ShakeCast configuration object. Fails if code errors
@@ -235,7 +234,6 @@ class TestTemplateManager(unittest.TestCase):
 
         self.assertTrue(result)
 
-
 class TestClock(unittest.TestCase):
     '''
     Tests for the Clock object
@@ -257,7 +255,6 @@ class TestClock(unittest.TestCase):
     def test_fromTime(self):
         c = Clock()
         c.from_time(time.time())
-
 
 class TestTask(unittest.TestCase):
     '''
@@ -298,7 +295,6 @@ class TestTask(unittest.TestCase):
 
         self.assertTrue(t.next_run > time.time())
 
-        
 class TestFull(unittest.TestCase):
     '''
     Test the individual ShakeCast functions
@@ -606,7 +602,6 @@ class TestFull(unittest.TestCase):
             # fail the test with the accumulated exception message
             self.fail(fail_message)
     
-
 class TestSCConfig(unittest.TestCase):
     '''
     Tests for the sc configuration script that runs during CI
