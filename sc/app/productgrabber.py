@@ -64,6 +64,7 @@ class ProductGrabber(object):
         else:
             json_str = url_opener.open(self.json_feed_url)
         self.json_feed = json.loads(json_str)
+        self.read_json_feed()
 
     def read_json_feed(self):
         """
