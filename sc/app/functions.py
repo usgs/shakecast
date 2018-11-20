@@ -13,6 +13,7 @@ import time
 from orm import *
 from objects import *
 from notifications import NotificationBuilder, TemplateManager, Mailer
+from updates import SoftwareUpdater
 from util import *
 from productgrabber import ProductGrabber
 
