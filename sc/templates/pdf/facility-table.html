@@ -1,0 +1,39 @@
+
+<html>
+    <table>
+        <thead>
+            <tr>
+            {% for head in config.table_head %}
+                {% if head.use == true %}
+                    {% if head.val ==  "Facility Name"%}
+                        <th align="left" width="30%">{{ head.val }}</th>
+                    {% else %}
+                        <th align="left" width="20%">{{ head.val }}</th>
+                    {% endif %}
+                {% endif %}
+            {% endfor %}
+            </tr>
+        </thead>
+        
+        <tbody>
+        {% for fs in facility_shaking %}
+            <tr {% if loop.index % 2 == 0 %}bgcolor="#eeeeee"{% endif %}>
+            {% for head in config.table_head %}
+                {% if head.use == true %}
+                    {% if head.name == 'name' or head.name == 'facility_id' or head.name == 'facility_type' %}
+                        <td align="left">{{ fs.facility[head.name] }}</td>
+                    {% elif head.name == 'inspection_priority' %}
+                        <td bgcolor="{{ colors[fs.alert_level] }}">{{ fs.alert_level }}</td>
+                    {% elif head.name == 'shaking_value' %}
+                        <td>{{ fs[fs.metric.lower()] }}</td>
+                    {% else %}
+                        <td>{{ fs[head.name] }}</td>
+                    {% endif %}
+                {% endif %}
+            {% endfor %}
+            </tr>
+        {% endfor %}
+        </tbody>
+
+    </table>
+</html>
