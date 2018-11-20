@@ -26,8 +26,9 @@ import pdf
 from jsonencoders import AlchemyEncoder, makeImpactGeoJSONDict, saveImpactGeoJson
 from notifications import NotificationBuilder, TemplateManager, Mailer
 from productgrabber import ProductGrabber
+from servertestfunctions import system_test
 from urlopener import URLOpener
-from updates import SoftwareUpdater
+from updates import check_for_updates
 from util import *
 
 
@@ -753,32 +754,7 @@ def create_grid(shakemap=None):
     grid = ShakeMapGrid()
     grid.load(shakemap.directory_name + get_delim() + 'grid.xml')
     
-    return grid    
-
-def check_for_updates():
-    '''
-    Hits the USGS github for ShakeCast to determine if there are
-    updates. If there are new updates, the software updater will
-    email admin users to alert them
-    '''
-    status = ''
-    error = ''
-    update_required = None
-    try:
-        s = SoftwareUpdater()
-        update_required, notify, update_info = s.check_update()
-
-        if notify is True:
-            s.notify_admin(update_info=update_info)
-        status = 'finished'
-    except Exception as e:
-        error = str(e)
-        status = 'failed'
-
-    return {'status': status, 'message': update_required, 'error': error}
-    
-#######################################################################
-######################## Import Inventory Data ########################
+    return grid
 
 def get_event_impact(shakemap):
     impact_sum = {'gray': 0,
@@ -794,115 +770,3 @@ def get_event_impact(shakemap):
         impact_sum[s.alert_level] += 1
 
     return impact_sum
-
-
-
-
-#######################################################################
-########################## TEST FUNCTIONS #############################
-
-def url_test():
-    pg = ProductGrabber()
-    pg.get_json_feed()
-
-@dbconnect
-def db_test(session=None):
-    u = User()
-    u.username = 'SC_TEST_USER'
-    session.add(u)
-    session.commit()
-
-    session.delete(u)
-    session.commit()
-
-def smtp_test():
-    m = Mailer()
-    you = 'test@gmail.com'
-    msg = MIMEText('This email is a test of your ShakeCast SMTP server')
-    msg['Subject'] = 'ShakeCast SMTP TEST'
-    msg['From'] = m.me
-    msg['To'] = you
-    m.send(msg=msg, you=you)
-
-def system_test(add_tests=None):
-    tests = [{'name': 'Access to USGS web', 'test': url_test}, 
-             {'name': 'Database read/write', 'test': db_test},
-             {'name': 'Sending test email', 'test': smtp_test}]
-
-    # additional tests
-    if add_tests is not None:
-        tests += add_tests
-
-    results = ''
-    success_message = '{0}: Passed'
-    failure_message = '{0}: Failed (Error - {1})'
-    success = True
-    for test in tests:
-        try:
-            test['test']()
-            result = success_message.format(test['name'])
-        except Exception as e:
-            success = False
-            result = failure_message.format(test['name'], str(e))
-        
-        if results:
-            results += '\n{}'.format(result)
-        else:
-            results = result
-
-    Session.remove()
-
-    title = 'Tests Passed'
-    if success is False:
-        title = 'Some Tests Failed'
-    
-    data = {'status': 'finished',
-            'results': results,
-            'message': {'from': 'system_test',
-                        'title': title,
-                        'message': results,
-                        'success': success},
-            'log': 'System Test: ' + results}
-
-    return data
-
-def sql_to_obj(sql):
-    '''
-    Convert SQLAlchemy objects into dictionaries for use after
-    session closes
-    '''
-
-    if isinstance(sql, Base):
-        sql = sql.__dict__
-
-    if isinstance(sql, list):
-        obj = []
-
-        for item in sql:
-            if (isinstance(item, dict) or
-                    isinstance(item, list) or
-                    isinstance(item, Base)):
-                obj.append(sql_to_obj(item))
-
-    elif isinstance(sql, dict):
-        obj = {}
-
-        if sql.get('_sa_instance_state', False):
-            sql.pop('_sa_instance_state')
-
-        for key in sql.keys():
-            item = sql[key]
-            if isinstance(item, Base) or isinstance(item, dict):
-                item = sql_to_obj(item)
-            
-            elif isinstance(item, list):
-                for obj in item:
-                    if isinstance(obj, Base):
-                        item = sql_to_obj(item)
-            
-            obj[key] = item
-
-    else:
-        obj = sql
-
-    return obj

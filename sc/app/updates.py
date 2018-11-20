@@ -230,3 +230,25 @@ class SoftwareUpdater(object):
             return False
 
         return True
+
+def check_for_updates():
+    '''
+    Hits the USGS github for ShakeCast to determine if there are
+    updates. If there are new updates, the software updater will
+    email admin users to alert them
+    '''
+    status = ''
+    error = ''
+    update_required = None
+    try:
+        s = SoftwareUpdater()
+        update_required, notify, update_info = s.check_update()
+
+        if notify is True:
+            s.notify_admin(update_info=update_info)
+        status = 'finished'
+    except Exception as e:
+        error = str(e)
+        status = 'failed'
+
+    return {'status': status, 'message': update_required, 'error': error}

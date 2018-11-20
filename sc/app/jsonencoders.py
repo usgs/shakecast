@@ -2,7 +2,7 @@ import json
 import types
 import os
 
-from orm import DeclarativeMeta
+from orm import DeclarativeMeta, Base
 
 class AlchemyEncoder(json.JSONEncoder):
     '''
@@ -61,3 +61,44 @@ def saveImpactGeoJson(shakemap, geoJSON):
 
     with open(json_file, 'w') as f_:
         f_.write(json.dumps(geoJSON))
+
+def sql_to_obj(sql):
+    '''
+    Convert SQLAlchemy objects into dictionaries for use after
+    session closes
+    '''
+
+    if isinstance(sql, Base):
+        sql = sql.__dict__
+
+    if isinstance(sql, list):
+        obj = []
+
+        for item in sql:
+            if (isinstance(item, dict) or
+                    isinstance(item, list) or
+                    isinstance(item, Base)):
+                obj.append(sql_to_obj(item))
+
+    elif isinstance(sql, dict):
+        obj = {}
+
+        if sql.get('_sa_instance_state', False):
+            sql.pop('_sa_instance_state')
+
+        for key in sql.keys():
+            item = sql[key]
+            if isinstance(item, Base) or isinstance(item, dict):
+                item = sql_to_obj(item)
+            
+            elif isinstance(item, list):
+                for obj in item:
+                    if isinstance(obj, Base):
+                        item = sql_to_obj(item)
+            
+            obj[key] = item
+
+    else:
+        obj = sql
+
+    return obj

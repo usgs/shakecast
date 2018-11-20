@@ -30,13 +30,13 @@ import sys
 import time
 from werkzeug.security import generate_password_hash, check_password_hash
 
-from app.functions import determine_xml, get_facility_info, sql_to_obj
+from app.inventory import determine_xml, get_facility_info
+from app.jsonencoders import AlchemyEncoder, sql_to_obj
 from app.notifications import NotificationBuilder, TemplateManager
-from app.jsonencoders import AlchemyEncoder
 from app.orm import *
-from ui import UI
 from app.updates import SoftwareUpdater
 from app.util import SC, Clock
+from ui import UI
 
 # setup logging
 import logging

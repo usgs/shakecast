@@ -8,7 +8,9 @@ from sc.app.inventory import add_facs_to_groups, add_users_to_groups
 from sc.app.task import Task
 from util import create_fac, create_group, create_user
 from .impact import *
+from .jsonencoders import *
 from .inventory import *
+from .updates import *
 
 class SystemTest(unittest.TestCase):
     '''
@@ -171,45 +173,6 @@ class TestDBConnet(unittest.TestCase):
         users = db_returnsSqlAList()
         for user in users:
             self.assertTrue(isinstance(user, Base))
-
-class TestSqlAlchemyToObj(unittest.TestCase):
-    '''
-    SQLAlchemy to object encoder
-    '''
-
-    def test_convertsToObject(self):
-        u = User()
-        converted = sql_to_obj(u)
-
-        self.assertFalse(isinstance(converted, Base))
-
-    def test_convertsSqlAList(self):
-        u1 = User(
-            username = 'u1'
-        )
-        u2 = User(
-            username = 'u2'
-        )
-
-        converted = sql_to_obj([u1, u2])
-
-        for user in converted:
-            self.assertFalse(isinstance(user, Base))
-
-        self.assertEqual(converted[0]['username'], 'u1')
-        self.assertEqual(converted[1]['username'], 'u2')
-
-    def test_convertsSqlADict(self):
-        u1 = User()
-        u2 = User()
-
-        converted = sql_to_obj({
-            'user1': u1,
-            'user2': u2
-        })
-
-        self.assertFalse(isinstance(converted['user1'], Base))
-        self.assertFalse(isinstance(converted['user2'], Base))
 
 
 class TestProductGrabber(unittest.TestCase):
@@ -1033,70 +996,6 @@ class TestFull(unittest.TestCase):
             run_scenario(sm.shakemap_id)
 
         Session.remove()
-
-    def step16_NewUpdate(self):
-        s = SoftwareUpdater()
-        new = s.check_new_update('1.1.1', '1.0.1')
-        self.assertTrue(new)
-        new = s.check_new_update('1.1.2', '1.1.1')
-        self.assertTrue(new)
-        new = s.check_new_update('2.0.0', '1.1.1')
-        self.assertTrue(new)
-        new = s.check_new_update('1.1.1', '1.1.1')
-        self.assertFalse(new)
-        new = s.check_new_update('1.1.1b2', '1.1.1b1')
-        self.assertTrue(new)
-        new = s.check_new_update('1.1.1b2', '1.1.1b2')
-        self.assertFalse(new)
-        new = s.check_new_update('1.1.2b0', '1.1.1b2')
-        self.assertTrue(new)
-        new = s.check_new_update('1.1.2b2', '1.1.1b2')
-        self.assertTrue(new)
-        new = s.check_new_update('1.1.2b3', '1.1.1b2')
-        self.assertTrue(new)
-        new = s.check_new_update('1.1.1rc2', '1.1.1rc1')
-        self.assertTrue(new)
-        new = s.check_new_update('1.1.1rc2', '1.1.1rc2')
-        self.assertFalse(new)
-        new = s.check_new_update('1.1.2rc0', '1.1.1rc2')
-        self.assertTrue(new)
-        new = s.check_new_update('1.1.2rc2', '1.1.1rc2')
-        self.assertTrue(new)
-        new = s.check_new_update('1.1.2rc3', '1.1.1rc2')
-        self.assertTrue(new)
-        new = s.check_new_update('1.1.2', '1.1.1rc2')
-        self.assertTrue(new)
-        new = s.check_new_update('1.1.2rc1', '1.1.1')
-        self.assertFalse(new)
-        new = s.check_new_update('1.1.2b5', '1.1.2rc1')
-        self.assertFalse(new)
-        new = s.check_new_update('1.1.2rc1', '1.1.2b5')
-        self.assertTrue(new)
-
-    def step17_CheckUpdate(self):
-        s = SoftwareUpdater()
-        s.json_url = os.path.normpath(delim.join(['file://', 
-                                                    sc_dir(), 
-                                                    'tests',
-                                                    'data',
-                                                    'update_test.json']))
-        s.check_update(testing=True)
-    
-    def step18_Update(self):
-        s = SoftwareUpdater()
-        s.json_url = os.path.normpath(delim.join(['file://', 
-                                                    sc_dir(), 
-                                                    'tests',
-                                                    'data',
-                                                    'update_test.json']))
-        s.update(testing=True)
-
-    def step19_NotifyAdmin(self):
-        s = SoftwareUpdater()
-        s.notify_admin()
-
-    def step20_UpdateFunction(self):
-        check_for_updates()
 
     def step21_AlchemyEncoder(self):
         '''
