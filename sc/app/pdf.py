@@ -50,16 +50,3 @@ def save_pdf(pdf_string, file_name, directory):
     file_name_ = os.path.join(directory, file_name)
     with open(file_name_, 'wb') as file_:
         file_.write(pdf_string)
-
-
-
-if __name__ == '__main__':
-    session = Session()
-    sms = session.query(ShakeMap).all()
-    sms_w_facs = [sm for sm in sms if len(sm.facility_shaking) > 0]
-
-    sm = sms_w_facs[-1]
-    print sm.shakemap_id, sm.shakemap_version
-    pdf = generate_impact_pdf(sm, save=True)
-    
-
