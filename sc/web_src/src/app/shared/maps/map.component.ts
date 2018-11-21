@@ -52,10 +52,11 @@ export class MapComponent implements OnInit, OnDestroy {
 
     initMap() {
         this.map = L.map('map', {
-            scrollWheelZoom: false
+            scrollWheelZoom: false,
+            minZoom: 3
         }).setView([51.505, -0.09], 8);
 
-        this.map.on('moveend', this.updateBounds);
+        this.map.on('moveend', (event) => { this.updateBounds(event); });
 
         // create basemap
         const basemap = this.getBasemap();
@@ -97,8 +98,6 @@ export class MapComponent implements OnInit, OnDestroy {
         this.subscriptions.add(this.mapService.clearMapNotify.subscribe(notification => {
             this.clearLayers();
         }));
-
-        this.updateBounds();
     }
 
     onEvent(event) {
@@ -116,7 +115,7 @@ export class MapComponent implements OnInit, OnDestroy {
     }
 
     onLayer(layer) {
-        if ((layer.layer === null) || !layer.layer) {
+        if (!layer.layer || !this.map) {
             return;
         }
 
@@ -130,10 +129,8 @@ export class MapComponent implements OnInit, OnDestroy {
 
         const group = L.featureGroup(layers);
 
-        try {
+        if (layers.length > 2) {
             this.map.fitBounds(group.getBounds().pad(0.1));
-        } catch (e) {
-            this.error = e;
         }
 
         // open epicenter popup
@@ -143,7 +140,6 @@ export class MapComponent implements OnInit, OnDestroy {
 
         // add to map control
         this.layerControl.addOverlay(layer.layer, layer.name);
-        this.updateBounds();
     }
 
     getBasemap() {
@@ -183,12 +179,10 @@ export class MapComponent implements OnInit, OnDestroy {
         this.subscriptions.unsubscribe();
     }
 
-    updateBounds() {
-        if (!this.map) {
-            return;
+    updateBounds(event) {
+        if (this.mapService) {
+            this.mapService.bounds = event.target.getBounds();
         }
-
-        this.mapService.bounds = this.map.getBounds();
     }
 
 }

@@ -6,18 +6,17 @@ import { Layer } from './layer';
 import 'leaflet-makimarkers';
 import 'leaflet.markercluster';
 
-var myStyle = {
-    "color": "#000000",
-    "weight": 2,
-    "opacity": 1,
-    "fillOpacity": 1,
-    "fillColor": '#ffffff',
+const myStyle = {
+    'color': '#000000',
+    'weight': 2,
+    'opacity': 1,
+    'fillOpacity': 1,
+    'fillColor': '#ffffff',
     'radius': 8
 };
 
 function generatePopup(fac) {
     const selectShakingTh = "border-top:2px dashed black;border-left:2px dashed black;border-right:2px dashed black;";
-
     const selectShakingTd = "border-bottom:2px dashed black;border-left:2px dashed black;border-right:2px dashed black;";
 
     const selectShaking = 'border:2px dashed black';
