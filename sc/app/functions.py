@@ -1,10 +1,12 @@
 import re
 import sys
 import itertools
+import pdf
 import xml.etree.ElementTree as ET
 from email.mime.text import MIMEText
 from email.mime.image import MIMEImage
 from email.mime.multipart import MIMEMultipart
+from email.mime.application import MIMEApplication
 import xmltodict
 import shutil
 import time
@@ -312,6 +314,9 @@ def process_shakemaps(shakemaps=None, session=None, scenario=False):
 
             saveGeoJson(shakemap, geoJSON)
 
+            # get and attach pdf
+            pdf.generate_impact_pdf(shakemap, save=True)
+    
             shakemap.status = 'processed'
         else:
             shakemap.status = 'processed - no facs'
@@ -522,17 +527,25 @@ def inspection_notification(notification=None,
 
     if has_alert_level and new_inspection:
         try:
+            #initiate message
+            msg = MIMEMultipart()
+
             # build the notification
             not_builder = NotificationBuilder()
             message = not_builder.build_insp_html(shakemap, name=group.template)
 
-            #initiate message
-            msg = MIMEMultipart()
-            
             # attach html
             message_type = 'html' if '<html>' in message else 'plain'
             encoded_message = MIMEText(message.encode('utf-8'), message_type, 'utf-8')
             msg.attach(encoded_message)
+
+            # check for pdf
+            pdf_location = os.path.join(shakemap.directory_name, 'impact.pdf')
+            if (os.path.isfile(pdf_location)):
+                with open(pdf_location, 'rb') as pdf_file:
+                    attach_pdf = MIMEApplication(pdf_file.read(), _subtype='pdf')
+                    attach_pdf.add_header('Content-Disposition', 'attachment', filename='impact.pdf')
+                    msg.attach(attach_pdf)
 
             # get and attach shakemap
             msg_shakemap = MIMEImage(shakemap.get_map(), _subtype='jpeg')

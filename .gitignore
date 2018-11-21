@@ -8,8 +8,9 @@ modules/
 docs/
 pypy/
 dist/
-templates/inspection/*
-templates/new_event/*
+inspection/
+new_event/
+pdf/
 !default.json
 !default.html
 .DS_Store
@@ -18,7 +19,6 @@ templates/new_event/*
 *.db
 conf/sc_back.json
 *.DS_Store
-templates/
 *-test.py
 server-messages.json
 .vscode/

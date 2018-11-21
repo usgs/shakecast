@@ -391,13 +391,49 @@ class NotificationBuilder(object):
         for fs in facility_shaking:
             fac_details['all'] += 1
             fac_details[fs.alert_level] += 1
-        
+
         return template.render(shakemap=shakemap,
                                facility_shaking=facility_shaking,
                                fac_details=fac_details,
                                sc=SC(),
                                config=config,
                                web=web)
+
+    @staticmethod
+    def build_pdf_html(shakemap, name=None, web=False, config=None):
+        temp_manager = TemplateManager()
+        if not config:
+            config = temp_manager.get_configs('pdf', name=name)
+
+        template = temp_manager.get_template('pdf', name=name)
+
+        facility_shaking = shakemap.facility_shaking
+        if len(facility_shaking) > 0:
+            facility_shaking.sort(key=lambda x: x.weight,
+                                        reverse=True)
+
+        fac_details = {'all': 0, 'gray': 0, 'green': 0,
+                       'yellow': 0, 'orange': 0, 'red': 0}
+
+        for fs in facility_shaking:
+            fac_details['all'] += 1
+            fac_details[fs.alert_level] += 1
+
+        colors = {
+            'red': 'FF0000',
+            'orange': 'FFA500',
+            'yellow': 'FFFF00',
+            'green': '50C878',
+            'gray': 'AAAAAA'
+        }
+
+        return template.render(shakemap=shakemap,
+                               facility_shaking=facility_shaking,
+                               fac_details=fac_details,
+                               sc=SC(),
+                               config=config,
+                               web=web,
+                               colors=colors)
 
     @staticmethod
     def build_update_html(update_info=None):
