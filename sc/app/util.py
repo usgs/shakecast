@@ -363,22 +363,6 @@ def root_dir():
     
     return directory
 
-def lognorm_opt(med=0, spread=0, shaking=0):
-    '''
-    Lognormal calculation to determine probability of exceedance
-    
-    Args:
-        med (float): Median value that might be exceeded
-        spread (float): Uncertainty in the median value
-        shaking (float): recorded shaking value
-    
-    Returns:
-        float: probability of exceedance as a human readable percentage
-    '''
-    
-    p_norm = (math.erf((shaking-med)/(math.sqrt(2) * spread)) + 1)/2
-    return p_norm * 100
-
 def merge_dicts(dct, merge_dct):
     """ Recursive dict merge. Inspired by :meth:``dict.update()``, instead of
     updating only top-level keys, merge_dicts recurses down into dicts nested

@@ -1,27 +1,41 @@
-from app.objects import AlchemyEncoder
-from app.util import *
-import os
-import sys
+from ast import literal_eval
+from csv import reader
+import datetime
+from flask import (
+    Flask,
+    render_template,
+    url_for,
+    request,
+    session,
+    flash,
+    redirect,
+    send_file,
+    send_from_directory,
+    Response,
+    jsonify
+)
+from flask_login import (
+    LoginManager,
+    login_user,
+    logout_user,
+    current_user,
+    login_required
+)
+from flask_uploads import UploadSet, configure_uploads, IMAGES
+from functools import wraps
 import io
 import json
-
-from csv import reader
-
-modules_dir = os.path.join(sc_dir(), 'modules')
-if modules_dir not in sys.path:
-    sys.path += [modules_dir]
-
-from flask import Flask, render_template, url_for, request, session, flash, redirect, send_file, send_from_directory, Response, jsonify
-from flask_login import LoginManager, login_user, logout_user, current_user, login_required
-from flask_uploads import UploadSet, configure_uploads, IMAGES
-from werkzeug.security import generate_password_hash, check_password_hash
-from functools import wraps
+import os
+import sys
 import time
-import datetime
-from ast import literal_eval
-from app.objects import Clock, SC, NotificationBuilder, TemplateManager, SoftwareUpdater
+from werkzeug.security import generate_password_hash, check_password_hash
+
+from app.inventory import determine_xml, get_facility_info
+from app.jsonencoders import AlchemyEncoder, sql_to_obj
+from app.notifications import NotificationBuilder, TemplateManager
 from app.orm import *
-from app.functions import determine_xml, get_facility_info, sql_to_obj
+from app.updates import SoftwareUpdater
+from app.util import SC, Clock
 from ui import UI
 
 # setup logging
@@ -710,7 +724,6 @@ def upload():
         
         # these import functions need to be submitted to the server instead
         # of run directly
-        import_data = {}
         func_name = ''
 
         func_name = 'import_' + xml_file_type + '_xml'
