@@ -19,6 +19,30 @@ from orm import (
     ShakeMap
 )
 
+def get_facility_dicts_from_xml(xml_str):
+    xml_dict = json.loads(json.dumps(xmltodict.parse(xml_str)))
+    facility_list = xml_dict['FacilityTable']['FacilityRow']
+    if isinstance(facility_list, list) is False:
+        facility_list = [facility_list]
+    
+    return facility_list
+
+def get_group_dicts_from_xml(xml_str):
+    xml_dict = json.loads(json.dumps(xmltodict.parse(xml_str)))
+    group_list = xml_dict['GroupTable']['GroupRow']
+    if isinstance(group_list, list) is False:
+        group_list = [group_list]
+    
+    return group_list
+
+def get_user_dicts_from_xml(xml_str):
+    user_xml_dict = json.loads(json.dumps(xmltodict.parse(xml_str)))
+    user_list = user_xml_dict['UserTable']['UserRow']
+    if isinstance(user_list, list) is False:
+        user_list = [user_list]
+    
+    return user_list
+
 def import_master_xml(xml_file='', _user=None):
     '''
     Import an XML file created by the ShakeCast workbook; Facilities, Groups, and Users
@@ -84,13 +108,8 @@ def import_facility_xml(xml_file='', _user=None):
                     'log': message to be added to ShakeCast log
                            and should contain info on error}
     '''
-    xml_list = []
-    with open(xml_file, 'r') as xml_str:
-        xml_dict = json.loads(json.dumps(xmltodict.parse(xml_str)))
-        xml_list = xml_dict['FacilityTable']['FacilityRow']
-        if isinstance(xml_list, list) is False:
-            xml_list = [xml_list]
-    
+    with open(xml_file, 'r') as xml_file:
+        xml_list = get_facility_dicts_from_xml(xml_file.read())
     data = import_facility_dicts(facs=xml_list, _user=_user)
     
     return data
@@ -250,14 +269,10 @@ def import_group_xml(xml_file='', _user=None):
                            and should contain info on error}
     '''
 
-    xml_list = []
-    with open(xml_file, 'r') as xml_str:
-        xml_dict = json.loads(json.dumps(xmltodict.parse(xml_str)))
-        xml_list = xml_dict['GroupTable']['GroupRow']
-        if isinstance(xml_list, list) is False:
-            xml_list = [xml_list]
-    
+    with open(xml_file, 'r') as xml_file:
+        xml_list = get_group_dicts_from_xml(xml_file.read())
     data = import_group_dicts(groups=xml_list, _user=_user)
+
     return data
 
 @dbconnect
@@ -397,11 +412,7 @@ def import_user_xml(xml_file='', _user=None):
                            and should contain info on error}
     '''
     with open(xml_file, 'r') as xml_str:
-        user_xml_dict = json.loads(json.dumps(xmltodict.parse(xml_str)))
-        user_list = user_xml_dict['UserTable']['UserRow']
-        if isinstance(user_list, list) is False:
-            user_list = [user_list]
-
+        user_list = get_user_dicts_from_xml(xml_str.read())
     data = import_user_dicts(user_list, _user)
     
     return data

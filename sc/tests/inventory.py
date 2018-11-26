@@ -141,7 +141,7 @@ class TestImport(unittest.TestCase):
         
         failed = False
         failed_str = ''
-        if len(facs) != 2:
+        if len(facs) != 3:
             failed_str += '\nIncorrect number of facs: {}'.format(len(facs))
             failed = True
             
@@ -228,7 +228,7 @@ class TestImport(unittest.TestCase):
             # fail the test with the accumulated exception message
             self.fail(fail_message)
 
-class TestImportData(unittest.TestCase):
+class TestImportFacilities(unittest.TestCase):
 
     @dbconnect
     def test_AebmImport(self, session):
@@ -237,6 +237,14 @@ class TestImportData(unittest.TestCase):
 
         facility = session.query(Facility).filter(Facility.name == 'AEBM Campus').first()
         self.assertIsNotNone(facility)
+    
+    @dbconnect
+    def test_FacilityImport(self, session):
+        fac_file = os.path.join(sc_dir(), 'tests', 'data', 'test_facs.xml')
+        file_type = determine_xml(fac_file)
+        import_facility_xml(fac_file, 1)
+
+        self.assertEqual(file_type, 'facility')
 
 if __name__ == '__main__':
     unittest.main()
