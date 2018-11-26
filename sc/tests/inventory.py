@@ -227,3 +227,16 @@ class TestImport(unittest.TestCase):
         if failed is True:
             # fail the test with the accumulated exception message
             self.fail(fail_message)
+
+class TestImportData(unittest.TestCase):
+
+    @dbconnect
+    def test_AebmImport(self, session):
+        xml_file = os.path.join(sc_dir(), 'tests', 'data', 'aebm_fac.xml')
+        import_facility_xml(xml_file)
+
+        facility = session.query(Facility).filter(Facility.name == 'AEBM Campus').first()
+        self.assertIsNotNone(facility)
+
+if __name__ == '__main__':
+    unittest.main()
