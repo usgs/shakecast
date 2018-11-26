@@ -7,7 +7,7 @@ itsdangerous==0.24
 Jinja2==2.8
 MarkupSafe==0.23
 PySocks==1.5.7
-shakecast-aebm==0.0a9
+shakecast-aebm==0.0a10
 SQLAlchemy==1.0.14
 Werkzeug==0.11.10
 xmltodict==0.10.2
