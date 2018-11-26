@@ -19,12 +19,12 @@ export class MapService {
     public removeFacMarkers = new ReplaySubject(1);
     public clearMapNotify = new ReplaySubject(1);
     public center = new ReplaySubject(1);
-    
+
     constructor(private _http: HttpClient) {}
 
     plotEq(eq: Earthquake,
            clear: any = null) {
-        var eqMarker = this.makeMarker(eq)
+        const eqMarker = this.makeMarker(eq);
         eqMarker['type'] = 'earthquake';
         eqMarker['zoom'] = 8;
         eqMarker['draggable'] = false;
@@ -34,7 +34,7 @@ export class MapService {
 
     makeFacMarker(fac: Facility,
             clear: boolean = false) {
-        var marker = this.makeMarker(fac);
+        const marker = this.makeMarker(fac);
         marker['type'] = 'facility';
         marker['zoom'] = 8;
         marker['draggable'] = false;
@@ -48,10 +48,10 @@ export class MapService {
 
     makeFacMarkers(facs: Facility[],
              clear: boolean = true) {
-        var markers = Array(facs.length);
-        for (var fac_id in facs) {
-            var fac = facs[fac_id];
-            var marker = this.makeMarker(fac);
+        const markers = Array(facs.length);
+        for (const fac_id of Object.keys(facs)) {
+            const fac = facs[fac_id];
+            const marker = this.makeMarker(fac);
             marker['type'] = 'facility';
             marker['zoom'] = 8;
             marker['draggable'] = false;
@@ -83,18 +83,15 @@ export class MapService {
         this.removeFacMarkers.next(fac);
     }
 
-    clearMarkers() {
-        //this.eqMarkers.next([]);
-    }
-
     makeMarker(notMarker: any): Marker {
-        var marker: Marker = {
+        const marker: Marker = {
             type: '',
             lat: 0,
             lon: 0,
             draggable: false
-        }
-        for (var prop in notMarker) {
+        };
+
+        for (const prop of Object.keys(notMarker)) {
             marker[prop] = notMarker[prop];
         }
         return marker;

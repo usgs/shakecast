@@ -25,26 +25,26 @@ export class LayerService {
   public layers = {
       'event': [epicenterLayer, intensityLayer, impactLayer],
       'group': [groupLayer]
-  }
+  };
 
   constructor(private http: HttpClient,
                 private loadingService: LoadingService) {}
 
 
   genEventLayers(event) {
-    this.genLayers(event, 'event')
+    this.genLayers(event, 'event');
   }
 
   genGroupLayers(group) {
-    this.genLayers(group, 'group')
+    this.genLayers(group, 'group');
   }
 
-  genLayers(input, type_='event') {
+  genLayers(input, type_ = 'event') {
     // stop waiting on old map layers
     this.stopWaiting();
 
     // try to make the layers
-    for (let layer of this.layers[type_]) {
+    for (const layer of this.layers[type_]) {
 
       this.loadingService.add(layer.name);
 
@@ -56,35 +56,33 @@ export class LayerService {
         const url = layer.url(input);
 
         this.waiting.add(
-          this.http.get(url, 
-                          {responseType: layer['productType']})
-            .subscribe(
-              product => {
-                // generate the layer
+          this.http.get(url,
+              {responseType: layer['productType']})
+              .subscribe(
+                product => {
+                  // generate the layer
 
 
-                layer['layer'] = layer.generateLayer(input, product);
+                  layer['layer'] = layer.generateLayer(input, product);
 
-                // let the map know it's ready
-                this.nextLayer.next(layer);
-                
-                // record data for later usage
-                this.data[layer['id']] = product;
-              },
-              error => {
-                this.error = error
-                console.log(error);
-              }
-            )
+                  // let the map know it's ready
+                  this.nextLayer.next(layer);
+
+                  // record data for later usage
+                  this.data[layer['id']] = product;
+                },
+                error => {
+                  this.error = error;
+                  console.log(error);
+                }
+              )
           );
       } else {
 
-
         layer['layer'] = layer.generateLayer(input);
-
         this.nextLayer.next(layer);
       }
-      
+
       this.loadingService.finish(layer.name);
     }
   }
@@ -92,9 +90,7 @@ export class LayerService {
   /* Facility layers require more options */
   addFacMarker(marker) {
     this.loadingService.add('Facility Markers');
-
     facilityLayer.addFacMarker(marker);
-
 
     this.loadingService.finish('Facility Markers');
   }
