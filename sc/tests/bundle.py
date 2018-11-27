@@ -706,21 +706,6 @@ def fail_test():
     raise ValueError('This test fails on purpose')
 
 if __name__ == '__main__':
-    
-    # If the user wants to make sure they can get emails, they should
-    # be able to specify an email address for each test run
-    if len(sys.argv) > 1:
-        email = sys.argv[1]
-        del sys.argv[1]
-        if (('@' in email) and
-                ('.' in email) and
-                ('com' in email or
-                 'gov' in email or
-                 'org' in email or
-                 'edu' in email)):
-            unittest.TestCase.email = email
-    else:
-        unittest.TestCase.email = 'test@test.com'
-            
+    set_email()
     unittest.main()
         
