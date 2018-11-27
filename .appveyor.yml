@@ -30,7 +30,7 @@ install:
   # Install the build dependencies of the project
   - "python -m pip install -r requirements.txt"
   - "python -m sc.app.startup"
-  - "python -m sc.tests.smtpserver &"
+  - "pythonw -m sc.tests.smtpserver"
 
 build: off
 
