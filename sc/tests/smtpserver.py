@@ -1,5 +1,6 @@
 import smtpd
 import asyncore
+from sc.app.util import SC
 
 class TestSmtpServer(smtpd.SMTPServer):
     @staticmethod
@@ -7,7 +8,9 @@ class TestSmtpServer(smtpd.SMTPServer):
         pass
 
 def main():
-    server = TestSmtpServer(('localhost', 1025), None)
+    sc = SC()
+    port = sc.dict['SMTP']['port']
+    server = TestSmtpServer(('localhost', port), None)
     asyncore.loop()
 
 if __name__ == '__main__':
