@@ -29,12 +29,11 @@ install:
 
   # Install the build dependencies of the project
   - "python -m pip install -r requirements.txt"
+  - "python -m sc.app.startup"
+  - "python -m sc.tests.smtpserver &"
 
 build: off
 
 test_script:
   # Run the project tests
-   - "cd %APPVEYOR_BUILD_FOLDER%"
-   - "set"
-   - "python sc\\app\\sc_config.py --smtpu testing.only.shakecast@gmail.com --smtpp testingpass"
-   - "python -m sc.tests.bundle dslosky@usgs.gov"
+   - "python -m sc.tests.bundle"
