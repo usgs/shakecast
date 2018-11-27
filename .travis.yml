@@ -4,10 +4,10 @@ python:
 
 install: 
   - pip install -r requirements.txt
-  - python sc/app/sc_config.py --smtpu testing.only.shakecast@gmail.com --smtpp testingpass
+  - pip install codecov
 
 script:
-  - python -m sc.tests.bundle dslosky@usgs.gov
+  - codecov run -m sc.tests.bundle dslosky@usgs.gov
 
 branches:
   only:

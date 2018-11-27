@@ -29,7 +29,6 @@ install:
 
   # Install the build dependencies of the project
   - "python -m pip install -r requirements.txt"
-  - "python -m pip install codecov"
 
 build: off
 
@@ -38,7 +37,4 @@ test_script:
    - "cd %APPVEYOR_BUILD_FOLDER%"
    - "set"
    - "python sc\\app\\sc_config.py --smtpu testing.only.shakecast@gmail.com --smtpp testingpass"
-   - "coverage run -m sc.tests.bundle dslosky@usgs.gov"
-
-after_test:
-  - "codecov"
+   - "python -m sc.tests.bundle dslosky@usgs.gov"

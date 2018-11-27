@@ -4,6 +4,9 @@ def startup():
     if os.environ.get('SC_DOCKER', False) is not False:
         docker_init()
 
+    if os.environ.get('SC_CI', False) is not False:
+        ci_init()
+
 def copy_backups():
     dir_ = sc_dir()
     docker_templates = os.path.join(dir_, 'backups', 'templates')
@@ -16,6 +19,18 @@ def copy_backups():
     
     if not os.path.isfile(os.path.join(conf, 'sc.json')):
         os.system('cp -r {}/* {}'.format(docker_conf, conf))
+
+def ci_init():
+    sc = SC()
+    sc.dict['SMTP']['username'] = os.environ.get('SC_SMTP_USERNAME', '')
+    sc.dict['SMTP']['password'] = os.environ.get('SC_SMTP_PASSWORD', '')
+    sc.dict['SMTP']['server'] = os.environ.get('SC_SMTP_SERVER', '')
+    sc.dict['SMTP']['from'] = os.environ.get('SC_SMTP_FROM', '')
+    sc.dict['SMTP']['security'] = os.environ.get('SC_SMTP_SECURITY', '')
+    sc.dict['SMTP']['port'] = os.environ.get('SC_SMTP_PORT', '')
+
+    sc.save_dict()
+
     
 
 def docker_init():
