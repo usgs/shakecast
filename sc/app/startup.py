@@ -40,3 +40,6 @@ def docker_init():
     sc.dict['host'] = 'sc-server'
     sc.dict['web_port'] = 5000
     sc.save_dict()
+
+if __name__ == '__main__':
+    startup()

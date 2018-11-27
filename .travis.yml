@@ -5,6 +5,7 @@ python:
 install: 
   - pip install -r requirements.txt
   - pip install codecov
+  - python -m sc.app.startup
 
 script:
   - coverage run -m sc.tests.bundle dslosky@usgs.gov
