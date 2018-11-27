@@ -6,9 +6,10 @@ install:
   - pip install -r requirements.txt
   - pip install codecov
   - python -m sc.app.startup
+  - python -m smtpd -n -c DebuggingServer localhost:1025 &
 
 script:
-  - coverage run -m sc.tests.bundle dslosky@usgs.gov
+  - coverage run -m sc.tests.bundle
 
 branches:
   only:
