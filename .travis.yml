@@ -7,8 +7,11 @@ install:
   - pip install codecov
 
 script:
-  - codecov run -m sc.tests.bundle dslosky@usgs.gov
+  - coverage run -m sc.tests.bundle dslosky@usgs.gov
 
 branches:
   only:
     - master
+  
+after_success:
+  - codecov
