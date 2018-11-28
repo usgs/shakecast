@@ -62,6 +62,11 @@ class NotificationBuilder(object):
         for fs in facility_shaking:
             fac_details['all'] += 1
             fac_details[fs.alert_level] += 1
+        
+        sc = SC()
+        max_facilities = sc.dict['Notification']['max_facilities']
+        if len(facility_shaking) > max_facilities:
+            facility_shaking = facility_shaking[:max_facilities]
 
         return template.render(shakemap=shakemap,
                                facility_shaking=facility_shaking,
