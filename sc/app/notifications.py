@@ -151,6 +151,13 @@ class Mailer(object):
         if self.username and self.password:
             server.login(self.username, self.password)
         
+        print 'Me: {}, you: {}, server: {}, port: {}'.format(
+            self.me,
+            you,
+            self.server_name,
+            self.server_port
+        )
+
         server.sendmail(self.me, you, msg.as_string())
         server.quit()
 
