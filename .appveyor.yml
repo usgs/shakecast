@@ -15,4 +15,6 @@ build: off
 test_script:
   - ps: $SmtpServer = Start-Process "python" -ArgumentList "-m sc.tests.smtpserver" -PassThru
   - "python -m sc.tests.bundle"
+  
+on_finish:
   - ps: Stop-Process -Id $SmtpServer.Id
