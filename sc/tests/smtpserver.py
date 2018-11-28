@@ -1,5 +1,6 @@
-import smtpd
 import asyncore
+import smtpd
+
 from sc.app.util import SC
 
 class TestSmtpServer(smtpd.SMTPServer):
