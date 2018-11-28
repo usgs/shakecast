@@ -150,7 +150,7 @@ class Mailer(object):
 
         if self.username and self.password:
             server.login(self.username, self.password)
-        
+
         server.sendmail(self.me, you, msg.as_string())
         server.quit()
 
