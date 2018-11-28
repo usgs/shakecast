@@ -8,6 +8,7 @@ import xml.etree.ElementTree as ET
 import xmltodict
 
 from orm import (
+    Aebm,
     dbconnect,
     Event,
     Facility,
@@ -17,6 +18,30 @@ from orm import (
     User,
     ShakeMap
 )
+
+def get_facility_dicts_from_xml(xml_str):
+    xml_dict = json.loads(json.dumps(xmltodict.parse(xml_str)))
+    facility_list = xml_dict['FacilityTable']['FacilityRow']
+    if isinstance(facility_list, list) is False:
+        facility_list = [facility_list]
+    
+    return facility_list
+
+def get_group_dicts_from_xml(xml_str):
+    xml_dict = json.loads(json.dumps(xmltodict.parse(xml_str)))
+    group_list = xml_dict['GroupTable']['GroupRow']
+    if isinstance(group_list, list) is False:
+        group_list = [group_list]
+    
+    return group_list
+
+def get_user_dicts_from_xml(xml_str):
+    user_xml_dict = json.loads(json.dumps(xmltodict.parse(xml_str)))
+    user_list = user_xml_dict['UserTable']['UserRow']
+    if isinstance(user_list, list) is False:
+        user_list = [user_list]
+    
+    return user_list
 
 def import_master_xml(xml_file='', _user=None):
     '''
@@ -83,13 +108,8 @@ def import_facility_xml(xml_file='', _user=None):
                     'log': message to be added to ShakeCast log
                            and should contain info on error}
     '''
-    xml_list = []
-    with open(xml_file, 'r') as xml_str:
-        xml_dict = json.loads(json.dumps(xmltodict.parse(xml_str)))
-        xml_list = xml_dict['FacilityTable']['FacilityRow']
-        if isinstance(xml_list, list) is False:
-            xml_list = [xml_list]
-    
+    with open(xml_file, 'r') as xml_file:
+        xml_list = get_facility_dicts_from_xml(xml_file.read())
     data = import_facility_dicts(facs=xml_list, _user=_user)
     
     return data
@@ -132,20 +152,20 @@ def import_facility_dicts(facs=None, _user=None, session=None):
                 for f in existing:
                     session.delete(f)
 
-            f = Facility()
-            f.facility_id = fac.get('EXTERNAL_FACILITY_ID', None)
-            f.facility_type = fac.get('FACILITY_TYPE', None)
-            f.component = fac.get('COMPONENT', 'SYSTEM')
-            f.component_class = fac.get('COMPONENT_CLASS', 'SYSTEM')
-            f.name = fac.get('FACILITY_NAME', None)
-            f.description = fac.get('DESCRIPTION', None)
-            f.short_name = fac.get('SHORT_NAME', None)
-            f.model = fac.get('FACILITY_MODEL', None)
+            facility = Facility()
+            facility.facility_id = fac.get('EXTERNAL_FACILITY_ID', None)
+            facility.facility_type = fac.get('FACILITY_TYPE', None)
+            facility.component = fac.get('COMPONENT', 'SYSTEM')
+            facility.component_class = fac.get('COMPONENT_CLASS', 'SYSTEM')
+            facility.name = fac.get('FACILITY_NAME', None)
+            facility.description = fac.get('DESCRIPTION', None)
+            facility.short_name = fac.get('SHORT_NAME', None)
+            facility.model = fac.get('FACILITY_MODEL', None)
 
             if fac.get('FEATURE', None) is not None:
-                f.geom_type = fac['FEATURE'].get('GEOM_TYPE', None)
-                f.html = fac['FEATURE'].get('DESCRIPTION', None)
-                f.geom = fac['FEATURE'].get('GEOM', None)
+                facility.geom_type = fac['FEATURE'].get('GEOM_TYPE', None)
+                facility.html = fac['FEATURE'].get('DESCRIPTION', None)
+                facility.geom = fac['FEATURE'].get('GEOM', None)
 
             if fac.get('FRAGILITY', None) is not None:
                 gray = 'GRAY'
@@ -153,62 +173,65 @@ def import_facility_dicts(facs=None, _user=None, session=None):
                     gray = 'GREY'
 
                 if fac['FRAGILITY'].get(gray, None) is not None:
-                    f.gray = fac['FRAGILITY'][gray].get('ALPHA', None)
-                    f.gray_beta = fac['FRAGILITY'][gray].get('BETA', None)
-                    f.gray_metric = fac['FRAGILITY'][gray].get('METRIC', None)
+                    facility.gray = fac['FRAGILITY'][gray].get('ALPHA', None)
+                    facility.gray_beta = fac['FRAGILITY'][gray].get('BETA', None)
+                    facility.gray_metric = fac['FRAGILITY'][gray].get('METRIC', None)
                 if fac['FRAGILITY'].get('GREEN', None) is not None:
-                    f.green = fac['FRAGILITY']['GREEN'].get('ALPHA', None)
-                    f.green_beta = fac['FRAGILITY']['GREEN'].get('BETA', None)
-                    f.green_metric = fac['FRAGILITY']['GREEN'].get('METRIC', None)
+                    facility.green = fac['FRAGILITY']['GREEN'].get('ALPHA', None)
+                    facility.green_beta = fac['FRAGILITY']['GREEN'].get('BETA', None)
+                    facility.green_metric = fac['FRAGILITY']['GREEN'].get('METRIC', None)
                 if fac['FRAGILITY'].get('YELLOW', None) is not None:
-                    f.yellow = fac['FRAGILITY']['YELLOW'].get('ALPHA', None)
-                    f.yellow_beta = fac['FRAGILITY']['YELLOW'].get('BETA', None)
-                    f.yellow_metric = fac['FRAGILITY']['YELLOW'].get('METRIC', None)
+                    facility.yellow = fac['FRAGILITY']['YELLOW'].get('ALPHA', None)
+                    facility.yellow_beta = fac['FRAGILITY']['YELLOW'].get('BETA', None)
+                    facility.yellow_metric = fac['FRAGILITY']['YELLOW'].get('METRIC', None)
                 if fac['FRAGILITY'].get('ORANGE', None) is not None:
-                    f.orange = fac['FRAGILITY']['ORANGE'].get('ALPHA', None)
-                    f.orange_beta = fac['FRAGILITY']['ORANGE'].get('BETA', None)
-                    f.orange_metric = fac['FRAGILITY']['ORANGE'].get('METRIC', None)
+                    facility.orange = fac['FRAGILITY']['ORANGE'].get('ALPHA', None)
+                    facility.orange_beta = fac['FRAGILITY']['ORANGE'].get('BETA', None)
+                    facility.orange_metric = fac['FRAGILITY']['ORANGE'].get('METRIC', None)
                 if fac['FRAGILITY'].get('RED', None) is not None:
-                    f.red = fac['FRAGILITY']['RED'].get('ALPHA', None)
-                    f.red_beta = fac['FRAGILITY']['RED'].get('BETA', None)
-                    f.red_metric = fac['FRAGILITY']['RED'].get('METRIC', None)
-                    f.metric = fac['FRAGILITY']['RED'].get('METRIC', None)
+                    facility.red = fac['FRAGILITY']['RED'].get('ALPHA', None)
+                    facility.red_beta = fac['FRAGILITY']['RED'].get('BETA', None)
+                    facility.red_metric = fac['FRAGILITY']['RED'].get('METRIC', None)
+                    facility.metric = fac['FRAGILITY']['RED'].get('METRIC', None)
 
-            f.updated = time.time()
+            facility.aebm = parse_aebm_from_xml_dict(fac.get('AEBM', None))
+                
+
+            facility.updated = time.time()
             if _user is not None:
-                f.updated_by = _user.username
+                facility.updated_by = _user.username
 
-            if f.geom_type and f.geom:
+            if facility.geom_type and facility.geom:
                 # manipulate geometry
-                if f.geom_type == 'POINT':
-                    point = f.geom.split(',')
+                if facility.geom_type == 'POINT':
+                    point = facility.geom.split(',')
                     lon = float(point[0])
                     lat = float(point[1])
                     
-                    f.lon_min = lon - .01
-                    f.lon_max = lon + .01
-                    f.lat_min = lat - .01
-                    f.lat_max = lat + .01
+                    facility.lon_min = lon - .01
+                    facility.lon_max = lon + .01
+                    facility.lat_min = lat - .01
+                    facility.lat_max = lat + .01
                     
-                elif f.geom_type == 'POLYGON':
-                    points = [p.split(',') for p in f.geom.split(';')]
+                elif facility.geom_type == 'POLYGON':
+                    points = [p.split(',') for p in facility.geom.split(';')]
                     lons = [pnt[0] for pnt in points]
                     lats = [pnt[1] for pnt in points]
                     
-                    f.lon_min = min(lons)
-                    f.lon_max = max(lons)
-                    f.lat_min = min(lats)
-                    f.lat_max = max(lats)
+                    facility.lon_min = min(lons)
+                    facility.lon_max = max(lons)
+                    facility.lat_min = min(lats)
+                    facility.lat_max = max(lats)
                     
-                elif f.geom_type == 'POLYLINE':
+                elif facility.geom_type == 'POLYLINE':
                     pass
                 
-                session.add(f)
+                session.add(facility)
 
-                if count_dict.get(f.facility_type, False) is False:
-                    count_dict[f.facility_type] = 1
+                if count_dict.get(facility.facility_type, False) is False:
+                    count_dict[facility.facility_type] = 1
                 else:
-                    count_dict[f.facility_type] += 1
+                    count_dict[facility.facility_type] += 1
 
         session.commit()
         add_facs_to_groups(session=session)
@@ -246,14 +269,10 @@ def import_group_xml(xml_file='', _user=None):
                            and should contain info on error}
     '''
 
-    xml_list = []
-    with open(xml_file, 'r') as xml_str:
-        xml_dict = json.loads(json.dumps(xmltodict.parse(xml_str)))
-        xml_list = xml_dict['GroupTable']['GroupRow']
-        if isinstance(xml_list, list) is False:
-            xml_list = [xml_list]
-    
+    with open(xml_file, 'r') as xml_file:
+        xml_list = get_group_dicts_from_xml(xml_file.read())
     data = import_group_dicts(groups=xml_list, _user=_user)
+
     return data
 
 @dbconnect
@@ -393,11 +412,7 @@ def import_user_xml(xml_file='', _user=None):
                            and should contain info on error}
     '''
     with open(xml_file, 'r') as xml_str:
-        user_xml_dict = json.loads(json.dumps(xmltodict.parse(xml_str)))
-        user_list = user_xml_dict['UserTable']['UserRow']
-        if isinstance(user_list, list) is False:
-            user_list = [user_list]
-
+        user_list = get_user_dicts_from_xml(xml_str.read())
     data = import_user_dicts(user_list, _user)
     
     return data
@@ -647,6 +662,38 @@ def delete_scenario(shakemap_id=None, session=None):
                         'title': 'Scenario Deleted',
                         'success': True},
             'log': 'Deleted scenario: ' + shakemap_id}
+
+
+def parse_aebm_from_xml_dict(aebm_xml_dict):
+    '''
+    If available, create an AEBM orm object for facility
+    '''
+    aebm = None
+    if aebm_xml_dict and aebm_xml_dict.get('AEBM', False):
+        aebm = Aebm(
+            mbt = aebm_xml_dict.get('MBT', None),
+            sdl = aebm_xml_dict.get('SDL', None),
+            bid = aebm_xml_dict.get('BID', None),
+            height = aebm_xml_dict.get('HEIGHT', None),
+            stories = aebm_xml_dict.get('STORIES', None),
+            year = aebm_xml_dict.get('YEAR', None),
+            performance_rating = aebm_xml_dict.get('PERFORMANCE_RATING', None),
+            quality_rating = aebm_xml_dict.get('QUALITY_RATING', None),
+            elastic_period = aebm_xml_dict.get('ELASTIC_PERIOD', None),
+            elastic_damping = aebm_xml_dict.get('ELASTIC_DAMPING', None),
+            design_period = aebm_xml_dict.get('DESIGN_PERIOD', None),
+            ultimate_period = aebm_xml_dict.get('ULTIMATE_PERIOD', None),
+            design_coefficient = aebm_xml_dict.get('DESIGN_COEFFICIENT', None),
+            modal_weight = aebm_xml_dict.get('MODAL_WEIGHT', None),
+            modal_height = aebm_xml_dict.get('MODAL_HEIGHT', None),
+            modal_response = aebm_xml_dict.get('MODAL_RESPONSE', None),
+            pre_yield = aebm_xml_dict.get('PRE_YIELD', None),
+            post_yield = aebm_xml_dict.get('POST_YIELD', None),
+            max_strength = aebm_xml_dict.get('MAX_STRENGTH', None),
+            ductility = aebm_xml_dict.get('DUCTILITY', None),
+            default_damage_state_beta = aebm_xml_dict.get('DAMAGE_STATE_BETA', None)
+        )
+    return aebm
 
 def remove_dir(directory_name):
     '''
