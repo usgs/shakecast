@@ -11,6 +11,8 @@ install:
   - "python -m sc.app.startup"
   - ps: $SmtpServer = Start-Process "python" -ArgumentList "-m sc.tests.smtpserver" -PassThru
 
+build: off
+
 test_script:
   - "python -m sc.tests.bundle"
   
