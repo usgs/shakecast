@@ -866,7 +866,7 @@ class ShakeMap(Base):
         alert_level = None
         if len(self.facility_shaking) > 0:
             insp_val = self.facility_shaking[0].weight
-            alert_levels = ['gray', 'green', 'yellow', 'orange', 'red']
+            alert_levels = ['gray', 'green', 'yellow', 'orange', 'red', 'red']
             alert_level = alert_levels[int(floor(insp_val))]
 
         return alert_level
