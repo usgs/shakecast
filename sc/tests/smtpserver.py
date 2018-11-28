@@ -10,7 +10,7 @@ class TestSmtpServer(smtpd.SMTPServer):
 def main():
     sc = SC()
     port = sc.dict['SMTP']['port']
-    server = TestSmtpServer(('localhost', port), None)
+    server = TestSmtpServer(('', port), None)
     asyncore.loop()
 
 if __name__ == '__main__':

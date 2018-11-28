@@ -9,11 +9,9 @@ environment:
 install:
   - "python -m pip install -r requirements.txt"
   - "python -m sc.app.startup"
-
-build: off
+  - ps: $SmtpServer = Start-Process "python" -ArgumentList "-m sc.tests.smtpserver" -PassThru
 
 test_script:
-  - ps: $SmtpServer = Start-Process "python" -ArgumentList "-m sc.tests.smtpserver" -PassThru
   - "python -m sc.tests.bundle"
   
 on_finish:
