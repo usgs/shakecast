@@ -137,7 +137,7 @@ class Mailer(object):
         self.username = sc.smtp_username
         self.password = sc.smtp_password
         self.server_name = sc.smtp_server
-        self.server_port = int(sc.smtp_port)
+        self.server_port = int(sc.dict['SMTP']['port'])
         self.security = sc.dict['SMTP']['security']
         self.log = ''
         
