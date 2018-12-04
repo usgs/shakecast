@@ -11,6 +11,7 @@ from sc.app.servertestfunctions import system_test
 from sc.app.task import Task
 from sc.app.util import merge_dicts, Clock, SC
 from util import create_fac, create_group, create_user
+from .grid import *
 from .impact import *
 from .inventory import *
 from .jsonencoders import *
@@ -427,7 +428,20 @@ class TestFull(unittest.TestCase):
                 shaking_point['LON'] > f.lon_min and
                 shaking_point['LON'] < f.lon_max
         )
-    
+
+        # check we get a point still if no metric is available
+        metric = copy.copy(f.metric)
+        f.metric = 'NOT AVAILABLE'
+        shaking_point = grid.max_shaking(facility=f)
+        self.assertTrue(
+                shaking_point['LAT'] > f.lat_min and
+                shaking_point['LAT'] < f.lat_max and
+                shaking_point['LON'] > f.lon_min and
+                shaking_point['LON'] < f.lon_max
+        )
+
+        f.metric = metric
+
     def step07_addFacsToGroups(self):
         session = Session()
         add_facs_to_groups(session=session)
@@ -446,7 +460,8 @@ class TestFull(unittest.TestCase):
                 raise ValueError('Event not processed... {}: {}'.format(event.event_id,
                                                                         event.status))
             for notification in event.notifications:
-                if (notification.status != 'sent' and 
+                if ((notification.status != 'sent' or
+                    not notification.sent_timestamp) and
                     notification.status != 'aggregated' and
                     (notification.group.name != 'HIGH_INSP' and
                     notification.group.name != 'small')):

@@ -189,6 +189,10 @@ def process_shakemaps(shakemaps=None, session=None, scenario=False):
                 continue
             
         shakemap.status = 'processing_started'
+        if shakemap.begin_timestamp is None:
+            shakemap.begin_timestamp = time.time()
+        else:
+            shakemap.superceded_timestamp = time.time()
 
         # open the grid.xml file and find groups affected by event
         grid = create_grid(shakemap)
@@ -207,6 +211,8 @@ def process_shakemaps(shakemaps=None, session=None, scenario=False):
         
         if not groups_affected:
             shakemap.status = 'processed - no groups'
+            shakemap.end_timestamp = time.time()
+
             session.commit()
             continue
         
@@ -289,6 +295,7 @@ def process_shakemaps(shakemaps=None, session=None, scenario=False):
                                         scenario=scenario,
                                         session=session)
         
+        shakemap.end_timestamp = time.time()
         session.commit()
 
 @dbconnect

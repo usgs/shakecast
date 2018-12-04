@@ -6,6 +6,7 @@ from jinja2 import Template
 import json
 import os
 import smtplib
+import time
 
 from orm import dbconnect, ShakeMap
 from util import sc_dir, SC
@@ -388,6 +389,7 @@ def new_event_notification(notifications=None,
         mailer.send(msg=msg, you=you)
         
         notification.status = 'sent'
+        notification.sent_timestamp = time.time()
         
     else:
         notification.status = 'not sent - no users'
@@ -484,6 +486,7 @@ def inspection_notification(notification=None,
                 mailer.send(msg=msg, you=you)
                 
                 notification.status = 'sent'
+                notification.sent_timestamp = time.time()
 
             else:
                 notification.status = 'not sent - no users'
