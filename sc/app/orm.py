@@ -333,6 +333,7 @@ class Notification(Base):
     group_id = Column(Integer, ForeignKey('group.shakecast_id'))
     notification_type = Column(String(25))
     status = Column(String(64))
+    sent_timestamp = Column(Float)
     notification_file = Column(String(255))
     
     def __repr__(self):
@@ -340,10 +341,12 @@ class Notification(Base):
                                group_id=%s,
                                notification_type=%s,
                                status=%s,
+                               sent_timestamp=%s,
                                notification_file=%s)''' % (self.shakemap_id,
                                                              self.group_id,
                                                              self.notification_type,
                                                              self.status,
+                                                             self.sent_timestamp,
                                                              self.notification_file)
     
       
@@ -765,9 +768,9 @@ class ShakeMap(Base):
     lon_max = Column(Float)
     generation_timestamp = Column(String(32))
     recieve_timestamp = Column(String(32))
-    begin_timestamp = Column(String(20))
-    end_timestamp = Column(String(20))
-    superceded_timestamp = Column(String(20))
+    begin_timestamp = Column(Float)
+    end_timestamp = Column(Float)
+    superceded_timestamp = Column(Float)
     directory_name = Column(String(255))
     gray = Column(Integer)
     green = Column(Integer)

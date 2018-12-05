@@ -173,16 +173,14 @@ class ShakeMapGrid(object):
         Returns:
             int: -1 if max shaking can't be determined, otherwise shaking level
         '''
-    
+
+        # grab lat/lon values from facility if available
         if facility is not None:
-            try:
-                lon_min = facility.lon_min
-                lon_max = facility.lon_max
-                lat_min = facility.lat_min
-                lat_max = facility.lat_max
-                metric = facility.metric
-            except:
-                return -1
+            lon_min = facility.lon_min
+            lon_max = facility.lon_max
+            lat_min = facility.lat_min
+            lat_max = facility.lat_max
+            metric = facility.metric
             
         if not self.grid:
             return None
@@ -190,10 +188,6 @@ class ShakeMapGrid(object):
         # check if the facility lies in the grid
         if not facility.in_grid(self):
             return {facility.metric: 0}
-        
-        # check if the facility's metric exists in the grid
-        if not self.grid[0].get(facility.metric, None):
-            return {facility.metric: None}
         
         # sort the grid in an attempt to speed up processing on
         # many facilities
@@ -221,7 +215,7 @@ class ShakeMapGrid(object):
             lat_max += .01
             start -= 1
         
-        Point.sort_by = metric
+        Point.sort_by = metric if metric in self.grid[0].keys() else 'MMI'
         shaking = sorted(shaking)
         return shaking[-1]
 
