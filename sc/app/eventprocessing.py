@@ -3,7 +3,7 @@ import time
 
 from grid import create_grid
 from impact import get_event_impact, make_inspection_priority
-from jsonencoders import makeImpactGeoJSONDict, saveImpactGeoJson
+from jsonencoders import ImpactGeoJson
 from orm import (
     dbconnect,
     Event,
@@ -17,6 +17,16 @@ import pdf
 from util import Clock, SC
 
 from notifications import new_event_notification, inspection_notification
+
+def can_process_event(event, scenario=False):
+    # check if we should wait until daytime to process
+    clock = Clock()
+    sc = SC()
+    if (clock.nighttime() is True) and (scenario is False):
+        if event.magnitude < sc.night_eq_mag_cutoff:
+            return False
+    
+    return True
 
 @dbconnect
 def check_new(session=None):
@@ -61,6 +71,105 @@ def check_new(session=None):
     
     return data
 
+def create_new_event_notifications(groups, event, scenario=False):
+    notifications = []
+    for group in groups:
+        # check new_event magnitude to make sure the group wants a 
+        # notificaiton
+        event_spec = group.get_new_event_spec(scenario=scenario)
+
+        if (event_spec is None or
+                event_spec.minimum_magnitude > event.magnitude):
+            continue
+        
+        notification = Notification(group=group,
+                                    event=event,
+                                    notification_type='NEW_EVENT',
+                                    status='created')
+        
+        notifications += [notification]
+    
+    return notifications
+
+def create_inspection_notifications(groups, shakemap, scenario=False):
+    notifications = []
+    for group in groups:
+        notification = Notification(group=group,
+                                    shakemap=shakemap,
+                                    event=shakemap.event,
+                                    notification_type='DAMAGE',
+                                    status='created')
+        notifications += [notification]
+
+    return notifications
+
+@dbconnect
+def get_inspection_groups(grid, scenario=False, session=None):
+    if scenario is True:
+        in_region = (session.query(Group)
+                                .filter(Group.in_grid(grid))
+                                .all())
+        groups_affected = [group for group in in_region
+                                if group.gets_notification('damage', scenario=True)]
+    else:
+        in_region = (session.query(Group)
+                                    .filter(Group.in_grid(grid))
+                                    .all())
+        groups_affected = [group for group in in_region
+                                if group.gets_notification('damage')]
+    
+    return groups_affected
+
+@dbconnect
+def get_new_event_groups(event, scenario=False, session=None):
+    groups_affected = []
+    all_groups_affected = set()
+    if scenario is True:
+        in_region = (session.query(Group)
+                                    .filter(Group.point_inside(event))
+                                    .all())
+        groups_affected = [group for group in in_region
+                                if group.gets_notification('new_event', scenario=True)]
+
+        all_groups_affected.update(groups_affected)
+    elif event.event_id != 'heartbeat':
+        groups_affected = (session.query(Group)
+                                    .filter(Group.point_inside(event))
+                                    .all())
+
+        filtered_groups = [group for group in groups_affected 
+                                if group.gets_notification('new_event')]
+
+        all_groups_affected.update(filtered_groups)
+    else:
+        all_groups = session.query(Group).all()
+
+        groups_affected = [group for group in all_groups
+                                if group.gets_notification('new_event', heartbeat=True)]
+
+        all_groups_affected.update(groups_affected)
+    
+    return all_groups_affected
+
+@dbconnect
+def get_new_event_notifications(group, scenario=False, session=None):
+    '''
+    Get notifications generated for this group from the last day
+    '''
+    # get new notifications
+    notifications = (session.query(Notification)
+                .filter(Notification.notification_type == 'NEW_EVENT')
+                .filter(Notification.status == 'created')
+                .filter(Notification.group_id == group.shakecast_id)
+                .all())
+
+    last_day = time.time() - 60 * 60 * 5
+    filter_nots = filter(
+        lambda x: x.event is not None and 
+        (x.event.time > last_day or scenario is True), notifications)
+    
+    return filter_nots
+
 @dbconnect
 def process_events(events=None, session=None, scenario=False):
     '''
@@ -79,88 +188,36 @@ def process_events(events=None, session=None, scenario=False):
                     'log': message to be added to ShakeCast log
                            and should contain info on error}
     '''
-    clock = Clock()
-    sc = SC()
-    groups_affected = []
-    all_groups_affected = set()
     for event in events:
-        # check if we should wait until daytime to process
-        if (clock.nighttime() is True) and (scenario is False):
-            if event.magnitude < sc.night_eq_mag_cutoff:
-                continue
+        if can_process_event(event, scenario) is False:
+            continue
+ 
+        event.status = 'processing_started'
+        groups_affected = get_new_event_groups(event, scenario, session)
         
-        if scenario is True:
-            in_region = (session.query(Group)
-                                        .filter(Group.point_inside(event))
-                                        .all())
-            groups_affected = [group for group in in_region
-                                    if group.gets_notification('new_event', scenario=True)]
-
-            all_groups_affected.update(groups_affected)
-        elif event.event_id != 'heartbeat':
-            groups_affected = (session.query(Group)
-                                        .filter(Group.point_inside(event))
-                                        .all())
-
-            filtered_groups = [group for group in groups_affected 
-                                    if group.gets_notification('new_event')]
-
-            all_groups_affected.update(filtered_groups)
-        else:
-            all_groups = session.query(Group).all()
-
-            groups_affected = [group for group in all_groups
-                                    if group.gets_notification('new_event', heartbeat=True)]
-
-            all_groups_affected.update(groups_affected)
-        
+        # if there aren't any groups, just skip to the next event
         if not groups_affected:
             event.status = 'processed - no groups'
             session.commit()
-        else:
-            event.status = 'processing_started'
+            continue
         
-        for group in all_groups_affected:
-
-            # check new_event magnitude to make sure the group wants a 
-            # notificaiton
-            event_spec = group.get_new_event_spec(scenario=scenario)
-
-            if (event_spec is None or
-                    event_spec.minimum_magnitude > event.magnitude):
-                continue
-            
-            notification = Notification(group=group,
-                                        event=event,
-                                        notification_type='NEW_EVENT',
-                                        status='created')
-            session.add(notification)
+        new_notifications = create_new_event_notifications(
+                groups_affected,
+                event,
+                scenario)
+        session.add_all(new_notifications)
         session.commit()
-    
-    if all_groups_affected:
-        for group in all_groups_affected:
-            # get new notifications
-            nots = (session.query(Notification)
-                        .filter(Notification.notification_type == 'NEW_EVENT')
-                        .filter(Notification.status == 'created')
-                        .filter(Notification.group_id == group.shakecast_id)
-                        .all())
 
-            last_day = time.time() - 60 * 60 * 5
-            filter_nots = filter(lambda x: x.event is not None and (x.event.time > last_day or scenario is True), nots)
+    for group in groups_affected:
+        notifications = get_new_event_notifications(group, scenario, session)
+        if len(notifications) > 0:
+            new_event_notification(notifications=notifications,
+                    scenario=scenario)
+        
+        processed_events = [n.event for n in notifications]
 
-            if len(filter_nots) > 0:
-                new_event_notification(notifications=filter_nots,
-                                        scenario=scenario)
-            
-            processed_events = [n.event for n in filter_nots]
-
-            for e in processed_events:
-                e.status = 'processed'
-
-    if scenario is True:
-        for event in events:
-            event.status = 'scenario'
+        for e in processed_events:
+            e.status = 'processed' if scenario is False else 'scenario'
     
 @dbconnect
 def process_shakemaps(shakemaps=None, session=None, scenario=False):
@@ -183,51 +240,28 @@ def process_shakemaps(shakemaps=None, session=None, scenario=False):
     clock = Clock()
     sc = SC()
     for shakemap in shakemaps:
-        # check if we should wait until daytime to process
-        if (clock.nighttime()) is True and scenario is False:
-            if shakemap.event.magnitude < sc.night_eq_mag_cutoff:
-                continue
+        if can_process_event(shakemap.event, scenario) is False:
+            continue
             
         shakemap.status = 'processing_started'
-        if shakemap.begin_timestamp is None:
-            shakemap.begin_timestamp = time.time()
-        else:
-            shakemap.superceded_timestamp = time.time()
+        shakemap.mark_processing_start()
 
         # open the grid.xml file and find groups affected by event
         grid = create_grid(shakemap)
-        if scenario is True:
-            in_region = (session.query(Group)
-                                    .filter(Group.in_grid(grid))
-                                    .all())
-            groups_affected = [group for group in in_region
-                                    if group.gets_notification('damage', scenario=True)]
-        else:
-            in_region = (session.query(Group)
-                                        .filter(Group.in_grid(grid))
-                                        .all())
-            groups_affected = [group for group in in_region
-                                    if group.gets_notification('damage')]
+        groups_affected = get_inspection_groups(grid, scenario, session)
         
         if not groups_affected:
-            shakemap.status = 'processed - no groups'
-            shakemap.end_timestamp = time.time()
-
+            shakemap.mark_processing_finished()
             session.commit()
             continue
         
         # send out new events and create inspection notifications
-        for group in groups_affected:
-                    
-            notification = Notification(group=group,
-                                        shakemap=shakemap,
-                                        event=shakemap.event,
-                                        notification_type='DAMAGE',
-                                        status='created')
+        new_notifications = create_inspection_notifications(
+                groups_affected, shakemap, scenario)
             
-            session.add(notification)
+        session.add_all(new_notifications)
         session.commit()
-        
+
         notifications = (session.query(Notification)
                     .filter(Notification.shakemap == shakemap)
                     .filter(Notification.notification_type == 'DAMAGE')
@@ -235,23 +269,13 @@ def process_shakemaps(shakemaps=None, session=None, scenario=False):
                     .all())
         
         # get a set of all affected facilities
-        affected_facilities = set(itertools
-                                    .chain
-                                    .from_iterable(
-                                        [(session.query(Facility)
-                                            .filter(Facility.in_grid(grid))
-                                            .filter(Facility.groups
-                                                        .any(Group.shakecast_id == group.shakecast_id))
-                                            .all())
-                                         for g in
-                                         groups_affected]))
+        affected_facilities = (session.query(Facility)
+                .filter(Facility.in_grid(grid))
+                .all())
 
-        geoJSON = {'type': 'FeatureCollection',
-                    'features': [None] * len(affected_facilities),
-                    'properties': {}}
+        impact = ImpactGeoJson()
+        impact.init_features(len(affected_facilities))
         if affected_facilities:
-            fac_shaking_lst = [None] * len(affected_facilities)
-            f_count = 0
             for facility in affected_facilities:
                 fac_shaking = make_inspection_priority(facility=facility,
                                                     shakemap=shakemap,
@@ -259,23 +283,19 @@ def process_shakemaps(shakemaps=None, session=None, scenario=False):
                 if fac_shaking is False:
                     continue
                 
-                fac_shaking_lst[f_count] = FacilityShaking(**fac_shaking)
+                impact.add_facility_shaking(facility, fac_shaking) 
 
-                geoJSON['features'][f_count] = makeImpactGeoJSONDict(facility,
-                                                                fac_shaking)
-
-                f_count += 1
 
             # Remove all old shaking and add all fac_shaking_lst
             shakemap.facility_shaking = []
             session.commit()
 
-            session.bulk_save_objects(fac_shaking_lst)
+            session.bulk_save_objects(impact.facility_shaking)
             session.commit()
 
-            geoJSON['properties']['impact-summary'] = get_event_impact(shakemap)
+            impact.geo_json['properties']['impact-summary'] = get_event_impact(shakemap)
 
-            saveImpactGeoJson(shakemap, geoJSON)
+            impact.save_impact_geo_json(shakemap.directory_name)
 
             # get and attach pdf
             pdf.generate_impact_pdf(shakemap, save=True)

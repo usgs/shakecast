@@ -68,6 +68,7 @@ class ImpactInterface(dict):
             if level['rank'] >= rank:
                 self['weight'] += self[level['level']] / 100
 
+
 def get_impact(facility, shaking_point, shakemap):
     impact = None
     if facility.aebm and facility.aebm.has_required():

@@ -2,7 +2,7 @@ import json
 import types
 import os
 
-from orm import DeclarativeMeta, Base
+from orm import DeclarativeMeta, Base, FacilityShaking
 
 class AlchemyEncoder(json.JSONEncoder):
     '''
@@ -35,32 +35,55 @@ class AlchemyEncoder(json.JSONEncoder):
     
         return json.JSONEncoder.default(self, obj)
 
-def makeImpactGeoJSONDict(facility, fac_shaking):
-    jsonDict = {
-        'type': 'Feature',
-        'geometry': {
-            'type': 'Point',
-            'coordinates': [facility.lon, facility.lat]
+
+
+class ImpactGeoJson(object):
+    def __init__(self):
+        self.facility_shaking = []
+        self.facility_count = 0
+        self.geo_json = {'type': 'FeatureCollection',
+                    'features': [],
+                    'properties': {}}
+    
+    def init_features(self, count):
+        self.geo_json['features'] = [None] * count
+        self.facility_shaking = [None] * count
+
+    def add_facility_shaking(self, facility, fac_shaking):
+        self.facility_shaking[self.facility_count] = FacilityShaking(**fac_shaking)
+
+        fac_shaking_dict = self.make_impact_geo_json_dict(
+                facility, fac_shaking)
+        self.geo_json['features'][self.facility_count] = fac_shaking_dict
+
+        self.facility_count += 1
+
+    def make_impact_geo_json_dict(self, facility, fac_shaking):
+        json_dict = {
+            'type': 'Feature',
+            'geometry': {
+                'type': 'Point',
+                'coordinates': [facility.lon, facility.lat]
+            }
         }
-    }
 
-    jsonDict['properties'] = {
-        'facility_name': facility.name,
-        'description': facility.description,
-        'facility_type': facility.facility_type,
-        'lat': facility.lat,
-        'lon': facility.lon,
-        'shaking': fac_shaking
-    }
+        json_dict['properties'] = {
+            'facility_name': facility.name,
+            'description': facility.description,
+            'facility_type': facility.facility_type,
+            'lat': facility.lat,
+            'lon': facility.lon,
+            'shaking': fac_shaking
+        }
 
-    return jsonDict
+        return json_dict
 
-def saveImpactGeoJson(shakemap, geoJSON):
-    json_file = os.path.join(shakemap.directory_name,
-                                'impact.json')
+    def save_impact_geo_json(self, directory, name='impact.json', geo_json=None):
+        geo_json = geo_json or self.geo_json
+        json_file = os.path.join(directory, 'impact.json')
 
-    with open(json_file, 'w') as f_:
-        f_.write(json.dumps(geoJSON))
+        with open(json_file, 'w') as f_:
+            f_.write(json.dumps(geo_json))
 
 def sql_to_obj(sql):
     '''
