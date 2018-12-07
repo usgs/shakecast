@@ -218,7 +218,24 @@ def process_events(events=None, session=None, scenario=False):
 
         for e in processed_events:
             e.status = 'processed' if scenario is False else 'scenario'
-    
+
+def compute_event_impact(facilities, shakemap, grid):
+    impact = ImpactGeoJson()
+    impact.init_features(len(facilities))
+    for facility in facilities:
+        fac_shaking = make_inspection_priority(facility=facility,
+                                            shakemap=shakemap,
+                                            grid=grid)
+        if fac_shaking is False:
+            continue
+
+        impact.add_facility_shaking(facility, fac_shaking)
+
+    impact.geo_json['properties']['impact-summary'] = get_event_impact(impact.facility_shaking)
+
+    return impact
+
+
 @dbconnect
 def process_shakemaps(shakemaps=None, session=None, scenario=False):
     '''
@@ -237,13 +254,9 @@ def process_shakemaps(shakemaps=None, session=None, scenario=False):
                     'log': message to be added to ShakeCast log
                            and should contain info on error}
     '''
-    clock = Clock()
-    sc = SC()
     for shakemap in shakemaps:
         if can_process_event(shakemap.event, scenario) is False:
             continue
-            
-        shakemap.status = 'processing_started'
         shakemap.mark_processing_start()
 
         # open the grid.xml file and find groups affected by event
@@ -261,30 +274,14 @@ def process_shakemaps(shakemaps=None, session=None, scenario=False):
             
         session.add_all(new_notifications)
         session.commit()
-
-        notifications = (session.query(Notification)
-                    .filter(Notification.shakemap == shakemap)
-                    .filter(Notification.notification_type == 'DAMAGE')
-                    .filter(Notification.status != 'sent')
-                    .all())
         
         # get a set of all affected facilities
         affected_facilities = (session.query(Facility)
                 .filter(Facility.in_grid(grid))
                 .all())
 
-        impact = ImpactGeoJson()
-        impact.init_features(len(affected_facilities))
         if affected_facilities:
-            for facility in affected_facilities:
-                fac_shaking = make_inspection_priority(facility=facility,
-                                                    shakemap=shakemap,
-                                                    grid=grid)
-                if fac_shaking is False:
-                    continue
-                
-                impact.add_facility_shaking(facility, fac_shaking) 
-
+            impact = compute_event_impact(affected_facilities, shakemap, grid)
 
             # Remove all old shaking and add all fac_shaking_lst
             shakemap.facility_shaking = []
@@ -293,19 +290,25 @@ def process_shakemaps(shakemaps=None, session=None, scenario=False):
             session.bulk_save_objects(impact.facility_shaking)
             session.commit()
 
-            impact.geo_json['properties']['impact-summary'] = get_event_impact(shakemap)
-
+            # save impact geo_json
             impact.save_impact_geo_json(shakemap.directory_name)
 
             # get and attach pdf
             pdf.generate_impact_pdf(shakemap, save=True)
-    
-            shakemap.status = 'processed'
+
         else:
+            shakemap.mark_processing_finished()
             shakemap.status = 'processed - no facs'
-        
-        if scenario is True:
-            shakemap.status = 'scenario'
+
+            session.commit()
+            continue
+
+        # grab new notifications, and any that might have failed to send
+        notifications = (session.query(Notification)
+                    .filter(Notification.shakemap == shakemap)
+                    .filter(Notification.notification_type == 'DAMAGE')
+                    .filter(Notification.status != 'sent')
+                    .all())
 
         if notifications:
             # send inspection notifications for the shaking levels we
@@ -314,8 +317,11 @@ def process_shakemaps(shakemaps=None, session=None, scenario=False):
                 inspection_notification(notification=n,
                                         scenario=scenario,
                                         session=session)
+
         
-        shakemap.end_timestamp = time.time()
+        shakemap.mark_processing_finished()
+        if scenario is True:
+            shakemap.status = 'scenario'
         session.commit()
 
 @dbconnect

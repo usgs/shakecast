@@ -30,6 +30,7 @@ import sys
 import time
 from werkzeug.security import generate_password_hash, check_password_hash
 
+from app.impact import get_event_impact
 from app.inventory import determine_xml, get_facility_info
 from app.jsonencoders import AlchemyEncoder, sql_to_obj
 from app.notifications import NotificationBuilder, TemplateManager
@@ -476,25 +477,14 @@ def get_affected_facilities(shakemap_id, session=None):
 @login_required
 @dbconnect
 def impact_summary(shakemap_id, session=None):
-    sms = (session.query(ShakeMap)
+    shakemap = (session.query(ShakeMap)
                 .filter(ShakeMap.shakemap_id == shakemap_id)
                 .order_by(ShakeMap.shakemap_version.desc())
-                .all())
-    
-    impact_sum = {'gray': 0,
-             'green': 0,
-             'yellow': 0,
-             'orange': 0,
-             'red': 0}
-    if sms:
-        sm = sms[0]
-        fac_shaking = sm.facility_shaking
-        
-        for s in fac_shaking:
-            # record number of facs at each alert level
-            impact_sum[s.alert_level] += 1
+                .first())
 
-    return json.dumps(impact_sum)
+    impact = get_event_impact(shakemap.facility_shaking)
+
+    return json.dumps(impact)
 
 @app.route('/api/shakemaps/<shakemap_id>/impact')
 @login_required
