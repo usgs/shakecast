@@ -84,6 +84,10 @@ class Facility(Base):
                         backref='facility',
                         uselist=False,
                         cascade='save-update, delete, delete-orphan')
+
+    attributes = relationship('Attribute',
+                        backref='facility',
+                        cascade='save-update, delete, delete-orphan')
     
     def __repr__(self):
         return '''Facility(facility_id=%s,
@@ -222,6 +226,25 @@ class Facility(Base):
                         cls.lat_min < grid.lat_max,
                         cls.lat_max > grid.lat_max))
 
+
+class Attribute(Base):
+    __tablename__ = 'attributes'
+    shakecast_id = Column(Integer, primary_key=True)
+    facility_id = Column(Integer, ForeignKey('facility.shakecast_id'))
+    name = Column(String)
+    value = Column(String)
+
+    def __repr__(self):
+        return '''Attribute(shakecast_id={},
+                        facility_id={},
+                        name={},
+                        value={}
+                    )'''.format(
+                                            self.shakecast_id,
+                                            self.facility_id,
+                                            self.name,
+                                            self.value
+                                   )
 
 class Aebm(Base):
     __tablename__ = 'aebm'

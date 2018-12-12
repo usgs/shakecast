@@ -246,5 +246,14 @@ class TestImportFacilities(unittest.TestCase):
 
         self.assertEqual(file_type, 'facility')
 
+    @dbconnect
+    def test_AttributeImport(self, session):
+        xml_file = os.path.join(sc_dir(), 'tests', 'data', 'attribute_fac.xml')
+        import_facility_xml(xml_file)
+
+        facility = session.query(Facility).filter(Facility.name == 'Attribute Campus').first()
+        self.assertIsNotNone(facility)
+        self.assertTrue(len(facility.attributes) > 0)
+
 if __name__ == '__main__':
     unittest.main()
