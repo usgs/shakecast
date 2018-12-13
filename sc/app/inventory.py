@@ -9,6 +9,7 @@ import xmltodict
 
 from orm import (
     Aebm,
+    Attribute,
     dbconnect,
     Event,
     Facility,
@@ -195,6 +196,7 @@ def import_facility_dicts(facs=None, _user=None, session=None):
                     facility.metric = fac['FRAGILITY']['RED'].get('METRIC', None)
 
             facility.aebm = parse_aebm_from_xml_dict(fac.get('AEBM', None))
+            facility.attributes = parse_attributes_from_xml(fac.get('ATTRIBUTE', None))
                 
 
             facility.updated = time.time()
@@ -694,6 +696,22 @@ def parse_aebm_from_xml_dict(aebm_xml_dict):
             default_damage_state_beta = aebm_xml_dict.get('DAMAGE_STATE_BETA', None)
         )
     return aebm
+
+def parse_attributes_from_xml(attributes):
+    if attributes is None:
+        return []
+
+    attribute_lst= []
+    for key in attributes.keys():
+        attribute = Attribute(
+            name=key,
+            value=attributes[key]
+        )
+
+        attribute_lst += [attribute]
+    
+    return attribute_lst
+
 
 def remove_dir(directory_name):
     '''
