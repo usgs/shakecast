@@ -68,6 +68,7 @@ class ImpactInterface(dict):
             if level['rank'] >= rank:
                 self['weight'] += self[level['level']] / 100
 
+
 def get_impact(facility, shaking_point, shakemap):
     impact = None
     if facility.aebm and facility.aebm.has_required():
@@ -222,16 +223,14 @@ def get_gps_distance(lat1, lon1, lat2, lon2):
   c = 2 * math.atan2(math.sqrt(a), math.sqrt(1-a))
   return earthRadiusKm * c
 
-def get_event_impact(shakemap):
+def get_event_impact(facility_shaking):
     impact_sum = {'gray': 0,
              'green': 0,
              'yellow': 0,
              'orange': 0,
              'red': 0}
-
-    fac_shaking = shakemap.facility_shaking
     
-    for s in fac_shaking:
+    for s in facility_shaking:
         # record number of facs at each alert level
         impact_sum[s.alert_level] += 1
 

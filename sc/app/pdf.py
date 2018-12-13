@@ -23,11 +23,14 @@ class Pdf(FPDF, HTMLMixin):
         # Page number
         self.cell(0, 10, 'Page ' + str(self.page_no()) + '/{nb}', 0, 0, 'C')
 
-def generate_impact_pdf(shakemap, save=False):
+def generate_impact_pdf(shakemap, save=False, pdf_name=''):
     pdf = Pdf()
     pdf.add_page()
 
     nb = NotificationBuilder()
+    html = nb.build_pdf_html(shakemap, 'header')
+    pdf.write_html(html)
+
     html = nb.build_pdf_html(shakemap, 'summary')
     pdf.write_html(html)
 
@@ -43,8 +46,10 @@ def generate_impact_pdf(shakemap, save=False):
     pdf_string = pdf.output('', 'S')
 
     if save is True:
-        save_pdf(pdf_string, 'impact.pdf', shakemap.directory_name)
+        pdf_name = pdf_name or 'impact.pdf'
+        save_pdf(pdf_string, pdf_name, shakemap.directory_name)
     return pdf_string
+
 
 def save_pdf(pdf_string, file_name, directory):
     file_name_ = os.path.join(directory, file_name)

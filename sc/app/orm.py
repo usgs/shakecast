@@ -873,6 +873,17 @@ class ShakeMap(Base):
             alert_level = alert_levels[int(floor(insp_val))]
 
         return alert_level
+    
+    def mark_processing_start(self):
+        self.status = 'processing_started'
+        if self.begin_timestamp is None:
+            self.begin_timestamp = time.time()
+        else:
+            self.superceded_timestamp = time.time()
+    
+    def mark_processing_finished(self):
+        self.status = 'processed'
+        self.end_timestamp = time.time()
 
     
 class Product(Base):
