@@ -2,7 +2,7 @@ from email.mime.text import MIMEText
 from email.mime.image import MIMEImage
 from email.mime.multipart import MIMEMultipart
 from email.mime.application import MIMEApplication
-from jinja2 import Template
+from jinja2 import Template, Environment
 import json
 import os
 import smtplib
@@ -10,6 +10,8 @@ import time
 
 from orm import dbconnect, ShakeMap
 from util import sc_dir, SC
+
+jinja_env = Environment(extensions=['jinja2.ext.do'])
 
 class NotificationBuilder(object):
     """
@@ -52,25 +54,11 @@ class NotificationBuilder(object):
         
         template = temp_manager.get_template('inspection', name=name)
 
-        facility_shaking = shakemap.facility_shaking
-        if len(facility_shaking) > 0:
-            facility_shaking.sort(key=lambda x: x.weight,
-                                        reverse=True)
-
-        fac_details = {'all': 0, 'gray': 0, 'green': 0,
-                       'yellow': 0, 'orange': 0, 'red': 0}
-        
-        for fs in facility_shaking:
-            fac_details['all'] += 1
-            fac_details[fs.alert_level] += 1
-        
-        sc = SC()
-        max_facilities = sc.dict['Notification']['max_facilities']
-        if len(facility_shaking) > max_facilities:
-            facility_shaking = facility_shaking[:max_facilities]
+        shakemap.sort_facility_shaking('weight')
+        fac_details = shakemap.get_impact_summary()
 
         return template.render(shakemap=shakemap,
-                               facility_shaking=facility_shaking,
+                               facility_shaking=shakemap.facility_shaking,
                                fac_details=fac_details,
                                sc=SC(),
                                config=config,
@@ -84,17 +72,8 @@ class NotificationBuilder(object):
 
         template = temp_manager.get_template('pdf', name=name)
 
-        facility_shaking = shakemap.facility_shaking
-        if len(facility_shaking) > 0:
-            facility_shaking.sort(key=lambda x: x.weight,
-                                        reverse=True)
-
-        fac_details = {'all': 0, 'gray': 0, 'green': 0,
-                       'yellow': 0, 'orange': 0, 'red': 0}
-
-        for fs in facility_shaking:
-            fac_details['all'] += 1
-            fac_details[fs.alert_level] += 1
+        shakemap.sort_facility_shaking('weight')
+        fac_details = shakemap.get_impact_summary()
 
         colors = {
             'red': '#FF0000',
@@ -105,7 +84,7 @@ class NotificationBuilder(object):
         }
 
         return template.render(shakemap=shakemap,
-                               facility_shaking=facility_shaking,
+                               facility_shaking=shakemap.facility_shaking,
                                fac_details=fac_details,
                                sc=SC(),
                                config=config,
@@ -226,7 +205,7 @@ class TemplateManager(object):
                                         'default.html')
             temp_str = open(temp_file, 'r')
         
-        template = Template(temp_str.read())
+        template = jinja_env.from_string(temp_str.read())
         temp_str.close()
         return template
 
