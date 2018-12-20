@@ -9,7 +9,6 @@ import smtplib
 import time
 
 from orm import dbconnect, ShakeMap
-import pdf
 from util import sc_dir, SC
 
 jinja_env = Environment(extensions=['jinja2.ext.do'])
@@ -387,15 +386,6 @@ def inspection_notification(notification=None,
     group = notification.group
     error = ''
 
-    # generate pdf for specific group
-    pdf_name = '{}_impact.pdf'.format(group.name)
-    pdf.generate_impact_pdf(
-        shakemap,
-        save=True,
-        pdf_name=pdf_name,
-        template_name=group.template
-    )
-
     has_alert_level, new_inspection, update = check_notification_for_group(
         group,
         notification,
@@ -418,6 +408,7 @@ def inspection_notification(notification=None,
             msg.attach(encoded_message)
 
             # check for pdf
+            pdf_name = '{}_impact.pdf'.format(group.name)
             pdf_location = os.path.join(shakemap.directory_name, pdf_name)
             if (os.path.isfile(pdf_location)):
                 with open(pdf_location, 'rb') as pdf_file:

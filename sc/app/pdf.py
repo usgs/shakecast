@@ -1,8 +1,8 @@
 from fpdf import FPDF, HTMLMixin
 import os
 
-from notifications import NotificationBuilder
-from orm import ShakeMap, Session
+from .notifications import NotificationBuilder
+from .orm import ShakeMap, Session
 
 class Pdf(FPDF, HTMLMixin):
     def footer(self):

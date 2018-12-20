@@ -13,6 +13,7 @@ from orm import (
     Notification,
     ShakeMap
 )
+import pdf
 from util import Clock, SC
 
 from notifications import new_event_notification, inspection_notification
@@ -310,6 +311,14 @@ def process_shakemaps(shakemaps=None, session=None, scenario=False):
             # send inspection notifications for the shaking levels we
             # just computed
             for n in notifications:
+                # generate pdf for specific group
+                pdf_name = '{}_impact.pdf'.format(n.group.name)
+                pdf.generate_impact_pdf(
+                    n.shakemap,
+                    save=True,
+                    pdf_name=pdf_name,
+                    template_name=n.group.template
+                )
                 inspection_notification(notification=n,
                                         scenario=scenario,
                                         session=session)
