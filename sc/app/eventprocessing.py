@@ -13,7 +13,6 @@ from orm import (
     Notification,
     ShakeMap
 )
-import pdf
 from util import Clock, SC
 
 from notifications import new_event_notification, inspection_notification
@@ -292,9 +291,6 @@ def process_shakemaps(shakemaps=None, session=None, scenario=False):
 
             # save impact geo_json
             impact.save_impact_geo_json(shakemap.directory_name)
-
-            # get and attach pdf
-            pdf.generate_impact_pdf(shakemap, save=True)
 
         else:
             shakemap.mark_processing_finished()
