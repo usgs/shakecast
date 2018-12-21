@@ -2,7 +2,7 @@ from email.mime.text import MIMEText
 from email.mime.image import MIMEImage
 from email.mime.multipart import MIMEMultipart
 from email.mime.application import MIMEApplication
-from jinja2 import Template
+from jinja2 import Template, Environment
 import json
 import os
 import smtplib
@@ -10,6 +10,8 @@ import time
 
 from orm import dbconnect, ShakeMap
 from util import sc_dir, SC
+
+jinja_env = Environment(extensions=['jinja2.ext.do'])
 
 class NotificationBuilder(object):
     """
@@ -52,49 +54,26 @@ class NotificationBuilder(object):
         
         template = temp_manager.get_template('inspection', name=name)
 
-        facility_shaking = shakemap.facility_shaking
-        if len(facility_shaking) > 0:
-            facility_shaking.sort(key=lambda x: x.weight,
-                                        reverse=True)
-
-        fac_details = {'all': 0, 'gray': 0, 'green': 0,
-                       'yellow': 0, 'orange': 0, 'red': 0}
-        
-        for fs in facility_shaking:
-            fac_details['all'] += 1
-            fac_details[fs.alert_level] += 1
-        
-        sc = SC()
-        max_facilities = sc.dict['Notification']['max_facilities']
-        if len(facility_shaking) > max_facilities:
-            facility_shaking = facility_shaking[:max_facilities]
+        shakemap.sort_facility_shaking('weight')
+        fac_details = shakemap.get_impact_summary()
 
         return template.render(shakemap=shakemap,
-                               facility_shaking=facility_shaking,
+                               facility_shaking=shakemap.facility_shaking,
                                fac_details=fac_details,
                                sc=SC(),
                                config=config,
                                web=web)
 
     @staticmethod
-    def build_pdf_html(shakemap, name=None, web=False, config=None):
+    def build_pdf_html(shakemap, name=None, template_name='default', web=False, config=None):
         temp_manager = TemplateManager()
         if not config:
-            config = temp_manager.get_configs('pdf', name=name)
+            config = temp_manager.get_configs('pdf', name=name, sub_dir=template_name)
 
-        template = temp_manager.get_template('pdf', name=name)
+        template = temp_manager.get_template('pdf', name=name, sub_dir=template_name)
 
-        facility_shaking = shakemap.facility_shaking
-        if len(facility_shaking) > 0:
-            facility_shaking.sort(key=lambda x: x.weight,
-                                        reverse=True)
-
-        fac_details = {'all': 0, 'gray': 0, 'green': 0,
-                       'yellow': 0, 'orange': 0, 'red': 0}
-
-        for fs in facility_shaking:
-            fac_details['all'] += 1
-            fac_details[fs.alert_level] += 1
+        shakemap.sort_facility_shaking('weight')
+        fac_details = shakemap.get_impact_summary()
 
         colors = {
             'red': '#FF0000',
@@ -105,7 +84,7 @@ class NotificationBuilder(object):
         }
 
         return template.render(shakemap=shakemap,
-                               facility_shaking=facility_shaking,
+                               facility_shaking=shakemap.facility_shaking,
                                fac_details=fac_details,
                                sc=SC(),
                                config=config,
@@ -166,30 +145,27 @@ class TemplateManager(object):
     """
 
     @staticmethod
-    def get_configs(not_type, name=None):
-        if name is None:
-            temp_name = 'default.json'
-        else:
-            temp_name = name + '.json'
-            conf_file = os.path.join(sc_dir(),
-                                    'templates',
-                                    not_type,
-                                    temp_name)
+    def get_configs(not_type, name=None, sub_dir=None):
+        name = name or 'default.json'
+        # force json file type
+        if '.json' not in name:
+            name += '.json'
 
-        try:
-            # try to find the template
-            conf_str = open(conf_file, 'r')
-        except Exception:
-            # just get the default template if the supplied one doesn't
-            # exist
-            conf_file = os.path.join(sc_dir(),
-                                    'templates',
-                                    not_type,
-                                    'default.json')
-            conf_str = open(conf_file, 'r')
+        sub_dir = sub_dir or 'default'
+        name = os.path.join(sub_dir, name)
 
-        config = json.loads(conf_str.read())
-        conf_str.close()
+        conf_file_name_template = os.path.join(sc_dir(),
+                                'templates',
+                                not_type,
+                                '{}')
+
+        custom_name = conf_file_name_template.format(name)
+        default_name = conf_file_name_template.format('default.json')
+        conf_file_name = custom_name if os.path.isfile(custom_name) else default_name
+
+        with open(conf_file_name, 'r') as conf_file:
+            config = json.loads(conf_file.read())
+
         return config
 
     @staticmethod
@@ -207,27 +183,26 @@ class TemplateManager(object):
             return None
 
     @staticmethod
-    def get_template(not_type, name=None):
-        if name is None:
-            temp_name = 'default.html'
-        else:
-            temp_name = name + '.html'
-            temp_file = os.path.join(sc_dir(),
-                                        'templates',
-                                        not_type,
-                                        temp_name)
+    def get_template(not_type, name=None, sub_dir=None):
+        name = name or 'default.html'
+        # force html file type
+        if '.html' not in name:
+            name += '.html'
 
-        try:
-            temp_str = open(temp_file, 'r')
-        except Exception:
-            temp_file = os.path.join(sc_dir(),
-                                        'templates',
-                                        not_type,
-                                        'default.html')
-            temp_str = open(temp_file, 'r')
+        sub_dir = sub_dir or 'default'
+        name = os.path.join(sub_dir, name)
+        html_file_name_template = os.path.join(sc_dir(),
+                                'templates',
+                                not_type,
+                                '{}')
+
+        custom_name = html_file_name_template.format(name)
+        default_name = html_file_name_template.format('default.html')
+        html_file_name = custom_name if os.path.isfile(custom_name) else default_name
         
-        template = Template(temp_str.read())
-        temp_str.close()
+        with open(html_file_name, 'r') as html_file:
+            template = jinja_env.from_string(html_file.read())
+
         return template
 
     @staticmethod
@@ -433,7 +408,8 @@ def inspection_notification(notification=None,
             msg.attach(encoded_message)
 
             # check for pdf
-            pdf_location = os.path.join(shakemap.directory_name, 'impact.pdf')
+            pdf_name = '{}_impact.pdf'.format(group.name)
+            pdf_location = os.path.join(shakemap.directory_name, pdf_name)
             if (os.path.isfile(pdf_location)):
                 with open(pdf_location, 'rb') as pdf_file:
                     attach_pdf = MIMEApplication(pdf_file.read(), _subtype='pdf')

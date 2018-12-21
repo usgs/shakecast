@@ -612,8 +612,6 @@ def delete_inventory_by_id(inventory_type=None, ids=None, session=None):
     
     return data
 
-    return {'status': 'finished', 'message': deleted}
-
 
 @dbconnect
 def get_facility_info(group_name='', shakemap_id='', session=None):

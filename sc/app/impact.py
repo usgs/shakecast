@@ -228,11 +228,13 @@ def get_event_impact(facility_shaking):
              'green': 0,
              'yellow': 0,
              'orange': 0,
-             'red': 0}
+             'red': 0,
+             'all': 0}
     
     for s in facility_shaking:
         # record number of facs at each alert level
         impact_sum[s.alert_level] += 1
+        impact_sum['all'] += 1
 
     return impact_sum
 

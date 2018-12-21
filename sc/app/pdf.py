@@ -1,20 +1,10 @@
 from fpdf import FPDF, HTMLMixin
 import os
 
-from notifications import NotificationBuilder
-from orm import ShakeMap, Session
+from .notifications import NotificationBuilder
+from .orm import ShakeMap, Session
 
 class Pdf(FPDF, HTMLMixin):
-    def header(self):
-        # Arial bold 15
-        self.set_font('Arial', 'B', 15)
-        # Move to the right
-        self.cell(80)
-        # Title
-        self.cell(30, 10, 'ShakeCast Report')
-        # Line break
-        self.ln(20)
-    
     def footer(self):
         # Position at 1.5 cm from bottom
         self.set_y(-15)
@@ -23,15 +13,15 @@ class Pdf(FPDF, HTMLMixin):
         # Page number
         self.cell(0, 10, 'Page ' + str(self.page_no()) + '/{nb}', 0, 0, 'C')
 
-def generate_impact_pdf(shakemap, save=False, pdf_name=''):
+def generate_impact_pdf(shakemap, save=False, pdf_name='', template_name=''):
     pdf = Pdf()
     pdf.add_page()
 
     nb = NotificationBuilder()
-    html = nb.build_pdf_html(shakemap, 'header')
+    html = nb.build_pdf_html(shakemap, 'header', template_name=template_name)
     pdf.write_html(html)
 
-    html = nb.build_pdf_html(shakemap, 'summary')
+    html = nb.build_pdf_html(shakemap, 'summary', template_name=template_name)
     pdf.write_html(html)
 
     shakemap_image_loc = os.path.join(shakemap.directory_name, 'intensity.jpg')
@@ -39,7 +29,7 @@ def generate_impact_pdf(shakemap, save=False, pdf_name=''):
 
     pdf.add_page()
     nb = NotificationBuilder()
-    html = nb.build_pdf_html(shakemap, 'facility-table')
+    html = nb.build_pdf_html(shakemap, 'facility-table', template_name=template_name)
     pdf.write_html(html)
 
     pdf.alias_nb_pages()

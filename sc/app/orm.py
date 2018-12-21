@@ -1,5 +1,5 @@
 from util import *
-from impact import get_impact
+from .impact import get_event_impact, get_impact
 import os
 import sys
 import inspect as inspect_mod
@@ -133,7 +133,14 @@ class Facility(Base):
     def __str__(self):
         return self.name
     
-    
+    def get_attribute(self, name):
+        for att in self.attributes:
+            if att.name.lower() == name.lower():
+                return att.value
+
+        return None
+
+
     def make_alert_level(self, shaking_point=None, shakemap=None):
         '''
         Create a dictionary that contains all the information for a
@@ -278,6 +285,7 @@ class Aebm(Base):
     
 class FacilityShaking(Base):
     __tablename__ = 'facility_shaking'
+    sort_by = 'weight'
     shakecast_id = Column(Integer, primary_key=True)
     shakemap_id = Column(Integer, ForeignKey('shakemap.shakecast_id'))
     facility_id = Column(Integer, ForeignKey('facility.shakecast_id'))
@@ -343,6 +351,13 @@ class FacilityShaking(Base):
                                                    self.psa03,
                                                    self.psa10,
                                                    self.psa30)
+    def __cmp__(self, other):
+        if int(getattr(self, self.sort_by.lower()) * 10000) > int(getattr(other, self.sort_by.lower()) * 10000):
+            return 1
+        elif int(getattr(self, self.sort_by.lower()) * 10000) < int(getattr(other, self.sort_by.lower()) * 10000):
+            return -1
+        else:
+            return 0
     
     
 #######################################################################
@@ -810,7 +825,6 @@ class ShakeMap(Base):
 
     facility_shaking = relationship('FacilityShaking',
                                     backref='shakemap',
-                                    order_by='FacilityShaking.weight.desc()',
                                     cascade='save-update, delete, delete-orphan')
     
     def __repr__(self):
@@ -897,6 +911,9 @@ class ShakeMap(Base):
 
         return alert_level
     
+    def get_impact_summary(self):
+        return get_event_impact(self.facility_shaking)
+
     def mark_processing_start(self):
         self.status = 'processing_started'
         if self.begin_timestamp is None:
@@ -907,8 +924,11 @@ class ShakeMap(Base):
     def mark_processing_finished(self):
         self.status = 'processed'
         self.end_timestamp = time.time()
-
     
+    def sort_facility_shaking(self, sort_by, reverse=True):
+        FacilityShaking.sort_by = sort_by
+        self.facility_shaking = sorted(self.facility_shaking, reverse=reverse)
+ 
 class Product(Base):
     __tablename__ = 'product'
     shakecast_id = Column(Integer, primary_key=True)

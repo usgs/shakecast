@@ -293,9 +293,6 @@ def process_shakemaps(shakemaps=None, session=None, scenario=False):
             # save impact geo_json
             impact.save_impact_geo_json(shakemap.directory_name)
 
-            # get and attach pdf
-            pdf.generate_impact_pdf(shakemap, save=True)
-
         else:
             shakemap.mark_processing_finished()
             shakemap.status = 'processed - no facs'
@@ -314,6 +311,14 @@ def process_shakemaps(shakemaps=None, session=None, scenario=False):
             # send inspection notifications for the shaking levels we
             # just computed
             for n in notifications:
+                # generate pdf for specific group
+                pdf_name = '{}_impact.pdf'.format(n.group.name)
+                pdf.generate_impact_pdf(
+                    n.shakemap,
+                    save=True,
+                    pdf_name=pdf_name,
+                    template_name=n.group.template
+                )
                 inspection_notification(notification=n,
                                         scenario=scenario,
                                         session=session)
