@@ -17,7 +17,7 @@ sudo groupadd docker
 sudo usermod -aG docker $USER
 
 # download the startup script
-curl -s https://raw.githubusercontent.com/dslosky-usgs/shakecast/docker/admin/Linux/centos/docker-pycast-startup.sh > ~/docker-pycast-startup.sh
+curl -s https://raw.githubusercontent.com/usgs/shakecast/docker/admin/Linux/centos/docker-pycast-startup.sh > ~/docker-pycast-startup.sh
 sudo chmod +x docker-pycast-startup.sh
 
 # adding startup will start pyCast on reboot
