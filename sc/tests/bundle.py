@@ -189,51 +189,6 @@ class TestSC(unittest.TestCase):
     def test_initSC(self):
         sc = SC()
 
-class TestTemplateManager(unittest.TestCase):
-    '''
-    Test the ShakeCast notification configuration. Fails if code errors
-    '''
-
-    def test_notificationConfigs(self):
-        temp_manager = TemplateManager()
-        configs = temp_manager.get_configs('new_event', 'default')
-        self.assertIsNotNone(configs)
-        configs = temp_manager.save_configs('new_event', 'default', configs)
-        self.assertIsNotNone(configs)
-    
-    def test_badNotificationConfigs(self):
-        temp_manager = TemplateManager()
-        bad_configs = temp_manager.get_configs('new_event', 'template_DOES_NOT_EXIST_!@#$')
-        default = temp_manager.get_configs('new_event', 'default')
-
-        self.assertEqual(bad_configs, default)
-
-        bad_configs = temp_manager.save_configs('new_event', 'template_DOES_NOT_EXIST_!@#$', None)
-        self.assertIsNone(bad_configs)
-
-    def test_getTemplate(self):
-        temp_manager = TemplateManager()
-        temp = temp_manager.get_template('new_event', 'default')
-        self.assertIsNotNone(temp)
-
-    def test_badTemplate(self):
-        temp_manager = TemplateManager()
-        temp = temp_manager.get_template('new_event', 'template_DOES_NOT_EXIST_!@#$')
-        self.assertIsNotNone(temp)
-
-        temp = temp_manager.get_template_string('new_event', 'template_DOES_NOT_EXIST_!@#$')
-        self.assertIsNone(temp)
-
-    def test_templateNames(self):
-        temp_manager = TemplateManager()
-        temp_names = temp_manager.get_template_names()
-        self.assertIn('default', temp_names)
-
-    def test_NewTemp(self):
-        temp_manager = TemplateManager()
-        result = temp_manager.create_new('default')
-
-        self.assertTrue(result)
 
 class TestClock(unittest.TestCase):
     '''

@@ -23,20 +23,14 @@ class NotificationBuilder(object):
     @staticmethod
     def build_new_event_html(events=None, notification=None, group=None, name=None, web=False, config=None):
         temp_manager = TemplateManager()
+        template_name = (name or 'default').lower()
+
         if not config:
-            if name is None and notification is not None:
-                config = temp_manager.get_configs('new_event', 
-                                                    name=notification.group.template)
-            else:
-                config = temp_manager.get_configs('new_event', 
-                                                    name=name)
+            config = temp_manager.get_configs('new_event', 
+                                                name=template_name)
         
-        if name is None and notification is not None:
-            template = temp_manager.get_template('new_event',
-                                                name=notification.group.template)
-        else:
-            template = temp_manager.get_template('new_event',
-                                                name=name)
+        template = temp_manager.get_template('new_event',
+                                            name=template_name)
         
 
         return template.render(events=events,
@@ -49,10 +43,11 @@ class NotificationBuilder(object):
     @staticmethod
     def build_insp_html(shakemap, name=None, web=False, config=None):
         temp_manager = TemplateManager()
+        template_name = (name or 'default').lower()
         if not config:
-            config = temp_manager.get_configs('inspection', name=name)
+            config = temp_manager.get_configs('inspection', name=template_name)
         
-        template = temp_manager.get_template('inspection', name=name)
+        template = temp_manager.get_template('inspection', name=template_name)
 
         shakemap.sort_facility_shaking('weight')
         fac_details = shakemap.get_impact_summary()
@@ -67,6 +62,7 @@ class NotificationBuilder(object):
     @staticmethod
     def build_pdf_html(shakemap, name=None, template_name='default', web=False, config=None):
         temp_manager = TemplateManager()
+        template_name = (template_name or 'default').lower()
         if not config:
             config = temp_manager.get_configs('pdf', name=name, sub_dir=template_name)
 
@@ -151,16 +147,20 @@ class TemplateManager(object):
         if '.json' not in name:
             name += '.json'
 
-        sub_dir = sub_dir or 'default'
-        name = os.path.join(sub_dir, name)
+        # default fallback configs
+        fallback = os.path.join('default', name) if sub_dir else 'default.json'
 
-        conf_file_name_template = os.path.join(sc_dir(),
+        # pdfs use a subdirectory
+        name = os.path.join(sub_dir, name) if sub_dir else name
+
+
+        json_file_name_template = os.path.join(sc_dir(),
                                 'templates',
                                 not_type,
                                 '{}')
 
-        custom_name = conf_file_name_template.format(name)
-        default_name = conf_file_name_template.format('default.json')
+        custom_name = json_file_name_template.format(name)
+        default_name = json_file_name_template.format(fallback)
         conf_file_name = custom_name if os.path.isfile(custom_name) else default_name
 
         with open(conf_file_name, 'r') as conf_file:
@@ -189,15 +189,20 @@ class TemplateManager(object):
         if '.html' not in name:
             name += '.html'
 
-        sub_dir = sub_dir or 'default'
-        name = os.path.join(sub_dir, name)
+        # default fallback template
+        fallback = os.path.join('default', name) if sub_dir else 'default.html'
+
+        # pdfs use a subdirectory
+        name = os.path.join(sub_dir, name) if sub_dir else name
+
+
         html_file_name_template = os.path.join(sc_dir(),
                                 'templates',
                                 not_type,
                                 '{}')
 
         custom_name = html_file_name_template.format(name)
-        default_name = html_file_name_template.format('default.html')
+        default_name = html_file_name_template.format(fallback)
         html_file_name = custom_name if os.path.isfile(custom_name) else default_name
         
         with open(html_file_name, 'r') as html_file:
@@ -293,7 +298,7 @@ def new_event_notification(notifications=None,
 
     # create HTML for the event email
     not_builder = NotificationBuilder()
-    message = not_builder.build_new_event_html(events=events, notification=notification)
+    message = not_builder.build_new_event_html(events=events, notification=notification, name=group.template)
     
     notification.status = 'Message built'
 
