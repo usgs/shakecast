@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Http, Response, Headers, RequestOptions, URLSearchParams } from '@angular/http';
+import { HttpClient, HttpParams, HttpHeaders} from '@angular/common/http';
 import 'rxjs/add/operator/map';
 import 'rxjs/add/operator/catch';
 import { Observable } from 'rxjs/Observable';
@@ -21,32 +21,29 @@ export class UsersService {
     public current_user: any = null;
     public filter = {};
 
-    constructor(private _http: Http,
+    constructor(private _http: HttpClient,
                 private mapService: MapService,
                 private notService: NotificationsService) {}
 
     getData(filter: any = {}) {
-        this.loadingData.next(true)
-        let params = new URLSearchParams();
-        params.set('filter', JSON.stringify(filter))
-        this._http.get('api/users', {search: params})
-            .map((result: Response) => result.json())
+        this.loadingData.next(true);
+        const params = new HttpParams().set('filter', JSON.stringify(filter));
+        this._http.get('api/users', {params: params})
             .subscribe((result: any) => {
                 this.userData.next(result);
                 this.current_user = result[0];
-                this.loadingData.next(false)
-            })
+                this.loadingData.next(false);
+            });
     }
 
     getCurrentUser() {
         this._http.get('api/users/current')
-            .map((result: Response) => result.json())
             .subscribe((result: any) => {
                 this.userData.next([result]);
-                this.loadingData.next(false)
-            })
+                this.loadingData.next(false);
+            });
     }
-    
+
     selectAll() {
         this.selection.next('all');
     }
@@ -56,28 +53,28 @@ export class UsersService {
     }
 
     saveUsers(users: User[]) {
-        let headers = new Headers();
+        const httpOptions = {
+          headers: new HttpHeaders({
+            'Content-Type':  'application/json',
+            'Authorization': 'my-auth-token'
+          })
+        };
         this.notService.success('User Info', 'Saving your changes...');
-        headers.append('Content-Type', 'application/json');
-        this._http.post('api/users', 
+        this._http.post('api/users',
                         JSON.stringify({users: users}),
-                        {headers}
+                        httpOptions
         )
-            .map((result: Response) => result.json())
             .subscribe((result: any) => {
-                //this.getData();
                 this.loadingData.next(false);
             });
     }
 
     deleteUsers(users: User[]) {
         this.notService.success('Delete User', 'Deleting ' + users.length + ' user')
-        this.loadingData.next(true)
-        let params = new URLSearchParams();
-        params.set('inventory', JSON.stringify(users))
-        params.set('inventory_type', 'user')
-        this._http.delete('api/delete/inventory', {search: params})
-            .map((result: Response) => result.json())
+        this.loadingData.next(true);
+        let params = new HttpParams().set('inventory', JSON.stringify(users));
+        params = params.append('inventory_type', 'user');
+        this._http.delete('api/delete/inventory', {params: params})
             .subscribe((result: any) => {
                 this.getData();
                 this.loadingData.next(false);
@@ -91,5 +88,4 @@ export class UsersService {
     clearMap() {
         this.mapService.clearMap();
     }
-    
 }

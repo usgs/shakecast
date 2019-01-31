@@ -44,12 +44,12 @@ export class FacilityService {
         if (this.sub) {
             this.sub.unsubscribe();
         }
-        
+
         // Unselect current facilities
         this.unselectAll();
 
         this.loadingService.add('Facilities');
-        let params = new HttpParams().set('filter', JSON.stringify(filter))
+        const params = new HttpParams().set('filter', JSON.stringify(filter));
         this.sub = this._http.get('api/facility-data', {params: params})
             .subscribe((result: any) => {
                 this.selectedFacs = [];
@@ -91,9 +91,9 @@ export class FacilityService {
                 this.loadingService.finish('Facilities')
             }, (error: any) => {
                 this.loadingService.finish('Facilities');
-            })
+            });
     }
-    
+
     selectAll() {
         this.selection.next('all');
     }
@@ -103,13 +103,13 @@ export class FacilityService {
     }
 
     deleteFacs() {
-        this.notService.success('Deleting Facilities', 'Deleting ' + this.selectedFacs.length + ' facilities')
-        let params = new HttpParams().set('inventory', JSON.stringify(this.selectedFacs))
-        params = params.append('inventory_type', 'facility')
+        this.notService.success('Deleting Facilities', 'Deleting ' + this.selectedFacs.length + ' facilities');
+        let params = new HttpParams().set('inventory', JSON.stringify(this.selectedFacs));
+        params = params.append('inventory_type', 'facility');
         this._http.delete('api/delete/inventory', {params: params})
             .subscribe((result: any) => {
                 this.getData();
-            })
+            });
     }
 
     removeFac(fac: Facility) {

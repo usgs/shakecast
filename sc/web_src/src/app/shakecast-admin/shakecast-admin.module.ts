@@ -1,9 +1,8 @@
-import { NgModule }       from '@angular/core';
-import { BrowserModule }  from '@angular/platform-browser';
-import { FormsModule }    from '@angular/forms';
-import { HttpModule, JsonpModule } from '@angular/http';
+import { NgModule } from '@angular/core';
+import { BrowserModule } from '@angular/platform-browser';
+import { FormsModule } from '@angular/forms';
 
-import { ShakeCastAdminComponent }       from './shakecast-admin.component';
+import { ShakeCastAdminComponent } from './shakecast-admin.component';
 import { routing } from './shakecast-admin.routing';
 
 import { FacilitiesComponent } from './pages/facilities/facilities.component';
@@ -39,8 +38,6 @@ import { FileUploadModule } from 'ng2-file-upload';
   imports: [
     FormsModule,
     routing,
-    HttpModule,
-    JsonpModule,
     SharedModule,
     FileUploadModule
   ],

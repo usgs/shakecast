@@ -1,9 +1,8 @@
-import { NgModule }       from '@angular/core';
-import { CommonModule }  from '@angular/common';
-import { FormsModule }    from '@angular/forms';
-import { HttpModule, JsonpModule } from '@angular/http';
+import { NgModule } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 
-import { ShakeCastComponent }       from './shakecast.component';
+import { ShakeCastComponent } from './shakecast.component';
 import { routing } from './shakecast.routing';
 
 import { DashboardComponent } from './pages/dashboard/dashboard.component'
@@ -21,8 +20,6 @@ import { SharedModule } from '../shared/shared.module'
     FormsModule,
     CommonModule,
     routing,
-    HttpModule,
-    JsonpModule,
     SharedModule
   ],
   declarations: [

@@ -10,7 +10,7 @@ import { ConfigService } from './config.service';
 import { TimeService } from './time.service';
 import { NotificationsService } from 'angular2-notifications';
 
-import * as _ from 'underscore'
+import * as _ from 'underscore';
 
 @Component({
   selector: 'config',
