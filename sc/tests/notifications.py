@@ -441,6 +441,61 @@ class TestGroupGetsNotification(unittest.TestCase):
         
         session.commit()
 
+
+class TestTemplateManager(unittest.TestCase):
+    '''
+    Test the ShakeCast notification configuration. Fails if code errors
+    '''
+
+    def test_notificationConfigs(self):
+        temp_manager = TemplateManager()
+        configs = temp_manager.get_configs('new_event', 'default')
+        self.assertIsNotNone(configs)
+        configs = temp_manager.save_configs('new_event', 'default', configs)
+        self.assertIsNotNone(configs)
+    
+    def test_badNotificationConfigs(self):
+        temp_manager = TemplateManager()
+        bad_configs = temp_manager.get_configs('new_event', 'template_DOES_NOT_EXIST_!@#$')
+        default = temp_manager.get_configs('new_event', 'default')
+
+        self.assertEqual(bad_configs, default)
+
+        bad_configs = temp_manager.save_configs('new_event', 'template_DOES_NOT_EXIST_!@#$', None)
+        self.assertIsNone(bad_configs)
+
+    def test_getTemplate(self):
+        temp_manager = TemplateManager()
+        temp = temp_manager.get_template('new_event', 'default')
+        self.assertIsNotNone(temp)
+
+    def test_badTemplate(self):
+        temp_manager = TemplateManager()
+        temp = temp_manager.get_template('new_event', 'template_DOES_NOT_EXIST_!@#$')
+        self.assertIsNotNone(temp)
+
+        temp = temp_manager.get_template_string('new_event', 'template_DOES_NOT_EXIST_!@#$')
+        self.assertIsNone(temp)
+
+    def test_templateNames(self):
+        temp_manager = TemplateManager()
+        temp_names = temp_manager.get_template_names()
+        self.assertIn('default', temp_names)
+
+    def test_NewTemp(self):
+        temp_manager = TemplateManager()
+        result = temp_manager.create_new('default')
+
+        self.assertTrue(result)
+    
+    def test_pdfTemplate(self):
+        temp_manager = TemplateManager()
+        result = temp_manager.get_template('pdf', 'header', sub_dir='default')
+    
+    def test_badSubdirPdfTemplate(self):
+        temp_manager = TemplateManager()
+        result = temp_manager.get_template('pdf', 'header', sub_dir='BAAAADSUBDIR')
+
 def set_email():
     # If the user wants to make sure they can get emails, they should
     # be able to specify an email address for each test run
