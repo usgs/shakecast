@@ -1,20 +1,20 @@
 import { Component,
          OnInit,
-         OnDestroy,         
-         trigger,
+         OnDestroy } from '@angular/core'
+import { trigger,
          state,
          style,
          transition,
-         animate } from '@angular/core';
+         animate } from '@angular/animations';
 import { FileUploader } from 'ng2-file-upload';
-import { NotificationsService } from 'angular2-notifications'
-import { UploadService } from './upload.service'
+import { NotificationsService } from 'angular2-notifications';
+import { UploadService } from './upload.service';
 import { ScreenDimmerService } from '../../shared/screen-dimmer/screen-dimmer.service'
 
 @Component({
     selector: 'upload',
     templateUrl: './upload.component.html',
-    styleUrls: ['./upload.component.css'],  
+    styleUrls: ['./upload.component.css'],
     animations: [
       trigger('showUpload', [
         state('no', style({top: '-800px'})),

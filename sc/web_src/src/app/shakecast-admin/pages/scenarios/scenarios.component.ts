@@ -67,10 +67,8 @@ export class ScenariosComponent implements OnInit, OnDestroy {
     }
 
     endSubscriptions() {
-        for (var sub in this.subscriptions) {
-            this.subscriptions[sub].unsubscribe();
+        for (const sub of this.subscriptions) {
+            sub.unsubscribe();
         }
-
     }
-    
 }

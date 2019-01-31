@@ -1,12 +1,9 @@
-import { Component, 
+import { Component,
          OnInit,
-         OnDestroy,
-         trigger,
-         state,
-         style,
-         transition,
-         animate } from '@angular/core';
+         OnDestroy } from '@angular/core';
 import { Router } from '@angular/router';
+
+import { Subscription } from 'rxjs';
 
 import { FacilityService, Facility } from '../facility.service';
 import { EarthquakeService, Earthquake } from '../../../../shakecast/pages/earthquakes/earthquake.service'
@@ -17,21 +14,21 @@ import { EarthquakeService, Earthquake } from '../../../../shakecast/pages/earth
     styleUrls: ['./facility-info.component.css']
 })
 export class FacilityInfoComponent implements OnInit, OnDestroy{
-    private subscriptions: any[] = [];
-    private show: boolean = false;
+    private subscriptions = new Subscription();
+    private show = false;
     public facility: Facility = null;
     public facilityShaking: any = null;
-    public showFragilityInfo: boolean = false;
+    public showFragilityInfo = false;
     constructor(private facService: FacilityService,
                 private eqService: EarthquakeService,
                 public _router: Router) {}
 
     ngOnInit() {
-        this.subscriptions.push(this.facService.select.subscribe((facility: Facility) => {
+        this.subscriptions.add(this.facService.select.subscribe((facility: Facility) => {
             this.onFacility(facility);
         }));
 
-        this.subscriptions.push(this.facService.facilityShaking.subscribe((shaking: any) => {
+        this.subscriptions.add(this.facService.facilityShaking.subscribe((shaking: any) => {
             this.facilityShaking = shaking;
         }));
     }
@@ -39,7 +36,7 @@ export class FacilityInfoComponent implements OnInit, OnDestroy{
     onFacility(facility) {
         if (facility === null) {
                 this.facility = null;
-                return
+                return;
             }
         this.setFacility(facility);
     }
@@ -50,12 +47,10 @@ export class FacilityInfoComponent implements OnInit, OnDestroy{
     }
 
     ngOnDestroy() {
-        this.endSubscriptions()
+        this.endSubscriptions();
     }
 
     endSubscriptions() {
-        for (var sub in this.subscriptions) {
-            this.subscriptions[sub].unsubscribe();
-        }
+        this.subscriptions.unsubscribe();
     }
 }

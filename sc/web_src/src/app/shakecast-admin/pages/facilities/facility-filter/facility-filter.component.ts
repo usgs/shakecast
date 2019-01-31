@@ -8,7 +8,7 @@ import { ScreenDimmerService } from '../../../../shared/screen-dimmer/screen-dim
     styleUrls: ['./facility-filter.component.css']
 })
 export class FacilityFilter {
-    public filter: filter = {}
+    public filter: filter = {};
 
     constructor(private facService: FacilityService,
                 private sdService: ScreenDimmerService) {}
@@ -44,5 +44,5 @@ export interface filter  {
     lonMax?: number;
     lonMin?: number;
     groupAffected?: string;
-    keywords?: string
+    keywords?: string;
 }

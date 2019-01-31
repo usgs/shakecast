@@ -1,12 +1,12 @@
 import { Component,
-         OnInit, 
+         OnInit,
          OnDestroy,
-         HostListener,
-         trigger,
+         HostListener } from '@angular/core';
+import { trigger,
          state,
          style,
          transition,
-         animate } from '@angular/core';
+         animate } from '@angular/animations';
 
 import { UsersService, User } from './users.service';
 import { GroupService, Group } from '../groups/group.service';
@@ -34,7 +34,7 @@ declare var _: any;
     ]
 })
 export class UserListComponent implements OnInit, OnDestroy {
-    public loadingData: boolean = false;
+    public loadingData = false;
     public dataList: any = [];
     private oldData: any = [];
     public filter: any = {};
@@ -48,8 +48,8 @@ export class UserListComponent implements OnInit, OnDestroy {
     ngOnInit() {
         this.subscriptions.push(this.userService.userData.subscribe(data => {
             this.dataList = data;
-            for (var user in this.dataList) {
-                this.dataList[user]['selected'] = false;
+            for (const user of this.dataList) {
+                user.selected = false;
             }
 
             this.selected = this.dataList[0];
@@ -61,7 +61,7 @@ export class UserListComponent implements OnInit, OnDestroy {
         this.subscriptions.push(this.userService.loadingData.subscribe((loading: boolean) => {
             this.loadingData = loading;
         }));
-        
+
         this.subscriptions.push(this.userService.saveUsersFromList.subscribe(saveUsers => {
             if ((saveUsers === true) && (!_.isEqual(this.dataList ,this.oldData))){
                 this.oldData = JSON.parse(JSON.stringify(this.dataList));
@@ -103,13 +103,12 @@ export class UserListComponent implements OnInit, OnDestroy {
     }
 
     ngOnDestroy() {
-        this.endSubscriptions()
+        this.endSubscriptions();
     }
 
     endSubscriptions() {
-        for (var sub in this.subscriptions) {
-            this.subscriptions[sub].unsubscribe();
+        for (const sub of this.subscriptions) {
+            sub.unsubscribe();
         }
     }
-
 }

@@ -1,13 +1,13 @@
 import { Component,
-         OnInit, 
+         OnInit,
          OnDestroy,
          ElementRef,
-         ViewChild, 
+         ViewChild,
          HostListener } from '@angular/core';
 import { TitleService } from '../../../title/title.service';
 import { NotificationHTMLService } from './notification.service'
 import { NotificationsService } from 'angular2-notifications'
-import { TimerObservable } from "rxjs/observable/TimerObservable";
+import { timer } from 'rxjs';
 
 import * as _ from 'underscore';
 
@@ -18,16 +18,16 @@ import * as _ from 'underscore';
 })
 export class NotificationsComponent implements OnInit, OnDestroy {
     private subscriptions: any[] = [];
-    public notification: string = '';
-    public name: string = 'default';
+    public notification = '';
+    public name = 'default';
     public tempNames: any = [];
-    public config: any = {}
-    public oldConfig: any = {}
-    public previewConfig: any = {}
-    public eventType: string = 'new_event';
-    public enteringNew: boolean = false;
-    public newName: string = '';
-    public imageNames: string[] = []
+    public config: any = {};
+    public oldConfig: any = {};
+    public previewConfig: any = {};
+    public eventType = 'new_event';
+    public enteringNew = false;
+    public newName = '';
+    public imageNames: string[] = [];
 
     constructor(private titleService: TitleService,
                 private notHTMLService: NotificationHTMLService,
@@ -57,14 +57,14 @@ export class NotificationsComponent implements OnInit, OnDestroy {
             })
         );
 
-        this.subscriptions.push(TimerObservable.create(0, 3000).subscribe((x: any) => {
+        this.subscriptions.push(timer(0, 3000).subscribe((x: any) => {
             this.preview(this.name,
                          this.eventType,
                          this.config);
         }));
 
         this.subscriptions.push(this.notHTMLService.imageNames.subscribe((names: string[]) => {
-            this.imageNames = names           
+            this.imageNames = names;
         }));
 
         this.notHTMLService.getNotification(this.name, this.eventType);
@@ -92,27 +92,26 @@ export class NotificationsComponent implements OnInit, OnDestroy {
     }
 
     saveConfigs() {
-        if (!_.isEqual(this.config,this.oldConfig)) {
+        if (!_.isEqual(this.config, this.oldConfig)) {
             this.notHTMLService.saveConfigs(this.name,
                                             this.config)
             this.oldConfig = JSON.parse(JSON.stringify(this.config));
         } else {
-            this.notService.info('No Changes', 'These configs are already in place!')
+            this.notService.info('No Changes', 'These configs are already in place!');
         }
-        
     }
 
     reset() {
         this.config = JSON.parse(JSON.stringify(this.oldConfig));
     }
 
-    @HostListener('window:keydown', ['$event']) 
+    @HostListener('window:keydown', ['$event'])
     keyboardInput(event: any) {
         if (this.enteringNew === true) {
             if (event.keyCode === 13) {
                 if (this.newName !== '') {
                     // remove unwanted characters
-                    var cleanName = this.newName.replace(/[^\w]/gi, '');
+                    const cleanName = this.newName.replace(/[^\w]/gi, '');
 
                     this.notHTMLService.newTemplate(cleanName);
                     this.enteringNew = false;
@@ -130,12 +129,12 @@ export class NotificationsComponent implements OnInit, OnDestroy {
     }
 
     endSubscriptions() {
-        for (var sub in this.subscriptions) {
-            this.subscriptions[sub].unsubscribe();
+        for (const sub of this.subscriptions) {
+            sub.unsubscribe();
         }
     }
 
     ngOnDestroy() {
-        this.endSubscriptions()
+        this.endSubscriptions();
     }
 }

@@ -1,6 +1,7 @@
 import { Component,
          OnInit,
          OnDestroy } from '@angular/core';
+import { Subscription } from 'rxjs';
 
 import { NotificationService } from './notification.service';
 import { EarthquakeService } from '../../earthquakes/earthquake.service';
@@ -14,18 +15,18 @@ import { EarthquakeService } from '../../earthquakes/earthquake.service';
 export class NotificationDashComponent implements OnInit, OnDestroy {
 
     public notifications: any = [];
-    public newEventGroups: string = ''
-    public inspGroups: string = ''
-    private subscriptions: any[] = [];
+    public newEventGroups = '';
+    public inspGroups = '';
+    private subscriptions = new Subscription;
     constructor(private notService: NotificationService,
                 private eqService: EarthquakeService) {}
 
     ngOnInit() {
-        this.subscriptions.push(this.eqService.selectEvent.subscribe((event: any) => {
+        this.subscriptions.add(this.eqService.selectEvent.subscribe((event: any) => {
             this.onEvent(event);
         }));
 
-        this.subscriptions.push(this.notService.notifications.subscribe(nots => {
+        this.subscriptions.add(this.notService.notifications.subscribe(nots => {
             this.onNotifications(nots);
         }));
     }
@@ -53,30 +54,28 @@ export class NotificationDashComponent implements OnInit, OnDestroy {
         }
 
         this.notifications = nots;
-        for (var not in nots) {
-            if (nots[not]['notification_type'] == 'NEW_EVENT') {
+        for (const not of nots) {
+            if (not['notification_type'] === 'NEW_EVENT') {
                 if (this.newEventGroups === '') {
-                    this.newEventGroups += nots[not]['group_name']
+                    this.newEventGroups += not['group_name'];
                 } else {
-                    this.newEventGroups += ', ' + nots[not]['group_name']
+                    this.newEventGroups += ', ' + not['group_name'];
                 }
             } else {
                 if (this.inspGroups === '') {
-                    this.inspGroups += nots[not]['group_name']
+                    this.inspGroups += not['group_name'];
                 } else {
-                    this.inspGroups += ', ' + nots[not]['group_name']
+                    this.inspGroups += ', ' + not['group_name'];
                 }
             }
         }
     }
 
     ngOnDestroy() {
-        this.endSubscriptions()
+        this.endSubscriptions();
     }
 
     endSubscriptions() {
-        for (var sub in this.subscriptions) {
-            this.subscriptions[sub].unsubscribe()
-        }
+        this.subscriptions.unsubscribe();
     }
 }

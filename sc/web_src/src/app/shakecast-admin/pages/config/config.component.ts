@@ -2,7 +2,7 @@ import { Component,
          OnInit,
          OnDestroy,
          HostListener } from '@angular/core';
-import { TimerObservable } from 'rxjs/observable/TimerObservable';
+import { Subscription, timer } from 'rxjs';
 
 import { TitleService } from '../../../title/title.service';
 import { UpdateService } from '../../update/update.service';
@@ -10,7 +10,7 @@ import { ConfigService } from './config.service';
 import { TimeService } from './time.service';
 import { NotificationsService } from 'angular2-notifications';
 
-import * as _ from 'underscore'
+import * as _ from 'underscore';
 
 @Component({
   selector: 'config',
@@ -18,13 +18,13 @@ import * as _ from 'underscore'
   styleUrls: ['./config.component.css']
 })
 export class ConfigComponent implements OnInit, OnDestroy {
-    private subscriptions: any[] = []
-    private oldConfigs: any = {}
+    private subscriptions = new Subscription();
+    private oldConfigs: any = {};
     public configs: any = {"Logging": {"log_file": "", "log_level": "", "log_rotate": 0}, "DBConnection": {"username": "", "retry_count": 0, "password": "", "type": "sqlite", "retry_interval": 0}, "Notification": {"default_template_new_event": "", "default_template_inspection": "", "default_template_pdf": ""}, "SMTP": {"username": "", "from": "", "envelope_from": "", "server": "", "security": "", "password": "", "port": 0}, "Server": {"software_version": "", "name": "", "DNS": ""}, "gmap_key": "", "Proxy": {"username": "", "use": false, "password": "", "port": 0, "server": ""}, "Services": {"use_geo_json": true, "ignore_nets": [], "new_eq_mag_cutoff": 0, "keep_eq_for": 0, "nighttime": 0, "check_new_int": 0, "night_eq_mag_cutoff": 0, "geo_json_web": "", "eq_req_products": [], "morning": 0, "archive_mag": 0, "geo_json_int": 0}, "timezone": 0}
     public utcTime: any = null;
     public offsetTime: any = null;
-    public enteringNet: boolean = false;
-    public newNet: string = '';
+    public enteringNet = false;
+    public newNet = '';
     public dbOptions: any[] = [{'name': 'SQLite', 'value': 'sqlite'},
                                     {'name': 'MySQL', 'value': 'mysql'}];
 
@@ -36,13 +36,13 @@ export class ConfigComponent implements OnInit, OnDestroy {
 
     ngOnInit() {
         this.titleService.title.next('Settings');
-        this.subscriptions.push(this.confService.configs.subscribe((configs: any) => {
+        this.subscriptions.add(this.confService.configs.subscribe((configs: any) => {
             this.configs = configs;
             this.oldConfigs = JSON.parse(JSON.stringify(this.configs));
 
             this.offsetTime = this.timeService.getOffsetTime(configs.timezone)
 
-            this.subscriptions.push(TimerObservable.create(0, 500)
+            this.subscriptions.add(timer(0, 500)
                 .subscribe(x => {
                     this.utcTime = this.timeService.getUTCTime();
                     this.offsetTime = this.timeService.getOffsetTime(configs.timezone)
@@ -103,12 +103,14 @@ export class ConfigComponent implements OnInit, OnDestroy {
             if (event.keyCode === 13) {
                 if (this.newNet !== '') {
                     this.configs.Services.ignore_nets.push(this.newNet)
-                    this.newNet = ''
-                    this.enteringNet = false
+                    this.newNet = '';
+                    this.enteringNet = false;
                 }
             }
         }
     }
 
-    ngOnDestroy() {}
+    ngOnDestroy() {
+        this.subscriptions.unsubscribe();
+    }
 }

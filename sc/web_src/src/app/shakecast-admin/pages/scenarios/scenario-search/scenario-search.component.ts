@@ -1,18 +1,18 @@
-import { Component, 
+import { Component,
          OnInit,
-         OnDestroy,
-         trigger,
+         OnDestroy } from '@angular/core';
+import { trigger,
          state,
          style,
          transition,
-         animate } from '@angular/core';
+         animate } from '@angular/animations';
 
 import { EarthquakeService, Earthquake } from '../../../../shakecast/pages/earthquakes/earthquake.service';
 
 @Component({
     selector: 'scenario-search',
     templateUrl: './scenario-search.component.html',
-    styleUrls: ['./scenario-search.component.css'],  
+    styleUrls: ['./scenario-search.component.css'],
     animations: [
       trigger('show', [
         state('hide', style({left: '100%'})),
@@ -23,9 +23,9 @@ import { EarthquakeService, Earthquake } from '../../../../shakecast/pages/earth
 })
 export class ScenarioSearchComponent implements OnInit, OnDestroy{
     private subscriptions: any[] = [];
-    private show: string = 'hide';
+    private show = 'hide';
     public facilityShaking: any = null;
-    public showFragilityInfo: boolean = false;
+    public showFragilityInfo = false;
     public lats: number[] = [];
     public lons: number[] = [];
     public filter: any = {starttime: '2005-01-01',
@@ -36,39 +36,39 @@ export class ScenarioSearchComponent implements OnInit, OnDestroy{
                           maxlatitude: 90,
                           minlongitude: -180,
                           maxlongitude: 180,
-                          scenariosOnly: false}
+                          scenariosOnly: false};
 
     constructor(public eqService: EarthquakeService) {
-        let date = new Date()
-        let day: any = date.getDate()
-        let month: any = date.getMonth()
+        const date = new Date();
+        let day: any = date.getDate();
+        let month: any = date.getMonth();
 
         if (day < 10) {
-            day = '0' + day
+            day = '0' + day;
         }
         if (month < 10) {
-            month = '0' + month
+            month = '0' + month;
         }
 
-        this.filter['endtime'] = [date.getFullYear(), 
-                                    month, day].join('-')
+        this.filter['endtime'] = [date.getFullYear(),
+                                    month, day].join('-');
     }
 
     ngOnInit() {
 
         // generate lats and lons
-        for (var i = -180; i <= 180; i += 5) {
+        for (let i = -180; i <= 180; i += 5) {
             this.lons.push(i);
-            if ((i >= -90) && (i <=90)) {
+            if ((i >= -90) && (i <= 90)) {
                 this.lats.push(i);
             }
         }
 
         this.subscriptions.push(this.eqService.showScenarioSearch.subscribe((show: boolean) => {
             if (show === true) {
-                this.show = 'show'
+                this.show = 'show';
             } else {
-                this.show = 'hide'
+                this.show = 'hide';
             }
         }));
     }
@@ -79,7 +79,6 @@ export class ScenarioSearchComponent implements OnInit, OnDestroy{
 
     hide() {
         this.show = 'hide';
-        //this.eqService.showScenarioSearch.next(false);
     }
 
     ngOnDestroy() {
@@ -87,8 +86,8 @@ export class ScenarioSearchComponent implements OnInit, OnDestroy{
     }
 
     endSubscriptions() {
-        for (var sub in this.subscriptions) {
-            this.subscriptions[sub].unsubscribe();
+        for (const sub of this.subscriptions) {
+            sub.unsubscribe();
         }
     }
 }

@@ -3,7 +3,8 @@ import { Component,
          OnDestroy } from '@angular/core';
 
 import { TitleService } from '../../../title/title.service';
-import { UsersService } from '../../../shakecast-admin/pages/users/users.service'
+import { UsersService } from '../../../shakecast-admin/pages/users/users.service';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'user-profile',
@@ -12,26 +13,24 @@ import { UsersService } from '../../../shakecast-admin/pages/users/users.service
 })
 export class UserProfileComponent implements OnInit, OnDestroy {
     public user: any = null;
-    private subscriptions: any[] = [];
+    private subs = new Subscription();
     constructor(public usersService: UsersService,
                 private titleService: TitleService) {}
 
     ngOnInit() {
         this.titleService.title.next('User Profile')
-        this.subscriptions.push(this.usersService.userData.subscribe(users => {
-            this.user = users[0]
+        this.subs.add(this.usersService.userData.subscribe(users => {
+            this.user = users[0];
         }));
 
         this.usersService.getCurrentUser();
     }
 
     ngOnDestroy() {
-        this.endSubscriptions()
+        this.endSubscriptions();
     }
 
     endSubscriptions() {
-        for (var sub in this.subscriptions) {
-            this.subscriptions[sub].unsubscribe()
-        }
+        this.subs.unsubscribe();
     }
 }

@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { ReplaySubject } from 'rxjs/ReplaySubject';
+import { ReplaySubject } from 'rxjs';
 
 import { HttpClient } from '@angular/common/http';
 import { Earthquake } from '../../shakecast/pages/earthquakes/earthquake.service';

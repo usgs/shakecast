@@ -1,10 +1,8 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpParams } from '@angular/common/http'
-import 'rxjs/add/operator/catch';
-import { map } from 'rxjs/operators';
-import { Observable } from 'rxjs/Observable';
-import { ReplaySubject } from 'rxjs/ReplaySubject';
-import { NotificationsService } from 'angular2-notifications'
+import { HttpClient, HttpParams } from '@angular/common/http';
+
+import { ReplaySubject } from 'rxjs';
+import { NotificationsService } from 'angular2-notifications';
 
 @Injectable()
 export class NotificationHTMLService {
@@ -22,7 +20,7 @@ export class NotificationHTMLService {
                     notType: string,
                     config: any = null) {
         this.loadingData.next(true);
-        let params = new HttpParams().set('config', JSON.stringify(config));
+        const params = new HttpParams().set('config', JSON.stringify(config));
         this._http.get('api/notification-html/' + notType + '/' + name, {params: params, responseType: 'text'})
             .subscribe((result: any) => {
                 this.name.next(name);

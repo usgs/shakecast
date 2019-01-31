@@ -2,6 +2,8 @@ import { Component,
          OnInit,
          OnDestroy, AfterViewInit } from '@angular/core';
 
+import { Subscription } from 'rxjs';
+
 import { FacilityListComponent } from './facility-list.component'
 import { FacilityService, Facility } from './facility.service'
 import { EarthquakeService } from '../../../shakecast/pages/earthquakes/earthquake.service'
@@ -14,7 +16,7 @@ import { TitleService } from '../../../title/title.service'
                   '../../../shared/css/data-list.css']
 })
 export class FacilitiesComponent implements OnInit, OnDestroy {
-    private subscriptions: any = [];
+    private subscriptions = new Subscription();
     public facList: any[] = [];
     
     constructor(public facService: FacilityService,
@@ -24,7 +26,7 @@ export class FacilitiesComponent implements OnInit, OnDestroy {
         this.eqService.clearData();
 
         this.titleService.title.next('Facilities')
-        this.subscriptions.push(this.facService.facilityData.subscribe((facs: any[]) => {
+        this.subscriptions.add(this.facService.facilityData.subscribe((facs: any[]) => {
             if ((facs != null) && (facs.length > 0)) {
                 this.facList = facs;
                 this.facService.select.next(facs[0]);
@@ -39,9 +41,7 @@ export class FacilitiesComponent implements OnInit, OnDestroy {
     }
 
     endSubscriptions() {
-        for (var sub in this.subscriptions) {
-            this.subscriptions[sub].unsubscribe();
-        }
+        this.subscriptions.unsubscribe();
     }
 
     ngOnDestroy() {
@@ -51,6 +51,6 @@ export class FacilitiesComponent implements OnInit, OnDestroy {
         this.facService.select.next(null);
         this.eqService.selectEvent.next(null);
         this.eqService.earthquakeData.next(null);
-        this.endSubscriptions()
+        this.endSubscriptions();
     }
 }

@@ -7,7 +7,7 @@ import { EarthquakeService } from '../earthquakes/earthquake.service'
 import { FacilityService } from '../../../shakecast-admin/pages/facilities/facility.service'
 import { TitleService } from '../../../title/title.service';
 
-import { TimerObservable } from "rxjs/observable/TimerObservable";
+import { Subscription, timer } from 'rxjs';
 import { LoadingService } from '../../../loading/loading.service';
 
 import * as _ from 'underscore';
@@ -21,26 +21,26 @@ import * as _ from 'underscore';
 export class DashboardComponent implements OnInit, OnDestroy {
     public facilityData: any = [];
     public earthquakeData: any = [];
-    private subscriptions: any[] = [];
+    private subscriptions = new Subscription();
 
     constructor(private eqService: EarthquakeService,
                 private facService: FacilityService,
                 private titleService: TitleService,
                 private loadingService: LoadingService) {}
-  
+
     ngOnInit() {
-        this.titleService.title.next('Dashboard')
+        this.titleService.title.next('Dashboard');
 
-        this.eqService.filter['timeframe'] = 'day'
-        this.eqService.filter['shakemap'] = true
-        this.eqService.filter['scenario'] = false
+        this.eqService.filter['timeframe'] = 'day';
+        this.eqService.filter['shakemap'] = true;
+        this.eqService.filter['scenario'] = false;
 
-        this.subscriptions.push(TimerObservable.create(0, 60000)
+        this.subscriptions.add(timer(0, 60000)
             .subscribe((x: any) => {
                 this.eqService.getData(this.eqService.filter);
         }));
 
-        this.subscriptions.push(this.eqService.earthquakeData.subscribe((eqs: any[]) => {
+        this.subscriptions.add(this.eqService.earthquakeData.subscribe((eqs: any[]) => {
             this.onEqData(eqs);
         }));
     }
@@ -58,15 +58,13 @@ export class DashboardComponent implements OnInit, OnDestroy {
     }
 
     endSubscriptions() {
-        for (var sub in this.subscriptions) {
-            this.subscriptions[sub].unsubscribe()
-        }
+        this.subscriptions.unsubscribe();
     }
 
     ngOnDestroy() {
         this.eqService.earthquakeData.next([]);
         this.eqService.selectEvent.next(null);
         this.eqService.clearData();
-        this.endSubscriptions()
+        this.endSubscriptions();
     }
 }

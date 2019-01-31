@@ -1,4 +1,4 @@
-import { NgModule }       from '@angular/core';
+import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { JsonpModule } from '@angular/http';
@@ -46,12 +46,10 @@ import { LoadingComponent } from './loading/loading.component';
   imports: [
     BrowserModule,
     BrowserAnimationsModule,
-    SimpleNotificationsModule,
+    SimpleNotificationsModule.forRoot(),
     routing,
     HttpClientModule,
     JsonpModule,
-    ShakeCastModule,
-    ShakeCastAdminModule,
     LoginModule,
     SharedModule
   ],
