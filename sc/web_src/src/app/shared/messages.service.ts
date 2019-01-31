@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import 'rxjs/add/operator/map';
-import { ReplaySubject } from 'rxjs/ReplaySubject';
+
+import { ReplaySubject } from 'rxjs';
 import { NotificationsService } from 'angular2-notifications';
 
 @Injectable()

@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject } from 'rxjs/BehaviorSubject';
+import { BehaviorSubject ,  Subscription } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
-import { Subscription } from 'rxjs/Subscription';
 
 import { LoadingService } from '../../../loading/loading.service';
 

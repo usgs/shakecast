@@ -1,22 +1,22 @@
-import { Directive, 
+import { Directive,
          ElementRef,
          OnInit } from '@angular/core';
 
-import { TimerObservable } from "rxjs/observable/TimerObservable";
+import { timer } from "rxjs";
 
 @Directive({
-    selector: '[scroll-toggle]', 
+    selector: '[scroll-toggle]',
 })
 
 export class ScrollToggleDirective implements OnInit {
-    private scrolled = document.querySelector('body').scrollTop
+    private scrolled = document.querySelector('body').scrollTop;
     public scrollUp = false;
 
-    constructor(private el:ElementRef) {}
+    constructor(private el: ElementRef) {}
 
-    ngOnInit() {        
+    ngOnInit() {
         console.log('Scroll Directive')
-        TimerObservable.create(0, 500)
+        timer(0, 500)
             .subscribe(x => {
                 if (this.scrolled !== document.querySelector('body').scrollTop) {
                     if (this.scrolled > (document.querySelector('body').scrollTop + 100)) {
@@ -29,17 +29,15 @@ export class ScrollToggleDirective implements OnInit {
                         // hide the element
                         if (this.scrollUp === false) {
                             console.log('hide element');
-                            console.log(this.el)
+                            console.log(this.el);
                             this.scrollUp = true;
                         }
                     }
 
-                    this.scrolled = document.querySelector('body').scrollTop
+                    this.scrolled = document.querySelector('body').scrollTop;
                 }
-                
-                console.log(this.scrolled)
-            });
-    
-    }
 
+                console.log(this.scrolled);
+            });
+    }
 }

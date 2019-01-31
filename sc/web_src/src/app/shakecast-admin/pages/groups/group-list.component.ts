@@ -1,11 +1,11 @@
 import { Component,
-         OnInit, 
-         OnDestroy,
-         trigger,
+         OnInit,
+         OnDestroy } from '@angular/core';
+import { trigger,
          state,
          style,
          transition,
-         animate } from '@angular/core';
+         animate } from '@angular/animations';
 
 import { GroupService, Group } from './group.service'
 
@@ -15,7 +15,7 @@ import * as _ from 'underscore';
     selector: 'group-list',
     templateUrl: './group-list.component.html',
     styleUrls: ['./group-list.component.css',
-                    '../../../shared/css/data-list.css'], 
+                    '../../../shared/css/data-list.css'],
     animations: [
       trigger('selected', [
         state('true', style({transform: 'translateY(-10px)'})),
@@ -32,20 +32,20 @@ import * as _ from 'underscore';
     ]
 })
 export class GroupListComponent implements OnInit, OnDestroy {
-    public loadingData: boolean = false
+    public loadingData = false;
     public groupData: any = [];
     public userGroupData: any = [];
     public noUserGroupData: any = [];
     public filter: any = {};
     public selected: Group;
     private subscriptions: any[] = [];
-    private _this: any = this
-    
+    private _this: any = this;
+
     constructor(public groupService: GroupService) {}
     ngOnInit() {
         this.subscriptions.push(this.groupService.groupData.subscribe((data: any) => {
             this.groupData = data;
-            for (var group in this.groupData) {
+            for (const group of this.groupData) {
                 this.groupData[group].selected = false;
                 this.selected = this.groupData[0];
                 this.selected['selected'] = true;
@@ -54,23 +54,22 @@ export class GroupListComponent implements OnInit, OnDestroy {
 
         this.subscriptions.push(this.groupService.userGroupData.subscribe((data: any) => {
             this.userGroupData = data;
-            for (var group in this.userGroupData) {
-                this.userGroupData[group].selected = false;
+            for (const eachGroup of this.userGroupData) {
+                eachGroup.selected = false;
                 this.selected = this.userGroupData[0];
                 this.selected['selected'] = true;
-
             }
-            
+
             // build non-user data
             this.noUserGroupData = [];
-            for (var group in this.groupData) {
+            for (const group in this.groupData) {
                 if (!_.findWhere(this.userGroupData, {'name': this.groupData[group]['name']})){
-                    this.noUserGroupData.push(this.groupData[group])
+                    this.noUserGroupData.push(this.groupData[group]);
                 }
             }
             this.groupService.clearMap();
             if (this.userGroupData.length > 0) {
-                this.groupService.plotGroup(this.userGroupData[0])
+                this.groupService.plotGroup(this.userGroupData[0]);
             }
         }));
 
@@ -87,11 +86,11 @@ export class GroupListComponent implements OnInit, OnDestroy {
     }
 
     ngOnDestroy() {
-        this.endSubscriptions()
+        this.endSubscriptions();
     }
 
     endSubscriptions() {
-        for (var sub in this.subscriptions) {
+        for (const sub of this.subscriptions) {
             this.subscriptions[sub].unsubscribe();
         }
     }

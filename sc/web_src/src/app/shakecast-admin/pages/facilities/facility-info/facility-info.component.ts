@@ -1,11 +1,7 @@
-import { Component, 
+import { Component,
          OnInit,
-         OnDestroy,
-         trigger,
-         state,
-         style,
-         transition,
-         animate } from '@angular/core';
+         OnDestroy } from '@angular/core';
+
 import { Router } from '@angular/router';
 
 import { FacilityService, Facility } from '../facility.service';
@@ -18,10 +14,10 @@ import { EarthquakeService, Earthquake } from '../../../../shakecast/pages/earth
 })
 export class FacilityInfoComponent implements OnInit, OnDestroy{
     private subscriptions: any[] = [];
-    private show: boolean = false;
+    private show = false;
     public facility: Facility = null;
     public facilityShaking: any = null;
-    public showFragilityInfo: boolean = false;
+    public showFragilityInfo = false;
     constructor(private facService: FacilityService,
                 private eqService: EarthquakeService,
                 public _router: Router) {}
@@ -39,7 +35,7 @@ export class FacilityInfoComponent implements OnInit, OnDestroy{
     onFacility(facility) {
         if (facility === null) {
                 this.facility = null;
-                return
+                return;
             }
         this.setFacility(facility);
     }
@@ -50,11 +46,11 @@ export class FacilityInfoComponent implements OnInit, OnDestroy{
     }
 
     ngOnDestroy() {
-        this.endSubscriptions()
+        this.endSubscriptions();
     }
 
     endSubscriptions() {
-        for (var sub in this.subscriptions) {
+        for (const sub of this.subscriptions) {
             this.subscriptions[sub].unsubscribe();
         }
     }

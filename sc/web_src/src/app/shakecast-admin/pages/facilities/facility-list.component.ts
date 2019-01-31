@@ -3,7 +3,7 @@ import { Component,
          ElementRef, 
          OnDestroy } from '@angular/core';
 
-import { Observable } from 'rxjs/Observable';
+import { Observable } from 'rxjs';
 
 import { trigger,
          state,

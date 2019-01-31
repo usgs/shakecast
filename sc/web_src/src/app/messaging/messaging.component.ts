@@ -1,7 +1,7 @@
 import { Component, ViewEncapsulation, OnInit, OnDestroy } from '@angular/core';
 import { NotificationsService } from 'angular2-notifications';
 import { MessagesService } from '../shared/messages.service';
-import { TimerObservable } from "rxjs/observable/TimerObservable";
+import { timer } from 'rxjs';
 import { Router } from '@angular/router';
 import { CookieService } from '../shared/cookie.service';
 
@@ -12,7 +12,7 @@ import { CookieService } from '../shared/cookie.service';
 export class MessagingComponent implements OnInit, OnDestroy {
 
     subscriptions: any[] = [];
-    messageTime: number = 0;
+    messageTime = 0;
 
     constructor(private notService: NotificationsService,
                 private messService: MessagesService,
@@ -22,9 +22,9 @@ export class MessagingComponent implements OnInit, OnDestroy {
 
     ngOnInit() {
         this.subscriptions.push(
-            TimerObservable.create(0,10000)
+            timer(0, 10000)
             .subscribe(data => {
-                    if (this._router.url != '/login') {
+                    if (this._router.url !== '/login') {
                         this.messService.getMessages();
                     }
                 }
@@ -32,15 +32,15 @@ export class MessagingComponent implements OnInit, OnDestroy {
         );
 
         this.subscriptions.push(this.messService.messages.subscribe((messages: any) => {
-            var maxTime = 0;
-            var messageTime = parseInt(this.cookieService.getCookie('messageTime'));
+            let maxTime = 0;
+            let messageTime = +this.cookieService.getCookie('messageTime');
 
             if (isNaN(messageTime)) {
                 messageTime = 0;
             }
 
-            for (let messTime in messages) {
-                let numTime = parseInt(messTime);
+            for (const messTime of messages) {
+                const numTime = +messTime;
                 if (numTime > messageTime) {
                     // Print message
                     this.makeNotification(messages[messTime]);
@@ -72,13 +72,12 @@ export class MessagingComponent implements OnInit, OnDestroy {
     }
 
     ngOnDestroy() {
-        this.endSubscriptions()
+        this.endSubscriptions();
     }
 
     endSubscriptions() {
-        for (var sub in this.subscriptions) {
-            this.subscriptions[sub].unsubscribe()
+        for (const sub of this.subscriptions) {
+            this.subscriptions[sub].unsubscribe();
         }
     }
-    
 }

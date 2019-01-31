@@ -1,9 +1,9 @@
 import { Component,
          OnInit } from '@angular/core';
 
-import { TimerObservable } from "rxjs/observable/TimerObservable";
+import { timer } from 'rxjs';
 
-import { navAnimation }   from '../shared/animations/animations';
+import { navAnimation } from '../shared/animations/animations';
 
 import { Router } from '@angular/router';
 import { UserService } from '../login/user.service'
@@ -12,21 +12,21 @@ import { NotificationsService } from 'angular2-notifications'
 @Component({
   selector: 'navbar',
   templateUrl: './nav.component.html',
-  styleUrls: ['./nav.component.css'],    
+  styleUrls: ['./nav.component.css'],
   animations: [ navAnimation ]
 })
 export class NavComponent implements OnInit {
-    public scrollUp: string = 'down';
+    public scrollUp = 'down';
     public scrolled: number = document.querySelector('body').scrollTop;
-    private ignoreTime: number = 0;
-    private hovering: boolean = false;
+    private ignoreTime = 0;
+    private hovering = false;
 
     constructor(public userService: UserService,
                 private notService: NotificationsService,
                 public router: Router) {}
 
     ngOnInit() {
-        TimerObservable.create(0, 1000)
+        timer(0, 1000)
             .subscribe(x => {
                 if (!this.hovering) {
                     this.ignoreTime += .5;
@@ -47,12 +47,12 @@ export class NavComponent implements OnInit {
                             }
                         }
 
-                        this.scrolled = document.scrollingElement.scrollTop
+                        this.scrolled = document.scrollingElement.scrollTop;
                     }
 
-                    // hide the header after 5 seconds of ignoreTime 
+                    // hide the header after 5 seconds of ignoreTime
                     // unless at the top of the page
-                    if ((this.ignoreTime > 5) && (document.scrollingElement.scrollTop!==0)) {
+                    if ((this.ignoreTime > 5) && (document.scrollingElement.scrollTop !== 0)) {
                         this.scrollUp = 'up';
                     }
                 }
@@ -60,20 +60,19 @@ export class NavComponent implements OnInit {
     }
 
     setHover(boolIn: boolean) {
-        this.hovering = boolIn
+        this.hovering = boolIn;
         if (this.hovering) {
-            this.scrollUp = 'down'
-            this.ignoreTime = 0
+            this.scrollUp = 'down';
+            this.ignoreTime = 0;
         }
-    }  
+    }
 
     changeRoute(url: string) {
         this.router.navigate([url]);
     }
-    
+
     logout() {
-        this.userService.logout()
-        this.notService.success('Logout', 'success')
+        this.userService.logout();
+        this.notService.success('Logout', 'success');
     }
-    
 }

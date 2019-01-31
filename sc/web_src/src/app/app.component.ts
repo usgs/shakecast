@@ -1,7 +1,7 @@
 import { Component, ViewEncapsulation, OnInit, OnDestroy } from '@angular/core';
 import { Router } from '@angular/router';
 import { UserService } from './login/user.service';
-import { Observable } from 'rxjs/Observable';
+import { Observable } from 'rxjs';
 
 
 @Component({
@@ -11,7 +11,7 @@ import { Observable } from 'rxjs/Observable';
   encapsulation: ViewEncapsulation.None,
 })
 export class AppComponent implements OnInit, OnDestroy {
-    public options = {
+    options = {
         timeOut: 4000,
         lastOnBottom: true,
         clickToClose: true,
@@ -30,7 +30,7 @@ export class AppComponent implements OnInit, OnDestroy {
         // Skip to dashboard if user already logged in
         this.subscriptions.push(this.userService.checkLoggedIn().subscribe((data: any) => {
             if (data.loggedIn === true) {
-                this.userService.loggedIn = data.success
+                this.userService.loggedIn = data.success;
                 this.userService.isAdmin = data.isAdmin;
                 this.router.navigate(['/shakecast']);
             }
@@ -38,12 +38,12 @@ export class AppComponent implements OnInit, OnDestroy {
     }
 
     ngOnDestroy() {
-        this.endSubscriptions()
+        this.endSubscriptions();
     }
 
     endSubscriptions() {
-        for (var sub in this.subscriptions) {
-            this.subscriptions[sub].unsubscribe()
+        for (const sub of this.subscriptions) {
+            this.subscriptions[sub].unsubscribe();
         }
     }
 }

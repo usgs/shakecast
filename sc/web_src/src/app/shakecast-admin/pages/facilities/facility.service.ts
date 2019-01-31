@@ -1,9 +1,8 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams} from '@angular/common/http';
-import 'rxjs/add/operator/map';
-import 'rxjs/add/operator/catch';
-import { Observable } from 'rxjs/Observable';
-import { BehaviorSubject } from 'rxjs/BehaviorSubject';
+
+
+import { Observable ,  BehaviorSubject } from 'rxjs';
 import { Router } from '@angular/router';
 import { NotificationsService } from 'angular2-notifications';
 import { MapService } from '../../../shared/maps/map.service';

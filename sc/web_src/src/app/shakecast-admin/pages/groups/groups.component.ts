@@ -1,11 +1,5 @@
 import { Component,
-         OnInit, 
-         OnDestroy,
-         trigger,
-         state,
-         style,
-         transition,
-         animate } from '@angular/core';
+         OnInit } from '@angular/core';
 import { TitleService } from '../../../title/title.service';
 import { GroupService } from './group.service'
 
@@ -20,8 +14,7 @@ export class GroupsComponent implements OnInit {
                 private titleService: TitleService) {}
 
     ngOnInit() {
-        this.titleService.title.next('Groups')
-        //this.groupService.clearMap();
+        this.titleService.title.next('Groups');
     }
 
     deleteCurrentGroup() {

@@ -7,7 +7,7 @@ import { EarthquakeService } from '../earthquakes/earthquake.service'
 import { FacilityService } from '../../../shakecast-admin/pages/facilities/facility.service'
 import { TitleService } from '../../../title/title.service';
 
-import { TimerObservable } from "rxjs/observable/TimerObservable";
+import { timer } from "rxjs";
 import { LoadingService } from '../../../loading/loading.service';
 
 import * as _ from 'underscore';
@@ -27,15 +27,15 @@ export class DashboardComponent implements OnInit, OnDestroy {
                 private facService: FacilityService,
                 private titleService: TitleService,
                 private loadingService: LoadingService) {}
-  
+
     ngOnInit() {
-        this.titleService.title.next('Dashboard')
+        this.titleService.title.next('Dashboard');
 
-        this.eqService.filter['timeframe'] = 'day'
-        this.eqService.filter['shakemap'] = true
-        this.eqService.filter['scenario'] = false
+        this.eqService.filter['timeframe'] = 'day';
+        this.eqService.filter['shakemap'] = true;
+        this.eqService.filter['scenario'] = false;
 
-        this.subscriptions.push(TimerObservable.create(0, 60000)
+        this.subscriptions.push(timer(0, 60000)
             .subscribe((x: any) => {
                 this.eqService.getData(this.eqService.filter);
         }));
@@ -58,8 +58,8 @@ export class DashboardComponent implements OnInit, OnDestroy {
     }
 
     endSubscriptions() {
-        for (var sub in this.subscriptions) {
-            this.subscriptions[sub].unsubscribe()
+        for (const sub of this.subscriptions) {
+            this.subscriptions[sub].unsubscribe();
         }
     }
 

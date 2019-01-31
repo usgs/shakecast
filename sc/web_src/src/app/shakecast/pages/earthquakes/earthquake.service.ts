@@ -2,10 +2,8 @@ import { Injectable } from '@angular/core';
 import { Response, Headers, RequestOptions } from '@angular/http';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { map } from 'rxjs/operators';
-import 'rxjs/add/operator/catch';
-import { Observable } from 'rxjs/Observable';
-import { ReplaySubject } from 'rxjs/ReplaySubject';
-import { BehaviorSubject } from 'rxjs/BehaviorSubject';
+
+import { Observable ,  ReplaySubject ,  BehaviorSubject } from 'rxjs';
 import { Router } from '@angular/router';
 
 import { MapService } from '../../../shared/maps/map.service'

@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { ReplaySubject } from 'rxjs/ReplaySubject';
+import { ReplaySubject } from 'rxjs';
 import { Response, Headers, RequestOptions, URLSearchParams } from '@angular/http';
 import { HttpClient } from '@angular/common/http';
 import { NotificationsService } from 'angular2-notifications';
