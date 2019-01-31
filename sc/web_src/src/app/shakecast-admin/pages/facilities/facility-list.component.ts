@@ -1,9 +1,9 @@
 import { Component,
          OnInit,
-         ElementRef, 
+         ElementRef,
          OnDestroy } from '@angular/core';
 
-import { Observable } from 'rxjs';
+import { Observable, Subscription } from 'rxjs';
 
 import { trigger,
          state,
@@ -42,16 +42,16 @@ export class FacilityListComponent implements OnInit, OnDestroy {
     public selectedFacs: any = [];
     public filter: filter = {};
     public initPlot: boolean = false;
-    private subscriptions: any[] = [];
+    private subscriptions = new Subscription();
     constructor(public facService: FacilityService,
                 private element: ElementRef,
                 private _router: Router) {}
 
     ngOnInit() {
-        this.subscriptions.push(this.facService.facilityData.subscribe(facs => {
+        this.subscriptions.add(this.facService.facilityData.subscribe(facs => {
             if (facs === null) {
                 this.facilityData = null;
-                return
+                return;
             }
 
             this.facilityData = facs;
@@ -74,14 +74,14 @@ export class FacilityListComponent implements OnInit, OnDestroy {
             }
         }));
 
-        this.subscriptions.push(this.facService.facilityDataUpdate.subscribe((facs: any) => {
+        this.subscriptions.add(this.facService.facilityDataUpdate.subscribe((facs: any) => {
             if (facs != null) {
                 this.facilityData = this.facilityData.concat(facs);
                 this.shownFacilityData = this.facilityData;
             }
         }));
 
-        this.subscriptions.push(this.facService.selection.subscribe(select => {
+        this.subscriptions.add(this.facService.selection.subscribe(select => {
             if (select === 'all') {
                 this.selectAll();
             } else if (select === 'none') {
@@ -153,9 +153,6 @@ export class FacilityListComponent implements OnInit, OnDestroy {
     }
 
     endSubscriptions() {
-        for (var sub in this.subscriptions) {
-            this.subscriptions[sub].unsubscribe();
-        }
+        this.subscriptions.unsubscribe();
     }
-    
 }

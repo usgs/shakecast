@@ -130,11 +130,11 @@ export class NotificationsComponent implements OnInit, OnDestroy {
 
     endSubscriptions() {
         for (const sub of this.subscriptions) {
-            this.subscriptions[sub].unsubscribe();
+            sub.unsubscribe();
         }
     }
 
     ngOnDestroy() {
-        this.endSubscriptions()
+        this.endSubscriptions();
     }
 }

@@ -46,12 +46,10 @@ import { LoadingComponent } from './loading/loading.component';
   imports: [
     BrowserModule,
     BrowserAnimationsModule,
-    SimpleNotificationsModule,
+    SimpleNotificationsModule.forRoot(),
     routing,
     HttpClientModule,
     JsonpModule,
-    ShakeCastModule,
-    ShakeCastAdminModule,
     LoginModule,
     SharedModule
   ],

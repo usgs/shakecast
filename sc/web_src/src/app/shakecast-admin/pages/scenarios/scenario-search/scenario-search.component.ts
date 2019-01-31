@@ -87,7 +87,7 @@ export class ScenarioSearchComponent implements OnInit, OnDestroy{
 
     endSubscriptions() {
         for (const sub of this.subscriptions) {
-            this.subscriptions[sub].unsubscribe();
+            sub.unsubscribe();
         }
     }
 }

@@ -46,7 +46,7 @@ export class GroupListComponent implements OnInit, OnDestroy {
         this.subscriptions.push(this.groupService.groupData.subscribe((data: any) => {
             this.groupData = data;
             for (const group of this.groupData) {
-                this.groupData[group].selected = false;
+                group.selected = false;
                 this.selected = this.groupData[0];
                 this.selected['selected'] = true;
             }
@@ -91,7 +91,7 @@ export class GroupListComponent implements OnInit, OnDestroy {
 
     endSubscriptions() {
         for (const sub of this.subscriptions) {
-            this.subscriptions[sub].unsubscribe();
+            sub.unsubscribe();
         }
     }
 }

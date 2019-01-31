@@ -35,9 +35,9 @@ import * as _ from 'underscore';
 })
 export class EarthquakeListComponent implements OnInit, OnDestroy {
     public earthquakeData: any = [];
-    public pulledRight: boolean = false;
-    public dataLoading: boolean = false;
-    public moreData: boolean = false;
+    public pulledRight = false;
+    public dataLoading = false;
+    public moreData = false;
     public selected: Earthquake = null;
 
     public filter: filter = {
@@ -55,7 +55,7 @@ export class EarthquakeListComponent implements OnInit, OnDestroy {
         }));
 
         this.subs.add(this.eqService.dataLoading.subscribe((loading: boolean) => {
-            this.dataLoading = loading
+            this.dataLoading = loading;
         }));
 
         this.subs.add(this.eqService.selectEvent.subscribe(event => {
@@ -66,7 +66,7 @@ export class EarthquakeListComponent implements OnInit, OnDestroy {
     onEqs(eqs) {
         if (eqs == null) {
             this.earthquakeData = [];
-            return
+            return;
         }
 
         // update data if required
@@ -92,11 +92,10 @@ export class EarthquakeListComponent implements OnInit, OnDestroy {
     ngOnDestroy() {
         this.earthquakeData = [];
         this.eqService.current = [];
-        this.endSubscriptions()
+        this.endSubscriptions();
     }
 
     endSubscriptions() {
         this.subs.unsubscribe();
     }
-    
 }
