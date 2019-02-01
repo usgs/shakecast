@@ -116,6 +116,7 @@ class Mailer(object):
         self.server_port = int(sc.dict['SMTP']['port'])
         self.security = sc.dict['SMTP']['security']
         self.log = ''
+        self.notify = sc.dict['Notification']['notify']
         
     def send(self, msg=None, you=None, debug=False):
         """
@@ -132,7 +133,8 @@ class Mailer(object):
         if self.username and self.password:
             server.login(self.username, self.password)
 
-        server.sendmail(self.me, you, msg.as_string())
+        if self.notify is True:
+            server.sendmail(self.me, you, msg.as_string())
         server.quit()
 
 class TemplateManager(object):
