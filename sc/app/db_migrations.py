@@ -78,6 +78,10 @@ def migrate_5to6(engine):
     type_ = Column('type', String(64))
     try:
         add_column(engine, 'shakemap', type_)
+    except Exception:
+        pass
+
+    try:
         add_column(engine, 'event', type_)
     except Exception:
         pass
