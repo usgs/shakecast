@@ -139,10 +139,6 @@ class ProductGrabber(object):
                         session.delete(old_event)
             else:
                 event.status = 'new'
-
-            # over ride new status if scenario
-            if scenario is True:
-                event.status = 'scenario'
                         
             # Fill the rest of the event info
             event.directory_name = os.path.join(self.data_dir,
@@ -155,10 +151,11 @@ class ProductGrabber(object):
             event.lon = event_coords[0]
             event.lat = event_coords[1]
             event.depth = event_coords[2]
+            event.type = 'scenario' if scenario is True else 'event'
             
             # determine whether or not an event should be kept
-            # based on group definitions
-            keep_event = False
+            # based on group definitions. Should always be true for scenario runs
+            keep_event = scenario
             groups = session.query(Group).all()
             if len(groups) > 0:
                 for group in groups:
@@ -304,6 +301,7 @@ class ProductGrabber(object):
             shakemap.lon_min = shakemap_json['properties']['minimum-longitude']
             shakemap.generation_timestamp = shakemap_json['properties']['process-timestamp']
             shakemap.recieve_timestamp = time.time()
+            shakemap.type = 'scenario' if scenario is True else 'event'
             
             # make a directory for the new event
             shakemap.directory_name = os.path.join(self.data_dir,
@@ -397,6 +395,7 @@ class ProductGrabber(object):
             e.title = 'ShakeCast Heartbeat'
             e.place = 'ShakeCast is running'
             e.status = 'new'
+            e.type = 'heartbeat'
             e.directory_name = os.path.join(self.data_dir,
                                                e.event_id)
             session.add(e)
