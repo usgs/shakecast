@@ -163,9 +163,9 @@ def get_eq_data(session=None):
                 query = query.filter(Event.time > time.time() - 365*DAY)
 
         if filter_.get('scenario', None) is True:
-            query = query.filter(Event.status == 'scenario')
+            query = query.filter(Event.type == 'scenario')
         else:
-            query = query.filter(Event.status != 'scenario')
+            query = query.filter(Event.type != 'scenario')
         
         if filter_.get('shakemap', False) is True:
             query = query.filter(Event.shakemaps)
@@ -482,7 +482,9 @@ def impact_summary(shakemap_id, session=None):
                 .order_by(ShakeMap.shakemap_version.desc())
                 .first())
 
-    impact = get_event_impact(shakemap.facility_shaking)
+    impact = None
+    if shakemap is not None:
+        impact = get_event_impact(shakemap.facility_shaking)
 
     return json.dumps(impact)
 
