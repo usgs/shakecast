@@ -364,15 +364,8 @@ def root_dir():
     return directory
 
 def merge_dicts(dct, merge_dct):
-    """ Recursive dict merge. Inspired by :meth:``dict.update()``, instead of
-    updating only top-level keys, merge_dicts recurses down into dicts nested
-    to an arbitrary depth, updating keys. The ``merge_dct`` is merged into
-    ``dct``.
-    :param dct: dict onto which the merge is executed
-    :param merge_dct: dct merged into dct
-    :return: None
-
-    @angstwad: https://gist.github.com/angstwad/bf22d1822c38a92ec0a9
+    """
+    Merge keys at an arbitrary depth. Used for updating user configs
     """
     for k in merge_dct:
         if (k in dct and isinstance(dct[k], dict)
