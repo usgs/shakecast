@@ -3,7 +3,6 @@ import { NotificationsService } from 'angular2-notifications';
 import { MessagesService } from '../shared/messages.service';
 import { timer } from 'rxjs';
 import { Router } from '@angular/router';
-import { CookieService } from '../shared/cookie.service';
 
 @Component({
   selector: 'messaging',
@@ -12,11 +11,10 @@ import { CookieService } from '../shared/cookie.service';
 export class MessagingComponent implements OnInit, OnDestroy {
 
     subscriptions: any[] = [];
-    messageTime = 0;
+    messageTime: number = (new Date()).getTime() / 1000;
 
     constructor(private notService: NotificationsService,
                 private messService: MessagesService,
-                private cookieService: CookieService,
                 private _router: Router
                 ) {}
 
@@ -32,27 +30,7 @@ export class MessagingComponent implements OnInit, OnDestroy {
         );
 
         this.subscriptions.push(this.messService.messages.subscribe((messages: any) => {
-            let maxTime = 0;
-            let messageTime = +this.cookieService.getCookie('messageTime');
-
-            if (isNaN(messageTime)) {
-                messageTime = 0;
-            }
-
-            for (const messTime of messages) {
-                const numTime = +messTime;
-                if (numTime > messageTime) {
-                    // Print message
-                    this.makeNotification(messages[messTime]);
-                    if (numTime > maxTime) {
-                        maxTime = numTime;
-                    }
-                }
-            }
-
-            if (maxTime > 0) {
-                this.cookieService.setCookie('messageTime', maxTime.toString())
-            }
+            this.onNotification(messages);
         }));
     }
 
@@ -67,6 +45,17 @@ export class MessagingComponent implements OnInit, OnDestroy {
             } else {
                 this.notService.info(message['title'],
                                         message['message'], {timeOut: 0});
+            }
+        }
+    }
+
+    onNotification(messages) {
+        for (const key of Object.keys(messages)) {
+            const messTime = parseFloat(key);
+            if (messTime > this.messageTime) {
+                // Print message
+                this.makeNotification(messages[messTime]);
+                this.messageTime = messTime;
             }
         }
     }
