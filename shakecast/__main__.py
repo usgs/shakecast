@@ -6,7 +6,6 @@ import time
 
 from .admin.server_service import ShakecastServer
 from .admin.web_server_service import ShakecastWebServer
-import shakecast_watcher
 from .app.util import SC, sc_dir
 
 def check_running():
