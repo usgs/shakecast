@@ -1,0 +1,77 @@
+{
+    "Logging": {
+        "level": "info"
+    }, 
+    "web_port": 80, 
+    "DBConnection": {
+        "username": "", 
+        "database": "shakecast", 
+        "retry_interval": 0, 
+        "server": "localhost", 
+        "retry_count": 0, 
+        "password": "", 
+        "type": "sqlite"
+    }, 
+    "Notification": {
+        "default_template_new_event": "default_ne.json", 
+        "default_template_inspection": "default_insp.json", 
+        "default_template_pdf": "default_pdf.json", 
+        "max_facilities": 200, 
+        "notify": true
+    }, 
+    "SMTP": {
+        "username": "", 
+        "from": "", 
+        "envelope_from": "", 
+        "server": "smtp.gmail.com", 
+        "security": "TLS", 
+        "password": "", 
+        "port": 587
+    }, 
+    "Server": {
+        "update": {
+            "json_url": "https://raw.githubusercontent.com/usgs/shakecast/master/update.json", 
+            "db_version": 6, 
+            "update_version": "4.0.5", 
+            "software_version": "4.0.5", 
+            "admin_notified": false
+        }, 
+        "DNS": "https://localhost", 
+        "name": "ShakeCast"
+    }, 
+    "map_key": "pk.eyJ1IjoiZHNsb3NreSIsImEiOiJjaXR1aHJnY3EwMDFoMnRxZWVtcm9laWJmIn0.1C3GE0kHPGOpbVV9kTxBlQ", 
+    "host": "localhost", 
+    "extensions": [], 
+    "Proxy": {
+        "username": "", 
+        "use": false, 
+        "password": "", 
+        "port": 0, 
+        "server": ""
+    }, 
+    "Services": {
+        "use_geo_json": true, 
+        "ignore_nets": "at,pt", 
+        "new_eq_mag_cutoff": 3, 
+        "keep_eq_for": 60, 
+        "eq_req_products": [
+            "grid.xml", 
+            "intensity.jpg"
+        ], 
+        "check_new_int": 3, 
+        "eq_pref_products": [
+            "grid.xml", 
+            "stationlist.xml", 
+            "intensity.jpg", 
+            "ii_overlay.png"
+        ], 
+        "night_eq_mag_cutoff": 0, 
+        "geo_json_web": "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/2.5_{}.geojson", 
+        "nighttime": 18, 
+        "morning": 9, 
+        "archive_mag": 5, 
+        "geo_json_int": 60
+    }, 
+    "timezone": 0, 
+    "port": 1981
+}

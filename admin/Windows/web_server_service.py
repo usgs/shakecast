@@ -12,7 +12,7 @@ path = os.path.dirname(os.path.abspath(__file__))
 path = path.split(os.sep)
 del path[-1]
 del path[-1]
-path += ['sc']
+path += ['shakecast']
 app_dir = os.path.normpath(os.sep.join(path))
 
 if app_dir not in sys.path:

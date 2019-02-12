@@ -12,4 +12,4 @@ ENV SC_DOCKER 1
 
 EXPOSE 1981
 
-ENTRYPOINT ["python", "-m", "sc.app.server", "start"]
+ENTRYPOINT ["python", "-m", "shakecast.app.server", "start"]

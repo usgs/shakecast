@@ -3,25 +3,18 @@ import logging
 import os, sys
 import traceback
 import urllib2
-path = os.path.dirname(os.path.abspath(__file__))
-path = path.split(os.sep)
-del path[-1]
-del path[-1]
-path += ['shakecast']
 
-app_dir = os.path.normpath(os.sep.join(path))
-if app_dir not in sys.path:
-    sys.path += [app_dir]
+from ..app.util import SC, get_logging_dir
+from ..web_server import start as start_web_server
 
-path += ['logs', 'sc-web-server.log']
+logs_dir = get_logging_dir()
+log_file = os.path.join(logs_dir, 'sc-web-server.log')
 logging.basicConfig(
-    filename = os.path.normpath(os.sep.join(path)),
+    filename = log_file,
     level = logging.INFO, 
     format = '%(asctime)s: [ShakeCast - Web] %(levelname)-7.7s %(message)s'
 )
 
-from web_server import start
-from app.util import SC
 
 class ShakecastWebServer(object):
     _svc_name_ = "sc_web_server"
@@ -48,7 +41,7 @@ class ShakecastWebServer(object):
     def main():
         logging.info(' ** Starting ShakeCast Web Server ** ')
         try:
-            start()
+            start_web_server()
 
         except Exception as e:
             logging.info('FAILED')
