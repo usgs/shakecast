@@ -9,8 +9,6 @@ modules/
 docs/
 pypy/
 dist/
-inspection/
-new_event/
 pdf/
 !default.json
 !default.html
