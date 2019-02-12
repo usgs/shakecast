@@ -8,13 +8,13 @@ environment:
 
 install:
   - "python -m pip install -r requirements.txt"
-  - "python -m sc.app.startup"
-  - ps: $SmtpServer = Start-Process "python" -ArgumentList "-m sc.tests.smtpserver" -PassThru
+  - "python -m shakecast.app.startup"
+  - ps: $SmtpServer = Start-Process "python" -ArgumentList "-m shakecast.tests.smtpserver" -PassThru
 
 build: off
 
 test_script:
-  - "python -m sc.tests.bundle"
+  - "python -m shakecast.tests.bundle"
   
 on_finish:
   - ps: Stop-Process -Id $SmtpServer.Id

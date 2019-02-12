@@ -5,11 +5,11 @@ python:
 install: 
   - pip install -r requirements.txt
   - pip install codecov
-  - python -m sc.app.startup
-  - python -m sc.tests.smtpserver &
+  - python -m shakecast.app.startup
+  - python -m shakecast.tests.smtpserver &
 
 script:
-  - coverage run -m sc.tests.bundle
+  - coverage run -m shakecast.tests.bundle
 
 branches:
   only:
