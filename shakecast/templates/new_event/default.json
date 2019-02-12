@@ -1,0 +1,27 @@
+{
+    "section_head": {
+        "font_color": "#ffffff", 
+        "back_color": "#444444"
+    }, 
+    "footer": {
+        "font_color": "#444444", 
+        "header_color": "#444444"
+    }, 
+    "intro": {
+        "font_color": "#444444", 
+        "back_color": "#ffffff", 
+        "text": "This report supersedes any earlier reports about this event. This is a computer-generated message and has not yet been reviewed by an Engineer or Seismologist. Epicenter and magnitude are published by the <a href=\"http://earthquake.usgs.gov/earthquakes/\" target=\"_blank\">USGS</a>.  Reported magnitude may be revised and will not be reported through ShakeCast. The <a href=\"http://earthquake.usgs.gov/earthquakes/\" target=\"_blank\">USGS</a> website should be referenced for the most up-to-date information.  Inspection prioritization emails will be sent shortly if ShakeCast determines significant shaking occurred at user's infrastructure."
+    }, 
+    "second_head": {
+        "font_color": "#444444", 
+        "border_color": "#444444"
+    }, 
+    "table": {
+        "border_color": "#444444"
+    }, 
+    "logo": "sc_logo.png", 
+    "admin_email": "sc.admin@gmail.com", 
+    "type": "new_event", 
+    "body_color": "#ffffff", 
+    "head_text": "ShakeCast Alert"
+}

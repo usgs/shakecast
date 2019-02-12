@@ -1,0 +1,35 @@
+<html>
+    <table>
+        <thead>
+            <tr>
+                <th width="30%"></th>
+                <th width="20%"></th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+        <tr>
+            <td>Number of Facilities Evaluated</td>
+            <td>: {{ fac_details.all }}</td>
+        </tr>
+        <tr>
+            <td style="color:#ff0000">High Impact</td>
+            <td>: {{ fac_details.red }}</td>
+        </tr>
+        <tr>
+            <td style="color:orange">Moderate-High Impact</td>
+            <td>: {{ fac_details.orange }}</td>
+        </tr>
+        <tr>
+            <td style="color:gold">Moderate Impact</td>
+            <td>: {{ fac_details.yellow }}</td>
+        </tr>
+        <tr>
+            <td style="color:green">Low Impact</td>
+            <td>: {{ fac_details.green }}</td>
+        </tr>
+        <tr>
+            <td style="color:gray">No Impact</td>
+            <td>: {{ fac_details.gray }}</td>
+        </tr>
+    </table>
+</html> 
