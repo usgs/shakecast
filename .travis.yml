@@ -15,10 +15,6 @@ install:
 script:
   - coverage run -m shakecast.tests.bundle
   - python setup.py bdist_wheel
-
-branches:
-  only:
-    - master
   
 after_success:
   - codecov
