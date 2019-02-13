@@ -1,6 +1,6 @@
 data/
 build/
-!sc/tests/data
+!shakecast/tests/data
 tmp/
 logs/
 docs/
