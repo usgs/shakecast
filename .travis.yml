@@ -2,14 +2,19 @@ language: python
 python:
   - "2.7"
 
+stages:
+  - name: after_success
+    if: branch = master
+
 install: 
   - pip install -r requirements.txt
   - pip install codecov
-  - python -m sc.app.startup
-  - python -m sc.tests.smtpserver &
+  - python -m shakecast.app.startup
+  - python -m shakecast.tests.smtpserver &
 
 script:
-  - coverage run -m sc.tests.bundle
+  - coverage run -m shakecast.tests.bundle
+  - python setup.py bdist_wheel
 
 branches:
   only:
@@ -17,3 +22,11 @@ branches:
   
 after_success:
   - codecov
+
+deploy:
+  - provider: pypi
+    user: "dslosky"
+    password: $PYPI_PASSWORD
+    distributions: "bdist_wheel"
+    on:
+      tags: true

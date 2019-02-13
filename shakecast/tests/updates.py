@@ -1,8 +1,8 @@
 import os
 import unittest
 
-from sc.app.updates import SoftwareUpdater, check_for_updates
-from sc.app.util import sc_dir
+from shakecast.app.updates import SoftwareUpdater, check_for_updates
+from shakecast.app.util import sc_dir
 
 class TestUpdates(unittest.TestCase):
     def test_NewUpdate(self):

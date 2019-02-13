@@ -1,8 +1,8 @@
 import sys
 import unittest
 
-from sc.app.notifications import *
-from sc.app.orm import dbconnect, Facility, FacilityShaking, Group, Notification
+from shakecast.app.notifications import *
+from shakecast.app.orm import dbconnect, Facility, FacilityShaking, Group, Notification
 from util import create_group
 
 class TestMailer(unittest.TestCase):

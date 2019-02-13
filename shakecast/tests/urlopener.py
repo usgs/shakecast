@@ -1,6 +1,6 @@
 import unittest
 
-from sc.app.urlopener import URLOpener
+from shakecast.app.urlopener import URLOpener
 
 class TestURLOpener(unittest.TestCase):
     '''

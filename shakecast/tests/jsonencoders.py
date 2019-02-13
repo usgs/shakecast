@@ -1,8 +1,8 @@
 import json
 import unittest
 
-from sc.app.jsonencoders import *
-from sc.app.orm import Base, User
+from shakecast.app.jsonencoders import *
+from shakecast.app.orm import Base, User
 
 class TestSqlAlchemyToObj(unittest.TestCase):
     '''

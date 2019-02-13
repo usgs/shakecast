@@ -6,4 +6,4 @@ WORKDIR /usr/local/shakecast
 
 EXPOSE 5000
 
-ENTRYPOINT ["python", "-m", "sc.web_server"]
+ENTRYPOINT ["python", "-m", "shakecast.web_server"]

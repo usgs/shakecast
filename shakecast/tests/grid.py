@@ -1,7 +1,7 @@
 import copy
 import unittest
 
-from sc.app.grid import *
+from shakecast.app.grid import *
 
 class TestPoint(unittest.TestCase):
     @classmethod

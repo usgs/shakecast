@@ -4,7 +4,7 @@ import time
 from grid import create_grid
 from impact import get_event_impact, make_inspection_priority
 from jsonencoders import ImpactGeoJson
-from orm import (
+from .orm import (
     dbconnect,
     Event,
     Facility,

@@ -16,7 +16,7 @@
         "default_template_new_event": "default_ne.json", 
         "default_template_inspection": "default_insp.json", 
         "default_template_pdf": "default_pdf.json", 
-        "max_facilities": 200,
+        "max_facilities": 200, 
         "notify": true
     }, 
     "SMTP": {
@@ -31,9 +31,9 @@
     "Server": {
         "update": {
             "json_url": "https://raw.githubusercontent.com/usgs/shakecast/master/update.json", 
-            "db_version": 1, 
-            "update_version": "4.0.4", 
-            "software_version": "4.0.4", 
+            "db_version": 6, 
+            "update_version": "4.0.5", 
+            "software_version": "4.0.5", 
             "admin_notified": false
         }, 
         "DNS": "https://localhost", 

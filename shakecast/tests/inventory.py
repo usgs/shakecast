@@ -1,9 +1,9 @@
 import os
 import unittest
 
-from sc.app.inventory import *
-from sc.app.orm import Session, Facility, Group, User
-from sc.app.util import sc_dir
+from shakecast.app.inventory import *
+from shakecast.app.orm import Session, Facility, Group, User
+from shakecast.app.util import sc_dir
 class TestImport(unittest.TestCase):
     '''
     Run tests on the XML import functions

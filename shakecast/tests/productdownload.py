@@ -1,6 +1,6 @@
 import unittest
 
-from sc.app.productdownload import *
+from shakecast.app.productdownload import *
 
 class TestProductGrabber(unittest.TestCase):
     '''

@@ -1,5 +1,6 @@
 data/
-!sc/tests/data
+build/
+!shakecast/tests/data
 tmp/
 logs/
 docs/
@@ -15,6 +16,7 @@ pdf/
 !default.html
 .DS_Store
 *.pyc
+*.egg-info/
 *~
 *.db
 conf/sc_back.json
@@ -24,6 +26,7 @@ server-messages.json
 .vscode/
 sc_back.json
 pycast_watcher.pid
+.status
 npm-debug.log
 
 # See http://help.github.com/ignore-files/ for more about ignoring files.

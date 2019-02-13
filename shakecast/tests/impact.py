@@ -1,7 +1,7 @@
 import unittest
-from sc.app.impact import *
-from sc.app.grid import ShakeMapGrid, Point
-from sc.app.orm import Aebm, Event, ShakeMap
+from shakecast.app.impact import *
+from shakecast.app.grid import ShakeMapGrid, Point
+from shakecast.app.orm import Aebm, Event, ShakeMap
 
 from .util import create_fac
 

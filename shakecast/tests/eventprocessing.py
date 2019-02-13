@@ -1,6 +1,6 @@
 import unittest
 
-from sc.app.eventprocessing import *
+from shakecast.app.eventprocessing import *
 
 class TestScenarioDownload(unittest.TestCase):
     def test_badScenario(self):

@@ -1,4 +1,4 @@
-from sc.app.orm import Facility, Group, GroupSpecification, User
+from shakecast.app.orm import Facility, Group, GroupSpecification, User
 
 def create_fac(grid=None, fac_id='AUTO_GENERATED'):
     '''

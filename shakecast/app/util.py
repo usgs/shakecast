@@ -353,6 +353,18 @@ def sc_dir():
     
     return directory
 
+def get_logging_dir():
+    sc_dir_ = sc_dir()
+    path = os.path.join(sc_dir_, 'logs')
+
+    return path
+
+def get_template_dir():
+    sc_dir_ = sc_dir()
+    path = os.path.join(sc_dir_, 'templates')
+
+    return path
+
 def root_dir():
     """
     Returns the path of the root directory for the shakecast application

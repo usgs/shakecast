@@ -1,6 +1,6 @@
 import unittest
 
-from sc.app.orm import *
+from shakecast.app.orm import *
 
 class TestShakeMap(unittest.TestCase):
     def test100Red(self):

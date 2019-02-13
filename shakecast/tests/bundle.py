@@ -3,13 +3,13 @@ import os
 import sys
 from email.mime.text import MIMEText
 import time
-from sc.app.eventprocessing import check_new, process_events, process_shakemaps, run_scenario
-from sc.app.grid import create_grid
-from sc.app.inventory import add_facs_to_groups, add_users_to_groups
-from sc.app.productdownload import geo_json, download_scenario
-from sc.app.servertestfunctions import system_test
-from sc.app.task import Task
-from sc.app.util import merge_dicts, Clock, SC
+from shakecast.app.eventprocessing import check_new, process_events, process_shakemaps, run_scenario
+from shakecast.app.grid import create_grid
+from shakecast.app.inventory import add_facs_to_groups, add_users_to_groups
+from shakecast.app.productdownload import geo_json, download_scenario
+from shakecast.app.servertestfunctions import system_test
+from shakecast.app.task import Task
+from shakecast.app.util import merge_dicts, Clock, SC
 from util import create_fac, create_group, create_user
 from .grid import *
 from .impact import *

@@ -7,18 +7,6 @@
         "font_color": "#444444", 
         "header_color": "#444444"
     }, 
-    "table": {
-        "border_color": "#444444"
-    }, 
-    "second_head": {
-        "font_color": "#444444", 
-        "border_color": "#444444"
-    }, 
-    "logo": "sc_logo.png", 
-    "head_text": "ShakeCast Alert", 
-    "admin_email": "sc.admin@gmail.com", 
-    "type": "inspection", 
-    "body_color": "#ffffff", 
     "table_head": [
         {
             "use": true, 
@@ -65,5 +53,17 @@
             "name": "shaking_value", 
             "val": "Shaking Value"
         }
-    ]
+    ], 
+    "second_head": {
+        "font_color": "#444444", 
+        "border_color": "#444444"
+    }, 
+    "table": {
+        "border_color": "#444444"
+    }, 
+    "logo": "sc_logo.png", 
+    "admin_email": "sc.admin@gmail.com", 
+    "type": "inspection", 
+    "body_color": "#ffffff", 
+    "head_text": "ShakeCast Alert"
 }
