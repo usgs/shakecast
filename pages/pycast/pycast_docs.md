@@ -20,9 +20,10 @@ Your application is ready to go! Checkout [Inventory Setup](#inventory-setup) be
 There are multiple ways to install pyCast on Linux, but we recommend you use the PyPI package. Installation requires python 2.7.x and root access:
 
 ~~~
-sudo pip install pycast-usgs
-sudo python -m shakecast start
+pip install usgs-shakecast
+sudo python -m shakecast start &
 ~~~
+
 
 ## Contributor Installation (GitHub)
 Contributors may want to install pyCast directly from GitHub to have the most updated code. 
@@ -32,21 +33,17 @@ Download from GitHub:
 git clone https://github.com/usgs/shakecast.git
 ~~~
 
-Install the required Python libraries. Feel free to use a virtual environment!
+Install the required Python libraries and start ShakeCast. Installating within a virtual environemnt is preferred.
 ~~~
-pip install -r shakecast/requirements.txt
+cd shakecast
+pip install -r requirements.txt
+sudo python -m shakecast start &
 ~~~
 
-Start and stop pyCast directly:
-~~~
-sudo ./shakecast/admin/Linux/start_shakecast.sh
-
-sudo ./shakecast/admin/Linux/stop_shakecast.sh
-~~~
 
 ## After Installation...
 
-In order to determine if ShakeCast has installed correctly, use your web browser to navigate to [your localhost](http://localhost). You can login using the default administrator account by entering "scadmin" for both the username and password.
+In order to determine if ShakeCast has installed correctly, use your web browser to navigate to [your localhost](http://localhost). If you did not install ShakeCast on your local machine, you'll navigate to the address of the server you used instead of your localhost. You can login using the default administrator account by entering "scadmin" for both the username and password.
 
 ## Inventory Setup
 Download an Inventory Workbook [here](ftp://ftpext.usgs.gov/pub/cr/co/golden/shakecast/ShakeCast_Workbook/ShakeCastInventory.xlsm) and create your initial inventory. Your ShakeCast inventory is made up of facilities, notification groups, and users. You can store all of this invormation in the ShakeCast Inventory Workbook to ensure your data is compatable with ShakeCast (including future versions). Once your information is input, you can export the data as XML files, which are easily read by ShakeCast.
@@ -112,14 +109,14 @@ net start sc_web_server
 You will find an uninstaller for pyCast in it's installation directory (C:\Users\Username\shakecast). Run this as an administrator to fully remove pyCast.
 
 ### Linux
-To stop pyCast:
+To stop ShakeCast:
 ~~~
 sudo python -m shakecast stop
 ~~~
 
 Then to uninstall it:
 ~~~
-sudo pip uninstall pycast-usgs
+pip uninstall usgs-shakecast
 ~~~
 
 ## Admin Changes in V4
