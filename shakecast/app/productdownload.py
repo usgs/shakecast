@@ -141,8 +141,6 @@ class ProductGrabber(object):
                 event.status = 'new'
                         
             # Fill the rest of the event info
-            event.directory_name = os.path.join(self.data_dir,
-                                                event.event_id)
             event.title = self.earthquakes[eq_id]['properties']['title']
             event.place = self.earthquakes[eq_id]['properties']['place']
             event.time = self.earthquakes[eq_id]['properties']['time']/1000.0
@@ -302,11 +300,7 @@ class ProductGrabber(object):
             shakemap.generation_timestamp = shakemap_json['properties']['process-timestamp']
             shakemap.recieve_timestamp = time.time()
             shakemap.type = 'scenario' if scenario is True else 'event'
-            
-            # make a directory for the new event
-            shakemap.directory_name = os.path.join(self.data_dir,
-                                                   shakemap.shakemap_id,
-                                                   shakemap.shakemap_id + '-' + str(shakemap.shakemap_version))
+
             if not os.path.exists(shakemap.directory_name):
                 os.makedirs(shakemap.directory_name)
         
@@ -396,8 +390,7 @@ class ProductGrabber(object):
             e.place = 'ShakeCast is running'
             e.status = 'new'
             e.type = 'heartbeat'
-            e.directory_name = os.path.join(self.data_dir,
-                                               e.event_id)
+
             session.add(e)
             session.commit()
             
@@ -456,7 +449,6 @@ def grab_from_directory(directory, session=None):
     event = Event(
         status = 'new',
         event_id = grid.event_id,
-        directory_name = directory,
         title = 'M {} - {}'.format(event_info['magnitude'], event_info['location']),
         place = event_info['location'],
         time = timestamp,
@@ -478,8 +470,7 @@ def grab_from_directory(directory, session=None):
         lon_min = grid.lon_min,
         lon_max = grid.lon_max,
         generation_timestamp = proc['shakemap_versions']['process_time'],
-        recieve_timestamp = time.time(),
-        directory_name = directory
+        recieve_timestamp = time.time()
     )
 
     session.add(shakemap)
