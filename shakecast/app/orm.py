@@ -291,6 +291,7 @@ class FacilityShaking(Base):
     facility_id = Column(Integer, ForeignKey('facility.shakecast_id'))
     metric = Column(String(20))
     alert_level = Column(String(20))
+    epicentral_distance = Column(Float(2))
     weight = Column(Float)
     gray = Column(Float)
     green = Column(Float)
@@ -733,7 +734,6 @@ class Event(Base):
     title = Column(String(100))
     place = Column(String(255))
     time = Column(Integer)
-    directory_name = Column(String(255))
     
     shakemaps = relationship('ShakeMap',
                              backref='event')
@@ -761,6 +761,10 @@ class Event(Base):
     def __str__(self):
         return self.event_id
     
+    @hybrid_property
+    def directory_name(self):
+        return os.path.join(sc_dir(), 'data', self.event_id)
+
     def is_new(self):
         """
         Check if this Event is new
@@ -811,7 +815,6 @@ class ShakeMap(Base):
     begin_timestamp = Column(Float)
     end_timestamp = Column(Float)
     superceded_timestamp = Column(Float)
-    directory_name = Column(String(255))
     gray = Column(Integer)
     green = Column(Integer)
     yellow = Column(Integer)
@@ -866,6 +869,13 @@ class ShakeMap(Base):
     
     def __str__(self):
         return self.shakemap_id
+
+    @hybrid_property
+    def directory_name(self):
+        return os.path.join(sc_dir(),
+            'data',
+            self.shakemap_id,
+            self.shakemap_id + '-' + str(self.shakemap_version))
     
     def old_maps(self):
         """

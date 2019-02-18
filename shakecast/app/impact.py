@@ -117,6 +117,7 @@ def compute_aebm_impact(facility, shaking_point, shakemap):
     fac_shake['yellow'] = damage_probabilities['moderate'] * 100
     fac_shake['orange'] = damage_probabilities['extensive'] * 100
     fac_shake['red'] = damage_probabilities['complete'] * 100
+    fac_shake['epicentral_distance'] = r_rup
 
     fac_shake.update(shaking_point)
     fac_shake.set_alert_level()
@@ -189,6 +190,16 @@ def compute_hazus_impact(facility, shaking_point, shakemap):
         fac_shake['gray'] = 100 - prob_sum
         fac_shake.set_alert_level()
         fac_shake.set_weight()
+
+        # get epicentral distance
+        r_rup = get_gps_distance(
+            facility.lat,
+            facility.lon,
+            shakemap.event.lat,
+            shakemap.event.lon
+        )
+
+        fac_shake['epicentral_distance'] = r_rup
 
     return fac_shake
 

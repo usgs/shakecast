@@ -88,6 +88,16 @@ def migrate_5to6(engine):
 
     return engine
 
+def migrate_6to7(engine):
+
+    epicentral_distance = Column('epicentral_distance', String(64))
+    try:
+        add_column(engine, 'facility_shaking', epicentral_distance)
+    except Exception:
+        pass
+
+    return engine
+
 def add_column(engine, table_name, column):
     '''
     Add a column to an existing table
@@ -101,4 +111,4 @@ def add_column(engine, table_name, column):
         engine.execute('ALTER TABLE `%s` ADD COLUMN %s %s' % (table_name, column_name, column_type))
 
 # List of database migrations for export
-migrations = [migrate_1to2, migrate_2to3, migrate_3to4, migrate_4to5, migrate_5to6]
+migrations = [migrate_1to2, migrate_2to3, migrate_3to4, migrate_4to5, migrate_5to6, migrate_6to7]
