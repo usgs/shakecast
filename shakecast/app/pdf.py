@@ -37,7 +37,7 @@ def generate_impact_pdf(shakemap, save=False, pdf_name='', template_name=''):
 
     if save is True:
         pdf_name = pdf_name or 'impact.pdf'
-        save_pdf(pdf_string, pdf_name, shakemap.directory_name)
+        save_pdf(pdf_string, pdf_name, shakemap.local_products_dir)
     return pdf_string
 
 

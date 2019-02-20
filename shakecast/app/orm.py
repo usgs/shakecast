@@ -1,19 +1,10 @@
-from util import *
-from .impact import get_event_impact, get_impact
 import os
 import sys
 import inspect as inspect_mod
 import time
 from math import floor
 from functools import wraps
-
-modules_dir = os.path.join(sc_dir(), 'modules')
-if modules_dir not in sys.path:
-    sys.path += [modules_dir]
-    
-app_dir = os.path.join(sc_dir(), 'app')
-if app_dir not in sys.path:
-    sys.path += [app_dir]
+from werkzeug.security import generate_password_hash
 
 from sqlalchemy import *
 from sqlalchemy.ext.declarative import *
@@ -22,14 +13,8 @@ from sqlalchemy.orm import *
 from sqlalchemy.sql import and_, or_
 from sqlalchemy.orm.session import Session as SessionClass
 
-from werkzeug.security import generate_password_hash
-
-# Get directory location for database
-path = os.path.dirname(os.path.abspath(__file__))
-delim = get_delim()
-path = path.split(delim)
-path[-1] = 'db'
-directory = delim.join(path)
+from util import *
+from .impact import get_event_impact, get_impact
 
 # create a metadata object
 metadata = MetaData()
@@ -763,7 +748,11 @@ class Event(Base):
     
     @hybrid_property
     def directory_name(self):
-        return os.path.join(sc_dir(), 'data', self.event_id)
+        return os.path.join(get_data_dir(), self.event_id)
+    
+    @hybrid_property
+    def local_products_dir(self):
+        return os.path.join(get_local_products_dir(), self.event_id)
 
     def is_new(self):
         """
@@ -872,8 +861,15 @@ class ShakeMap(Base):
 
     @hybrid_property
     def directory_name(self):
-        return os.path.join(sc_dir(),
-            'data',
+        return os.path.join(
+            get_data_dir(),
+            self.shakemap_id,
+            self.shakemap_id + '-' + str(self.shakemap_version))
+    
+    @hybrid_property
+    def local_products_dir(self):
+        return os.path.join(
+            get_local_products_dir(),
             self.shakemap_id,
             self.shakemap_id + '-' + str(self.shakemap_version))
     
@@ -1072,7 +1068,7 @@ def db_init():
         testing = True
 
     if sc.dict['DBConnection']['type'] == 'sqlite' or testing is True:
-        engine = create_engine('sqlite:///%s' % os.path.join(directory, db_name))
+        engine = create_engine('sqlite:///%s' % os.path.join(get_db_dir(), db_name))
     elif sc.dict['DBConnection']['type'] == 'mysql':
         try:
             db_str = 'mysql://{}:{}@{}/{}'.format(sc.dict['DBConnection']['username'],

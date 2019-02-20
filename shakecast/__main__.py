@@ -4,10 +4,6 @@ from multiprocessing import Process
 import subprocess
 import time
 
-from .admin.server_service import ShakecastServer
-from .admin.web_server_service import ShakecastWebServer
-from .app.util import SC, sc_dir
-
 def check_running():
     ##### replace with actual server health checks #####
     shakecast_process_count = get_shakecast_process_count()
@@ -92,6 +88,12 @@ def write_status(status):
 
 
 if __name__ == '__main__':
+    from .app.startup import pip_init
+    pip_init()
+
+    from .admin.server_service import ShakecastServer
+    from .admin.web_server_service import ShakecastWebServer
+    from .app.util import SC, sc_dir
 
     sc = SC()
     uid = 0

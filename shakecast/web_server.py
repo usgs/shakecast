@@ -120,7 +120,7 @@ def index():
 @app.route('/api/messages')
 @login_required
 def get_messages():
-    fname = os.path.join(sc_dir(), 'tmp', 'server-messages.json')
+    fname = os.path.join(get_tmp_dir(), 'server-messages.json')
     
     # ignore if file doesn't exist
     if os.path.isfile(fname):
@@ -504,7 +504,7 @@ def shakemap_impact(shakemap_id, session=None):
         # return an empty feature
         return emptyJSON
 
-    json_file = os.path.join(shakemap.directory_name, 'impact.json')
+    json_file = os.path.join(shakemap.local_products_dir, 'impact.json')
     if os.path.exists(json_file) is True:
         with open(json_file, 'r') as f_:
             geoJSON = f_.read()
@@ -871,9 +871,9 @@ def page_not_found(error):
 
 
 ############################# Upload Setup ############################
-app.config['UPLOADED_XMLFILES_DEST'] = os.path.join(sc_dir(), 'tmp')
+app.config['UPLOADED_XMLFILES_DEST'] = get_tmp_dir()
 app.config['UPLOADED_IMAGEFILES_DEST'] = os.path.join(sc_dir(), STATIC_DIR)
-app.config['EARTHQUAKES'] = os.path.join(sc_dir(), 'data')
+app.config['EARTHQUAKES'] = get_data_dir()
 app.config['MESSAGES'] = {}
 xml_files = UploadSet('xmlfiles', ('xml',))
 image_files = UploadSet('imagefiles', IMAGES, default_dest=app.config['UPLOADED_IMAGEFILES_DEST'])

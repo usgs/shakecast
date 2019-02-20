@@ -353,17 +353,65 @@ def sc_dir():
     
     return directory
 
+def get_user_dir():
+    '''
+    Establishes a directory named in the config file for persistent data storage. The
+    default is ~/.shakecast
+    '''
+
+    sc = SC()
+    input_dir = sc.dict['user_directory']
+    if input_dir:
+        dir_name = input_dir if input_dir != '.' else sc_dir()
+    else:
+        home = os.path.expanduser('~')
+        dir_name = os.path.join(home, '.shakecast')
+    
+    return dir_name
+
 def get_logging_dir():
-    sc_dir_ = sc_dir()
-    path = os.path.join(sc_dir_, 'logs')
+    home_dir = get_user_dir()
+    path = os.path.join(home_dir, 'logs')
+
+    return path
+
+def get_local_products_dir():
+    home_dir = get_user_dir()
+    path = os.path.join(home_dir, 'local_products')
 
     return path
 
 def get_template_dir():
-    sc_dir_ = sc_dir()
-    path = os.path.join(sc_dir_, 'templates')
+    home_dir = get_user_dir()
+    path = os.path.join(home_dir, 'templates')
 
     return path
+
+def get_db_dir():
+    home_dir = get_user_dir()
+    path = os.path.join(home_dir, 'db')
+
+    return path
+
+def get_tmp_dir():
+    home_dir = get_user_dir()
+    path = os.path.join(home_dir, 'tmp')
+
+    return path
+
+def get_data_dir():
+    '''
+    Establishes a directory named in the config file for persistent storage of
+    earthquake products. Default is ~/.shakecast/data
+    '''
+
+    sc = SC()
+    if sc.dict['data_directory']:
+        dir_name = sc.dict['data_directory']
+    else:
+        dir_name = os.path.join(get_user_dir(), 'data')
+    
+    return dir_name
 
 def root_dir():
     """

@@ -12,8 +12,8 @@ from util import *
 from startup import startup
 import logging
 
-split_sc_dir = sc_dir().split(os.sep)
-log_path = split_sc_dir + ['logs', 'sc-service.log']
+log_dir = get_logging_dir()
+log_path = os.path.join(get_logging_dir(), 'sc-service.log')
 sc = SC()
 if sc.dict['Logging']['level'] == 'info':
     log_level = logging.INFO
@@ -21,7 +21,7 @@ elif sc.dict['Logging']['level'] == 'debug':
     log_level = logging.DEBUG
 
 logging.basicConfig(
-    filename = os.path.normpath(os.sep.join(log_path)),
+    filename = os.path.normpath(log_path),
     level = log_level, 
     format = '%(asctime)s: [ShakeCast Server] %(levelname)-7.7s %(message)s')
 
@@ -62,13 +62,6 @@ class Server(object):
             'check_for_updates',
             'record_messages'
         ]
-        
-        self.log_file = os.path.join(sc_dir(),
-                                    'logs',
-                                    'server.log')
-        self.sc_log_file = os.path.join(sc_dir(),
-                                        'logs',
-                                        'shakecast.log')
         
         sc = SC()
         self.port = sc.dict['port']
@@ -478,7 +471,7 @@ class Server(object):
 
 
     def record_messages(self):
-        fname = os.path.join(sc_dir(), 'tmp', 'server-messages.json')
+        fname = os.path.join(get_tmp_dir(), 'server-messages.json')
 
         # initialize file if it doesn't exist
         if not os.path.isfile(fname):

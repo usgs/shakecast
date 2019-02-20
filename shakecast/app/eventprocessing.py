@@ -291,7 +291,7 @@ def process_shakemaps(shakemaps=None, session=None, scenario=False):
             session.commit()
 
             # save impact geo_json
-            impact.save_impact_geo_json(shakemap.directory_name)
+            impact.save_impact_geo_json(shakemap.local_products_dir)
 
         else:
             shakemap.mark_processing_finished()

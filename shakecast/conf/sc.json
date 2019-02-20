@@ -1,7 +1,4 @@
 {
-    "Logging": {
-        "level": "info"
-    }, 
     "web_port": 80, 
     "DBConnection": {
         "username": "", 
@@ -32,13 +29,13 @@
         "update": {
             "json_url": "https://raw.githubusercontent.com/usgs/shakecast/master/update.json", 
             "db_version": 1, 
-            "update_version": "4.0.5", 
-            "software_version": "4.0.5", 
-            "admin_notified": false
+            "update_version": "4.0.6", 
+            "admin_notified": false, 
+            "software_version": "4.0.6"
         }, 
         "DNS": "https://localhost", 
         "name": "ShakeCast"
-    }, 
+    },
     "map_key": "pk.eyJ1IjoiZHNsb3NreSIsImEiOiJjaXR1aHJnY3EwMDFoMnRxZWVtcm9laWJmIn0.1C3GE0kHPGOpbVV9kTxBlQ", 
     "host": "localhost", 
     "extensions": [], 
@@ -49,6 +46,8 @@
         "port": 0, 
         "server": ""
     }, 
+    "data_directory": "", 
+    "timezone": 0, 
     "Services": {
         "use_geo_json": true, 
         "ignore_nets": "at,pt", 
@@ -72,6 +71,9 @@
         "archive_mag": 5, 
         "geo_json_int": 60
     }, 
-    "timezone": 0, 
+    "Logging": {
+        "level": "info"
+    }, 
+    "user_directory": "", 
     "port": 1981
 }

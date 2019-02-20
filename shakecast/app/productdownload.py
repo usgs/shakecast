@@ -187,6 +187,8 @@ class ProductGrabber(object):
     def get_event_map(event):
         if not os.path.exists(event.directory_name):
                 os.makedirs(event.directory_name)
+        if not os.path.exists(event.local_products_dir):
+                os.makedirs(event.local_products_dir)
 
         image_loc = os.path.join(event.directory_name,
                                  'image.png')
@@ -303,6 +305,8 @@ class ProductGrabber(object):
 
             if not os.path.exists(shakemap.directory_name):
                 os.makedirs(shakemap.directory_name)
+            if not os.path.exists(shakemap.local_products_dir):
+                os.makedirs(shakemap.local_products_dir)
         
             # Try to download all prefered products
             for product_name in self.pref_products:
