@@ -4,9 +4,9 @@ COPY . /usr/local/shakecast
 
 WORKDIR /usr/local/shakecast
 
-RUN mkdir sc/backups; \
-    cp -r sc/templates sc/backups/; \
-    cp -r sc/conf sc/backups/
+RUN mkdir shakecast/backups; \
+    cp -r shakecast/templates shakecast/backups/; \
+    cp -r shakecast/conf shakecast/backups/
 
 ENV SC_DOCKER 1
 
