@@ -6,8 +6,6 @@ import time
 from shutil import copyfile
 import collections
 
-DAY = 60 * 60 * 24
-
 class SC(object):
     """
     Holds application custimization settings
@@ -92,10 +90,7 @@ class SC(object):
         self.server_dns = ''
         self.software_version = ''
         self.json = ''
-        self.conf_file_location = ''
         self.map_key = ''
-        
-        self.conf_file_location = os.path.join(get_conf_dir(), 'sc.json')
 
         try:
             self.load()
@@ -111,11 +106,13 @@ class SC(object):
         Returns:
             None
         """
-        conf_file = open(self.conf_file_location, 'r')
-        conf_str = conf_file.read()
-        self.json = conf_str
-        conf_json = json.loads(conf_str)
-        self.dict = conf_json
+        conf_file_location = os.path.join(get_conf_dir(), 'sc.json')
+
+        with open(conf_file_location, 'r') as conf_file:
+            conf_str = conf_file.read()
+            self.json = conf_str
+            conf_json = json.loads(conf_str)
+            self.dict = conf_json
 
         # timezone
         self.timezone = conf_json['timezone']
@@ -177,7 +174,12 @@ class SC(object):
         self.save(json_str)
     
     def save(self, json_str):
-        with open(self.conf_file_location, 'w') as conf_file:
+        conf_dir = get_conf_dir()
+        conf_file_location = os.path.join(conf_dir, 'sc.json')
+        if not os.path.isdir(conf_dir):
+            os.mkdir(conf_dir)
+
+        with open(conf_file_location, 'w') as conf_file:
             conf_file.write(json_str)
     
     def make_backup(self):
@@ -345,11 +347,7 @@ def get_user_dir():
 
     sc = SC()
     input_dir = sc.dict['user_directory']
-    if input_dir:
-        dir_name = input_dir if input_dir != '.' else sc_dir()
-    else:
-        home = os.path.expanduser('~')
-        dir_name = os.path.join(home, '.shakecast')
+    dir_name = translate_user_dir(input_dir)
     
     return dir_name
 
@@ -384,10 +382,18 @@ def get_tmp_dir():
     return path
 
 def get_conf_dir():
-    home_dir = get_user_dir()
-    path = os.path.join(home_dir, 'conf')
+    '''
+    Get configurable config directory by opening the default config location
+    '''
+    default_configs_file = os.path.join(DEFAULT_CONFIG_DIR, 'sc.json')
+    with open(default_configs_file, 'r') as file_:
+        configs = json.loads(file_.read())
 
-    return path
+    input_dir = configs['user_directory']
+    user_dir = translate_user_dir(input_dir)
+    config_dir = os.path.join(user_dir, 'conf') 
+
+    return config_dir
 
 def get_data_dir():
     '''
@@ -439,3 +445,16 @@ def non_null(input_dict):
             output_dict[key] = input_dict[key]
 
     return output_dict
+
+def translate_user_dir(input_dir):
+    if input_dir:
+        dir_name = input_dir if input_dir != '.' else sc_dir()
+    else:
+        home = os.path.expanduser('~')
+        dir_name = os.path.join(home, '.shakecast')
+    
+    return dir_name
+
+
+DAY = 60 * 60 * 24
+DEFAULT_CONFIG_DIR = os.path.join(sc_dir(), 'conf')
