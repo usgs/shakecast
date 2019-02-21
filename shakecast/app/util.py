@@ -107,7 +107,6 @@ class SC(object):
             None
         """
         conf_file_location = os.path.join(get_conf_dir(), 'sc.json')
-
         with open(conf_file_location, 'r') as conf_file:
             conf_str = conf_file.read()
             self.json = conf_str
@@ -178,7 +177,7 @@ class SC(object):
         conf_file_location = os.path.join(conf_dir, 'sc.json')
         default_conf_file_location = os.path.join(DEFAULT_CONFIG_DIR, 'sc.json')
         if not os.path.isdir(conf_dir):
-            os.mkdir(conf_dir)
+            os.makedirs(conf_dir)
 
         with open(conf_file_location, 'w') as conf_file:
             conf_file.write(json_str)
