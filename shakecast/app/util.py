@@ -176,10 +176,13 @@ class SC(object):
     def save(self, json_str):
         conf_dir = get_conf_dir()
         conf_file_location = os.path.join(conf_dir, 'sc.json')
+        default_conf_file_location = os.path.join(DEFAULT_CONFIG_DIR, 'sc.json')
         if not os.path.isdir(conf_dir):
             os.mkdir(conf_dir)
 
         with open(conf_file_location, 'w') as conf_file:
+            conf_file.write(json_str)
+        with open(default_conf_file_location, 'w') as conf_file:
             conf_file.write(json_str)
     
     def make_backup(self):
