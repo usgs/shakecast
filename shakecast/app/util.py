@@ -95,8 +95,7 @@ class SC(object):
         self.conf_file_location = ''
         self.map_key = ''
         
-        conf_dir = self.get_conf_dir()
-        self.conf_file_location = os.path.join(conf_dir, 'sc.json')
+        self.conf_file_location = os.path.join(get_conf_dir(), 'sc.json')
 
         try:
             self.load()
@@ -181,32 +180,14 @@ class SC(object):
         with open(self.conf_file_location, 'w') as conf_file:
             conf_file.write(json_str)
     
-    @staticmethod
-    def get_conf_dir():
-        """
-        Determine where the conf directory is
-        
-        Returns:
-            str: The absolute path the the conf directory
-        """
-        
-        # Get directory location for database
-        path = os.path.dirname(os.path.abspath(__file__))
-        delim = get_delim()
-        path = path.split(delim)
-        path[-1] = 'conf'
-        directory = os.path.normpath(delim.join(path))
-        
-        return directory
-    
     def make_backup(self):
-        conf_dir = self.get_conf_dir()
+        conf_dir = get_conf_dir()
         # copy sc_config file
         copyfile(os.path.join(conf_dir, 'sc.json'),
                  os.path.join(conf_dir, 'sc_back.json'))
         
     def revert(self):
-        conf_dir = self.get_conf_dir()
+        conf_dir = get_conf_dir()
         # copy sc_config file
         copyfile(os.path.join(conf_dir, 'sc_back.json'),
                  os.path.join(conf_dir, 'sc.json'))
@@ -399,6 +380,12 @@ def get_db_dir():
 def get_tmp_dir():
     home_dir = get_user_dir()
     path = os.path.join(home_dir, 'tmp')
+
+    return path
+
+def get_conf_dir():
+    home_dir = get_user_dir()
+    path = os.path.join(home_dir, 'conf')
 
     return path
 
