@@ -92,12 +92,7 @@ class SC(object):
         self.json = ''
         self.map_key = ''
 
-        try:
-            self.load()
-        except Exception:
-            # unable to load, try to generate a config file
-            self.generate()
-            self.load()
+        self.load()
     
     def load(self):
         """
@@ -175,13 +170,10 @@ class SC(object):
     def save(self, json_str):
         conf_dir = get_conf_dir()
         conf_file_location = os.path.join(conf_dir, 'sc.json')
-        default_conf_file_location = os.path.join(DEFAULT_CONFIG_DIR, 'sc.json')
         if not os.path.isdir(conf_dir):
             os.makedirs(conf_dir)
 
         with open(conf_file_location, 'w') as conf_file:
-            conf_file.write(json_str)
-        with open(default_conf_file_location, 'w') as conf_file:
             conf_file.write(json_str)
     
     def make_backup(self):
@@ -397,14 +389,10 @@ def get_data_dir():
     Establishes a directory named in the config file for persistent storage of
     earthquake products. Default is ~/.shakecast/data
     '''
-
-    sc = SC()
-    if sc.dict['data_directory']:
-        dir_name = sc.dict['data_directory']
-    else:
-        dir_name = os.path.join(get_user_dir(), 'data')
+    home_dir = get_user_dir()
+    data_dir = os.path.join(home_dir, 'data')
     
-    return dir_name
+    return data_dir
 
 def root_dir():
     """
