@@ -15,13 +15,12 @@ from util import (
 )
 
 def startup():
+    pip_init()
     if os.environ.get('SC_DOCKER', False) is not False:
         docker_init()
 
     if os.environ.get('SC_CI', False) is not False:
         ci_init()
-    
-    pip_init()
 
 def copy_backups():
     dir_ = sc_dir()
