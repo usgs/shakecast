@@ -9,6 +9,7 @@ RUN mkdir shakecast/backups; \
     cp -r shakecast/conf shakecast/backups/
 
 ENV SC_DOCKER 1
+ENV SC_HOME /usr/local/shakecast/shakecast
 
 EXPOSE 1981
 

@@ -347,11 +347,11 @@ def get_user_dir():
     default is ~/.shakecast
     '''
 
-    sc = SC()
-    input_dir = sc.dict['user_directory']
-    dir_name = translate_user_dir(input_dir)
-    
-    return dir_name
+    user_set_dir = os.environ.get('SC_HOME')
+    home_dir = os.path.expanduser('~')
+    default_home_dir = os.path.join(home_dir, '.shakecast')
+
+    return user_set_dir or default_home_dir
 
 def get_logging_dir():
     home_dir = get_user_dir()
@@ -387,13 +387,8 @@ def get_conf_dir():
     '''
     Get configurable config directory by opening the default config location
     '''
-    default_configs_file = os.path.join(DEFAULT_CONFIG_DIR, 'sc.json')
-    with open(default_configs_file, 'r') as file_:
-        configs = json.loads(file_.read())
-
-    input_dir = configs['user_directory']
-    user_dir = translate_user_dir(input_dir)
-    config_dir = os.path.join(user_dir, 'conf') 
+    home_dir = get_user_dir()
+    config_dir = os.path.join(home_dir, 'conf')
 
     return config_dir
 
@@ -447,16 +442,6 @@ def non_null(input_dict):
             output_dict[key] = input_dict[key]
 
     return output_dict
-
-def translate_user_dir(input_dir):
-    if input_dir:
-        dir_name = input_dir if input_dir != '.' else sc_dir()
-    else:
-        home = os.path.expanduser('~')
-        dir_name = os.path.join(home, '.shakecast')
-    
-    return dir_name
-
 
 DAY = 60 * 60 * 24
 DEFAULT_CONFIG_DIR = os.path.join(sc_dir(), 'conf')

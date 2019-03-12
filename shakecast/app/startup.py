@@ -1,7 +1,18 @@
 import os
 import shutil
 
-from util import SC, sc_dir, get_user_dir
+from util import (
+        SC,
+        sc_dir,
+        get_user_dir,
+        get_template_dir,
+        get_conf_dir,
+        get_db_dir,
+        get_logging_dir,
+        get_tmp_dir,
+        get_data_dir,
+        get_local_products_dir
+)
 
 def startup():
     if os.environ.get('SC_DOCKER', False) is not False:
@@ -31,7 +42,6 @@ def ci_init():
     sc.dict['SMTP']['from'] = os.environ.get('SC_SMTP_FROM', '')
     sc.dict['SMTP']['security'] = os.environ.get('SC_SMTP_SECURITY', '')
     sc.dict['SMTP']['port'] = int(os.environ.get('SC_SMTP_PORT', ''))
-    sc.dict['user_directory'] = '.'
 
     sc.save_dict()
 
@@ -40,24 +50,23 @@ def pip_init():
     Initialize persistent data directories for pip installization
     '''
 
-    sc = SC()
     user_dir = get_user_dir()
     sc_dir_ = sc_dir()
     if not os.path.isdir(user_dir):
         templates = os.path.join(sc_dir_, 'templates')
-        templates_dest = os.path.join(user_dir, 'templates')
+        templates_dest = get_template_dir()
         db = os.path.join(sc_dir_, 'db')
-        db_dest = os.path.join(user_dir, 'db')
+        db_dest = get_db_dir()
         configs = os.path.join(sc_dir_, 'conf')
-        configs_dest = os.path.join(user_dir, 'conf')
+        configs_dest = get_conf_dir()
         logs = os.path.join(sc_dir_, 'logs')
-        logs_dest = os.path.join(user_dir, 'logs')
+        logs_dest = get_logging_dir()
         local_prods = os.path.join(sc_dir_, 'local_products')
-        local_prods_dest = os.path.join(user_dir, 'local_products')
+        local_prods_dest = get_local_products_dir()
         tmp = os.path.join(sc_dir_, 'tmp')
-        tmp_dest = os.path.join(user_dir, 'tmp')
+        tmp_dest = get_tmp_dir()
         data = os.path.join(sc_dir_, 'data')
-        data_dest = os.path.join(user_dir, 'data')
+        data_dest = get_data_dir()
 
         shutil.copytree(templates, templates_dest)
         shutil.copytree(db, db_dest)
@@ -71,11 +80,11 @@ def pip_init():
 
 def docker_init():
     copy_backups()
+    pip_init()
 
     sc = SC()
     sc.dict['host'] = 'sc-server'
     sc.dict['web_port'] = 5000
-    sc.dict['user_directory'] = '.'
     sc.save_dict()
 
 if __name__ == '__main__':
