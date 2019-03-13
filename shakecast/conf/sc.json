@@ -51,8 +51,7 @@
         "password": "", 
         "port": 0, 
         "server": ""
-    }, 
-    "data_directory": "", 
+    },
     "Services": {
         "ignore_nets": "at,pt", 
         "keep_eq_for": 60, 

@@ -62,10 +62,6 @@ def pip_init():
     logs_dest = get_logging_dir()
     local_prods = os.path.join(sc_dir_, 'local_products')
     local_prods_dest = get_local_products_dir()
-    tmp = os.path.join(sc_dir_, 'tmp')
-    tmp_dest = get_tmp_dir()
-    data = os.path.join(sc_dir_, 'data')
-    data_dest = get_data_dir()
 
     if not os.path.isdir(templates_dest):
         shutil.copytree(templates, templates_dest)
@@ -77,10 +73,6 @@ def pip_init():
         shutil.copytree(logs, logs_dest)
     if not os.path.isdir(local_prods_dest):
         shutil.copytree(local_prods, local_prods_dest)
-    if not os.path.isdir(tmp_dest):
-        shutil.copytree(tmp, tmp_dest)
-    if not os.path.isdir(data_dest):
-        shutil.copytree(data, data_dest)
 
 
 
