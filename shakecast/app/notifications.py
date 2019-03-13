@@ -9,7 +9,7 @@ import smtplib
 import time
 
 from orm import dbconnect, ShakeMap
-from util import sc_dir, SC
+from util import sc_dir, SC, get_template_dir
 
 jinja_env = Environment(extensions=['jinja2.ext.do'])
 
@@ -156,8 +156,7 @@ class TemplateManager(object):
         name = os.path.join(sub_dir, name) if sub_dir else name
 
 
-        json_file_name_template = os.path.join(sc_dir(),
-                                'templates',
+        json_file_name_template = os.path.join(get_template_dir(),
                                 not_type,
                                 '{}')
 
@@ -173,8 +172,7 @@ class TemplateManager(object):
     @staticmethod
     def save_configs(not_type, name, config):
         if isinstance(config, dict):
-            conf_file = os.path.join(sc_dir(),
-                                    'templates',
+            conf_file = os.path.join(get_template_dir(),
                                     not_type,
                                     name + '.json')
             conf_str = open(conf_file, 'w')
@@ -198,8 +196,7 @@ class TemplateManager(object):
         name = os.path.join(sub_dir, name) if sub_dir else name
 
 
-        html_file_name_template = os.path.join(sc_dir(),
-                                'templates',
+        html_file_name_template = os.path.join(get_template_dir(),
                                 not_type,
                                 '{}')
 
@@ -218,8 +215,7 @@ class TemplateManager(object):
         if name is not None:
             temp_name = name + '.html'
 
-        temp_file = os.path.join(sc_dir(),
-                                    'templates',
+        temp_file = os.path.join(get_template_dir(),
                                     not_type,
                                     temp_name)
         try:
@@ -232,8 +228,7 @@ class TemplateManager(object):
 
     @staticmethod
     def save_template(not_type, name, template_str):
-        temp_file = os.path.join(sc_dir(),
-                                'templates',
+        temp_file = os.path.join(get_template_dir(),
                                 not_type,
                                 name + '.html')
         temp_file = open(temp_file, 'w')
@@ -246,8 +241,7 @@ class TemplateManager(object):
         '''
         Get a list of the existing template names
         '''
-        temp_folder = os.path.join(sc_dir(),
-                                   'templates',
+        temp_folder = os.path.join(get_template_dir(),
                                    'new_event')
         file_list = os.listdir(temp_folder)
 
@@ -416,7 +410,7 @@ def inspection_notification(notification=None,
 
             # check for pdf
             pdf_name = '{}_impact.pdf'.format(group.name)
-            pdf_location = os.path.join(shakemap.directory_name, pdf_name)
+            pdf_location = os.path.join(shakemap.local_products_dir, pdf_name)
             if (os.path.isfile(pdf_location)):
                 with open(pdf_location, 'rb') as pdf_file:
                     attach_pdf = MIMEApplication(pdf_file.read(), _subtype='pdf')

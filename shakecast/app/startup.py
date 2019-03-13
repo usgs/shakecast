@@ -1,6 +1,21 @@
 import os
-from util import SC, sc_dir
+import shutil
+
+from util import (
+        SC,
+        sc_dir,
+        get_user_dir,
+        get_template_dir,
+        get_conf_dir,
+        get_db_dir,
+        get_logging_dir,
+        get_tmp_dir,
+        get_data_dir,
+        get_local_products_dir
+)
+
 def startup():
+    pip_init()
     if os.environ.get('SC_DOCKER', False) is not False:
         docker_init()
 
@@ -31,7 +46,35 @@ def ci_init():
 
     sc.save_dict()
 
-    
+def pip_init():
+    '''
+    Initialize persistent data directories for pip installization
+    '''
+
+    sc_dir_ = sc_dir()
+    templates = os.path.join(sc_dir_, 'templates')
+    templates_dest = get_template_dir()
+    db = os.path.join(sc_dir_, 'db')
+    db_dest = get_db_dir()
+    configs = os.path.join(sc_dir_, 'conf')
+    configs_dest = get_conf_dir()
+    logs = os.path.join(sc_dir_, 'logs')
+    logs_dest = get_logging_dir()
+    local_prods = os.path.join(sc_dir_, 'local_products')
+    local_prods_dest = get_local_products_dir()
+
+    if not os.path.isdir(templates_dest):
+        shutil.copytree(templates, templates_dest)
+    if not os.path.isdir(db_dest):
+        shutil.copytree(db, db_dest)
+    if not os.path.isdir(configs_dest):
+        shutil.copytree(configs, configs_dest)
+    if not os.path.isdir(logs_dest):
+        shutil.copytree(logs, logs_dest)
+    if not os.path.isdir(local_prods_dest):
+        shutil.copytree(local_prods, local_prods_dest)
+
+
 
 def docker_init():
     copy_backups()
