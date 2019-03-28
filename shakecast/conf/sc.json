@@ -72,6 +72,7 @@
             "stationlist.xml", 
             "intensity.jpg", 
             "ii_overlay.png",
+            "intensity_overlay.png",
             "cont_mi.json"
         ], 
         "morning": 9
