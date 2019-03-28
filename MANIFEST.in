@@ -1,1 +1,8 @@
 recursive-include shakecast *
+
+exlude node_modules
+exclude shakecast/data/*
+exclude shakecast/db/*
+exclude shakecast/tmp/*
+exclude shakecast/local_products/*
+exclude shakecast/logs/*
