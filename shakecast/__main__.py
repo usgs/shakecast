@@ -4,6 +4,13 @@ from multiprocessing import Process
 import subprocess
 import time
 
+from .app.startup import pip_init
+pip_init()
+
+from .admin.server_service import ShakecastServer
+from .admin.web_server_service import ShakecastWebServer
+from .app.util import SC, sc_dir
+
 def check_running():
     ##### replace with actual server health checks #####
     shakecast_process_count = get_shakecast_process_count()
@@ -26,6 +33,30 @@ def invalid():
         start - Starts the ShakeCast servers
         stop - Stops the ShakeCast servers
     '''
+
+def install_windows():
+    main('start')
+
+def main(command = None):
+    sc = SC()
+    uid = 0
+    if sc.dict['web_port'] < 1024:
+        uid = os.getuid()
+
+    if uid == 0:
+        if len(sys.argv) == 2:
+            command = command or sys.argv[1]
+
+        if command == 'start':
+            start()
+
+        elif command == 'stop':
+            shutdown()
+        else:
+            invalid()
+    
+    else:
+        sudo_required()
 
 def read_status():
     file_name = os.path.join(sc_dir(), '.status')
@@ -88,30 +119,4 @@ def write_status(status):
 
 
 if __name__ == '__main__':
-    from .app.startup import pip_init
-    pip_init()
-
-    from .admin.server_service import ShakecastServer
-    from .admin.web_server_service import ShakecastWebServer
-    from .app.util import SC, sc_dir
-
-    sc = SC()
-    uid = 0
-    if sc.dict['web_port'] < 1024:
-        uid = os.getuid()
-
-    if uid == 0:
-        command = None
-        if len(sys.argv) == 2:
-            command = sys.argv[1]
-
-        if command == 'start':
-            start()
-
-        elif command == 'stop':
-            shutdown()
-        else:
-            invalid()
-    
-    else:
-        sudo_required()
+    main()
