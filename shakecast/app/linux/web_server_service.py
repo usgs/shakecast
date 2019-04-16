@@ -1,11 +1,12 @@
 import socket
 import logging
+from multiprocessing import Process
 import os, sys
 import traceback
 import urllib2
 
-from ..app.util import SC, get_logging_dir
-from ..web_server import start as start_web_server
+from shakecast.app.util import SC, get_logging_dir
+from shakecast.web_server import start as start_web_server
 
 logs_dir = get_logging_dir()
 log_file = os.path.join(logs_dir, 'sc-web-server.log')
@@ -36,6 +37,12 @@ class ShakecastWebServer(object):
         
     def start(self):
         self.main()
+
+    def start_daemon(self):
+        p = Process(target=self.start)
+        p.name = 'ShakeCast-Web-Server'
+        p.daemon = True
+        p.start()
 
     @staticmethod
     def main():

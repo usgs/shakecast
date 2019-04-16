@@ -7,9 +7,13 @@ import time
 from .app.startup import pip_init
 pip_init()
 
-from .admin.server_service import ShakecastServer
-from .admin.web_server_service import ShakecastWebServer
-from .app.util import SC, sc_dir
+from .app.util import SC, sc_dir, on_windows
+import app.windows as winControls
+import app.linux as controls
+
+if on_windows():
+    # use windows controls if we're in that OS
+    controls = winControls
 
 def check_running():
     ##### replace with actual server health checks #####
@@ -34,14 +38,17 @@ def invalid():
         stop - Stops the ShakeCast servers
     '''
 
-def install_windows():
-    main('start')
-
 def main(command = None):
     sc = SC()
     uid = 0
     if sc.dict['web_port'] < 1024:
-        uid = os.getuid()
+        try:
+            uid = os.getuid()
+        except Exception as e:
+            # this will error in Windows, but that doesn't mean the
+            # user isn't an admin... just try to install and let it
+            # error if the user doesn't have privileges
+            pass
 
     if uid == 0:
         if len(sys.argv) == 2:
@@ -52,6 +59,7 @@ def main(command = None):
 
         elif command == 'stop':
             shutdown()
+
         else:
             invalid()
     
@@ -75,42 +83,25 @@ def sudo_required():
 def start():
     status = 'running'
     write_status(status)
+    controls.start()
 
-    start_services()
-    while status == 'running':
-        status = read_status()
-        if check_running() is False and status == 'running':
-            restart_services()
+    if not on_windows():
+        # keep alive on linux to watch the services
+        while status == 'running':
+            status = read_status()
+            if check_running() is False and status == 'running':
+                restart_services()
 
-        time.sleep(10)
+            time.sleep(10)
 
 def restart_services():
-    stop_services()
+    controls.stop()
     time.sleep(10)
-    start_services()
+    controls.start()
 
 def shutdown():
     write_status('stopped')
-    stop_services()
-
-def start_services():
-    server = ShakecastServer()
-    p = Process(target=server.start)
-    p.name = 'ShakeCast-Server'
-    p.daemon = True
-    p.start()
-
-    server = ShakecastWebServer()
-    p = Process(target=server.start)
-    p.name = 'ShakeCast-Web-Server'
-    p.daemon = True
-    p.start()
-
-def stop_services():
-    server = ShakecastServer()
-    server.stop()
-    server = ShakecastWebServer()
-    server.stop()
+    controls.stop()
 
 def write_status(status):
     file_name = os.path.join(sc_dir(), '.status')

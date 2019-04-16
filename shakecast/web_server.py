@@ -522,10 +522,7 @@ def shakemap_overlay(shakemap_id, session=None):
                     .order_by(desc(ShakeMap.shakemap_version))
                     .limit(1)).first()
     if shakemap is not None:
-        img = os.path.join(app.config['EARTHQUAKES'],
-                           shakemap_id,
-                           shakemap_id + '-' + str(shakemap.shakemap_version),
-                           'ii_overlay.png')
+        img = shakemap.get_overlay()
         
     else:
         img = app.send_static_file('sc_logo.png')

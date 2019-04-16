@@ -1,5 +1,5 @@
 import math
-import os
+import os, sys
 import json
 import datetime
 import time
@@ -430,6 +430,10 @@ def non_null(input_dict):
             output_dict[key] = input_dict[key]
 
     return output_dict
+
+def on_windows():
+    return 'win32' in sys.platform.lower()
+
 
 DAY = 60 * 60 * 24
 DEFAULT_CONFIG_DIR = os.path.join(sc_dir(), 'conf')
