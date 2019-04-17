@@ -54,29 +54,29 @@ def pip_init():
     sc_dir_ = sc_dir()
     templates = os.path.join(sc_dir_, 'templates')
     templates_dest = get_template_dir()
-    db = os.path.join(sc_dir_, 'db')
-    db_dest = get_db_dir()
     configs = os.path.join(sc_dir_, 'conf')
     configs_dest = get_conf_dir()
-    logs = os.path.join(sc_dir_, 'logs')
-    logs_dest = get_logging_dir()
-    local_prods = os.path.join(sc_dir_, 'local_products')
-    local_prods_dest = get_local_products_dir()
 
     if not os.path.isdir(templates_dest):
         shutil.copytree(templates, templates_dest)
-    if not os.path.isdir(db_dest):
-        shutil.copytree(db, db_dest)
     if not os.path.isdir(configs_dest):
         shutil.copytree(configs, configs_dest)
-    if not os.path.isdir(logs_dest):
-        shutil.copytree(logs, logs_dest)
-    if not os.path.isdir(local_prods_dest):
-        shutil.copytree(local_prods, local_prods_dest)
 
     tmp_dir = get_tmp_dir()
     if not os.path.isdir(tmp_dir):
         os.mkdir(tmp_dir)
+    
+    db_dir = get_db_dir()
+    if not os.path.isdir(db_dir):
+        os.mkdir(db_dir)
+
+    local_prods_dir = get_local_products_dir()
+    if not os.path.isdir(local_prods_dir):
+        os.mkdir(local_prods_dir)
+
+    logs_dir = get_logging_dir()
+    if not os.path.isdir(logs_dir):
+        os.mkdir(logs_dir)
 
 
 
