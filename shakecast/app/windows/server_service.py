@@ -1,11 +1,22 @@
+import win32serviceutil
+import win32service
+import win32event
+import servicemanager
 import socket
 import logging
 import os, sys
 import traceback
 
-from ..app.server import Server
-from ..app.util import SC, get_logging_dir
-from ..ui import UI
+# Windows makes it hard to import from parent modules
+path = os.path.dirname(os.path.abspath(__file__))
+path = path.split(os.sep)[:-2]
+app_dir = os.path.normpath(os.sep.join(path))
+if app_dir not in sys.path:
+    sys.path += [app_dir]
+
+from app.server import Server
+from ui import UI
+from app.util import get_logging_dir, SC
 
 sc = SC()
 if sc.dict['Logging']['level'] == 'info':
@@ -13,33 +24,38 @@ if sc.dict['Logging']['level'] == 'info':
 elif sc.dict['Logging']['level'] == 'debug':
     log_level = logging.DEBUG
 
-logs_dir = get_logging_dir()
-log_file = os.path.join(logs_dir, 'sc-service.log')
-
+log_file = os.path.join(get_logging_dir(), 'sc-service.log')
 logging.basicConfig(
     filename = log_file,
     level = log_level, 
     format = '%(asctime)s: [ShakeCast Server] %(levelname)-7.7s %(message)s')
 
-
-class ShakecastServer(object):
+class ShakecastServer(win32serviceutil.ServiceFramework):
     _svc_name_ = "sc_server"
     _svc_display_name_ = "ShakeCast Server"
     
-    def __init__(self):
+    def __init__(self,args):
+        win32serviceutil.ServiceFramework.__init__(self,args)
+        self.stop_event = win32event.CreateEvent(None,0,0,None)
         socket.setdefaulttimeout(60)
+        self.stop_requested = False
 
-    @staticmethod
-    def stop():
+    def SvcStop(self):
+        self.ReportServiceStatus(win32service.SERVICE_STOP_PENDING)
+        win32event.SetEvent(self.stop_event)
+        logging.info('Stopping ShakeCast Server...')
+        self.stop_requested = True
+
         ui = UI()
         ui.send('shutdown')
 
-    def start(self):
-        ui = UI()
-        if ui.server_check() is False:
-            self.main()
-        else:
-            logging.info('Startup Failed -- ShakeCast Server is already started')
+    def SvcDoRun(self):
+        servicemanager.LogMsg(
+            servicemanager.EVENTLOG_INFORMATION_TYPE,
+            servicemanager.PYS_SERVICE_STARTED,
+            (self._svc_name_,'')
+        )
+        self.main()
 
     @staticmethod
     def main():
@@ -66,22 +82,9 @@ class ShakecastServer(object):
                                                                              text))
         return
 
-def invalid():
-    print '''
-    Invalid Command:
-        start - Starts the ShakeCast Server
-        stop - Stops the ShakeCast Server
-    '''
+def command(command_in):
+    argvals = ['server_service.py'] + command_in
+    win32serviceutil.HandleCommandLine(ShakecastServer, argv=argvals)
 
 if __name__ == '__main__':
-    if len(sys.argv) > 1:
-        if sys.argv[1] == "start":
-            server = ShakecastServer()
-            server.start()
-        elif sys.argv[1] == "stop":
-            server = ShakecastServer()
-            server.stop()
-        else:
-            invalid()
-    else:
-        invalid()
+    win32serviceutil.HandleCommandLine(ShakecastServer)

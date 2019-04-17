@@ -74,6 +74,10 @@ def pip_init():
     if not os.path.isdir(local_prods_dest):
         shutil.copytree(local_prods, local_prods_dest)
 
+    tmp_dir = get_tmp_dir()
+    if not os.path.isdir(tmp_dir):
+        os.mkdir(tmp_dir)
+
 
 
 def docker_init():

@@ -909,6 +909,13 @@ class ShakeMap(Base):
         map_image = shakemap_image.read()
         shakemap_image.close()
         return map_image
+    
+    def get_overlay(self):
+        overlay_names = ['intensity_overlay.png', 'ii_overlay.png']
+        for name in overlay_names:
+            full_name = os.path.join(self.directory_name, name)
+            if os.path.isfile(full_name):
+                return full_name
 
     def get_alert_level(self):
         alert_level = None

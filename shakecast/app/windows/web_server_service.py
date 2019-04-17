@@ -6,36 +6,28 @@ import socket
 import logging
 import os, sys
 import traceback
+import urllib2
 
+# Windows makes it hard to import from parent modules
 path = os.path.dirname(os.path.abspath(__file__))
-path = path.split(os.sep)
-del path[-1]
-del path[-1]
-path += ['shakecast']
-
+path = path.split(os.sep)[:-2]
 app_dir = os.path.normpath(os.sep.join(path))
 if app_dir not in sys.path:
     sys.path += [app_dir]
 
-from shakecast.app.server import Server
-from shakecast.ui import UI
-from shakecast.app.util import SC
+from app.util import get_logging_dir, SC
+from web_server import start as startweb
 
-path += ['logs', 'sc-service.log']
-sc = SC()
-if sc.dict['Logging']['level'] == 'info':
-    log_level = logging.INFO
-elif sc.dict['Logging']['level'] == 'debug':
-    log_level = logging.DEBUG
-
+log_file = os.path.join(get_logging_dir(), 'sc-web-server.log')
 logging.basicConfig(
-    filename = os.path.normpath(os.sep.join(path)),
-    level = log_level, 
-    format = '%(asctime)s: [ShakeCast Server] %(levelname)-7.7s %(message)s')
+    filename = log_file,
+    level = logging.INFO, 
+    format = '%(asctime)s: [ShakeCast - Web] %(levelname)-7.7s %(message)s'
+)
 
-class ShakecastServer (win32serviceutil.ServiceFramework):
-    _svc_name_ = "sc_server"
-    _svc_display_name_ = "ShakeCast Server"
+class ShakecastWebServer (win32serviceutil.ServiceFramework):
+    _svc_name_ = "sc_web_server"
+    _svc_display_name_ = "ShakeCast Web Server"
     
     def __init__(self,args):
         win32serviceutil.ServiceFramework.__init__(self,args)
@@ -46,11 +38,16 @@ class ShakecastServer (win32serviceutil.ServiceFramework):
     def SvcStop(self):
         self.ReportServiceStatus(win32service.SERVICE_STOP_PENDING)
         win32event.SetEvent(self.stop_event)
-        logging.info('Stopping ShakeCast Server...')
         self.stop_requested = True
 
-        ui = UI()
-        ui.send('shutdown')
+        sc = SC()
+        web_port = sc.dict['web_port']
+
+        # Send the http request to shutdown the server
+        try:
+            urllib2.urlopen('http://localhost:{}/shutdown'.format(web_port))
+        except Exception:
+            logging.error('Web server not running on {}'.format(web_port))
 
     def SvcDoRun(self):
         servicemanager.LogMsg(
@@ -62,16 +59,9 @@ class ShakecastServer (win32serviceutil.ServiceFramework):
 
     @staticmethod
     def main():
-        logging.info(' ** Starting ShakeCast Server ** ')
+        logging.info(' ** Starting ShakeCast Web Server ** ')
         try:
-            sc_server = Server()
-
-            # start shakecast
-            sc_server.start_shakecast()
-            
-            while sc_server.stop_server is False:
-                sc_server.stop_loop = False
-                sc_server.loop()
+            startweb()
 
         except Exception as e:
             exc_tb = sys.exc_info()[2]
@@ -85,9 +75,9 @@ class ShakecastServer (win32serviceutil.ServiceFramework):
                                                                              text))
         return
 
-def start():
-    argvals = ['server_service.py', 'start']
-    win32serviceutil.HandleCommandLine(ShakecastServer, argv=argvals)
+def command(command_in):
+    argvals = ['web_server_service.py'] + command_in
+    win32serviceutil.HandleCommandLine(ShakecastWebServer, argv=argvals)
 
 if __name__ == '__main__':
-    win32serviceutil.HandleCommandLine(ShakecastServer)
+    win32serviceutil.HandleCommandLine(ShakecastWebServer)
