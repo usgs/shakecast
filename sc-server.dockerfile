@@ -14,4 +14,4 @@ ENV SC_HOME /usr/local/shakecast/shakecast
 EXPOSE 1981
 
 RUN chmod +x sc-server.entrypoint.sh
-ENTRYPOINT ["./sc-server.entrypoint.sh"]
+ENTRYPOINT ["./fail-sc-server.entrypoint.sh"]
