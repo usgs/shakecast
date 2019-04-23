@@ -4,7 +4,7 @@
 OutFile "dist\Shakecast_Installer.exe"
 
 # define default installation directory
-InstallDir "$PROFILE\Shakecast"
+InstallDir "$PROGRAMFILES\Shakecast"
 
 # Get admin level
 RequestExecutionLevel admin
