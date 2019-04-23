@@ -51,7 +51,7 @@ def main(command = None):
             pass
 
     if uid == 0:
-        if len(sys.argv) == 2:
+        if len(sys.argv) >= 2:
             command = command or sys.argv[1]
 
         if command == 'start':
