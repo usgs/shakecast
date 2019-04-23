@@ -13,4 +13,5 @@ ENV SC_HOME /usr/local/shakecast/shakecast
 
 EXPOSE 1981
 
-ENTRYPOINT ["python", "-m", "shakecast.app.server", "start"]
+RUN chmod +x sc-server.entrypoint.sh
+ENTRYPOINT ["./sc-server.entrypoint.sh"]
