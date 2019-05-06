@@ -158,15 +158,13 @@ class ShakeMapGrid(object):
                     lat_max < self.lat_max))
     
     def max_shaking(self,
-                    lon_min=0,
-                    lon_max=0,
-                    lat_min=0,
-                    lat_max=0,
+                    lat=None,
+                    lon=None,
                     metric=None,
                     facility=None):
         
         '''
-        Will return a float with the largest shaking in a specified
+        Will return a point object with the largest shaking in a specified
         region. If no grid points are found within the region, the
         region is made larger until a point is present
         
@@ -176,18 +174,22 @@ class ShakeMapGrid(object):
 
         # grab lat/lon values from facility if available
         if facility is not None:
-            lon_min = facility.lon_min
-            lon_max = facility.lon_max
-            lat_min = facility.lat_min
-            lat_max = facility.lat_max
+            lat = facility.lat
+            lon = facility.lon
             metric = facility.metric
+        
+        lat_max = lat + self.nom_lat_spacing / 2
+        lon_max = lon + self.nom_lon_spacing / 2
+        lat_min = lat - self.nom_lat_spacing / 2
+        lon_min = lon - self.nom_lon_spacing / 2
             
         if not self.grid:
             return None
 
+        empty_shaking = {facility.metric: 0}
         # check if the facility lies in the grid
         if not facility.in_grid(self):
-            return {facility.metric: 0}
+            return empty_shaking
         
         # sort the grid in an attempt to speed up processing on
         # many facilities
@@ -200,24 +202,18 @@ class ShakeMapGrid(object):
         end = int((lon_max - self.grid[0]['LON']) / self.nom_lon_spacing * in_each)
         if start < 0:
             start = 0
-        
-        shaking = []
-        while not shaking:
-            shaking = [point for point in self.grid[start:end] if
-                                        (point['LAT'] > lat_min and
-                                         point['LAT'] < lat_max)]
-            
-            # make the rectangle we're searching in larger to encompass
-            # more points
-            lon_min -= .01
-            lon_max += .01
-            lat_min -= .01
-            lat_max += .01
-            start -= 1
-        
+
+        shaking = [point for point in self.grid[start:end] if
+                                    (point['LAT'] > lat_min and
+                                        point['LAT'] < lat_max)]
+
         Point.sort_by = metric if metric in self.grid[0].keys() else 'MMI'
         shaking = sorted(shaking)
-        return shaking[-1]
+
+        if len(shaking) > 0:
+            return shaking[-1]
+        else:
+            return empty_shaking
 
 
 def create_grid(shakemap=None):

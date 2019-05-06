@@ -76,6 +76,8 @@ def get_impact(facility, shaking_point, shakemap):
     else:
         impact = compute_hazus_impact(facility, shaking_point, shakemap)
 
+    impact['grid_point'] = dict((k.lower(), v)
+            for k,v in shaking_point.iteritems())
     return lower_case_keys(impact)
 
 def compute_aebm_impact(facility, shaking_point, shakemap):
