@@ -574,8 +574,9 @@ class Group(Base):
 
         return filtered
 
-    def get_new_event_spec(self, scenario=False):
-        specs = self._get_specs('new_event', scenario=scenario)
+    def get_new_event_spec(self, scenario=False, heartbeat=False):
+        specs = self._get_specs(
+                'new_event', scenario=scenario, heartbeat=heartbeat)
 
         return specs[0] if len(specs) > 0 else None
 
@@ -636,8 +637,9 @@ class Group(Base):
             alert_level = notification.shakemap.get_alert_level()
             spec = self.get_inspection_spec(alert_level, scenario)
         else:
-            spec = self.get_new_event_spec(scenario)
-
+            heartbeat = notification.event.type == 'heartbeat' 
+            spec = self.get_new_event_spec(scenario=scenario,
+                    heartbeat=heartbeat)
 
         if spec is None:
             return None

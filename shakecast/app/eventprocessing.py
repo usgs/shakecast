@@ -76,11 +76,12 @@ def create_new_event_notifications(groups, event, scenario=False):
     for group in groups:
         # check new_event magnitude to make sure the group wants a 
         # notificaiton
-        event_spec = group.get_new_event_spec(scenario=scenario)
 
-        if (event_spec is None or
-                event_spec.minimum_magnitude > event.magnitude):
-            continue
+        if event.type != 'heartbeat':
+            event_spec = group.get_new_event_spec(scenario=scenario)
+            if (event_spec is None or
+                    event_spec.minimum_magnitude > event.magnitude):
+                continue
         
         notification = Notification(group=group,
                                     event=event,
