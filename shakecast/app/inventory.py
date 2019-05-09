@@ -3,6 +3,7 @@ import os
 import re
 import shutil
 import time
+from sqlalchemy import or_
 from werkzeug.security import generate_password_hash
 import xml.etree.ElementTree as ET
 import xmltodict
@@ -542,7 +543,11 @@ def add_facs_to_groups(session=None):
         query = session.query(Facility).filter(Facility.in_grid(group))
         if ((group.facility_type is not None) and
                 (group.facility_type.lower() != 'all')):
-            query = query.filter(Facility.facility_type.like(group.facility_type))
+            
+            facility_types = group.facility_type.split(',')
+            query = query.filter(
+                    or_(*[Facility.facility_type.like(fac_type)
+                    for fac_type in facility_types]))
 
         group.facilities = query.all()
 
