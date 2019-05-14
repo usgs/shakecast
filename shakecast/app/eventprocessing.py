@@ -190,6 +190,7 @@ def process_events(events=None, session=None, scenario=False):
                            and should contain info on error}
     '''
     for event in events:
+        all_groups_affected = []
         if can_process_event(event, scenario) is False:
             continue
  
@@ -209,16 +210,19 @@ def process_events(events=None, session=None, scenario=False):
         session.add_all(new_notifications)
         session.commit()
 
-    for group in groups_affected:
+        all_groups_affected += groups_affected
+
+    processed_events = []
+    for group in all_groups_affected:
         notifications = get_new_event_notifications(group, scenario, session)
         if len(notifications) > 0:
             new_event_notification(notifications=notifications,
                     scenario=scenario)
         
-        processed_events = [n.event for n in notifications]
+            processed_events += [n.event for n in notifications]
 
-        for e in processed_events:
-            e.status = 'processed' if scenario is False else 'scenario'
+    for e in processed_events:
+        e.status = 'processed' if scenario is False else 'scenario'
 
 def compute_event_impact(facilities, shakemap, grid):
     impact = ImpactGeoJson()
