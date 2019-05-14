@@ -190,10 +190,10 @@ def process_events(events=None, session=None, scenario=False):
                            and should contain info on error}
     '''
     for event in events:
-        all_groups_affected = []
         if can_process_event(event, scenario) is False:
             continue
  
+        all_groups_affected = []
         event.status = 'processing_started'
         groups_affected = get_new_event_groups(event, scenario, session)
         
@@ -223,6 +223,8 @@ def process_events(events=None, session=None, scenario=False):
 
     for e in processed_events:
         e.status = 'processed' if scenario is False else 'scenario'
+    
+    return processed_events
 
 def compute_event_impact(facilities, shakemap, grid):
     impact = ImpactGeoJson()

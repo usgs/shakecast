@@ -750,11 +750,21 @@ class Event(Base):
     
     @hybrid_property
     def directory_name(self):
-        return os.path.join(get_data_dir(), self.event_id)
+        if self.type == 'test':
+            base_dir = os.path.join(sc_dir(), 'tests', 'data')
+        else:
+            base_dir = get_data_dir()
+
+        return os.path.join(base_dir, self.event_id)
     
     @hybrid_property
     def local_products_dir(self):
-        return os.path.join(get_local_products_dir(), self.event_id)
+        if self.type == 'test':
+            base_dir = os.path.join(sc_dir(), 'tests', 'data')
+        else:
+            base_dir = get_local_products_dir()
+
+        return os.path.join(base_dir, self.event_id)
 
     def is_new(self):
         """
