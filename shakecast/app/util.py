@@ -4,6 +4,7 @@ import json
 import datetime
 import time
 from shutil import copyfile
+import shutil
 import collections
 
 class SC(object):
@@ -312,9 +313,6 @@ class Clock(object):
         return app_time
 
 
-"""
-Functions used by the functions module
-"""
 def get_delim():
     """
     Returns which delimeter is appropriate for the operating system
@@ -362,6 +360,14 @@ def get_template_dir():
     path = os.path.join(home_dir, 'templates')
 
     return path
+
+def get_default_template_dir():
+    if os.environ.get('SC_DOCKER', False) is not False:
+        default_dir = os.path.join(sc_dir(), 'backups', 'templates')
+    else:
+        default_dir = os.path.join(sc_dir(), 'templates')
+
+    return default_dir
 
 def get_db_dir():
     home_dir = get_user_dir()
@@ -434,6 +440,15 @@ def non_null(input_dict):
 def on_windows():
     return 'win32' in sys.platform.lower()
 
+def copy_dir(source, dest, indent = 0):
+    """Copy a directory structure overwriting existing files"""
+    for root, dirs, files in os.walk(source):
+        if not os.path.isdir(root):
+            os.makedirs(root)
+        for each_file in files:
+            rel_path = root.replace(source, '').lstrip(os.sep)
+            dest_path = os.path.join(dest, rel_path, each_file)
+            shutil.copyfile(os.path.join(root, each_file), dest_path)
 
 DAY = 60 * 60 * 24
 DEFAULT_CONFIG_DIR = os.path.join(sc_dir(), 'conf')

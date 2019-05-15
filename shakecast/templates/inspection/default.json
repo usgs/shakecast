@@ -15,6 +15,16 @@
         }, 
         {
             "use": true, 
+            "name": "facility_type", 
+            "val": "Facility Type"
+        },  
+        {
+            "use": true, 
+            "name": "epicentral_distance", 
+            "val": "Distance"
+        }, 
+        {
+            "use": true, 
             "name": "inspection_priority", 
             "val": "Inspection Priority"
         }, 
