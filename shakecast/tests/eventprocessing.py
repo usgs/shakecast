@@ -10,12 +10,13 @@ from shakecast.app.orm import (
     ShakeMap
 )
 
-from .util import create_new_event, create_group
+from .util import create_new_event, create_group, create_new_shakemap
 
-class TestScenarioDownload(unittest.TestCase):
+class TestScenarioRun(unittest.TestCase):
     def test_badScenario(self):
         result = run_scenario('a_bad_Event_id')
         self.assertFalse(result['message']['success'])
+
 
 class TestNewEvent(unittest.TestCase):
     @dbconnect
@@ -53,3 +54,15 @@ class TestNewEvent(unittest.TestCase):
 
         self.assertTrue('gets_heartbeat' in group_names)
         self.assertTrue('no_heartbeat' not in group_names)
+
+class TestNewShakemap(unittest.TestCase):
+    
+    @dbconnect
+    def test_process_Shakemap(self, session=None):
+        new_event = create_new_event()
+        shakemap = create_new_shakemap()
+        shakemap.event = new_event
+
+        processed_shakemaps = process_shakemaps([shakemap], session)
+        for shakemap in processed_shakemaps:
+            self.assertNotEqual(shakemap.status, 'new')

@@ -873,10 +873,16 @@ class ShakeMap(Base):
 
     @hybrid_property
     def directory_name(self):
+        if self.type == 'test':
+            base_dir = os.path.join(sc_dir(), 'tests', 'data')
+        else:
+            base_dir = get_data_dir()
+
         return os.path.join(
-            get_data_dir(),
+            base_dir,
             self.shakemap_id,
-            self.shakemap_id + '-' + str(self.shakemap_version))
+            self.shakemap_id + '-' + str(self.shakemap_version)
+        )
     
     @hybrid_property
     def local_products_dir(self):

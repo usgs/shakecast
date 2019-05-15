@@ -336,6 +336,8 @@ def process_shakemaps(shakemaps=None, session=None, scenario=False):
             shakemap.status = 'scenario'
         session.commit()
 
+    return shakemaps
+
 @dbconnect
 def run_scenario(shakemap_id=None, session=None):
     '''
