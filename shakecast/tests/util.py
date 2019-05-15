@@ -1,4 +1,39 @@
-from shakecast.app.orm import Facility, Group, GroupSpecification, User
+import time
+
+from shakecast.app.orm import Facility, Group, GroupSpecification, User, Event, ShakeMap
+
+def create_new_event(**kwargs):
+    defaults = {
+        'event_id': 'new_event',
+        'status': 'new',
+        'type': 'test',
+        'all_event_ids': ',new_event,',
+        'lat': 40,
+        'lon': -120,
+        'depth': 10,
+        'magnitude': 6,
+        'title': 'Test event',
+        'place': 'Test event in Western US',
+        'time': time.time()
+    }
+    defaults.update(kwargs)
+
+    return Event(**defaults)
+
+def create_new_shakemap(**kwargs):
+    defaults = {
+        'shakemap_id': 'new_event',
+        'lat_max': 90,
+        'lat_min': -90,
+        'lon_max': 180,
+        'lon_min': -180,
+        'shakemap_version': 1,
+        'recieve_timestamp': time.time(),
+        'type': 'test'
+    }
+    defaults.update(kwargs)
+
+    return ShakeMap(**defaults)
 
 def create_fac(grid=None, fac_id='AUTO_GENERATED'):
     '''

@@ -574,8 +574,9 @@ class Group(Base):
 
         return filtered
 
-    def get_new_event_spec(self, scenario=False):
-        specs = self._get_specs('new_event', scenario=scenario)
+    def get_new_event_spec(self, scenario=False, heartbeat=False):
+        specs = self._get_specs(
+                'new_event', scenario=scenario, heartbeat=heartbeat)
 
         return specs[0] if len(specs) > 0 else None
 
@@ -636,8 +637,9 @@ class Group(Base):
             alert_level = notification.shakemap.get_alert_level()
             spec = self.get_inspection_spec(alert_level, scenario)
         else:
-            spec = self.get_new_event_spec(scenario)
-
+            heartbeat = notification.event.type == 'heartbeat' 
+            spec = self.get_new_event_spec(scenario=scenario,
+                    heartbeat=heartbeat)
 
         if spec is None:
             return None
@@ -748,11 +750,21 @@ class Event(Base):
     
     @hybrid_property
     def directory_name(self):
-        return os.path.join(get_data_dir(), self.event_id)
+        if self.type == 'test':
+            base_dir = os.path.join(sc_dir(), 'tests', 'data')
+        else:
+            base_dir = get_data_dir()
+
+        return os.path.join(base_dir, self.event_id)
     
     @hybrid_property
     def local_products_dir(self):
-        return os.path.join(get_local_products_dir(), self.event_id)
+        if self.type == 'test':
+            base_dir = os.path.join(sc_dir(), 'tests', 'data')
+        else:
+            base_dir = get_local_products_dir()
+
+        return os.path.join(base_dir, self.event_id)
 
     def is_new(self):
         """
@@ -861,10 +873,16 @@ class ShakeMap(Base):
 
     @hybrid_property
     def directory_name(self):
+        if self.type == 'test':
+            base_dir = os.path.join(sc_dir(), 'tests', 'data')
+        else:
+            base_dir = get_data_dir()
+
         return os.path.join(
-            get_data_dir(),
+            base_dir,
             self.shakemap_id,
-            self.shakemap_id + '-' + str(self.shakemap_version))
+            self.shakemap_id + '-' + str(self.shakemap_version)
+        )
     
     @hybrid_property
     def local_products_dir(self):
@@ -982,6 +1000,13 @@ class Product(Base):
                                                      self.update_timestamp)
 
 #######################################################################
+
+def clear_data(session, engine):
+    meta = MetaData(engine)
+    for table in reversed(meta.sorted_tables):
+        print 'Clear table %s' % table
+        session.execute(table.delete())
+    session.commit()
 
 # decorator for DB connection
 def dbconnect(func):

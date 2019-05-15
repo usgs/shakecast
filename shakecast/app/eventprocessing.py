@@ -76,11 +76,12 @@ def create_new_event_notifications(groups, event, scenario=False):
     for group in groups:
         # check new_event magnitude to make sure the group wants a 
         # notificaiton
-        event_spec = group.get_new_event_spec(scenario=scenario)
 
-        if (event_spec is None or
-                event_spec.minimum_magnitude > event.magnitude):
-            continue
+        if event.type != 'heartbeat':
+            event_spec = group.get_new_event_spec(scenario=scenario)
+            if (event_spec is None or
+                    event_spec.minimum_magnitude > event.magnitude):
+                continue
         
         notification = Notification(group=group,
                                     event=event,
@@ -132,7 +133,7 @@ def get_new_event_groups(event, scenario=False, session=None):
                                 if group.gets_notification('new_event', scenario=True)]
 
         all_groups_affected.update(groups_affected)
-    elif event.event_id != 'heartbeat':
+    elif event.type.lower() != 'heartbeat':
         groups_affected = (session.query(Group)
                                     .filter(Group.point_inside(event))
                                     .all())
@@ -192,6 +193,7 @@ def process_events(events=None, session=None, scenario=False):
         if can_process_event(event, scenario) is False:
             continue
  
+        all_groups_affected = []
         event.status = 'processing_started'
         groups_affected = get_new_event_groups(event, scenario, session)
         
@@ -208,16 +210,21 @@ def process_events(events=None, session=None, scenario=False):
         session.add_all(new_notifications)
         session.commit()
 
-    for group in groups_affected:
+        all_groups_affected += groups_affected
+
+    processed_events = []
+    for group in all_groups_affected:
         notifications = get_new_event_notifications(group, scenario, session)
         if len(notifications) > 0:
             new_event_notification(notifications=notifications,
                     scenario=scenario)
         
-        processed_events = [n.event for n in notifications]
+            processed_events += [n.event for n in notifications]
 
-        for e in processed_events:
-            e.status = 'processed' if scenario is False else 'scenario'
+    for e in processed_events:
+        e.status = 'processed' if scenario is False else 'scenario'
+    
+    return processed_events
 
 def compute_event_impact(facilities, shakemap, grid):
     impact = ImpactGeoJson()
@@ -328,6 +335,8 @@ def process_shakemaps(shakemaps=None, session=None, scenario=False):
         if scenario is True:
             shakemap.status = 'scenario'
         session.commit()
+
+    return shakemaps
 
 @dbconnect
 def run_scenario(shakemap_id=None, session=None):
