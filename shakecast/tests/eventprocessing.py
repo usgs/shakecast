@@ -1,14 +1,16 @@
-import time
+from sqlalchemy import MetaData
 import unittest
 
 from shakecast.app.eventprocessing import *
 from shakecast.app.orm import (
+    clear_data,
     dbconnect,
     engine,
     Event,
-    metadata,
     ShakeMap
 )
+
+from .util import create_new_event, create_group
 
 class TestScenarioDownload(unittest.TestCase):
     def test_badScenario(self):
@@ -16,10 +18,6 @@ class TestScenarioDownload(unittest.TestCase):
         self.assertFalse(result['message']['success'])
 
 class TestNewEvent(unittest.TestCase):
-    def setup(self):
-        metadata.drop_all()
-        metadata.create_all(engine)
-
     @dbconnect
     def test_processNewEvent(self, session=None):
         new_event = create_new_event()
@@ -28,21 +26,30 @@ class TestNewEvent(unittest.TestCase):
         for event in processed_events:
             self.assertNotEqual(event.status, 'new')
 
-def create_new_event(**kwargs):
-    defaults = {
-        'shakecast_id': 1,
-        'event_id': 'new_event',
-        'status': 'new',
-        'type': 'test',
-        'all_event_ids': ',new_event,',
-        'lat': 40,
-        'lon': -120,
-        'depth': 10,
-        'magnitude': 6,
-        'title': 'Test event',
-        'place': 'Test event in Western US',
-        'time': time.time()
-    }
-    defaults.update(kwargs)
+    @dbconnect
+    def test_processNewEventWithGroup(self, session=None):
+        new_event = create_new_event(type='ACTUAL')
+        group = create_group()
+        session.add(group)
 
-    return Event(**defaults)
+        session.commit()
+        processed_events = process_events([new_event], session)
+
+        for event in processed_events:
+            self.assertNotEqual(event.status, 'new')
+
+    @dbconnect
+    def test_heartbeat(self, session=None):
+        new_event = create_new_event(type='HEARTBEAT')
+        group1 = create_group(name='gets_heartbeat', heartbeat=True)
+        group2 = create_group(name='no_heartbeat', heartbeat=False)
+        session.add(group1)
+        session.add(group2)
+        session.commit()
+
+        processed_events = process_events([new_event], session)
+        notifications = processed_events[0].notifications
+        group_names = [notification.group.name for notification in notifications]
+
+        self.assertTrue('gets_heartbeat' in group_names)
+        self.assertTrue('no_heartbeat' not in group_names)

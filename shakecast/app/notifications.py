@@ -269,6 +269,15 @@ class TemplateManager(object):
                                     event_template_saved,
                                     insp_template_saved])
 
+def get_image(image_path):
+    default_image = os.path.join(sc_dir(),'view','assets', 'sc_logo.png')
+    try:
+        image = open(image_path, 'rb')
+    except Exception:
+        image = open(default_image, 'rb')
+
+    return image
+
 
 def new_event_notification(notifications=None,
                            scenario=False):
@@ -308,8 +317,9 @@ def new_event_notification(notifications=None,
 
     # get and attach map
     for count,event in enumerate(events):
-        map_image = open(os.path.join(event.directory_name,
-                                      'image.png'), 'rb')
+        map_image = get_image(os.path.join(event.directory_name,
+                                    'image.png'))
+
         msg_gmap = MIMEImage(map_image.read(), _subtype='png')
         map_image.close()
         
@@ -324,7 +334,7 @@ def new_event_notification(notifications=None,
     logo_str = os.path.join(sc_dir(),'view','assets',configs['logo'])
     
     # open logo and attach it to the message
-    logo_file = open(logo_str, 'rb')
+    logo_file = get_image(logo_str)
     msg_image = MIMEImage(logo_file.read(), _subtype='png')
     logo_file.close()
     msg_image.add_header('Content-ID', '<sc_logo_{0}>'.format(notification.shakecast_id))

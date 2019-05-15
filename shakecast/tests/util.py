@@ -1,4 +1,24 @@
-from shakecast.app.orm import Facility, Group, GroupSpecification, User
+import time
+
+from shakecast.app.orm import Facility, Group, GroupSpecification, User, Event
+
+def create_new_event(**kwargs):
+    defaults = {
+        'event_id': 'new_event',
+        'status': 'new',
+        'type': 'test',
+        'all_event_ids': ',new_event,',
+        'lat': 40,
+        'lon': -120,
+        'depth': 10,
+        'magnitude': 6,
+        'title': 'Test event',
+        'place': 'Test event in Western US',
+        'time': time.time()
+    }
+    defaults.update(kwargs)
+
+    return Event(**defaults)
 
 def create_fac(grid=None, fac_id='AUTO_GENERATED'):
     '''

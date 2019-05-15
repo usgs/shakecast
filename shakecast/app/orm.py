@@ -995,6 +995,13 @@ class Product(Base):
 
 #######################################################################
 
+def clear_data(session, engine):
+    meta = MetaData(engine)
+    for table in reversed(meta.sorted_tables):
+        print 'Clear table %s' % table
+        session.execute(table.delete())
+    session.commit()
+
 # decorator for DB connection
 def dbconnect(func):
     @wraps(func)

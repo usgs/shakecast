@@ -133,7 +133,7 @@ def get_new_event_groups(event, scenario=False, session=None):
                                 if group.gets_notification('new_event', scenario=True)]
 
         all_groups_affected.update(groups_affected)
-    elif event.event_id != 'heartbeat':
+    elif event.type.lower() != 'heartbeat':
         groups_affected = (session.query(Group)
                                     .filter(Group.point_inside(event))
                                     .all())
