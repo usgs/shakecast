@@ -21,7 +21,7 @@
         {
             "use": true, 
             "name": "epicentral_distance", 
-            "val": "Distance"
+            "val": "Distance (km)"
         }, 
         {
             "use": true, 
