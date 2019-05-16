@@ -29,8 +29,8 @@
         "update": {
             "json_url": "https://raw.githubusercontent.com/usgs/shakecast/master/update.json", 
             "db_version": 1, 
-            "update_version": "4.0.8", 
-            "software_version": "4.0.8", 
+            "update_version": "4.0.9", 
+            "software_version": "4.0.9", 
             "admin_notified": false
         }, 
         "DNS": "https://localhost", 
