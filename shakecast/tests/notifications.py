@@ -487,14 +487,6 @@ class TestTemplateManager(unittest.TestCase):
         result = temp_manager.create_new('default')
 
         self.assertTrue(result)
-    
-    def test_pdfTemplate(self):
-        temp_manager = TemplateManager()
-        result = temp_manager.get_template('pdf', 'header', sub_dir='default')
-    
-    def test_badSubdirPdfTemplate(self):
-        temp_manager = TemplateManager()
-        result = temp_manager.get_template('pdf', 'header', sub_dir='BAAAADSUBDIR')
 
 def set_email():
     # If the user wants to make sure they can get emails, they should

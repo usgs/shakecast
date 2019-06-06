@@ -119,7 +119,7 @@ def compute_aebm_impact(facility, shaking_point, shakemap):
     fac_shake['yellow'] = damage_probabilities['moderate'] * 100
     fac_shake['orange'] = damage_probabilities['extensive'] * 100
     fac_shake['red'] = damage_probabilities['complete'] * 100
-    fac_shake['epicentral_distance'] = r_rup
+    fac_shake['epicentral_distance'] = round(r_rup * 100)/100
 
     fac_shake.update(shaking_point)
     fac_shake.set_alert_level()

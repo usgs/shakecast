@@ -9,7 +9,7 @@ import smtplib
 import time
 
 from orm import dbconnect, ShakeMap
-from util import sc_dir, SC, get_template_dir
+from util import sc_dir, SC, get_template_dir, split_string_on_spaces
 
 jinja_env = Environment(extensions=['jinja2.ext.do'])
 
@@ -85,7 +85,8 @@ class NotificationBuilder(object):
                                sc=SC(),
                                config=config,
                                web=web,
-                               colors=colors)
+                               colors=colors,
+                               split_string=split_string_on_spaces)
 
     @staticmethod
     def build_update_html(update_info=None):

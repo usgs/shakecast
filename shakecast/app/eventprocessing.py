@@ -363,7 +363,7 @@ def run_scenario(shakemap_id=None, session=None):
 
     except Exception as e:
         error = str(e)
-        message = 'Scenario run failed'
+        message = 'Scenario run failed: {}'.format(error)
 
         
     if event is None and shakemap is None:

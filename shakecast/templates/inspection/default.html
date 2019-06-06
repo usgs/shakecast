@@ -10,14 +10,12 @@
             <td>
                 <table>
                     <tr>
-                        <td>
-                            <div style="width: 80px">                                
-                                {% if web is sameas false %}
-                                    <img style="border-radius:50%;max-height:100%;max-width:100%;" src="cid:sc_logo{{ shakemap.shakecast_id }}">
-                                {% else %}
-                                    <img style="border-radius:50%;max-height:100%;max-width:100%;" src="assets/{{ config.logo }}">
-                                {% endif %}
-                            </div>
+                        <td style="max-width: 612px">                       
+                            {% if web is sameas false %}
+                                <img style="border-radius:50%;max-height:100%;max-width:100%;" src="cid:sc_logo{{ shakemap.shakecast_id }}">
+                            {% else %}
+                                <img style="border-radius:50%;max-height:100%;max-width:100%;" src="assets/{{ config.logo }}">
+                            {% endif %}
                         </td>
                         <td>
                             <h1 style="color:#444444;font-size:50px;font-family:Arial;margin:0px">{{ config.head_text }}</h1>
@@ -107,14 +105,18 @@
                         <tr style="border: 2px solid #444444;padding: 5px;">
                         {% for head in config.table_head %}
                             {% if head.use == true %}
-                                {% if head.name == 'name' or head.name == 'facility_id' or head.name == 'facility_type' %}
+                                {% if fs.facility.get(head.name, False) %}
                                     <td style="border: 2px solid #444444;padding: 5px;">{{ fs.facility[head.name] }}</td>
                                 {% elif head.name == 'inspection_priority' %}
                                     <td style="border: 2px solid #444444;padding: 5px;background-color:{{ fs.alert_level }}">{{ fs.alert_level }}</td>
                                 {% elif head.name == 'shaking_value' %}
                                     <td style="border: 2px solid #444444;padding: 5px;">{{ fs[fs.metric.lower()] }}</td>
-                                {% else %}
+                                {% elif facility.get_attribute(head.name) %}
                                     <td style="border: 2px solid #444444;padding: 5px;">{{ fs[head.name] }}</td>
+                                {% elif fs.get(head.name, False) %}
+                                    <td style="border: 2px solid #444444;padding: 5px;">{{ fs[head.name] }}</td>
+                                {% else %}
+                                    <td style="border: 2px solid #444444;padding: 5px;">-</td>
                                 {% endif %}
                             {% endif %}
                         {% endfor %}
@@ -137,6 +139,7 @@
                         <td>
                             <p style="margin-bottom:2px;margin-top:0px;font-size: small;font-family: Arial;">ShakeCast Web: <a href="{{ sc.server_dns }}" target="_blank">{{ sc.server_dns }}</a></p>
                             <p style="margin-bottom:2px;margin-top:0px;font-size: small;font-family: Arial;">Software: {{ sc.software_version }}</p>
+                            <p style="margin-bottom:2px;margin-top:0px;font-size: small;font-family: Arial;">Notification Group: {{ notification.group.name }}</p>
                             <p style="margin-bottom:2px;margin-top:0px;font-size: small;font-family: Arial;">Reported by: {{ sc.server_name }}</p>
                         </td>
                     </tr>

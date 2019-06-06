@@ -4,6 +4,7 @@ import json
 import datetime
 import time
 from shutil import copyfile
+import shutil
 import collections
 
 class SC(object):
@@ -312,9 +313,6 @@ class Clock(object):
         return app_time
 
 
-"""
-Functions used by the functions module
-"""
 def get_delim():
     """
     Returns which delimeter is appropriate for the operating system
@@ -362,6 +360,14 @@ def get_template_dir():
     path = os.path.join(home_dir, 'templates')
 
     return path
+
+def get_default_template_dir():
+    if os.environ.get('SC_DOCKER', False) is not False:
+        default_dir = os.path.join(sc_dir(), 'backups', 'templates')
+    else:
+        default_dir = os.path.join(sc_dir(), 'templates')
+
+    return default_dir
 
 def get_db_dir():
     home_dir = get_user_dir()
@@ -434,6 +440,58 @@ def non_null(input_dict):
 def on_windows():
     return 'win32' in sys.platform.lower()
 
+def copy_dir(source, dest, indent = 0):
+    """Copy a directory structure overwriting existing files"""
+    for root, dirs, files in os.walk(source):
+        if not os.path.isdir(root):
+            os.makedirs(root)
+        for each_file in files:
+            rel_path = root.replace(source, '').lstrip(os.sep)
+            dest_path = os.path.join(dest, rel_path, each_file)
+            shutil.copyfile(os.path.join(root, each_file), dest_path)
+
+def split_string_on_spaces(string, split_count):
+    '''
+    Break up a string to fit into PDF tables. Prefer to break strings
+    on spaces
+    '''
+    string = str(string)
+    split_string = string.split(' ')
+
+    line = ''
+    new_string = []
+    for current_string in split_string:
+        if len(line) + len(current_string) < split_count:
+            if len(line) > 0:
+                line += ' '
+
+            line += current_string
+        else:
+            if len(line) + 1 > .5 * split_count:
+                new_string += [line]
+                line = ''
+            
+            remaining = current_string
+            if line:
+                remaining = '{} {}'.format(line, remaining)
+
+            start_str_cut = 0
+            while start_str_cut < len(remaining):
+                end_str_cut = start_str_cut + split_count
+                if end_str_cut > len(remaining):
+                    end_str_cut = len(remaining)
+                
+                chunk = remaining[int(start_str_cut):int(end_str_cut)]
+                start_str_cut = end_str_cut
+
+                if start_str_cut < len(remaining):
+                    new_string += [chunk]
+                else:
+                    line = chunk
+    if line:
+        new_string += [line]
+
+    return new_string
 
 DAY = 60 * 60 * 24
 DEFAULT_CONFIG_DIR = os.path.join(sc_dir(), 'conf')
