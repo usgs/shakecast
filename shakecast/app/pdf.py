@@ -2,6 +2,7 @@ from fpdf import FPDF, HTMLMixin
 import os
 import time
 
+from .impact import get_event_impact
 from .notifications import NotificationBuilder, TemplateManager
 from .orm import ShakeMap, Session
 from .util import Clock
@@ -27,6 +28,12 @@ def generate_impact_pdf(shakemap, save=False, pdf_name='', template_name=''):
     tm = TemplateManager()
     configs = tm.get_configs('pdf', 'header', template_name or 'default')
     add_header_to_pdf(pdf, shakemap, configs)
+
+    pdf.ln(pdf.font_size * 2)
+    add_summary_to_pdf(pdf, shakemap)
+
+    pdf.add_page()
+    add_shakemap_details_to_pdf(pdf, shakemap)
 
     add_shakemap_to_pdf(pdf, shakemap)
 
@@ -54,10 +61,18 @@ def add_header_to_pdf(pdf, shakemap, configs):
     pdf.set_font(font, 'b', 14)
     pdf.multi_cell(pdf.w, pdf.font_size, shakemap.event.title)
 
+    pdf.set_font(font, style, size)
 
-    pdf.set_font(font, 'b', 12)
+def add_shakemap_details_to_pdf(pdf, shakemap):
+    font = pdf.font_family
+    style = pdf.font_style
+    size = pdf.font_size_pt
+
     details_height = pdf.font_size + 2
-    pdf.multi_cell(pdf.w, details_height, '')
+    pdf.set_font(font, 'b', 14)
+    pdf.multi_cell(pdf.w, pdf.font_size, 'Event Details')
+
+    pdf.set_font(font, '', 12)
     pdf.multi_cell(pdf.w, details_height, 'Epicenter Location: {}, {}'.format(shakemap.event.lat, shakemap.event.lon))
     pdf.multi_cell(pdf.w, details_height, 'Event ID: {}'.format(shakemap.shakemap_id))
     pdf.multi_cell(pdf.w, details_height, 'Version: {}'.format(shakemap.shakemap_version))
@@ -70,6 +85,27 @@ def add_header_to_pdf(pdf, shakemap, configs):
     datetime = clock.from_time(time.time())
     date_string = datetime.strftime('%H:%M %10-%b-%Y')
     pdf.multi_cell(pdf.w, details_height, 'Report Generated: {}'.format(date_string))
+    pdf.set_font(font, style, size)
+
+def add_summary_to_pdf(pdf, shakemap):
+    font = pdf.font_family
+    style = pdf.font_style
+    size = pdf.font_size_pt
+
+    impact = get_event_impact(shakemap.facility_shaking)
+
+    details_height = pdf.font_size + 2
+    font = pdf.font_family
+    pdf.set_font(font, 'b', 14)
+    pdf.multi_cell(pdf.w, details_height, 'Impact Summary')
+    pdf.set_font(font, '', 12)
+    pdf.multi_cell(pdf.w, details_height, 'Total Facilities Evaluated: {}'.format(impact['all']))
+    pdf.multi_cell(pdf.w, details_height, 'High: {}'.format(impact['red']))
+    pdf.multi_cell(pdf.w, details_height, 'Medium-High: {}'.format(impact['orange']))
+    pdf.multi_cell(pdf.w, details_height, 'Medium: {}'.format(impact['yellow']))
+    pdf.multi_cell(pdf.w, details_height, 'Low: {}'.format(impact['green']))
+    pdf.multi_cell(pdf.w, details_height, 'None: {}'.format(impact['gray']))
+
     pdf.set_font(font, style, size)
 
 def add_pdf_table(pdf, headers, data):
