@@ -1,6 +1,7 @@
 import json
 import types
 import os
+from sqlalchemy import inspect
 
 from orm import DeclarativeMeta, Base, FacilityShaking
 
@@ -92,9 +93,30 @@ def sql_to_obj(sql):
     '''
 
     if isinstance(sql, Base):
-        sql = sql.__dict__
+        obj = {}
 
-    if isinstance(sql, list):
+        sql_class = type(sql)
+        class_keys = inspect(sql_class).all_orm_descriptors.keys()
+
+        filtered_keys = [key for key in class_keys if '__' not in key and key[0] != '_']
+        for attribute in filtered_keys:
+            if not obj.get(attribute, False):
+                try:
+                    obj_attr = getattr(sql, attribute)
+
+                    # don't include functions
+                    if (not hasattr(obj_attr, '__call__') and
+                            not isinstance(obj_attr, Base) and
+                            not isinstance(obj_attr, list) and
+                            not isinstance(obj_attr, dict)):
+                        obj[attribute] = obj_attr
+                except:
+                    # can't access it for some reason
+                    pass
+        
+        sql = obj
+
+    elif isinstance(sql, list):
         obj = []
 
         for item in sql:
@@ -106,6 +128,7 @@ def sql_to_obj(sql):
     elif isinstance(sql, dict):
         obj = {}
 
+        # remove sqlalchemy state
         if sql.get('_sa_instance_state', False):
             sql.pop('_sa_instance_state')
 
@@ -125,3 +148,46 @@ def sql_to_obj(sql):
         obj = sql
 
     return obj
+
+class GeoJson(dict):
+    def __init__(self):
+        self['type'] = 'Feature'
+        self['geometry'] = {'type': 'Point', 'coordinates': None}
+        self['properties'] = {}
+    
+    def set_coordinates(self, coordinates):
+        self['geometry']['coordinates'] = coordinates
+
+    def set_feature_type(self, feature_type):
+        self['geometry']['type'] = feature_type
+
+    def set_property(self, property_, value):
+        self['properties'][property_] = value
+    
+    def get_json(self, indent=4):
+        return json.dumps(self, indent=indent)
+
+    def digest_sql_obj(self, sql):
+        obj = sql_to_obj(sql)
+        self['properties'].update(obj)
+        self['geometry']['coordinates'] = get_geojson_latlon(obj)
+
+
+def get_geojson_latlon(obj):
+    # check for lat/lon
+    if obj.get('lat', False) and obj.get('lon', False):
+        return [obj['lat'], obj['lon']]
+    
+    elif (obj.get('lat_max', False) and
+            obj.get('lon_max', False) and
+            obj.get('lat_min', False) and
+            obj.get('lon_min', False)):
+        return [
+            [
+                [obj['lat_min'], obj['lon_min']],
+                [obj['lat_max'], obj['lon_min']],
+                [obj['lat_max'], obj['lon_max']],
+                [obj['lat_min'], obj['lon_max']],
+                [obj['lat_min'], obj['lon_min']]
+            ]
+        ]
