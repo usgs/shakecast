@@ -158,25 +158,28 @@ class GeoJson(dict):
     def set_coordinates(self, coordinates):
         self['geometry']['coordinates'] = coordinates
 
+        if isinstance(coordinates[0], list):
+            self['geometry']['type'] = 'Polygon'
+
     def set_feature_type(self, feature_type):
         self['geometry']['type'] = feature_type
 
     def set_property(self, property_, value):
         self['properties'][property_] = value
     
-    def get_json(self, indent=4):
+    def get_json(self, indent=0):
         return json.dumps(self, indent=indent)
 
-    def digest_sql_obj(self, sql):
+    def digest_sql(self, sql):
         obj = sql_to_obj(sql)
+        self.set_coordinates(get_geojson_latlon(obj))
         self['properties'].update(obj)
-        self['geometry']['coordinates'] = get_geojson_latlon(obj)
 
 
 def get_geojson_latlon(obj):
     # check for lat/lon
     if obj.get('lat', False) and obj.get('lon', False):
-        return [obj['lat'], obj['lon']]
+        return [obj['lon'], obj['lat']]
     
     elif (obj.get('lat_max', False) and
             obj.get('lon_max', False) and
@@ -184,10 +187,10 @@ def get_geojson_latlon(obj):
             obj.get('lon_min', False)):
         return [
             [
-                [obj['lat_min'], obj['lon_min']],
-                [obj['lat_max'], obj['lon_min']],
-                [obj['lat_max'], obj['lon_max']],
-                [obj['lat_min'], obj['lon_max']],
-                [obj['lat_min'], obj['lon_min']]
+                [obj['lon_max'], obj['lat_min']],
+                [obj['lon_max'], obj['lat_max']],
+                [obj['lon_min'], obj['lat_max']],
+                [obj['lon_min'], obj['lat_min']],
+                [obj['lon_max'], obj['lat_min']]
             ]
         ]
