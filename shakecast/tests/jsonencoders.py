@@ -80,5 +80,47 @@ class TestGeoJson(unittest.TestCase):
         self.assertEqual(geo_json['geometry']['coordinates'][0], f.lon)
         self.assertEqual(geo_json['geometry']['coordinates'][1], f.lat)
 
+    def test_geoJsonSetsProperties(self):
+        f = Facility(
+            lat_max = 80,
+            lat_min = 79,
+            lon_max = 100,
+            lon_min = 99,
+            name = 'TEST'
+        )
+
+        geo_json = GeoJson()
+        geo_json.digest_sql(f)
+
+        self.assertEqual(geo_json['properties']['name'], f.name)
+
+    def test_geoJsonSetsPolygon(self):
+        f = Group(
+            lat_max = 80,
+            lat_min = 79,
+            lon_max = 100,
+            lon_min = 99,
+            name = 'TEST'
+        )
+
+        geo_json = GeoJson()
+        geo_json.digest_sql(f)
+
+        self.assertEqual(geo_json['geometry']['type'], 'Polygon')
+
+    def test_geoJsonSetsCoordinates(self):
+        f = Group(
+            lat_max = 80,
+            lat_min = 79,
+            lon_max = 100,
+            lon_min = 99,
+            name = 'TEST'
+        )
+
+        geo_json = GeoJson()
+        geo_json.digest_sql(f)
+
+        self.assertTrue(isinstance(geo_json['geometry']['coordinates'][0], list))
+
 if __name__ == '__main__':
     unittest.main()
