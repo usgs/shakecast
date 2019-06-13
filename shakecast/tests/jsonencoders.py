@@ -2,7 +2,7 @@ import json
 import unittest
 
 from shakecast.app.jsonencoders import *
-from shakecast.app.orm import Base, User
+from shakecast.app.orm import Base, User, Group, Facility
 
 class TestSqlAlchemyToObj(unittest.TestCase):
     '''
@@ -56,3 +56,71 @@ class TestAlchemyEncoder(unittest.TestCase):
         user_dict = json.loads(user_json)
         self.assertTrue(user_dict['username'] == 'TEST')
 
+class TestGeoJson(unittest.TestCase):
+
+    def test_geoJsonPreloads(self):
+        geo = GeoJson()
+        self.assertTrue(geo.get('type', False))
+        self.assertTrue(geo.get('geometry', False))
+        self.assertEqual(geo['properties'], {})
+
+    def test_geoJsonFacility(self):
+        f = Facility(
+            lat_max = 80,
+            lat_min = 79,
+            lon_max = 100,
+            lon_min = 99,
+            name = 'TEST'
+        )
+
+        geo_json = GeoJson()
+        geo_json.digest_sql(f)
+
+        self.assertEqual(geo_json['geometry']['type'], 'Point')
+        self.assertEqual(geo_json['geometry']['coordinates'][0], f.lon)
+        self.assertEqual(geo_json['geometry']['coordinates'][1], f.lat)
+
+    def test_geoJsonSetsProperties(self):
+        f = Facility(
+            lat_max = 80,
+            lat_min = 79,
+            lon_max = 100,
+            lon_min = 99,
+            name = 'TEST'
+        )
+
+        geo_json = GeoJson()
+        geo_json.digest_sql(f)
+
+        self.assertEqual(geo_json['properties']['name'], f.name)
+
+    def test_geoJsonSetsPolygon(self):
+        f = Group(
+            lat_max = 80,
+            lat_min = 79,
+            lon_max = 100,
+            lon_min = 99,
+            name = 'TEST'
+        )
+
+        geo_json = GeoJson()
+        geo_json.digest_sql(f)
+
+        self.assertEqual(geo_json['geometry']['type'], 'Polygon')
+
+    def test_geoJsonSetsCoordinates(self):
+        f = Group(
+            lat_max = 80,
+            lat_min = 79,
+            lon_max = 100,
+            lon_min = 99,
+            name = 'TEST'
+        )
+
+        geo_json = GeoJson()
+        geo_json.digest_sql(f)
+
+        self.assertTrue(isinstance(geo_json['geometry']['coordinates'][0], list))
+
+if __name__ == '__main__':
+    unittest.main()
