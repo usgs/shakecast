@@ -5,6 +5,7 @@ from email.mime.application import MIMEApplication
 from jinja2 import Template, Environment
 import json
 import os
+import shutil
 import smtplib
 import time
 
@@ -41,7 +42,7 @@ class NotificationBuilder(object):
                                web=web)
     
     @staticmethod
-    def build_insp_html(shakemap, name=None, web=False, config=None):
+    def build_insp_html(shakemap, notification=None, name=None, web=False, config=None):
         temp_manager = TemplateManager()
         template_name = (name or 'default').lower()
         if not config:
@@ -55,6 +56,7 @@ class NotificationBuilder(object):
         return template.render(shakemap=shakemap,
                                facility_shaking=shakemap.facility_shaking,
                                fac_details=fac_details,
+                               notification=notification,
                                sc=SC(),
                                config=config,
                                web=web)
@@ -265,6 +267,14 @@ class TemplateManager(object):
         event_template_saved = self.save_template('new_event', name, event_temp)
         insp_template_saved = self.save_template('inspection', name, insp_temp)
 
+        # copy PDF templates
+        pdf_dest = os.path.join(get_template_dir(), 'pdf', name)
+        pdf_default = os.path.join(get_template_dir(), 'pdf', 'default')
+        if not os.path.isdir(pdf_dest):
+            shutil.copytree(pdf_default, pdf_dest)
+        else:
+            return False
+
         return bool(None not in [event_configs_saved,
                                     insp_configs_saved,
                                     event_template_saved,
@@ -412,7 +422,7 @@ def inspection_notification(notification=None,
 
             # build the notification
             not_builder = NotificationBuilder()
-            message = not_builder.build_insp_html(shakemap, name=group.template)
+            message = not_builder.build_insp_html(shakemap, notification=notification, name=group.template)
 
             # attach html
             message_type = 'html' if '<html>' in message else 'plain'

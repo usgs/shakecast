@@ -105,8 +105,8 @@
                         <tr style="border: 2px solid #444444;padding: 5px;">
                         {% for head in config.table_head %}
                             {% if head.use == true %}
-                                {% if fs.facility.get(head.name, False) %}
-                                    <td style="border: 2px solid #444444;padding: 5px;">{{ fs.facility[head.name] }}</td>
+                                {% if fs.facility.__dict__.get(head.name, False) %}
+                                    <td style="border: 2px solid #444444;padding: 5px;">{{ fs.facility.__dict__[head.name] }}</td>
                                 {% elif head.name == 'inspection_priority' %}
                                     <td style="border: 2px solid #444444;padding: 5px;background-color:{{ fs.alert_level }}">{{ fs.alert_level }}</td>
                                 {% elif head.name == 'shaking_value' %}
@@ -139,7 +139,9 @@
                         <td>
                             <p style="margin-bottom:2px;margin-top:0px;font-size: small;font-family: Arial;">ShakeCast Web: <a href="{{ sc.server_dns }}" target="_blank">{{ sc.server_dns }}</a></p>
                             <p style="margin-bottom:2px;margin-top:0px;font-size: small;font-family: Arial;">Software: {{ sc.software_version }}</p>
-                            <p style="margin-bottom:2px;margin-top:0px;font-size: small;font-family: Arial;">Notification Group: {{ notification.group.name }}</p>
+                            {% if notification.group %}
+                                <p style="margin-bottom:2px;margin-top:0px;font-size: small;font-family: Arial;">Notification Group: {{ notification.group.name }}</p>
+                            {% endif %}
                             <p style="margin-bottom:2px;margin-top:0px;font-size: small;font-family: Arial;">Reported by: {{ sc.server_name }}</p>
                         </td>
                     </tr>
