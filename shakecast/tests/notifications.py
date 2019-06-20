@@ -1,3 +1,4 @@
+import shutil
 import sys
 import unittest
 
@@ -483,10 +484,17 @@ class TestTemplateManager(unittest.TestCase):
         self.assertIn('default', temp_names)
 
     def test_NewTemp(self):
+        new_temp_name = 'TESTING_default_copy'
         temp_manager = TemplateManager()
-        result = temp_manager.create_new('default')
+        result = temp_manager.create_new(new_temp_name)
+        
+        temp_dir = get_template_dir()
+        pdf_dir = os.path.join(temp_dir, 'pdf', new_temp_name)
 
+        self.assertTrue(os.path.isdir(pdf_dir))
         self.assertTrue(result)
+
+        shutil.rmtree(pdf_dir)
 
 def set_email():
     # If the user wants to make sure they can get emails, they should
