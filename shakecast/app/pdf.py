@@ -26,8 +26,8 @@ def generate_impact_pdf(shakemap, save=False, pdf_name='', template_name=''):
     pdf.add_page()
 
     tm = TemplateManager()
-    configs = tm.get_configs('pdf', 'header', template_name or 'default')
-    add_header_to_pdf(pdf, shakemap, configs)
+    configs = tm.get_configs('pdf', template_name or 'default.json')
+    add_header_to_pdf(pdf, shakemap, configs['header'])
 
     pdf.ln(pdf.font_size * 2)
     add_summary_to_pdf(pdf, shakemap)
@@ -37,8 +37,7 @@ def generate_impact_pdf(shakemap, save=False, pdf_name='', template_name=''):
 
     add_shakemap_to_pdf(pdf, shakemap)
 
-    configs = tm.get_configs('pdf', 'facility-table', template_name or 'default')
-    add_pdf_table(pdf, configs['table_head'], shakemap.facility_shaking)
+    add_pdf_table(pdf, configs['table']['table_head'], shakemap.facility_shaking)
 
     pdf.alias_nb_pages()
     pdf_string = pdf.output('', 'S')

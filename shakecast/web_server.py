@@ -639,6 +639,7 @@ def notification_config(notification_type, name):
     if request.method == 'GET':
         config = temp_manager.get_configs(notification_type, name)
 
+
     elif request.method == 'POST':
         config = request.json.get('config', None)
         if config:
