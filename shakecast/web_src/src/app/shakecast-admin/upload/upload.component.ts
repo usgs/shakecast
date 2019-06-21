@@ -6,7 +6,9 @@ import { trigger,
          style,
          transition,
          animate } from '@angular/animations';
+
 import { FileUploader } from 'ng2-file-upload';
+
 import { NotificationsService } from 'angular2-notifications';
 import { UploadService } from './upload.service';
 import { ScreenDimmerService } from '@core/screen-dimmer.service';
@@ -23,12 +25,12 @@ import { ScreenDimmerService } from '@core/screen-dimmer.service';
       ])
     ]
 })
-export class UploadComponent implements OnInit, OnDestroy{
+export class UploadComponent implements OnInit, OnDestroy {
     public uploader:FileUploader = new FileUploader({url: 'admin/upload/'});
     public hasBaseDropZoneOver:boolean = false;
     public hasAnotherDropZoneOver:boolean = false;
     public show: string = 'no';
-    private subscriptions: any = []
+    private subscriptions: any = [];
 
     constructor(private uploadService: UploadService,
                 private screenDimmer: ScreenDimmerService,
@@ -52,12 +54,12 @@ export class UploadComponent implements OnInit, OnDestroy{
     }
 
     showUpload() {
-        this.show = 'yes'
+        this.show = 'yes';
         this.screenDimmer.dimScreen();
     }
 
     hideUpload() {
-        this.show = 'no'
+        this.show = 'no';
         this.screenDimmer.undimScreen();
     }
 
