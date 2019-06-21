@@ -5,6 +5,7 @@ from email.mime.application import MIMEApplication
 from jinja2 import Template, Environment
 import json
 import os
+import shutil
 import smtplib
 import time
 
@@ -41,7 +42,7 @@ class NotificationBuilder(object):
                                web=web)
     
     @staticmethod
-    def build_insp_html(shakemap, name=None, web=False, config=None):
+    def build_insp_html(shakemap, notification=None, name=None, web=False, config=None):
         temp_manager = TemplateManager()
         template_name = (name or 'default').lower()
         if not config:
@@ -55,38 +56,10 @@ class NotificationBuilder(object):
         return template.render(shakemap=shakemap,
                                facility_shaking=shakemap.facility_shaking,
                                fac_details=fac_details,
+                               notification=notification,
                                sc=SC(),
                                config=config,
                                web=web)
-
-    @staticmethod
-    def build_pdf_html(shakemap, name=None, template_name='default', web=False, config=None):
-        temp_manager = TemplateManager()
-        template_name = (template_name or 'default').lower()
-        if not config:
-            config = temp_manager.get_configs('pdf', name=name, sub_dir=template_name)
-
-        template = temp_manager.get_template('pdf', name=name, sub_dir=template_name)
-
-        shakemap.sort_facility_shaking('weight')
-        fac_details = shakemap.get_impact_summary()
-
-        colors = {
-            'red': '#FF0000',
-            'orange': '#FFA500',
-            'yellow': '#FFFF00',
-            'green': '#50C878',
-            'gray': '#AAAAAA'
-        }
-
-        return template.render(shakemap=shakemap,
-                               facility_shaking=shakemap.facility_shaking,
-                               fac_details=fac_details,
-                               sc=SC(),
-                               config=config,
-                               web=web,
-                               colors=colors,
-                               split_string=split_string_on_spaces)
 
     @staticmethod
     def build_update_html(update_info=None):
@@ -256,19 +229,23 @@ class TemplateManager(object):
 
         insp_configs = self.get_configs('inspection', 'default')
         insp_temp = self.get_template_string('inspection', 'default')
+    
+        pdf_configs = self.get_configs('pdf', 'default')
 
         # save configs
         event_configs_saved = self.save_configs('new_event', name, event_configs)
         insp_configs_saved = self.save_configs('inspection', name, insp_configs)
+        pdf_configs_saved = self.save_configs('inspection', name, pdf_configs)
         
         # save templates
         event_template_saved = self.save_template('new_event', name, event_temp)
         insp_template_saved = self.save_template('inspection', name, insp_temp)
 
-        return bool(None not in [event_configs_saved,
-                                    insp_configs_saved,
-                                    event_template_saved,
-                                    insp_template_saved])
+        return (event_configs_saved and
+                insp_configs_saved and
+                pdf_configs_saved and
+                event_template_saved and
+                insp_template_saved)
 
 def get_image(image_path):
     default_image = os.path.join(sc_dir(),'view','assets', 'sc_logo.png')
@@ -412,7 +389,7 @@ def inspection_notification(notification=None,
 
             # build the notification
             not_builder = NotificationBuilder()
-            message = not_builder.build_insp_html(shakemap, name=group.template)
+            message = not_builder.build_insp_html(shakemap, notification=notification, name=group.template)
 
             # attach html
             message_type = 'html' if '<html>' in message else 'plain'

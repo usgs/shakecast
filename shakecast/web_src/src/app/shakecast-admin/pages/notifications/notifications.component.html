@@ -27,7 +27,7 @@
                             placeholder="Give it a name, then hit enter">
                         <h3 class="button"
                             *ngIf="enteringNew"
-                            (click)="enteringNew=False">Cancel</h3>
+                            (click)="enteringNew=false">Cancel</h3>
                     </div>
 
                     <div class="item">
@@ -40,6 +40,11 @@
                                 [ngClass]="{'selected': eventType=='inspection'}"
                                 (click)="getNotification(name, 'inspection')">
                             Facilities
+                        </h3>
+                        <h3 class="conf event-type button"
+                                [ngClass]="{'selected': eventType=='pdf'}"
+                                (click)="getNotification(name, 'pdf')">
+                            PDF
                         </h3>
                     </div>
                 </div>
@@ -87,16 +92,16 @@
                                 [(ngModel)]="config.intro.font_color">
                     </div>
                     <div class="item"
-                                *ngIf="config.intro" >
-                        <p class="label">Background Color: </p>
-                        <input class="conf" 
-                                [(ngModel)]="config.intro.back_color">
+                        *ngIf="config.intro" >
+                      <p class="label">Background Color: </p>
+                      <input class="conf" 
+                        [(ngModel)]="config.intro.back_color">
                     </div>
                     <div class="item"
-                                    *ngIf="config.intro" >
+                            *ngIf="config.intro" >
                         <p class="label">Text: </p>
                         <textarea
-                                    [(ngModel)]="config.intro.text">
+                            [(ngModel)]="config.intro.text">
                         </textarea>
                     </div>
                 </div>

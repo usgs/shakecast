@@ -110,7 +110,9 @@
                             <p style="margin-bottom:2px;margin-top:0px;font-size: small;font-family: Arial;">ShakeCast Web: <a href="{{ sc.server_dns }}" target="_blank">{{ sc.server_dns }}</a></p>
                             <p style="margin-bottom:2px;margin-top:0px;font-size: small;font-family: Arial;">Software: {{ sc.software_version }}</p>
                             <p style="margin-bottom:2px;margin-top:0px;font-size: small;font-family: Arial;">Reported by: {{ sc.server_name }}</p>
-                            <p style="margin-bottom:2px;margin-top:0px;font-size: small;font-family: Arial;">Notification Group: {{ notification.group.name }}</p>
+                            {% if notification.group %}
+                                <p style="margin-bottom:2px;margin-top:0px;font-size: small;font-family: Arial;">Notification Group: {{ notification.group.name }}</p>
+                            {% endif %}
                         </td>
                     </tr>
                 </table>
