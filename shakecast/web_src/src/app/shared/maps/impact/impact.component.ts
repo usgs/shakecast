@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Subscription } from 'rxjs';
 
-import { FacilityService } from '../../../shakecast-admin/pages/facilities/facility.service';
+import { FacilityService } from '../../../shakecast-admin/facilities/facility.service';
 
 import { EarthquakeService } from '../../../shakecast/pages/earthquakes/earthquake.service';
 

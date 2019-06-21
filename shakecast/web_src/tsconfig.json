@@ -18,5 +18,12 @@
     ],
     "module": "es2015",
     "baseUrl": "./"
+    ,
+    "paths": {
+        "@shakecast-admin/*": ["./app/shakecast-admin/*"],
+        "@shakecast/*": ["./app/shakecast/*"],
+        "@core/*": ["./app/core/*"],
+        "@shared/*": ["./app/shared/*"]
+    }
   }
 }

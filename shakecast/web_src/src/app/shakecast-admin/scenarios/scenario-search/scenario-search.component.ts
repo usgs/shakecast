@@ -7,7 +7,7 @@ import { trigger,
          transition,
          animate } from '@angular/animations';
 
-import { EarthquakeService, Earthquake } from '../../../../shakecast/pages/earthquakes/earthquake.service';
+import { EarthquakeService } from '../../../shakecast/pages/earthquakes/earthquake.service';
 
 @Component({
     selector: 'scenario-search',

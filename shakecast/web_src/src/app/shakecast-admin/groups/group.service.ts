@@ -4,7 +4,7 @@ import { HttpClient, HttpParams} from '@angular/common/http';
 
 import { Observable ,  ReplaySubject } from 'rxjs';
 
-import { MapService } from '../../../shared/maps/map.service'
+import { MapService } from '@shared/maps/map.service'
 
 export interface Group {
     lat_min: number;

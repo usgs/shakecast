@@ -4,7 +4,7 @@ import { Subscription } from 'rxjs';
 import { MapService } from './map.service';
 import { EarthquakeService } from '../../shakecast/pages/earthquakes/earthquake.service';
 import { LayerService } from './layers/layer.service';
-import { FacilityService } from '../../shakecast-admin/pages/facilities/facility.service';
+import { FacilityService } from '../../shakecast-admin/facilities/facility.service';
 
 import * as L from 'leaflet';
 import * as _ from 'underscore';

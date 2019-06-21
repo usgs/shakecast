@@ -3,7 +3,7 @@ import { Component,
          OnDestroy } from '@angular/core';
 
 import { TitleService } from '../../../title/title.service';
-import { UsersService } from '../../../shakecast-admin/pages/users/users.service';
+import { UsersService } from '@shakecast-admin/users/users.service';
 import { Subscription } from 'rxjs';
 
 @Component({

@@ -2,9 +2,9 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams, HttpHeaders} from '@angular/common/http';
 
 
-import { Observable ,  ReplaySubject } from 'rxjs';
-import { NotificationsService } from 'angular2-notifications'
-import { MapService } from '../../../shared/maps/map.service'
+import { ReplaySubject } from 'rxjs';
+import { NotificationsService } from 'angular2-notifications';
+import { MapService } from '../../shared/maps/map.service';
 
 export interface User {
     name: string;

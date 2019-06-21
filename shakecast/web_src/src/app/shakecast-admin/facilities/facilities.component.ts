@@ -1,24 +1,24 @@
 import { Component,
          OnInit,
-         OnDestroy, AfterViewInit } from '@angular/core';
+         OnDestroy } from '@angular/core';
 
 import { Subscription } from 'rxjs';
 
-import { FacilityListComponent } from './facility-list.component'
-import { FacilityService, Facility } from './facility.service'
-import { EarthquakeService } from '../../../shakecast/pages/earthquakes/earthquake.service'
-import { TitleService } from '../../../title/title.service'
+import { FacilityListComponent } from './facility-list.component';
+import { FacilityService, Facility } from './facility.service';
+import { EarthquakeService } from '../../shakecast/pages/earthquakes/earthquake.service';
+import { TitleService } from '../../title/title.service';
 
 @Component({
     selector: 'facilities',
     templateUrl: './facilities.component.html',
     styleUrls: ['./facilities.component.css',
-                  '../../../shared/css/data-list.css']
+                  '../../shared/css/data-list.css']
 })
 export class FacilitiesComponent implements OnInit, OnDestroy {
     private subscriptions = new Subscription();
     public facList: any[] = [];
-    
+
     constructor(public facService: FacilityService,
                 private titleService: TitleService,
                 private eqService: EarthquakeService) {}

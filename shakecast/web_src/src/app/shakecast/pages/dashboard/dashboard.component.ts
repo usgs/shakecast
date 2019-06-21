@@ -3,8 +3,8 @@ import { Component,
          OnDestroy,
          AfterViewInit } from '@angular/core';
 
-import { EarthquakeService } from '../earthquakes/earthquake.service'
-import { FacilityService } from '../../../shakecast-admin/pages/facilities/facility.service'
+import { EarthquakeService } from '../earthquakes/earthquake.service';
+import { FacilityService } from '@shakecast-admin/facilities/facility.service';
 import { TitleService } from '../../../title/title.service';
 
 import { Subscription, timer } from 'rxjs';

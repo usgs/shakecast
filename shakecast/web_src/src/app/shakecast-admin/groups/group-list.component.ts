@@ -7,7 +7,7 @@ import { trigger,
          transition,
          animate } from '@angular/animations';
 
-import { GroupService, Group } from './group.service'
+import { GroupService, Group } from './group.service';
 
 import * as _ from 'underscore';
 
@@ -15,7 +15,7 @@ import * as _ from 'underscore';
     selector: 'group-list',
     templateUrl: './group-list.component.html',
     styleUrls: ['./group-list.component.css',
-                    '../../../shared/css/data-list.css'],
+                    '../../shared/css/data-list.css'],
     animations: [
       trigger('selected', [
         state('true', style({transform: 'translateY(-10px)'})),

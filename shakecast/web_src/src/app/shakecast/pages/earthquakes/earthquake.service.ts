@@ -3,13 +3,13 @@ import { Response, Headers, RequestOptions } from '@angular/http';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { map } from 'rxjs/operators';
 
-import { Observable ,  ReplaySubject ,  BehaviorSubject } from 'rxjs';
+import { BehaviorSubject } from 'rxjs';
 import { Router } from '@angular/router';
 
-import { MapService } from '../../../shared/maps/map.service'
-import { NotificationService } from '../dashboard/notification-dash/notification.service'
-import { NotificationsService } from 'angular2-notifications'
-import { FacilityService } from '../../../shakecast-admin/pages/facilities/facility.service'
+import { MapService } from '@shared/maps/map.service';
+import { NotificationService } from '../dashboard/notification-dash/notification.service';
+import { NotificationsService } from 'angular2-notifications';
+import { FacilityService } from '@shakecast-admin/facilities/facility.service';
 
 import { LoadingService } from '../../../loading/loading.service';
 

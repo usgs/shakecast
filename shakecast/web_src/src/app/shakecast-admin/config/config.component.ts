@@ -4,8 +4,8 @@ import { Component,
          HostListener } from '@angular/core';
 import { Subscription, timer } from 'rxjs';
 
-import { TitleService } from '../../../title/title.service';
-import { UpdateService } from '../../update/update.service';
+import { TitleService } from '../../title/title.service';
+import { UpdateService } from '../update/update.service';
 import { ConfigService } from './config.service';
 import { TimeService } from './time.service';
 import { NotificationsService } from 'angular2-notifications';

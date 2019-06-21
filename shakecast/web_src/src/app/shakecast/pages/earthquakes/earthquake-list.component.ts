@@ -1,5 +1,5 @@
-import { Component, 
-         OnInit, 
+import { Component,
+         OnInit,
          OnDestroy } from '@angular/core';
 
 import { trigger,

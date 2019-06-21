@@ -16,7 +16,7 @@ declare var _: any;
 @Component({
     selector: 'user-list',
     templateUrl: './user-list.component.html',
-    styleUrls: ['../../../shared/css/data-list.css', './user-list.component.css'],
+    styleUrls: ['../../shared/css/data-list.css', './user-list.component.css'],
     animations: [
       trigger('selected', [
         state('true', style({transform: 'translateY(-10px)'})),

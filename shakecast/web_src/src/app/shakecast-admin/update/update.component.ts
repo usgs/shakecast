@@ -1,4 +1,4 @@
-import { Component, 
+import { Component,
          OnInit,
          OnDestroy} from '@angular/core';
 
@@ -15,11 +15,11 @@ export class UpdateComponent implements OnInit, OnDestroy {
 
     constructor(private updateService: UpdateService) {}
 
-    ngOnInit() {        
+    ngOnInit() {
         this.subscriptions.push(this.updateService.info.subscribe((info: any) => {
-            this.info = info
+            this.info = info;
         }));
-        
+
         this.updateService.getData();
     }
 
@@ -31,14 +31,14 @@ export class UpdateComponent implements OnInit, OnDestroy {
     close() {
         this.info['required'] = false;
     }
-    
+
     ngOnDestroy() {
         this.endSubscriptions()
     }
 
     endSubscriptions() {
-        for (var sub in this.subscriptions) {
-            this.subscriptions[sub].unsubscribe()
+        for (const sub of this.subscriptions) {
+            this.subscriptions[sub].unsubscribe();
         }
     }
 }

@@ -21,7 +21,7 @@ import * as _ from 'underscore';
   selector: 'facility-list',
   templateUrl: './facility-list.component.html',
   styleUrls: ['./facility-list.component.css',
-                '../../../shared/css/data-list.css'],
+                '../../shared/css/data-list.css'],
   animations: [
       trigger('selected', [
         state('yes', style({transform: 'translateY(-10px)'})),

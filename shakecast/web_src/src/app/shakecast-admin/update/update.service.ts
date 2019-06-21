@@ -7,7 +7,7 @@ import { map } from 'rxjs/operators';
 
 @Injectable()
 export class UpdateService {
-    public info = new ReplaySubject(1)
+    public info = new ReplaySubject(1);
     constructor(private _http: HttpClient,
                 private notService: NotificationsService) {}
 

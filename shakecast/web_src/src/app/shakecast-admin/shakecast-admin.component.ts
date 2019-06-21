@@ -1,8 +1,8 @@
 import { Component, 
          ViewEncapsulation,
          HostBinding } from '@angular/core';
-import { UploadService } from './upload/upload.service'
-import { fadeAnimation }   from '../shared/animations/animations';
+import { UploadService } from './upload/upload.service';
+import { fadeAnimation }  from '@shared/animations/animations';
 @Component({
     selector: 'shakecast-admin',
     templateUrl: './shakecast-admin.component.html',

@@ -3,7 +3,7 @@ import {throwError as observableThrowError,  Observable } from 'rxjs';
 // user.service.ts
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Router } from '@angular/router'
+import { Router } from '@angular/router';
 
 
 

@@ -5,8 +5,8 @@ import { HttpClient, HttpParams} from '@angular/common/http';
 import { Observable ,  BehaviorSubject } from 'rxjs';
 import { Router } from '@angular/router';
 import { NotificationsService } from 'angular2-notifications';
-import { MapService } from '../../../shared/maps/map.service';
-import { LoadingService } from '../../../loading/loading.service';
+import { MapService } from '@shared/maps/map.service';
+import { LoadingService } from '../../loading/loading.service';
 
 export interface Facility {
     shakecast_id?: string;
@@ -118,5 +118,5 @@ export class FacilityService {
     clearMap() {
         this.mapService.clearMap();
     }
-    
+
 }

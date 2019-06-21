@@ -6,8 +6,8 @@ import { FormsModule }         from '@angular/forms';
 import { MapComponent } from './maps/map.component';
 
 // Facility List
-import { FacilityListComponent } from '../shakecast-admin/pages/facilities/facility-list.component';
-import { FacilityInfoComponent } from '../shakecast-admin/pages/facilities/facility-info/facility-info.component';
+import { FacilityListComponent } from '../shakecast-admin/facilities/facility-list.component';
+import { FacilityInfoComponent } from '../shakecast-admin/facilities/facility-info/facility-info.component';
 
 // Earthquake List
 import { EarthquakeListComponent } from '../shakecast/pages/earthquakes/earthquake-list.component';
