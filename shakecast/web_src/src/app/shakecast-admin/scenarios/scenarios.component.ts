@@ -2,7 +2,7 @@ import { Component,
          OnInit,
          OnDestroy } from '@angular/core';
 import { TitleService } from '../../title/title.service';
-import { EarthquakeService, Earthquake } from '../../shakecast/pages/earthquakes/earthquake.service';
+import { EarthquakeService, Earthquake } from '@shakecast/earthquakes/earthquake.service';
 import { FacilityService } from '../facilities/facility.service';
 
 import { PanelService } from '@shared/panels/panel.service';

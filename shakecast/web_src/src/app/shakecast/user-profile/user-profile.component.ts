@@ -2,7 +2,7 @@ import { Component,
          OnInit,
          OnDestroy } from '@angular/core';
 
-import { TitleService } from '../../../title/title.service';
+import { TitleService } from '../../title/title.service';
 import { UsersService } from '@shakecast-admin/users/users.service';
 import { Subscription } from 'rxjs';
 
@@ -18,7 +18,7 @@ export class UserProfileComponent implements OnInit, OnDestroy {
                 private titleService: TitleService) {}
 
     ngOnInit() {
-        this.titleService.title.next('User Profile')
+        this.titleService.title.next('User Profile');
         this.subs.add(this.usersService.userData.subscribe(users => {
             this.user = users[0];
         }));

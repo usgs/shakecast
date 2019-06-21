@@ -1,5 +1,4 @@
 import { Component, Input } from '@angular/core';
-import { Earthquake } from '../../shakecast/pages/earthquakes/earthquake.service'
 
 @Component({
     selector: 'earthquake-blurb',

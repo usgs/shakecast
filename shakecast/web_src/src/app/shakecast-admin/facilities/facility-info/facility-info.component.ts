@@ -6,7 +6,7 @@ import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 
 import { FacilityService, Facility } from '../facility.service';
-import { EarthquakeService } from '../../../shakecast/pages/earthquakes/earthquake.service'
+import { EarthquakeService } from '@shakecast/earthquakes/earthquake.service'
 
 @Component({
     selector: 'facility-info',

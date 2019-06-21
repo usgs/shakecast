@@ -1,14 +1,13 @@
 import { Component,
          OnInit,
-         OnDestroy,
-         AfterViewInit } from '@angular/core';
+         OnDestroy } from '@angular/core';
 
-import { EarthquakeService } from '../earthquakes/earthquake.service';
+import { EarthquakeService } from '@shakecast/earthquakes/earthquake.service';
 import { FacilityService } from '@shakecast-admin/facilities/facility.service';
-import { TitleService } from '../../../title/title.service';
+import { TitleService } from '../../title/title.service';
 
 import { Subscription, timer } from 'rxjs';
-import { LoadingService } from '../../../loading/loading.service';
+import { LoadingService } from '../../loading/loading.service';
 
 import * as _ from 'underscore';
 
@@ -16,7 +15,7 @@ import * as _ from 'underscore';
     selector: 'dashboard',
     templateUrl: './dashboard.component.html',
     styleUrls: ['./dashboard.component.css',
-                  '../../../shared/css/panels.css']
+                  '../../shared/css/panels.css']
 })
 export class DashboardComponent implements OnInit, OnDestroy {
     public facilityData: any = [];

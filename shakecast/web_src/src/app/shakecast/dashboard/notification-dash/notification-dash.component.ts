@@ -10,7 +10,7 @@ import { EarthquakeService } from '../../earthquakes/earthquake.service';
   selector: 'notification-dash',
   templateUrl: './notification-dash.component.html',
   styleUrls: ['./notification-dash.component.css',
-                '../../../../shared/css/data-list.css']
+                '../../../shared/css/data-list.css']
 })
 export class NotificationDashComponent implements OnInit, OnDestroy {
 

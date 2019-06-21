@@ -2,10 +2,10 @@ import { Injectable } from '@angular/core';
 import { ReplaySubject } from 'rxjs';
 
 import { HttpClient } from '@angular/common/http';
-import { Earthquake } from '../../shakecast/pages/earthquakes/earthquake.service';
-import { Facility } from '../../shakecast-admin/facilities/facility.service';
-import { Group } from '../../shakecast-admin/groups/group.service';
-import { User } from '../../shakecast-admin/users/users.service';
+import { Earthquake } from '@shakecast/earthquakes/earthquake.service';
+import { Facility } from '@shakecast-admin/facilities/facility.service';
+import { Group } from '@shakecast-admin/groups/group.service';
+import { User } from '@shakecast-admin/users/users.service';
 
 import { map } from 'rxjs/operators';
 

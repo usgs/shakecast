@@ -2,6 +2,8 @@ import { Component,
          OnInit,
          OnDestroy} from '@angular/core';
 
+import { Subscription } from 'rxjs';
+
 import { UpdateService } from './update.service';
 
 @Component({
@@ -10,13 +12,13 @@ import { UpdateService } from './update.service';
   styleUrls: ['./update.component.css']
 })
 export class UpdateComponent implements OnInit, OnDestroy {
-    private subscriptions: any[] = [];
+    private subscriptions = new Subscription();
     public info: any = null;
 
     constructor(private updateService: UpdateService) {}
 
     ngOnInit() {
-        this.subscriptions.push(this.updateService.info.subscribe((info: any) => {
+        this.subscriptions.add(this.updateService.info.subscribe((info: any) => {
             this.info = info;
         }));
 
@@ -33,12 +35,10 @@ export class UpdateComponent implements OnInit, OnDestroy {
     }
 
     ngOnDestroy() {
-        this.endSubscriptions()
+        this.endSubscriptions();
     }
 
     endSubscriptions() {
-        for (const sub of this.subscriptions) {
-            this.subscriptions[sub].unsubscribe();
-        }
+        this.subscriptions.unsubscribe();
     }
 }

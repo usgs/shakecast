@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { ReplaySubject } from 'rxjs';
-import { Response, Headers, RequestOptions, URLSearchParams } from '@angular/http';
+import { Response } from '@angular/http';
 import { HttpClient } from '@angular/common/http';
 import { NotificationsService } from 'angular2-notifications';
 import { map } from 'rxjs/operators';
@@ -25,7 +25,7 @@ export class UpdateService {
             )
             .subscribe((result: any) => {
                 this.info.next(result);
-                if (result['required'] == false) {
+                if (result['required'] === false) {
                     this.notService.success('Software Update', 'Update Complete');
                 } else {
                     this.notService.alert('Software Update', 'Update Failed');

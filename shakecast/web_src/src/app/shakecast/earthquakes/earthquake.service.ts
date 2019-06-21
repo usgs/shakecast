@@ -11,7 +11,7 @@ import { NotificationService } from '../dashboard/notification-dash/notification
 import { NotificationsService } from 'angular2-notifications';
 import { FacilityService } from '@shakecast-admin/facilities/facility.service';
 
-import { LoadingService } from '../../../loading/loading.service';
+import { LoadingService } from '../../loading/loading.service';
 
 import * as _ from 'underscore';
 

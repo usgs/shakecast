@@ -10,9 +10,9 @@ import { UsersService } from '@shakecast-admin/users/users.service';
 import { TimeService } from '@shakecast-admin/config/time.service';
 import { PanelService } from '@shared/panels/panel.service';
 import { UserService } from '../login/user.service';
-import { EarthquakeService } from '@shakecast/pages/earthquakes/earthquake.service';
+import { EarthquakeService } from '@shakecast/earthquakes/earthquake.service';
 import { FacilityService } from '@shakecast-admin/facilities/facility.service';
-import { NotificationService } from '@shakecast/pages/dashboard/notification-dash/notification.service';
+import { NotificationService } from '@shakecast/dashboard/notification-dash/notification.service';
 import { MapService } from '@shared/maps/map.service';
 import { ScreenDimmerService } from '@shared/screen-dimmer/screen-dimmer.service';
 

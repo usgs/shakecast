@@ -20,7 +20,7 @@ import * as _ from 'underscore';
     selector: 'earthquake-list',
     templateUrl: './earthquake-list.component.html',
     styleUrls: ['./earthquake-list.component.css',
-                    '../../../shared/css/data-list.css'],
+                    '../../shared/css/data-list.css'],
     animations: [
       trigger('selected', [
         state('true', style({transform: 'translateY(-10px)'})),

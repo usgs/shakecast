@@ -4,9 +4,8 @@ import { Component,
 
 import { Subscription } from 'rxjs';
 
-import { FacilityListComponent } from './facility-list.component';
-import { FacilityService, Facility } from './facility.service';
-import { EarthquakeService } from '../../shakecast/pages/earthquakes/earthquake.service';
+import { FacilityService } from './facility.service';
+import { EarthquakeService } from '@shakecast/earthquakes/earthquake.service';
 import { TitleService } from '../../title/title.service';
 
 @Component({
@@ -25,7 +24,7 @@ export class FacilitiesComponent implements OnInit, OnDestroy {
     ngOnInit() {
         this.eqService.clearData();
 
-        this.titleService.title.next('Facilities')
+        this.titleService.title.next('Facilities');
         this.subscriptions.add(this.facService.facilityData.subscribe((facs: any[]) => {
             if ((facs != null) && (facs.length > 0)) {
                 this.facList = facs;

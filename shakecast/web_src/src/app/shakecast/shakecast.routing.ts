@@ -1,12 +1,12 @@
 import { ModuleWithProviders } from '@angular/core';
-import { Routes, RouterModule }   from '@angular/router';
+import { Routes, RouterModule } from '@angular/router';
 
-import { ShakeCastComponent } from './shakecast.component'
+import { ShakeCastComponent } from './shakecast.component';
 
-import { DashboardComponent } from './pages/dashboard/dashboard.component'
-import { UserProfileComponent } from './pages/user-profile/user-profile.component'
+import { DashboardComponent } from './dashboard/dashboard.component';
+import { UserProfileComponent } from './user-profile/user-profile.component';
 
-import { LoginGuard } from '../auth/login.guard'
+import { LoginGuard } from '../auth/login.guard';
 
 const appRoutes: Routes = [
     {

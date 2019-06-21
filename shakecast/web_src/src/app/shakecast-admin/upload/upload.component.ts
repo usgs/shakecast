@@ -1,6 +1,6 @@
 import { Component,
          OnInit,
-         OnDestroy } from '@angular/core'
+         OnDestroy } from '@angular/core';
 import { trigger,
          state,
          style,
