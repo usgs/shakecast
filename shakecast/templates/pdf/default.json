@@ -1,0 +1,87 @@
+{
+    "header": {
+        "title": "ShakeCast Report",
+        "banner": null,
+        "icon": null
+    },
+    "summary": {},
+    "table": {
+        "table_head": [
+            {
+                "use": true, 
+                "name": "name", 
+                "val": "Facility Name",
+                "width": ".3"
+            }, 
+            {
+                "use": true, 
+                "name": "alert_level", 
+                "val": "Insp. Priority",
+                "colors": {
+                    "red": {"r": 255, "g": 0, "b": 0},
+                    "orange": {"r": 255, "g": 165, "b": 0},
+                    "yellow": {"r": 245, "g": 200, "b": 0},
+                    "green": {"r": 0, "g": 245, "b": 100},
+                    "gray": {"r": 100, "g": 100, "b": 100}
+                },
+                "translate": {
+                    "gray": "None",
+                    "green": "Low",
+                    "yellow": "Medium",
+                    "orange": "Medium-High",
+                    "red": "High"
+                },
+                "font_style": "b",
+                "width": ".15"
+            }, 
+            {
+                "use": true, 
+                "name": "mmi", 
+                "val": "MMI",
+                "width": ".075"
+            }, 
+            {
+                "use": true, 
+                "name": "pgv", 
+                "val": "PGV",
+                "width": ".075"
+            }, 
+            {
+                "use": true, 
+                "name": "psa03", 
+                "val": "PSA03",
+                "width": ".075"
+            }, 
+            {
+                "use": false, 
+                "name": "psa10", 
+                "val": "PSA10",
+                "width": ".075"
+            }, 
+            {
+                "use": false, 
+                "name": "psa30", 
+                "val": "PSA30",
+                "width": ".075"
+            }, 
+            {
+                "use": true, 
+                "name": "metric", 
+                "val": "Metric",
+                "width": ".075"
+            }, 
+            {
+                "use": true, 
+                "name": "epicentral_distance", 
+                "val": "Dist.",
+                "width": ".075"
+            }, 
+            {
+                "use": true, 
+                "name": "shaking_value", 
+                "val": "Shaking Value",
+                "width": ".15"
+            }
+        ]
+    }
+}
