@@ -3,5 +3,5 @@ import { ReplaySubject } from 'rxjs';
 
 @Injectable()
 export class TitleService {
-    public title = new ReplaySubject(1)
+    public title = new ReplaySubject(1);
 }

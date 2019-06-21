@@ -7,14 +7,13 @@ import { trigger,
          style,
          animate,
          transition } from '@angular/animations';
-import { Subscription } from 'rxjs';
-
 import { Router } from '@angular/router';
-import { EarthquakeService, Earthquake } from './earthquake.service';
 
-import { filter } from './earthquake.service';
-
+import { Subscription } from 'rxjs';
 import * as _ from 'underscore';
+
+import { EarthquakeService, Earthquake } from '@core/earthquake.service';
+import { filter } from '@core/earthquake.service';
 
 @Component({
     selector: 'earthquake-list',

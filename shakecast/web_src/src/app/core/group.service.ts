@@ -1,10 +1,9 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams} from '@angular/common/http';
 
+import { ReplaySubject } from 'rxjs';
 
-import { Observable ,  ReplaySubject } from 'rxjs';
-
-import { MapService } from '@shared/maps/map.service'
+import { MapService } from '@core/map.service'
 
 export interface Group {
     lat_min: number;

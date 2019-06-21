@@ -1,7 +1,7 @@
 import { Component,
          OnInit } from '@angular/core';
-import { TitleService } from '../../title/title.service';
-import { GroupService } from './group.service';
+import { TitleService } from '@core/title.service';
+import { GroupService } from '@core/group.service';
 
 @Component({
     selector: 'groups',

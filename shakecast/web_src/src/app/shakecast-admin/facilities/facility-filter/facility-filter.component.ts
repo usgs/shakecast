@@ -1,6 +1,6 @@
 import { Component, HostListener} from '@angular/core';
-import { FacilityService, Facility } from '../facility.service';
-import { ScreenDimmerService } from '@shared/screen-dimmer/screen-dimmer.service';
+import { FacilityService } from '@core/facility.service';
+import { ScreenDimmerService } from '@core/screen-dimmer.service';
 
 @Component({
     selector: 'facility-filter',

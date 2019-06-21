@@ -1,6 +1,6 @@
-import { Component, ViewEncapsulation, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { NotificationsService } from 'angular2-notifications';
-import { MessagesService } from '../shared/messages.service';
+import { MessagesService } from '@core/messages.service';
 import { timer } from 'rxjs';
 import { Router } from '@angular/router';
 

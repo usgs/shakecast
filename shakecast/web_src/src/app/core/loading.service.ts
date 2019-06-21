@@ -3,7 +3,7 @@ import { ReplaySubject } from 'rxjs';
 
 @Injectable()
 export class LoadingService {
-    public loading: string[] = []
+    public loading: string[] = [];
     public update: any = new ReplaySubject(1);
 
     constructor() {}
@@ -14,13 +14,13 @@ export class LoadingService {
     }
 
     finish(name:string) {
-        var new_loading: any[] = []
+        var new_loading: any[] = [];
         for (var idx in this.loading) {
-            if (this.loading[idx] != name) {
-                new_loading.push(this.loading[idx])
+            if (this.loading[idx] !== name) {
+                new_loading.push(this.loading[idx]);
             }
         }
         this.loading = new_loading;
-        this.update.next('remove-'+name);
+        this.update.next('remove-' + name);
     }
 }

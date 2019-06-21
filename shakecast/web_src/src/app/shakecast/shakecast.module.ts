@@ -8,7 +8,6 @@ import { routing } from './shakecast.routing';
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { NotificationDashComponent } from './dashboard/notification-dash/notification-dash.component';
 
-import { EarthquakeListComponent } from './earthquakes/earthquake-list.component';
 import { EarthquakeFilter } from './earthquakes/earthquake-filter/earthquake-filter.component';
 
 import { UserProfileComponent } from './user-profile/user-profile.component';

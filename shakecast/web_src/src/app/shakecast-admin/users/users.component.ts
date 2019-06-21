@@ -2,12 +2,13 @@ import { Component,
          OnInit,
          OnDestroy } from '@angular/core';
 
-import { GroupService, Group } from '../groups/group.service';
-//mport { FacilityListComponent } from './facility-list.component'
-import { TitleService } from '../../title/title.service';
-import { UsersService } from './users.service';
+import { Subscription } from 'rxjs';
 
-import { MapService } from '@shared/maps/map.service';
+import { GroupService } from '@core/group.service';
+import { TitleService } from '@core/title.service';
+import { UsersService } from '@core/users.service';
+
+import { MapService } from '@core/map.service';
 import { showLeft, showRight, showBottom } from '@shared/animations/animations';
 
 @Component({
@@ -18,8 +19,8 @@ import { showLeft, showRight, showBottom } from '@shared/animations/animations';
                   '../../shared/css/panels.css'],
     animations: [ showLeft, showRight, showBottom ]
 })
-export class UsersComponent {
-    private subscriptions: any[] = [];
+export class UsersComponent implements OnInit, OnDestroy {
+    private subscriptions = new Subscription()
     public groupData: any = []
     public showLeft: string = 'shown';
     public showRight: string = 'shown';
@@ -33,17 +34,21 @@ export class UsersComponent {
     ngOnInit() {
         this.titleService.title.next('Users and Groups');
 
-        this.subscriptions.push(this.groupService.groupData.subscribe(data => {
+        this.subscriptions.add(this.groupService.groupData.subscribe(data => {
             this.groupData = data;
             this.groupService.clearMap();
-        })); 
+        }));
     }
 
     deleteCurrentUser() {
         this.usersService.deleteUsers([this.usersService.current_user]);
     }
-    
+
     saveUsers() {
         this.usersService.saveUsersFromList.next(true);
+    }
+
+    ngOnDestroy() {
+        this.subscriptions.unsubscribe();
     }
 }

@@ -2,17 +2,16 @@ import { Component,
          OnInit,
          ElementRef,
          OnDestroy } from '@angular/core';
-
-import { Observable, Subscription } from 'rxjs';
-
 import { trigger,
          state,
          style,
          animate,
          transition } from '@angular/animations';
-
 import { Router } from '@angular/router';
-import { FacilityService, Facility } from './facility.service';
+
+import { Subscription } from 'rxjs';
+
+import { FacilityService, Facility } from '@core/facility.service';
 import { filter } from './facility-filter/facility-filter.component';
 
 import * as _ from 'underscore';

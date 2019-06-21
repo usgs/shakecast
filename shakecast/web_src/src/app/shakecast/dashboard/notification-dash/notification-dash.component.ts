@@ -3,8 +3,8 @@ import { Component,
          OnDestroy } from '@angular/core';
 import { Subscription } from 'rxjs';
 
-import { NotificationService } from './notification.service';
-import { EarthquakeService } from '../../earthquakes/earthquake.service';
+import { NotificationService } from '@core/notification.service';
+import { EarthquakeService } from '@core/earthquake.service';
 
 @Component({
   selector: 'notification-dash',

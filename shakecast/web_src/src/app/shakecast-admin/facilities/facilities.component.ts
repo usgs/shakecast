@@ -4,9 +4,9 @@ import { Component,
 
 import { Subscription } from 'rxjs';
 
-import { FacilityService } from './facility.service';
-import { EarthquakeService } from '@shakecast/earthquakes/earthquake.service';
-import { TitleService } from '../../title/title.service';
+import { FacilityService } from '@core/facility.service';
+import { EarthquakeService } from '@core/earthquake.service';
+import { TitleService } from '@core/title.service';
 
 @Component({
     selector: 'facilities',

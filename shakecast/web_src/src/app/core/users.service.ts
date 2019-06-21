@@ -4,7 +4,7 @@ import { HttpClient, HttpParams, HttpHeaders} from '@angular/common/http';
 
 import { ReplaySubject } from 'rxjs';
 import { NotificationsService } from 'angular2-notifications';
-import { MapService } from '../../shared/maps/map.service';
+import { MapService } from '@core/map.service';
 
 export interface User {
     name: string;

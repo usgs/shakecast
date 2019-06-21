@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 
-import { Observable ,  ReplaySubject } from 'rxjs';
+import { ReplaySubject } from 'rxjs';
 
 export interface Notification {
     event_id: string;

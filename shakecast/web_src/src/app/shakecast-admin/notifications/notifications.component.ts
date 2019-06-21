@@ -4,7 +4,7 @@ import { Component,
          ElementRef,
          ViewChild,
          HostListener } from '@angular/core';
-import { TitleService } from '../../title/title.service';
+import { TitleService } from '@core/title.service';
 import { NotificationHTMLService } from './notification.service';
 import { NotificationsService } from 'angular2-notifications';
 import { timer } from 'rxjs';

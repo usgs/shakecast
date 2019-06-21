@@ -1,11 +1,11 @@
 import { Component,
          OnInit,
          OnDestroy } from '@angular/core';
-import { TitleService } from '../../title/title.service';
-import { EarthquakeService, Earthquake } from '@shakecast/earthquakes/earthquake.service';
-import { FacilityService } from '../facilities/facility.service';
+import { TitleService } from '@core/title.service';
+import { EarthquakeService } from '@core/earthquake.service';
+import { FacilityService } from '@core/facility.service';
 
-import { PanelService } from '@shared/panels/panel.service';
+import { PanelService } from '@core/panel.service';
 
 @Component({
     selector: 'scenarios',

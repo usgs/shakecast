@@ -1,5 +1,5 @@
 import { Component} from '@angular/core';
-import { EarthquakeService, Earthquake } from '../earthquake.service'
+import { EarthquakeService } from '@core/earthquake.service';
 
 @Component({
     selector: 'eq-filter',

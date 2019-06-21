@@ -7,7 +7,7 @@ import { trigger,
          transition,
          animate } from '@angular/animations';
 
-import { GroupService, Group } from './group.service';
+import { GroupService, Group } from '@core/group.service';
 
 import * as _ from 'underscore';
 

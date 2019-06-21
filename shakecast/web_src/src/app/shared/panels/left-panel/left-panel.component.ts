@@ -1,8 +1,9 @@
 import { Component, OnInit, OnDestroy, Input } from '@angular/core';
+
 import { Subscription } from 'rxjs';
 
-import { showLeft } from '../../animations/animations';
-import { PanelService } from '../panel.service';
+import { showLeft } from '@shared/animations/animations';
+import { PanelService } from '@core/panel.service';
 
 @Component({
   selector: 'panels-left-panel',
@@ -11,7 +12,7 @@ import { PanelService } from '../panel.service';
                 '../../../shared/css/panels.css'],
   animations: [ showLeft ]
 })
-export class LeftPanelComponent implements OnInit {
+export class LeftPanelComponent implements OnInit, OnDestroy {
   public show = 'hidden';
   public subs = new Subscription();
 
@@ -28,17 +29,17 @@ export class LeftPanelComponent implements OnInit {
     }));
 
     if (this.open) {
-      this.show = 'shown'
+      this.show = 'shown';
     } else {
-      this.show = 'hidden'
+      this.show = 'hidden';
     }
   }
 
   toggle() {
-    if (this.show == 'hidden') {
+    if (this.show === 'hidden') {
         this.show = 'shown';
     } else {
-        this.show = 'hidden'
+        this.show = 'hidden';
     }
   }
 

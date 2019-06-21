@@ -8,8 +8,8 @@ import { trigger,
          transition,
          animate } from '@angular/animations';
 
-import { UsersService, User } from './users.service';
-import { GroupService, Group } from '../groups/group.service';
+import { UsersService, User } from '@core/users.service';
+import { GroupService } from '@core/group.service';
 
 declare var _: any;
 

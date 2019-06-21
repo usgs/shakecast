@@ -1,8 +1,8 @@
 import { Component, OnInit, Input, OnDestroy } from '@angular/core';
-import { showRight } from '../../animations/animations'
-
 import { Subscription } from 'rxjs';
-import { PanelService } from '../panel.service';
+
+import { showRight } from '@shared/animations/animations';
+import { PanelService } from '@core/panel.service';
 
 @Component({
   selector: 'panels-right-panel',

@@ -2,13 +2,10 @@ import { Injectable } from '@angular/core';
 import { ReplaySubject } from 'rxjs';
 
 import { HttpClient } from '@angular/common/http';
-import { Earthquake } from '@shakecast/earthquakes/earthquake.service';
-import { Facility } from '@shakecast-admin/facilities/facility.service';
-import { Group } from '@shakecast-admin/groups/group.service';
-import { User } from '@shakecast-admin/users/users.service';
-
-import { map } from 'rxjs/operators';
-
+import { Earthquake } from '@core/earthquake.service';
+import { Facility } from '@core/facility.service';
+import { Group } from '@core/group.service';
+import { User } from '@core/users.service';
 
 @Injectable()
 export class MapService {

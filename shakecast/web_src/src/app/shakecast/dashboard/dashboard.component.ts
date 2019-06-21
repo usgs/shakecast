@@ -2,12 +2,12 @@ import { Component,
          OnInit,
          OnDestroy } from '@angular/core';
 
-import { EarthquakeService } from '@shakecast/earthquakes/earthquake.service';
-import { FacilityService } from '@shakecast-admin/facilities/facility.service';
-import { TitleService } from '../../title/title.service';
+import { EarthquakeService } from '@core/earthquake.service';
+import { FacilityService } from '@core/facility.service';
+import { TitleService } from '@core/title.service';
 
 import { Subscription, timer } from 'rxjs';
-import { LoadingService } from '../../loading/loading.service';
+import { LoadingService } from '@core/loading.service';
 
 import * as _ from 'underscore';
 

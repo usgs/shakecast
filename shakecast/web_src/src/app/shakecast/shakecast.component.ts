@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { fadeAnimation } from '../shared/animations/animations';
+import { fadeAnimation } from '@shared/animations/animations';
 
 @Component({
     selector: 'shakecast',

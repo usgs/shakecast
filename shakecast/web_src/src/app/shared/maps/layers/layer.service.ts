@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { BehaviorSubject ,  Subscription } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 
-import { LoadingService } from '../../../loading/loading.service';
+import { LoadingService } from '@core/loading.service';
 
 import { epicenterLayer } from './epicenter';
 import { intensityLayer } from './intensity';

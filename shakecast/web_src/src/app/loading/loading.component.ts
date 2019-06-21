@@ -1,5 +1,5 @@
 import { Component, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
-import { LoadingService } from './loading.service'
+import { LoadingService } from '@core/loading.service';
 
 @Component({
     selector: 'loading-comp',

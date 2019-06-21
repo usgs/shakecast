@@ -1,5 +1,5 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { FacilityService } from '../../../shakecast-admin/facilities/facility.service';
+import { FacilityService } from '@core/facility.service';
 import { Subscription } from 'rxjs';
 
 @Component({
