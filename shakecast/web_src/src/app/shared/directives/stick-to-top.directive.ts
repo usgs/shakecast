@@ -3,7 +3,7 @@ import { Directive,
          OnInit, OnDestroy } from '@angular/core';
 
 import { timer } from 'rxjs';
-import { StickToTopService } from './stick-to-top.service';
+import { StickToTopService } from '@core/stick-to-top.service';
 import { Subscription } from 'rxjs';
 
 @Directive({

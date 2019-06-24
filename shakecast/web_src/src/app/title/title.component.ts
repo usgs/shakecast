@@ -3,7 +3,7 @@ import { Component,
          OnDestroy,
         ChangeDetectorRef} from '@angular/core';
 
-import { TitleService } from './title.service';
+import { TitleService } from '@core/title.service';
 
 @Component({
   selector: 'page-title',

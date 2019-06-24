@@ -1,8 +1,9 @@
 import { Component, OnInit, Input, OnDestroy } from '@angular/core';
-import { showBottom } from '../../animations/animations'
 
 import { Subscription } from 'rxjs';
-import { PanelService } from '../panel.service';
+
+import { showBottom } from '@shared/animations/animations';
+import { PanelService } from '@core/panel.service';
 
 @Component({
   selector: 'panels-bottom-panel',

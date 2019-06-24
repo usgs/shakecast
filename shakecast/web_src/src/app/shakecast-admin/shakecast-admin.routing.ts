@@ -1,17 +1,17 @@
 import { ModuleWithProviders } from '@angular/core';
-import { Routes, RouterModule }   from '@angular/router';
+import { Routes, RouterModule } from '@angular/router';
 
 import { ShakeCastAdminComponent } from './shakecast-admin.component';
 
-import { FacilitiesComponent } from './pages/facilities/facilities.component';
-import { GroupsComponent } from './pages/groups/groups.component';
-import { UsersComponent } from './pages/users/users.component';
-import { ConfigComponent } from './pages/config/config.component';
-import { ScenariosComponent } from './pages/scenarios/scenarios.component';
-import { NotificationsComponent } from './pages/notifications/notifications.component';
+import { FacilitiesComponent } from './facilities/facilities.component';
+import { GroupsComponent } from './groups/groups.component';
+import { UsersComponent } from './users/users.component';
+import { ConfigComponent } from './config/config.component';
+import { ScenariosComponent } from './scenarios/scenarios.component';
+import { NotificationsComponent } from './notifications/notifications.component';
 
-import { LoginGuard } from '../auth/login.guard'
-import { AdminGuard } from '../auth/admin.guard'
+import { LoginGuard } from '../auth/login.guard';
+import { AdminGuard } from '../auth/admin.guard';
 
 const appRoutes: Routes = [
     {

@@ -5,29 +5,29 @@ import { FormsModule } from '@angular/forms';
 import { ShakeCastAdminComponent } from './shakecast-admin.component';
 import { routing } from './shakecast-admin.routing';
 
-import { FacilitiesComponent } from './pages/facilities/facilities.component';
-import { FacilityFilter } from './pages/facilities/facility-filter/facility-filter.component';
+import { FacilitiesComponent } from './facilities/facilities.component';
+import { FacilityFilter } from './facilities/facility-filter/facility-filter.component';
 
-import { GroupsComponent } from './pages/groups/groups.component';
-import { GroupListComponent } from './pages/groups/group-list.component';
+import { GroupsComponent } from './groups/groups.component';
+import { GroupListComponent } from './groups/group-list.component';
 
-import { UsersComponent } from './pages/users/users.component';
-import { UserListComponent } from './pages/users/user-list.component';
+import { UsersComponent } from './users/users.component';
+import { UserListComponent } from './users/user-list.component';
 
-import { ConfigComponent } from './pages/config/config.component';
-import { ConfigService } from './pages/config/config.service';
+import { ConfigComponent } from './config/config.component';
+import { ConfigService } from './config/config.service';
 
 import { UploadComponent } from './upload/upload.component';
 import { UploadService } from './upload/upload.service';
 
-import { NotificationsComponent } from './pages/notifications/notifications.component';
-import { NotificationHTMLService } from './pages/notifications/notification.service';
+import { NotificationsComponent } from './notifications/notifications.component';
+import { NotificationHTMLService } from './notifications/notification.service';
 
 import { UpdateComponent } from './update/update.component';
 import { UpdateService } from './update/update.service';
 
-import { ScenariosComponent } from './pages/scenarios/scenarios.component';
-import { ScenarioSearchComponent } from './pages/scenarios/scenario-search/scenario-search.component';
+import { ScenariosComponent } from './scenarios/scenarios.component';
+import { ScenarioSearchComponent } from './scenarios/scenario-search/scenario-search.component';
 
 import { SharedModule } from '../shared/shared.module';
 

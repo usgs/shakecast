@@ -1,10 +1,10 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Subscription } from 'rxjs';
 
-import { MapService } from './map.service';
-import { EarthquakeService } from '../../shakecast/pages/earthquakes/earthquake.service';
+import { MapService } from '@core/map.service';
+import { EarthquakeService } from '@core/earthquake.service';
 import { LayerService } from './layers/layer.service';
-import { FacilityService } from '../../shakecast-admin/pages/facilities/facility.service';
+import { FacilityService } from '@core/facility.service';
 
 import * as L from 'leaflet';
 import * as _ from 'underscore';

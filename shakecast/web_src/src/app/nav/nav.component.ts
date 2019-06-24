@@ -6,8 +6,8 @@ import { timer } from 'rxjs';
 import { navAnimation } from '../shared/animations/animations';
 
 import { Router } from '@angular/router';
-import { UserService } from '../login/user.service'
-import { NotificationsService } from 'angular2-notifications'
+import { UserService } from '@core/user.service';
+import { NotificationsService } from 'angular2-notifications';
 
 @Component({
   selector: 'navbar',

@@ -1,8 +1,8 @@
 import { Component, HostListener } from '@angular/core';
 import { Router } from '@angular/router';
-import { NotificationsService } from 'angular2-notifications'
+import { NotificationsService } from 'angular2-notifications';
 
-import { UserService, User } from './user.service'
+import { UserService, User } from '@core/user.service';
 
 @Component({
     selector: 'login',
@@ -10,7 +10,7 @@ import { UserService, User } from './user.service'
     styleUrls: ['./login.component.css']
 })
 export class LoginComponent {
-    constructor(private userService: UserService, 
+    constructor(private userService: UserService,
                 private router: Router,
                 private notService: NotificationsService) {}
 

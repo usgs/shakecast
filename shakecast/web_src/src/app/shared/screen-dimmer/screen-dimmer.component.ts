@@ -8,12 +8,12 @@ import { trigger,
          animate,
          transition } from '@angular/animations';
 
-import { ScreenDimmerService } from './screen-dimmer.service'
+import { ScreenDimmerService } from '@core/screen-dimmer.service';
 
 @Component({
     selector: 'screen-dimmer',
     template: '<div class="screen-dimmer" [@dimmerOn]="dimmerOn"></div>',
-    styleUrls: ['./screen-dimmer.component.css'],  
+    styleUrls: ['./screen-dimmer.component.css'],
     animations: [
       trigger('dimmerOn', [
         state('no', style({opacity: 0, zIndex: -1})),

@@ -1,7 +1,6 @@
 import { Component, ViewEncapsulation, OnInit, OnDestroy } from '@angular/core';
 import { Router } from '@angular/router';
-import { UserService } from './login/user.service';
-import { Observable } from 'rxjs';
+import { UserService } from '@core/user.service';
 
 
 @Component({

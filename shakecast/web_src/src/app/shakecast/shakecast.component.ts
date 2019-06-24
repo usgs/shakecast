@@ -1,6 +1,5 @@
-import { Component, 
-         HostBinding} from '@angular/core';
-import { fadeAnimation }   from '../shared/animations/animations';
+import { Component } from '@angular/core';
+import { fadeAnimation } from '@shared/animations/animations';
 
 @Component({
     selector: 'shakecast',

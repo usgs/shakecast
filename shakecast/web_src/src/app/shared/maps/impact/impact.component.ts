@@ -1,9 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { Subscription } from 'rxjs';
 
-import { FacilityService } from '../../../shakecast-admin/pages/facilities/facility.service';
-
-import { EarthquakeService } from '../../../shakecast/pages/earthquakes/earthquake.service';
+import { EarthquakeService } from '@core/earthquake.service';
+import { FacilityService } from '@core/facility.service';
 
 @Component({
   selector: 'shared-impact',

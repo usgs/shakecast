@@ -1,16 +1,16 @@
-import { NgModule }            from '@angular/core';
-import { CommonModule }        from '@angular/common';
-import { FormsModule }         from '@angular/forms';
+import { NgModule } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 
 // Map service and component
 import { MapComponent } from './maps/map.component';
 
 // Facility List
-import { FacilityListComponent } from '../shakecast-admin/pages/facilities/facility-list.component';
-import { FacilityInfoComponent } from '../shakecast-admin/pages/facilities/facility-info/facility-info.component';
+import { FacilityListComponent } from '../shakecast-admin/facilities/facility-list.component';
+import { FacilityInfoComponent } from '../shakecast-admin/facilities/facility-info/facility-info.component';
 
 // Earthquake List
-import { EarthquakeListComponent } from '../shakecast/pages/earthquakes/earthquake-list.component';
+import { EarthquakeListComponent } from '@shakecast/earthquakes/earthquake-list.component';
 
 // Earthquake Blurb
 import { EarthquakeBlurbComponent } from './earthquake-blurb/earthquake-blurb.component';
@@ -28,7 +28,7 @@ import { FacilityCountComponent } from './maps/facility-count/facility-count.com
 import { ImpactComponent } from './maps/impact/impact.component';
 import { LayerService } from './maps/layers/layer.service';
 
-import { PanelsModule } from './panels/panels.module'
+import { PanelsModule } from './panels/panels.module';
 
 @NgModule({
   imports: [
