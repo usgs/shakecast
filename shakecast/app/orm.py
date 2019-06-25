@@ -721,6 +721,7 @@ class Event(Base):
     title = Column(String(100))
     place = Column(String(255))
     time = Column(Integer)
+    override_directory = Column(String(255))
     
     shakemaps = relationship('ShakeMap',
                              backref='event')
@@ -750,6 +751,8 @@ class Event(Base):
     
     @hybrid_property
     def directory_name(self):
+        if self.override_directory:
+            return self.override_directory
         if self.type == 'test':
             base_dir = os.path.join(sc_dir(), 'tests', 'data')
         else:
@@ -759,6 +762,9 @@ class Event(Base):
     
     @hybrid_property
     def local_products_dir(self):
+        if self.override_directory:
+            return self.override_directory
+
         if self.type == 'test':
             base_dir = os.path.join(sc_dir(), 'tests', 'data')
         else:
@@ -799,7 +805,7 @@ class ShakeMap(Base):
     shakecast_id = Column(Integer, primary_key=True)
     shakemap_id = Column(String(80))
     event_id = Column(Integer,
-                      ForeignKey('event.shakecast_id'))
+            ForeignKey('event.shakecast_id'))
     shakemap_version = Column(Integer)
     status = Column(String(64))
     type = Column(String(64))
@@ -821,6 +827,7 @@ class ShakeMap(Base):
     yellow = Column(Integer)
     orage = Column(Integer)
     red = Column(Integer)
+    override_directory = Column(String(255))
     
     products = relationship('Product',
                             backref='shakemap',
@@ -873,6 +880,9 @@ class ShakeMap(Base):
 
     @hybrid_property
     def directory_name(self):
+        if self.override_directory:
+            return self.override_directory
+
         if self.type == 'test':
             base_dir = os.path.join(sc_dir(), 'tests', 'data')
         else:
@@ -886,6 +896,9 @@ class ShakeMap(Base):
     
     @hybrid_property
     def local_products_dir(self):
+        if self.override_directory:
+            return self.override_directory
+
         return os.path.join(
             get_local_products_dir(),
             self.shakemap_id,

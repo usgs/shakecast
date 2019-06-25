@@ -444,14 +444,18 @@ def grab_from_directory(directory, session=None):
     event_info = info['input']['event_information']
     
     # make timestamp
-    dt = datetime.datetime.strptime(
-        event_info['origin_time'],
-        '%Y-%d-%mT%H:%M:%SZ'
-    )
-    timestamp = time.mktime(dt.timetuple())
+    try:
+        dt = datetime.datetime.strptime(
+            event_info['origin_time'],
+            '%Y-%d-%mT%H:%M:%SZ'
+        )
+        timestamp = time.mktime(dt.timetuple())
+    except Exception:
+        # can't parse the timestamp... just use current time
+        timestamp = time.time()
 
     event = Event(
-        status = 'new',
+        status = 'scenario',
         event_id = grid.event_id,
         title = 'M {} - {}'.format(event_info['magnitude'], event_info['location']),
         place = event_info['location'],
@@ -459,14 +463,16 @@ def grab_from_directory(directory, session=None):
         magnitude = event_info['magnitude'],
         lon = event_info['longitude'],
         lat = event_info['latitude'],
-        depth = event_info['depth']
+        depth = event_info['depth'],
+        override_directory = directory,
+        type = 'scenario'
     )
 
     session.add(event)
 
     proc = info['processing']
     shakemap = ShakeMap(
-        status = 'new',
+        status = 'scenario',
         event = event,
         shakemap_id = grid.event_id,
         lat_min = grid.lat_min,
@@ -474,11 +480,13 @@ def grab_from_directory(directory, session=None):
         lon_min = grid.lon_min,
         lon_max = grid.lon_max,
         generation_timestamp = proc['shakemap_versions']['process_time'],
-        recieve_timestamp = time.time()
+        recieve_timestamp = time.time(),
+        override_directory = directory,
+        shakemap_version = proc['shakemap_versions']['map_version'],
+        type = 'scenario'
     )
 
     session.add(shakemap)
-
     session.commit()
 
     return {
