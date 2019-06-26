@@ -1,6 +1,6 @@
 import json
 import unittest
-from sc.web_server import app
+from shakecast.web_server import app
 
 class TestOpenAPI(unittest.TestCase):
     def setUp(self):

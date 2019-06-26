@@ -1,6 +1,9 @@
+import os
 import unittest
 
 from shakecast.app.productdownload import *
+from shakecast.app.orm import dbconnect, ShakeMap
+from shakecast.app.util import get_test_dir
 
 class TestProductGrabber(unittest.TestCase):
     '''
@@ -34,3 +37,16 @@ class TestScenarioDownload(unittest.TestCase):
 
     def test_downloadActualScenario(self):
         download_scenario('bssc2014903_m6p09_se', scenario=True)
+
+class TestImportFromDirectory(unittest.TestCase):
+
+    @dbconnect
+    def test_imports(self, session=None):
+        scenario_directory = os.path.join(get_test_dir(), 'data', 'new_event', 'new_event-1')
+        event, shakemap = grab_from_directory(scenario_directory, session=session)
+
+        shakemap_from_db = session.query(ShakeMap).filter(ShakeMap.shakemap_id == event.event_id).first()
+        self.assertIsNotNone(shakemap_from_db)
+
+if __name__ == '__main__':
+    unittest.main()

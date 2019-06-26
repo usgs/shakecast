@@ -489,12 +489,7 @@ def grab_from_directory(directory, session=None):
     session.add(shakemap)
     session.commit()
 
-    return {
-        'status': 'finished',
-        'error': error,
-        'log': log,
-        'message': 'File scrape for new earthquakes'
-    }
+    return event, shakemap
 
 
 def geo_json(query_period='day'):
