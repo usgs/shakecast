@@ -526,6 +526,7 @@ def shakemap_overlay(shakemap_id, session=None):
         
     else:
         img = app.send_static_file('sc_logo.png')
+
     return send_file(img, mimetype='image/gif')
 
 @app.route('/api/shakemaps/<shakemap_id>/shakemap')
@@ -616,20 +617,27 @@ def admin_only(func):
 @login_required
 @dbconnect
 def notification_html(notification_type, name, session=None):
+    no_preview = '<h1>No PDF Preview Available</h1>'
+    html = None
     config = json.loads(request.args.get('config', 'null'))
     not_builder = NotificationBuilder()
 
     if notification_type == 'new_event':
         # get the two most recent events
         events = session.query(Event).all()
-        events = events[-2:]
-        html = not_builder.build_new_event_html(events=events, name=name, web=True, config=config)
-    else:
+
+        if events:
+            events = events[-2:]
+            html = not_builder.build_new_event_html(events=events, name=name, web=True, config=config)
+    elif notification_type != 'pdf':
         # get the most recent shakemap
         sms = session.query(ShakeMap).all()
-        sm = sms[-1]
-        html = not_builder.build_insp_html(sm, name=name, web=True, config=config)
-    return html
+
+        if sms:
+            sm = sms[-1]
+            html = not_builder.build_insp_html(sm, name=name, web=True, config=config)
+
+    return html or no_preview
 
 @app.route('/api/notification-config/<notification_type>/<name>', methods=['GET','POST'])
 @admin_only

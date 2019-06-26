@@ -111,7 +111,7 @@
                                     <td style="border: 2px solid #444444;padding: 5px;background-color:{{ fs.alert_level }}">{{ fs.alert_level }}</td>
                                 {% elif head.name == 'shaking_value' %}
                                     <td style="border: 2px solid #444444;padding: 5px;">{{ fs[fs.metric.lower()] }}</td>
-                                {% elif facility.get_attribute(head.name) %}
+                                {% elif fs.facility.get_attribute(head.name) %}
                                     <td style="border: 2px solid #444444;padding: 5px;">{{ fs[head.name] }}</td>
                                 {% elif fs.get(head.name, False) %}
                                     <td style="border: 2px solid #444444;padding: 5px;">{{ fs[head.name] }}</td>

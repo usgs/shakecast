@@ -5,10 +5,16 @@ import { FormsModule } from '@angular/forms';
 import { NotificationsComponent } from './notifications.component';
 import { NotificationHTMLService } from './notification.service';
 import { SharedModule } from '@shared/shared.module';
+import { NewEventComponent } from './new-event/new-event.component';
+import { FacilitiesComponent } from './facilities/facilities.component';
+import { PdfComponent } from './pdf/pdf.component';
 
 @NgModule({
   declarations: [
-    NotificationsComponent
+    NotificationsComponent,
+    NewEventComponent,
+    FacilitiesComponent,
+    PdfComponent
   ],
   imports: [
     CommonModule,
