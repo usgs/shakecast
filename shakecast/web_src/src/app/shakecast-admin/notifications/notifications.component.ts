@@ -30,28 +30,21 @@ export class NotificationsComponent implements OnInit, OnDestroy {
     public imageNames: string[] = [];
 
     constructor(private titleService: TitleService,
-                private notHTMLService: NotificationHTMLService,
+                public notHTMLService: NotificationHTMLService,
                 private notService: NotificationsService) {}
 
     @ViewChild('notificationContainer') notContainer: ElementRef;
 
     ngOnInit() {
-        this.titleService.title.next('Notifications')
+        this.titleService.title.next('Notifications');
 
-        this.subscriptions.push(this.notHTMLService.notification.subscribe((html: string) => {
-                this.notContainer.nativeElement.innerHTML = html;
-            })
-        );
         this.subscriptions.push(this.notHTMLService.config.subscribe((config: any) => {
                 this.config = config;
                 this.oldConfig = JSON.parse(JSON.stringify(config));
                 this.previewConfig = JSON.parse(JSON.stringify(config));
             })
         );
-        this.subscriptions.push(this.notHTMLService.tempNames.subscribe((names: any) => {
-                this.tempNames = names;
-            })
-        );
+
         this.subscriptions.push(this.notHTMLService.name.subscribe((name: any) => {
                 this.name = name;
             })
@@ -61,10 +54,6 @@ export class NotificationsComponent implements OnInit, OnDestroy {
             this.preview(this.name,
                          this.eventType,
                          this.config);
-        }));
-
-        this.subscriptions.push(this.notHTMLService.imageNames.subscribe((names: string[]) => {
-            this.imageNames = names;
         }));
 
         this.notHTMLService.getNotification(this.name, this.eventType);
@@ -82,7 +71,7 @@ export class NotificationsComponent implements OnInit, OnDestroy {
         this.notHTMLService.getConfigs(eventType, name);
     }
 
-    preview(name:string,
+    preview(name: string,
             eventType: string,
             config: any = null) {
         if (!_.isEqual(this.config,this.previewConfig)) {
@@ -94,7 +83,7 @@ export class NotificationsComponent implements OnInit, OnDestroy {
     saveConfigs() {
         if (!_.isEqual(this.config, this.oldConfig)) {
             this.notHTMLService.saveConfigs(this.name,
-                                            this.config)
+                                            this.config);
             this.oldConfig = JSON.parse(JSON.stringify(this.config));
         } else {
             this.notService.info('No Changes', 'These configs are already in place!');

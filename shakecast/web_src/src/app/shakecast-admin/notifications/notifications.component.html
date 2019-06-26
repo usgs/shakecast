@@ -1,6 +1,8 @@
 <div class="container">
     <div class="not-column column">
-        <div class="notification" #notificationContainer></div>
+        <ng-container *ngIf="notHTMLService.notification | async as notification">
+            <div class="notification" [innerHTML]="notification | safeHtml"></div>
+        </ng-container>
     </div>
 
     <div class="conf-column column">
@@ -12,7 +14,11 @@
                         <select class="not-dropdown" id="notDropdown" 
                                                         [(ngModel)]="name" 
                                                         (change)="getNotification(name, eventType)">
-                            <option *ngFor="let eachName of tempNames" [ngValue]="eachName">{{ eachName }}</option>
+                            <ng-container *ngIf="notHTMLService.tempNames | async as tempNames">
+                              <option *ngFor="let eachName of tempNames" [ngValue]="eachName">
+                                {{ eachName }}
+                              </option>
+                            </ng-container>
                         </select>
                     </div>
 
@@ -55,9 +61,11 @@
                                 *ngIf="config.logo" >
                         <p class="label">Logo: </p>
                         <select [(ngModel)]="config.logo">
-                            <option [value]="name" *ngFor="let name of imageNames">
+                            <ng-container *ngIf="notHTMLService.imageNames | async as imageNames">
+                              <option [value]="name" *ngFor="let name of imageNames">
                                 {{ name }}
-                            </option>
+                              </option>
+                            </ng-container>
                         </select>
                     </div>
                     <div class="item">
