@@ -440,6 +440,7 @@ def grab_from_directory(directory, session=None):
     except Exception as e:
         error = str(e)
         log = error
+        raise(e)
 
     event_info = info['input']['event_information']
     
