@@ -1,0 +1,17 @@
+<ng-container *ngIf="notService.config | async as config">
+  <div class="section">
+    <h1 class="header">Header</h1>
+    <div class="item">
+      <p class="label">Title:</p>
+      <input class="conf" *ngIf="config.header" [(ngModel)]="config.header.title" />
+    </div>
+  </div>
+
+  <div class="section">
+    <h1 class="header">Table Content</h1>
+    <div class="item" *ngFor="let field of config.table.table_head">
+      <input type="checkbox" [(ngModel)]="field.use" />
+      <p>{{ field.val }}</p>
+    </div>
+  </div>
+</ng-container>

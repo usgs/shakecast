@@ -31,7 +31,6 @@ export class AppComponent implements OnInit, OnDestroy {
             if (data.loggedIn === true) {
                 this.userService.loggedIn = data.success;
                 this.userService.isAdmin = data.isAdmin;
-                this.router.navigate(['/shakecast']);
             }
         }));
     }

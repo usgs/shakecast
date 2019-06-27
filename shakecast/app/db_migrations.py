@@ -98,6 +98,21 @@ def migrate_6to7(engine):
 
     return engine
 
+def migrate_7to8(engine):
+
+    override_directory = Column('override_directory', String(255))
+    try:
+        add_column(engine, 'shakemap', override_directory)
+    except Exception:
+        pass
+
+    try:
+        add_column(engine, 'event', override_directory)
+    except Exception:
+        pass
+
+    return engine
+
 def add_column(engine, table_name, column):
     '''
     Add a column to an existing table

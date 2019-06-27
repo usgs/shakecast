@@ -1,5 +1,4 @@
 import { NgModule } from '@angular/core';
-import { BrowserModule } from '@angular/platform-browser';
 import { FormsModule } from '@angular/forms';
 
 import { ShakeCastAdminComponent } from './shakecast-admin.component';
@@ -20,8 +19,7 @@ import { ConfigService } from './config/config.service';
 import { UploadComponent } from './upload/upload.component';
 import { UploadService } from './upload/upload.service';
 
-import { NotificationsComponent } from './notifications/notifications.component';
-import { NotificationHTMLService } from './notifications/notification.service';
+import { NotificationsModule } from './notifications/notifications.module';
 
 import { UpdateComponent } from './update/update.component';
 import { UpdateService } from './update/update.service';
@@ -37,9 +35,10 @@ import { FileUploadModule } from 'ng2-file-upload';
 @NgModule({
   imports: [
     FormsModule,
+    FileUploadModule,
+    NotificationsModule,
     routing,
-    SharedModule,
-    FileUploadModule
+    SharedModule
   ],
   declarations: [
     ShakeCastAdminComponent,
@@ -51,7 +50,6 @@ import { FileUploadModule } from 'ng2-file-upload';
     UserListComponent,
     ConfigComponent,
     UploadComponent,
-    NotificationsComponent,
     UpdateComponent,
     ScenariosComponent,
     ScenarioSearchComponent
@@ -59,7 +57,6 @@ import { FileUploadModule } from 'ng2-file-upload';
   providers: [
     ConfigService,
     UploadService,
-    NotificationHTMLService,
     UpdateService
   ]
 })

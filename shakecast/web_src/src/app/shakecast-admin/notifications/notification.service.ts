@@ -1,13 +1,13 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 
-import { ReplaySubject } from 'rxjs';
+import { ReplaySubject, BehaviorSubject } from 'rxjs';
 import { NotificationsService } from 'angular2-notifications';
 
 @Injectable()
 export class NotificationHTMLService {
     public loadingData = new ReplaySubject(1);
-    public notification = new ReplaySubject(1);
+    public notification = new BehaviorSubject(null);
     public config = new ReplaySubject(1);
     public tempNames = new ReplaySubject(1);
     public imageNames = new ReplaySubject(1);

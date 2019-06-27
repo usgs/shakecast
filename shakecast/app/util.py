@@ -400,6 +400,16 @@ def get_data_dir():
     
     return data_dir
 
+def get_test_dir():
+    '''
+    Establishes a directory named in the config file for persistent storage of
+    earthquake products. Default is ~/.shakecast/data
+    '''
+    sc_dir_ = sc_dir()
+    test_dir = os.path.join(sc_dir_, 'tests')
+    
+    return test_dir
+
 def root_dir():
     """
     Returns the path of the root directory for the shakecast application

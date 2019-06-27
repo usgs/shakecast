@@ -10,15 +10,16 @@ export class AdminGuard implements CanActivate {
                 private router: Router,
                 private notService: NotificationsService) {}
 
-    canActivate(route: ActivatedRouteSnapshot, 
+    canActivate(route: ActivatedRouteSnapshot,
                 state: RouterStateSnapshot): Observable<boolean>|boolean {
         console.log('AdminGuard#canActivate called');
         if (this.user.isAdmin) {
-            return true
+            return true;
         }
         // not logged in so redirect to login page
-        this.notService.error('Admin', 
-                              'Login as an admin to access this page', 
-                              {setTimeout: 5000})
+        this.notService.error('Admin',
+                              'Login as an admin to access this page',
+                              {setTimeout: 5000});
+        this.router.navigate(['/shakecast/dashboard']);
     }
 }

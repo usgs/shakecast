@@ -29,36 +29,44 @@ import { ImpactComponent } from './maps/impact/impact.component';
 import { LayerService } from './maps/layers/layer.service';
 
 import { PanelsModule } from './panels/panels.module';
+import { SafeHtmlPipe } from './safe-html.pipe';
 
 @NgModule({
   imports: [
-        CommonModule,
-        PanelsModule,
-        ],
-  declarations: [MapComponent,
-                 StickToTopDirective,
-                 ScrollToggleDirective,
-                 EarthquakeBlurbComponent,
-                 ScreenDimmerComponent,
-                 EarthquakeListComponent,
-                 FacilityListComponent,
-                 FacilityInfoComponent,
-                 InfoComponent,
-                 FacilityCountComponent,
-                 ImpactComponent],
+    CommonModule,
+    PanelsModule,
+  ],
+  declarations: [
+    MapComponent,
+    StickToTopDirective,
+    ScrollToggleDirective,
+    EarthquakeBlurbComponent,
+    ScreenDimmerComponent,
+    EarthquakeListComponent,
+    FacilityListComponent,
+    FacilityInfoComponent,
+    InfoComponent,
+    FacilityCountComponent,
+    ImpactComponent,
+    SafeHtmlPipe
+  ],
   providers: [
-  LayerService],
-  exports: [MapComponent,
-            EarthquakeBlurbComponent,
-            FacilityListComponent,
-            FacilityInfoComponent,
-            EarthquakeListComponent,
-            CommonModule, 
-            FormsModule,
-            StickToTopDirective,
-            ScrollToggleDirective,
-            ScreenDimmerComponent,
-            InfoComponent,
-            PanelsModule]
+    LayerService
+  ],
+  exports: [
+    MapComponent,
+    EarthquakeBlurbComponent,
+    FacilityListComponent,
+    FacilityInfoComponent,
+    EarthquakeListComponent,
+    CommonModule,
+    FormsModule,
+    StickToTopDirective,
+    ScrollToggleDirective,
+    ScreenDimmerComponent,
+    InfoComponent,
+    PanelsModule,
+    SafeHtmlPipe
+  ]
 })
 export class SharedModule { }
