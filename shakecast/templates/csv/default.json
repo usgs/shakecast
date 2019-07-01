@@ -1,0 +1,26 @@
+{
+  "headers": [
+    { "use": true, "val": "facility_type", "name": "Facility Type" },
+    { "use": true, "val": "facility_id", "name": "Facility ID" },
+    { "use": true, "val": "name", "name": "Name" },
+    { "use": false, "val": "", "name": "Location" },
+    { "use": true, "val": "description", "name": "Description" },
+    { "use": true, "val": "lat", "name": "Latitude" },
+    { "use": true, "val": "lon", "name": "Longitude" },
+    { "use": true, "val": "alert_level", "name": "Impact Potential (color)" },
+    {
+      "use": true,
+      "val": "alert_level",
+      "name": "Impact Potential (category)"
+    },
+    { "use": false, "val": "", "name": "Exceedance Ratio" },
+    { "use": true, "val": "weight", "name": "Impact Rank" },
+    { "use": true, "val": "metric", "name": "Ground Motion Metric" },
+    { "use": true, "val": "mmi", "name": "MMI" },
+    { "use": true, "val": "pga", "name": "PGA" },
+    { "use": true, "val": "pgv", "name": "PGV" },
+    { "use": true, "val": "psa03", "name": "PSA03" },
+    { "use": true, "val": "psa10", "name": "PSA10" },
+    { "use": true, "val": "psa30", "name": "PSA30" }
+  ]
+}
