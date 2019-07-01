@@ -10,26 +10,31 @@ def generate_impact_csv(shakemap, save=False, file_name='', template_name=''):
     '''
 
     tm = TemplateManager()
-    configs_json = tm.get_configs('csv', template_name or 'default.json')
-    configs = json.loads(configs_json)
+    configs = tm.get_configs('csv', template_name or 'default.json')
 
-    headers = configs['headers'].filter(lambda x: x['use'] is True)
+    headers = filter(lambda x: x['use'] is True, configs['headers'])
     csv_rows = [[header['name'] for header in headers]]
+    
+    facility_shaking_lst = sorted(shakemap.facility_shaking,
+            key=lambda x: x.weight, reverse=True)
 
-    for fac_shaking in shakemap.facility_shaking:
+    for fac_shaking in facility_shaking_lst:
         facility_row = []
         for header in headers:
             head_key = header['val']
             val = ''
-            if fac_shaking.__dict__.get(head_key, False):
-                val = fac_shaking.__dict__(head_key)
-            elif fac_shaking.facility__dict__.get(head_key, False):
-                val = fac_shaking.facility.__dict__(head_key)
+            if getattr(fac_shaking, head_key, False):
+                val = getattr(fac_shaking, head_key)
+            elif getattr(fac_shaking.facility, head_key, False):
+                val = getattr(fac_shaking.facility, head_key)
             elif fac_shaking.facility.get_attribute(head_key):
                 val = fac_shaking.facility.get_attribute(head_key)
 
+            if header.get('translate', False):
+                val = header['translate'][val]
+
             facility_row += [val]
-        csv_rows += facility_row
+        csv_rows += [facility_row]
 
     if save is True:
         file_name = file_name or 'impact.csv'

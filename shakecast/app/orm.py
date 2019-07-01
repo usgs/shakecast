@@ -305,6 +305,10 @@ class FacilityShaking(Base):
         # now let sqlalchemy do the real initialization
         super(FacilityShaking, self).__init__(**move_on)
     
+    @hybrid_property
+    def exceedance_ratio(self):
+        return getattr(self, self.alert_level, None)
+    
     def __repr__(self):
         return '''FacilityShaking(shakemap_id=%s,
                                    facility_id=%s,
