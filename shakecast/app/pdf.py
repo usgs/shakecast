@@ -259,14 +259,6 @@ def get_cell_height(cell):
     pdf.multi_cell(cell_width, cell_height, str(cell['value']), border=1)
 
     return pdf.get_y() - start_y
-    
-
-
-
-    
-
-    
-
 
 def save_pdf(pdf_string, file_name, directory):
     file_name_ = os.path.join(directory, file_name)
