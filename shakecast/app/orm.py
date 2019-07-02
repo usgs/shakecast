@@ -308,6 +308,39 @@ class FacilityShaking(Base):
     @hybrid_property
     def exceedance_ratio(self):
         return getattr(self, self.alert_level, None)
+
+    @hybrid_property
+    def simple_exceedance(self):
+        exceedance = None
+        alert_level = None
+        next_alert_level = None
+        for level in IMPACT_RANKS:
+            if level['name'] == self.alert_level:
+                alert_level = level
+                break
+        
+        for level in IMPACT_RANKS:
+            if level['rank'] > alert_level['rank']:
+                if getattr(self.facility, level['name'], False):
+                    next_alert_level = level
+                    break
+        
+        shaking = getattr(self, self.metric.lower())
+        threshold = getattr(self.facility, alert_level['name'])
+        if shaking and threshold:
+            if next_alert_level:
+                next_threshold = getattr(self.facility, next_alert_level['name'])
+
+                exceedance = (shaking - threshold) / (next_threshold - threshold)
+            elif alert_level:
+                exceedance = (shaking - threshold) / threshold
+    
+        return exceedance
+
+        
+
+
+        return getattr(self, self.alert_level, None)
     
     def __repr__(self):
         return '''FacilityShaking(shakemap_id=%s,
@@ -1170,5 +1203,13 @@ def db_init():
     Session.remove()
 
     return engine, Session
+
+IMPACT_RANKS = [
+    {'name': 'gray', 'rank': 1},
+    {'name': 'green', 'rank': 2},
+    {'name': 'yellow', 'rank': 3},
+    {'name': 'orange', 'rank': 4},
+    {'name': 'red', 'rank': 5}
+]
 
 engine, Session = db_init()
