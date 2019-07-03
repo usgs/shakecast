@@ -3,7 +3,7 @@
     { "use": true, "val": "facility_type", "name": "Facility Type" },
     { "use": true, "val": "facility_id", "name": "Facility ID" },
     { "use": true, "val": "name", "name": "Name" },
-    { "use": true, "val": "location", "name": "Location" },
+    { "use": true, "val": "short_name", "name": "Location" },
     { "use": true, "val": "description", "name": "Description" },
     { "use": true, "val": "lat", "name": "Latitude" },
     { "use": true, "val": "lon", "name": "Longitude" },
@@ -20,7 +20,7 @@
           "red": "High"
       }
     },
-    { "use": true, "val": "exceedance_ratio", "name": "Exceedance Ratio" },
+    { "use": true, "val": "simple_exceedance", "name": "Exceedance Ratio" },
     { "use": true, "val": "weight", "name": "Impact Rank" },
     { "use": true, "val": "metric", "name": "Ground Motion Metric" },
     { "use": true, "val": "mmi", "name": "MMI" },
