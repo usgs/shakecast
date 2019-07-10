@@ -113,7 +113,7 @@
                                     <td style="border: 2px solid #444444;padding: 5px;">{{ fs[fs.metric.lower()] }}</td>
                                 {% elif fs.facility.get_attribute(head.name) %}
                                     <td style="border: 2px solid #444444;padding: 5px;">{{ fs[head.name] }}</td>
-                                {% elif fs.get(head.name, False) %}
+                                {% elif fs.__dict__.get(head.name, False) %}
                                     <td style="border: 2px solid #444444;padding: 5px;">{{ fs[head.name] }}</td>
                                 {% else %}
                                     <td style="border: 2px solid #444444;padding: 5px;">-</td>
