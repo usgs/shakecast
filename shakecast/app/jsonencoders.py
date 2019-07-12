@@ -3,7 +3,8 @@ import types
 import os
 from sqlalchemy import inspect
 
-from orm import DeclarativeMeta, Base, FacilityShaking
+from sqlalchemy.ext.declarative import DeclarativeMeta
+from .orm import Base, FacilityShaking
 
 class AlchemyEncoder(json.JSONEncoder):
     '''

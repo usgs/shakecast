@@ -1,4 +1,7 @@
 from sqlalchemy import Column, Integer, String, Float
+
+from ..util import SC
+
 ############### DB Migrations ################
 def migrate_1to2(engine):
     '''
@@ -125,5 +128,25 @@ def add_column(engine, table_name, column):
     elif 'mysql' in str(engine):
         engine.execute('ALTER TABLE `%s` ADD COLUMN %s %s' % (table_name, column_name, column_type))
 
+#######################################################################
+
 # List of database migrations for export
 migrations = [migrate_1to2, migrate_2to3, migrate_3to4, migrate_4to5, migrate_5to6, migrate_6to7]
+
+def migrate(engine):
+    '''
+    Check for required database migrations
+    '''
+
+    sc = SC()
+    for migration in migrations:
+        mig_version = int(migration.__name__.split('to')[1])
+        cur_version = sc.dict['Server']['update']['db_version']
+        if mig_version > cur_version:
+            # run the migration
+            engine = migration(engine)
+            # update the configs
+            sc.dict['Server']['update']['db_version'] = mig_version
+
+    sc.save_dict()
+    return engine

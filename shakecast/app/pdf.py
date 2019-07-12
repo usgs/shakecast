@@ -7,6 +7,7 @@ from .notifications import NotificationBuilder, TemplateManager
 from .orm import ShakeMap, Session
 from .util import Clock
 
+
 class Pdf(FPDF):
     def __init__(self):
         super(Pdf, self).__init__()
@@ -20,6 +21,7 @@ class Pdf(FPDF):
         self.set_font('Arial', 'I', 8)
         # Page number
         self.cell(0, 10, 'Page ' + str(self.page_no()) + '/{nb}', 0, 0, 'C')
+
 
 def generate_impact_pdf(shakemap, save=False, pdf_name='', template_name=''):
     pdf = Pdf()
@@ -37,7 +39,10 @@ def generate_impact_pdf(shakemap, save=False, pdf_name='', template_name=''):
 
     add_shakemap_to_pdf(pdf, shakemap)
 
-    add_pdf_table(pdf, configs['table']['table_head'], shakemap.facility_shaking)
+    facility_shaking = sorted(
+        shakemap.facility_shaking, key=lambda x: x.weight, reverse=True)
+    add_pdf_table(pdf, configs['table']['table_head'],
+                  facility_shaking)
 
     pdf.alias_nb_pages()
     pdf_string = pdf.output('', 'S')
@@ -46,6 +51,7 @@ def generate_impact_pdf(shakemap, save=False, pdf_name='', template_name=''):
         pdf_name = pdf_name or 'impact.pdf'
         save_pdf(pdf_string, pdf_name, shakemap.local_products_dir)
     return pdf_string
+
 
 def add_header_to_pdf(pdf, shakemap, configs):
     font = pdf.font_family
@@ -62,6 +68,7 @@ def add_header_to_pdf(pdf, shakemap, configs):
 
     pdf.set_font(font, style, size)
 
+
 def add_shakemap_details_to_pdf(pdf, shakemap):
     font = pdf.font_family
     style = pdf.font_style
@@ -72,19 +79,25 @@ def add_shakemap_details_to_pdf(pdf, shakemap):
     pdf.multi_cell(pdf.w, pdf.font_size, 'Event Details')
 
     pdf.set_font(font, '', 12)
-    pdf.multi_cell(pdf.w, details_height, 'Epicenter Location: {}, {}'.format(shakemap.event.lat, shakemap.event.lon))
-    pdf.multi_cell(pdf.w, details_height, 'Event ID: {}'.format(shakemap.shakemap_id))
-    pdf.multi_cell(pdf.w, details_height, 'Version: {}'.format(shakemap.shakemap_version))
+    pdf.multi_cell(pdf.w, details_height, 'Epicenter Location: {}, {}'.format(
+        shakemap.event.lat, shakemap.event.lon))
+    pdf.multi_cell(pdf.w, details_height,
+                   'Event ID: {}'.format(shakemap.shakemap_id))
+    pdf.multi_cell(pdf.w, details_height,
+                   'Version: {}'.format(shakemap.shakemap_version))
 
     clock = Clock()
     event_time = clock.from_time(shakemap.event.time)
     event_time_str = event_time.strftime('%H:%M %10-%b-%Y')
-    pdf.multi_cell(pdf.w, details_height, 'Event Time: {}'.format(event_time_str))
+    pdf.multi_cell(pdf.w, details_height,
+                   'Event Time: {}'.format(event_time_str))
 
     datetime = clock.from_time(time.time())
     date_string = datetime.strftime('%H:%M %10-%b-%Y')
-    pdf.multi_cell(pdf.w, details_height, 'Report Generated: {}'.format(date_string))
+    pdf.multi_cell(pdf.w, details_height,
+                   'Report Generated: {}'.format(date_string))
     pdf.set_font(font, style, size)
+
 
 def add_summary_to_pdf(pdf, shakemap):
     font = pdf.font_family
@@ -98,14 +111,18 @@ def add_summary_to_pdf(pdf, shakemap):
     pdf.set_font(font, 'b', 14)
     pdf.multi_cell(pdf.w, details_height, 'Impact Summary')
     pdf.set_font(font, '', 12)
-    pdf.multi_cell(pdf.w, details_height, 'Total Facilities Evaluated: {}'.format(impact['all']))
+    pdf.multi_cell(pdf.w, details_height,
+                   'Total Facilities Evaluated: {}'.format(impact['all']))
     pdf.multi_cell(pdf.w, details_height, 'High: {}'.format(impact['red']))
-    pdf.multi_cell(pdf.w, details_height, 'Medium-High: {}'.format(impact['orange']))
-    pdf.multi_cell(pdf.w, details_height, 'Medium: {}'.format(impact['yellow']))
+    pdf.multi_cell(pdf.w, details_height,
+                   'Medium-High: {}'.format(impact['orange']))
+    pdf.multi_cell(pdf.w, details_height,
+                   'Medium: {}'.format(impact['yellow']))
     pdf.multi_cell(pdf.w, details_height, 'Low: {}'.format(impact['green']))
     pdf.multi_cell(pdf.w, details_height, 'None: {}'.format(impact['gray']))
 
     pdf.set_font(font, style, size)
+
 
 def add_pdf_table(pdf, headers, data):
     use_headers = [header for header in headers if header['use']]
@@ -129,7 +146,7 @@ def add_pdf_table(pdf, headers, data):
         pdf.set_x(x_offset)
         max_cell_height = get_line_height(line)
         add_line_to_pdf(line, use_headers, pdf, padding=padding)
-            
+
         pdf.ln(max_cell_height + padding)
 
         if pdf.get_y() > pdf.h - pdf.t_margin - pdf.b_margin:
@@ -146,11 +163,12 @@ def add_pdf_table(pdf, headers, data):
 def add_shakemap_to_pdf(pdf, shakemap):
     shakemap_image_loc = os.path.join(shakemap.directory_name, 'intensity.jpg')
 
-    width = pdf.w * .66
+    width = pdf.w * .75
     top = pdf.get_y() + 10
     left = (pdf.w - width) / 2
 
     pdf.image(shakemap_image_loc, x=left, y=top, w=width)
+
 
 def add_line_to_pdf(line, headers, pdf, padding=0):
     page_width = pdf.w - 2 * pdf.l_margin
@@ -169,7 +187,7 @@ def add_line_to_pdf(line, headers, pdf, padding=0):
             colors = cell['colors']
             rgb = colors.get(cell['value'], {'r': 0, 'g': 0, 'b': 0})
             pdf.set_text_color(rgb['r'], rgb['g'], rgb['b'])
-        
+
         font_style = pdf.font_style
         if cell.get('font_style', False):
             pdf.set_font(pdf.font_family, cell['font_style'], pdf.font_size_pt)
@@ -181,18 +199,20 @@ def add_line_to_pdf(line, headers, pdf, padding=0):
 
         if cell_height > pdf.font_size:
             lines = cell_height / pdf.font_size
-            pdf.multi_cell(cell_width, pdf.font_size + (padding / lines), str(value), border=1, fill=1)
+            pdf.multi_cell(cell_width, pdf.font_size +
+                           (padding / lines), str(value), border=1, fill=1)
         else:
-            pdf.multi_cell(cell_width, max_cell_height + padding, str(value), border=1, fill=1)
+            pdf.multi_cell(cell_width, max_cell_height +
+                           padding, str(value), border=1, fill=1)
 
-        pdf.set_text_color(0,0,0)
+        pdf.set_text_color(0, 0, 0)
         pdf.set_font(pdf.font_family, font_style, pdf.font_size_pt)
         pdf.set_xy(start_x + cell_width, start_y)
 
         header_pos += 1
 
 
-def add_pdf_table_page(headers, pdf, padding = 0, x_offset = 0):
+def add_pdf_table_page(headers, pdf, padding=0, x_offset=0):
     pdf.add_page()
     page_width = pdf.w - 2 * pdf.l_margin
 
@@ -211,6 +231,7 @@ def add_pdf_table_page(headers, pdf, padding = 0, x_offset = 0):
     pdf.ln(pdf.font_size + padding)
     pdf.set_font(font, style, size)
 
+
 def get_impact_line_values(headers, data):
     values = []
     for facility_shaking in data:
@@ -222,16 +243,18 @@ def get_impact_line_values(headers, data):
                 header_name = facility_shaking.facility.metric.lower()
 
             value = facility_shaking.__dict__.get(
-                    header_name, facility_shaking.facility.__dict__.get(header_name,
-                    facility_shaking.facility.get_attribute(header_name) or ''))
+                header_name, facility_shaking.facility.__dict__.get(header_name,
+                                                                    facility_shaking.facility.get_attribute(header_name) or ''))
             if type(value) is float:
                 value = round(value * 100) / 100
 
-            facility_data += [{'value': value, 'width': float(header['width'])}]
+            facility_data += [{'value': value,
+                               'width': float(header['width'])}]
 
         values += [facility_data]
-    
+
     return values
+
 
 def get_line_height(line):
     max_height = 0
@@ -240,6 +263,7 @@ def get_line_height(line):
         max_height = height if height > max_height else max_height
     return max_height
 
+
 def get_line_width_percent(line):
     percent = 0
     for cell in line:
@@ -247,9 +271,10 @@ def get_line_width_percent(line):
 
     return percent
 
+
 def get_cell_height(cell):
     pdf = Pdf()
-    pdf.add_page()    
+    pdf.add_page()
     page_width = pdf.w - 2 * pdf.l_margin
 
     cell_height = pdf.font_size
@@ -259,6 +284,7 @@ def get_cell_height(cell):
     pdf.multi_cell(cell_width, cell_height, str(cell['value']), border=1)
 
     return pdf.get_y() - start_y
+
 
 def save_pdf(pdf_string, file_name, directory):
     file_name_ = os.path.join(directory, file_name)

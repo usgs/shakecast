@@ -18,7 +18,6 @@ from .inventory import *
 from .jsonencoders import *
 from .notifications import *
 from .productdownload import *
-from .updates import *
 from .urlopener import *
 
 class SystemTest(unittest.TestCase):
