@@ -14,4 +14,3 @@ from inventory import (
 )
 from productdownload import geo_json, download_scenario
 from servertestfunctions import system_test
-from updates import check_for_updates
