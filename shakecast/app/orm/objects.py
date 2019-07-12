@@ -11,8 +11,8 @@ from sqlalchemy.orm import relationship
 from sqlalchemy.sql import and_, or_
 
 from .engine import engine
-from ..util import *
 from .util import IMPACT_RANKS
+from ..util import Clock, get_data_dir, get_local_products_dir, sc_dir
 from ..impact import get_event_impact, get_impact
 
 # create a metadata object
