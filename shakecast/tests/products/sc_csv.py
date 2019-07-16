@@ -3,10 +3,10 @@ import unittest
 
 from shakecast.app.productdownload import grab_from_directory
 from shakecast.app.orm import dbconnect, ShakeMap, Group
-from shakecast.app.products.pdf import main
+from shakecast.app.products.sc_csv import main
 from shakecast.app.util import get_test_dir
 
-class TestPDFGeneration(unittest.TestCase):
+class TestCSVGeneration(unittest.TestCase):
 
     @dbconnect
     def test_imports(self, session=None):
@@ -17,10 +17,10 @@ class TestPDFGeneration(unittest.TestCase):
             name='TESTGROUP'
         )
 
-        pdf_name = 'test_pdf'
-        pdf_result = main(group, shakemap, name=pdf_name)
+        csv_name = 'test_csv'
+        csv_result = main(group, shakemap, name=csv_name)
 
-        path = os.path.join(shakemap.local_products_dir, pdf_name)
+        path = os.path.join(shakemap.local_products_dir, csv_name)
         self.assertTrue(os.path.exists(path))
 
 if __name__ == '__main__':
