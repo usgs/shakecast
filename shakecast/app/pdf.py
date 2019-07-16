@@ -3,7 +3,7 @@ import os
 import time
 
 from .impact import get_event_impact
-from .notifications import NotificationBuilder, TemplateManager
+from .notifications.notifications import NotificationBuilder, TemplateManager
 from .orm import ShakeMap, Session
 from .util import Clock
 

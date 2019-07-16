@@ -361,23 +361,12 @@ class Server(object):
                 self.queue += [task]
                 message += "Waiting for new events"
 
-            if 'check_for_updates' not in task_names:
-                task = Task()
-                task.id = int(time.time() * 1000000)
-                task.func = f.check_for_updates
-                task.loop = True
-                task.interval = 60
-                task.name = 'check_for_updates'
-                
-                self.queue += [task]
-                message += "Looking for updates"
-
             if 'record_messages' not in task_names:
                 task = Task()
                 task.id = int(time.time() * 1000000)
                 task.func = self.record_messages
                 task.loop = True
-                task.interval = 5
+                task.interval = 2
                 task.name = 'record_messages'
 
                 self.queue += [task]

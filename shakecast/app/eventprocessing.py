@@ -16,7 +16,7 @@ from .orm import (
 import pdf
 from util import Clock, SC
 
-from notifications import new_event_notification, inspection_notification
+from .notifications.notifications import new_event_notification, inspection_notification
 
 def can_process_event(event, scenario=False):
     # check if we should wait until daytime to process

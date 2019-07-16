@@ -14,6 +14,7 @@ from .engine import engine
 from .util import IMPACT_RANKS
 from ..util import Clock, get_data_dir, get_local_products_dir, sc_dir
 from ..impact import get_event_impact, get_impact
+from ..product_generation import *
 
 # create a metadata object
 metadata = MetaData()
@@ -1055,8 +1056,8 @@ class Product(Base):
 class LocalProduct(Base):
     __tablename__ = 'local_products'
     id = Column(Integer, primary_key=True)
-    type_id = Column(Integer,
-                     ForeignKey('local_product_types.id'))
+    type = Column(String,
+                     ForeignKey('local_product_types.type'))
     shakemap_id = Column(Integer,
                          ForeignKey('shakemap.shakecast_id'))
     timestamp = Column(Integer)
@@ -1064,8 +1065,17 @@ class LocalProduct(Base):
     product_type = relationship('LocalProductType',
                                 backref='products')
 
+    def __init__(self, *args, **kwargs):
+        super(LocalProduct, self).__init__(*args, **kwargs)
+        self.timestamp = time.time()
+
+    def generate(self, *args, **kwargs):
+        generate_function = eval(self.product_type.generate_function)
+        result = generate_function.main(*args, **kwargs)
+
+        return result
 
 class LocalProductType(Base):
     __tablename__ = 'local_product_types'
-    id = Column(Integer, primary_key=True)
-    type = Column(String(100))
+    type = Column(String(100), primary_key=True)
+    generate_function = Column(String(100))

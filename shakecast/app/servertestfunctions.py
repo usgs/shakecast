@@ -1,7 +1,7 @@
 from email.mime.text import MIMEText
 
 from productdownload import ProductGrabber
-from notifications import Mailer
+from .notifications.notifications import Mailer
 from orm import dbconnect, User
 
 def url_test():
