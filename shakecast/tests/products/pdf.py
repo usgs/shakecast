@@ -9,7 +9,7 @@ from shakecast.app.util import get_test_dir
 class TestPDFGeneration(unittest.TestCase):
 
     @dbconnect
-    def test_imports(self, session=None):
+    def test_pdfGeneration(self, session=None):
         scenario_directory = os.path.join(get_test_dir(), 'data', 'new_event', 'new_event-1')
         event, shakemap = grab_from_directory(scenario_directory, session=session)
 

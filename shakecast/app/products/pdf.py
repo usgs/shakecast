@@ -89,12 +89,12 @@ def add_shakemap_details_to_pdf(pdf, shakemap):
 
     clock = Clock()
     event_time = clock.from_time(shakemap.event.time)
-    event_time_str = event_time.strftime('%H:%M %10-%b-%Y')
+    event_time_str = event_time.strftime('%H:%M %d-%b-%Y')
     pdf.multi_cell(pdf.w, details_height,
                    'Event Time: {}'.format(event_time_str))
 
     datetime = clock.from_time(time.time())
-    date_string = datetime.strftime('%H:%M %10-%b-%Y')
+    date_string = datetime.strftime('%H:%M %d-%b-%Y')
     pdf.multi_cell(pdf.w, details_height,
                    'Report Generated: {}'.format(date_string))
     pdf.set_font(font, style, size)
