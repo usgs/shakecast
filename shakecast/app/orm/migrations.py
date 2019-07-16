@@ -116,6 +116,16 @@ def migrate_7to8(engine):
 
     return engine
 
+def migrate_8to9(engine):
+
+    product_string = Column('product_string', String(255))
+    try:
+        add_column(engine, 'group', product_string)
+    except Exception:
+        pass
+
+    return engine
+
 def add_column(engine, table_name, column):
     '''
     Add a column to an existing table
@@ -135,18 +145,9 @@ migrations = [migrate_1to2, migrate_2to3, migrate_3to4, migrate_4to5, migrate_5t
 
 def migrate(engine):
     '''
-    Check for required database migrations
+    Run all database migrations
     '''
-
-    sc = SC()
     for migration in migrations:
-        mig_version = int(migration.__name__.split('to')[1])
-        cur_version = sc.dict['Server']['update']['db_version']
-        if mig_version > cur_version:
-            # run the migration
-            engine = migration(engine)
-            # update the configs
-            sc.dict['Server']['update']['db_version'] = mig_version
+        engine = migration(engine)
 
-    sc.save_dict()
     return engine
