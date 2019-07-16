@@ -14,7 +14,7 @@ from .engine import engine
 from .util import IMPACT_RANKS
 from ..util import Clock, get_data_dir, get_local_products_dir, sc_dir
 from ..impact import get_event_impact, get_impact
-from ..product_generation import *
+from ..products import *
 
 # create a metadata object
 metadata = MetaData()
@@ -472,6 +472,7 @@ class Group(Base):
     template = Column(String(255))
     updated = Column(Integer)
     updated_by = Column(String(32))
+    product_string = Column(String(255), default='pdf')
 
     facilities = relationship('Facility',
                               secondary='facility_group_connection',
@@ -1060,22 +1061,44 @@ class LocalProduct(Base):
                      ForeignKey('local_product_types.type'))
     shakemap_id = Column(Integer,
                          ForeignKey('shakemap.shakecast_id'))
-    timestamp = Column(Integer)
+    group_id = Column(Integer,
+                         ForeignKey('group.shakecast_id'))
+    name = Column(String(255))
+    status = Column(String(255), default='created')
+    timestamp = Column(Float)
+    error = Column(String(255))
 
     product_type = relationship('LocalProductType',
+                                backref='products')
+    group = relationship('Group',
                                 backref='products')
 
     def __init__(self, *args, **kwargs):
         super(LocalProduct, self).__init__(*args, **kwargs)
         self.timestamp = time.time()
 
-    def generate(self, *args, **kwargs):
+    def generate(self):
         generate_function = eval(self.product_type.generate_function)
-        result = generate_function.main(*args, **kwargs)
+        result = generate_function.main(self.group, self.shakemap, self.name)
 
         return result
+
+    def read(self):
+        name = os.path.join(self.shakemap.local_products_dir, self.name)
+        with open(name, self.product_type.read_type) as product:
+            read_product = product.read()
+        
+        return read_product
+
+    def write(self, content):
+        name = os.path.join(self.shakemap.local_products_dir, self.name)
+        with open(name, self.product_type.write_type) as product:
+            product.write(content)
 
 class LocalProductType(Base):
     __tablename__ = 'local_product_types'
     type = Column(String(100), primary_key=True)
     generate_function = Column(String(100))
+    read_type = Column(String(10))
+    write_type = Column(String(10))
+    subtype = Column(String(10), default='plain')

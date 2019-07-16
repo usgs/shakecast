@@ -2,10 +2,10 @@ from fpdf import FPDF, HTMLMixin
 import os
 import time
 
-from .impact import get_event_impact
-from .notifications.notifications import NotificationBuilder, TemplateManager
-from .orm import ShakeMap, Session
-from .util import Clock
+from ..impact import get_event_impact
+from ..notifications.builder import NotificationBuilder
+from ..notifications.templates import TemplateManager
+from ..util import Clock
 
 
 class Pdf(FPDF):
@@ -23,7 +23,7 @@ class Pdf(FPDF):
         self.cell(0, 10, 'Page ' + str(self.page_no()) + '/{nb}', 0, 0, 'C')
 
 
-def generate_impact_pdf(shakemap, save=False, pdf_name='', template_name=''):
+def generate_impact_pdf(group, shakemap, save=False, pdf_name='', template_name=''):
     pdf = Pdf()
     pdf.add_page()
 
@@ -41,6 +41,7 @@ def generate_impact_pdf(shakemap, save=False, pdf_name='', template_name=''):
 
     facility_shaking = sorted(
         shakemap.facility_shaking, key=lambda x: x.weight, reverse=True)
+    facility_shaking = filter(lambda x: group in x.facility.groups, facility_shaking)
     add_pdf_table(pdf, configs['table']['table_head'],
                   facility_shaking)
 
@@ -290,3 +291,6 @@ def save_pdf(pdf_string, file_name, directory):
     file_name_ = os.path.join(directory, file_name)
     with open(file_name_, 'wb') as file_:
         file_.write(pdf_string)
+
+def main(group, shakemap, name):
+    return generate_impact_pdf(group, shakemap, save=True, pdf_name=name, template_name=group.template)

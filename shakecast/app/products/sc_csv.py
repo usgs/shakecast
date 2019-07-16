@@ -48,5 +48,5 @@ def save_csv(csv_rows, file_name, directory):
         for row in csv_rows:
             csv_writer.writerow(row)
 
-def main(*args, **kwargs):
-    generate_impact_csv(*args, **kwargs)
+def main(group, shakemap, name):
+    return generate_impact_csv(shakemap, save=True, file_name=name, template_name=group.template)

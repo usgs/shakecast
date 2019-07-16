@@ -7,7 +7,16 @@ from .utils import dbconnect
 local_product_types = [
     LocalProductType(
         type='csv',
-        generate_function='sc_csv'
+        generate_function='sc_csv',
+        read_type='r',
+        write_type='w'
+    ),
+    LocalProductType(
+        type='pdf',
+        generate_function='pdf',
+        read_type='rb',
+        write_type='wb',
+        subtype='pdf'
     )
 ]
 
@@ -34,6 +43,7 @@ def load_data(session=None):
         else:
             add_data.append(product_type)
 
+    # add scadmin
     users= session.query(User).filter(User.user_type.like('admin')).all()
     if len(users) == 0:
         add_data.append(sc_admin)

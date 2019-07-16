@@ -6,111 +6,17 @@ from jinja2 import Template, Environment
 import json
 import os
 import shutil
-import smtplib
 import time
 
+from .builder import NotificationBuilder
+from .mailer import Mailer
 from ..orm import dbconnect, ShakeMap
 from .templates import TemplateManager
 from ..util import sc_dir, SC, get_template_dir, split_string_on_spaces
 
 jinja_env = Environment(extensions=['jinja2.ext.do'])
 
-class NotificationBuilder(object):
-    """
-    Uses Jinja to build notifications
-    """
-    def __init__(self):
-        pass
-    
-    @staticmethod
-    def build_new_event_html(events=None, notification=None, group=None, name=None, web=False, config=None):
-        temp_manager = TemplateManager()
-        template_name = (name or 'default').lower()
 
-        if not config:
-            config = temp_manager.get_configs('new_event', 
-                                                name=template_name)
-        
-        template = temp_manager.get_template('new_event',
-                                            name=template_name)
-        
-
-        return template.render(events=events,
-                               group=group,
-                               notification=notification,
-                               sc=SC(),
-                               config=config,
-                               web=web)
-    
-    @staticmethod
-    def build_insp_html(shakemap, notification=None, name=None, web=False, config=None):
-        temp_manager = TemplateManager()
-        template_name = (name or 'default').lower()
-        if not config:
-            config = temp_manager.get_configs('inspection', name=template_name)
-        
-        template = temp_manager.get_template('inspection', name=template_name)
-
-        shakemap.sort_facility_shaking('weight')
-        fac_details = shakemap.get_impact_summary()
-
-        return template.render(shakemap=shakemap,
-                               facility_shaking=shakemap.facility_shaking,
-                               fac_details=fac_details,
-                               notification=notification,
-                               sc=SC(),
-                               config=config,
-                               web=web)
-
-    @staticmethod
-    def build_update_html(update_info=None):
-        '''
-        Builds an update notification using a jinja2 template
-        '''
-        template_manager = TemplateManager()
-        template = template_manager.get_template('system', name='update')
-
-        return template.render(update_info=update_info)
-
-class Mailer(object):
-    """
-    Keeps track of information used to send emails
-    
-    If a proxy is setup, Mailer will try to wrap the smtplib module
-    to access the smtp through the proxy
-    """
-    
-    def __init__(self):
-        # get info from the config
-        sc = SC()
-        
-        self.me = sc.dict['SMTP']['from'] or sc.dict['SMTP']['username']
-        self.username = sc.smtp_username
-        self.password = sc.smtp_password
-        self.server_name = sc.smtp_server
-        self.server_port = int(sc.dict['SMTP']['port'])
-        self.security = sc.dict['SMTP']['security']
-        self.log = ''
-        self.notify = sc.dict['Notification']['notify']
-        
-    def send(self, msg=None, you=None, debug=False):
-        """
-        Send an email (msg) to specified addresses (you) using SMTP
-        server details associated with the object
-        """
-        server = smtplib.SMTP(self.server_name, self.server_port) #port 587 or 25
-
-        if self.security.lower() == 'tls':
-            server.ehlo()
-            server.starttls()
-            server.ehlo()
-
-        if self.username and self.password:
-            server.login(self.username, self.password)
-
-        if self.notify is True:
-            server.sendmail(self.me, you, msg.as_string())
-        server.quit()
 
 def get_image(image_path):
     default_image = os.path.join(sc_dir(),'view','assets', 'sc_logo.png')
@@ -261,14 +167,18 @@ def inspection_notification(notification=None,
             encoded_message = MIMEText(message.encode('utf-8'), message_type, 'utf-8')
             msg.attach(encoded_message)
 
-            # check for pdf
-            pdf_name = '{}_impact.pdf'.format(group.name)
-            pdf_location = os.path.join(shakemap.local_products_dir, pdf_name)
-            if (os.path.isfile(pdf_location)):
-                with open(pdf_location, 'rb') as pdf_file:
-                    attach_pdf = MIMEApplication(pdf_file.read(), _subtype='pdf')
-                    attach_pdf.add_header('Content-Disposition', 'attachment', filename='impact.pdf')
-                    msg.attach(attach_pdf)
+            # check for and attach local products
+            for product in shakemap.local_products:
+                if product.error:
+                    continue
+
+                try:
+                    content = product.read()
+                    attach_product = MIMEApplication(content, _subtype=product.product_type.subtype)
+                    attach_product.add_header('Content-Disposition', 'attachment', filename=product.name)
+                    msg.attach(attach_product)
+                except Exception as e:
+                    product.error = 'Unable to attach to email'
 
             # get and attach shakemap
             msg_shakemap = MIMEImage(shakemap.get_map(), _subtype='jpeg')
