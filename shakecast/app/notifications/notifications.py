@@ -6,246 +6,17 @@ from jinja2 import Template, Environment
 import json
 import os
 import shutil
-import smtplib
 import time
 
-from orm import dbconnect, ShakeMap
-from util import sc_dir, SC, get_template_dir, split_string_on_spaces
+from .builder import NotificationBuilder
+from .mailer import Mailer
+from ..orm import dbconnect, ShakeMap
+from .templates import TemplateManager
+from ..util import sc_dir, SC, get_template_dir, split_string_on_spaces
 
 jinja_env = Environment(extensions=['jinja2.ext.do'])
 
-class NotificationBuilder(object):
-    """
-    Uses Jinja to build notifications
-    """
-    def __init__(self):
-        pass
-    
-    @staticmethod
-    def build_new_event_html(events=None, notification=None, group=None, name=None, web=False, config=None):
-        temp_manager = TemplateManager()
-        template_name = (name or 'default').lower()
 
-        if not config:
-            config = temp_manager.get_configs('new_event', 
-                                                name=template_name)
-        
-        template = temp_manager.get_template('new_event',
-                                            name=template_name)
-        
-
-        return template.render(events=events,
-                               group=group,
-                               notification=notification,
-                               sc=SC(),
-                               config=config,
-                               web=web)
-    
-    @staticmethod
-    def build_insp_html(shakemap, notification=None, name=None, web=False, config=None):
-        temp_manager = TemplateManager()
-        template_name = (name or 'default').lower()
-        if not config:
-            config = temp_manager.get_configs('inspection', name=template_name)
-        
-        template = temp_manager.get_template('inspection', name=template_name)
-
-        shakemap.sort_facility_shaking('weight')
-        fac_details = shakemap.get_impact_summary()
-
-        return template.render(shakemap=shakemap,
-                               facility_shaking=shakemap.facility_shaking,
-                               fac_details=fac_details,
-                               notification=notification,
-                               sc=SC(),
-                               config=config,
-                               web=web)
-
-    @staticmethod
-    def build_update_html(update_info=None):
-        '''
-        Builds an update notification using a jinja2 template
-        '''
-        template_manager = TemplateManager()
-        template = template_manager.get_template('system', name='update')
-
-        return template.render(update_info=update_info)
-
-class Mailer(object):
-    """
-    Keeps track of information used to send emails
-    
-    If a proxy is setup, Mailer will try to wrap the smtplib module
-    to access the smtp through the proxy
-    """
-    
-    def __init__(self):
-        # get info from the config
-        sc = SC()
-        
-        self.me = sc.dict['SMTP']['from'] or sc.dict['SMTP']['username']
-        self.username = sc.smtp_username
-        self.password = sc.smtp_password
-        self.server_name = sc.smtp_server
-        self.server_port = int(sc.dict['SMTP']['port'])
-        self.security = sc.dict['SMTP']['security']
-        self.log = ''
-        self.notify = sc.dict['Notification']['notify']
-        
-    def send(self, msg=None, you=None, debug=False):
-        """
-        Send an email (msg) to specified addresses (you) using SMTP
-        server details associated with the object
-        """
-        server = smtplib.SMTP(self.server_name, self.server_port) #port 587 or 25
-
-        if self.security.lower() == 'tls':
-            server.ehlo()
-            server.starttls()
-            server.ehlo()
-
-        if self.username and self.password:
-            server.login(self.username, self.password)
-
-        if self.notify is True:
-            server.sendmail(self.me, you, msg.as_string())
-        server.quit()
-
-class TemplateManager(object):
-    """
-    Manages templates and configs for emails
-    """
-
-    @staticmethod
-    def get_configs(not_type, name=None, sub_dir=None):
-        name = name or 'default.json'
-        # force json file type
-        if '.json' not in name:
-            name += '.json'
-
-        # default fallback configs
-        fallback = os.path.join('default', name) if sub_dir else 'default.json'
-
-        # pdfs use a subdirectory
-        name = os.path.join(sub_dir, name) if sub_dir else name
-
-
-        json_file_name_template = os.path.join(get_template_dir(),
-                                not_type,
-                                '{}')
-
-        custom_name = json_file_name_template.format(name)
-        default_name = json_file_name_template.format(fallback)
-        conf_file_name = custom_name if os.path.isfile(custom_name) else default_name
-
-        with open(conf_file_name, 'r') as conf_file:
-            config = json.loads(conf_file.read())
-
-        return config
-
-    @staticmethod
-    def save_configs(not_type, name, config):
-        if isinstance(config, dict):
-            conf_file = os.path.join(get_template_dir(),
-                                    not_type,
-                                    name + '.json')
-            conf_str = open(conf_file, 'w')
-            conf_str.write(json.dumps(config, indent=4))
-            conf_str.close()
-            return config
-        else:
-            return None
-
-    @staticmethod
-    def get_template(not_type, name=None, sub_dir=None):
-        name = name or 'default.html'
-        # force html file type
-        if '.html' not in name:
-            name += '.html'
-
-        # default fallback template
-        fallback = os.path.join('default', name) if sub_dir else 'default.html'
-
-        # pdfs use a subdirectory
-        name = os.path.join(sub_dir, name) if sub_dir else name
-
-
-        html_file_name_template = os.path.join(get_template_dir(),
-                                not_type,
-                                '{}')
-
-        custom_name = html_file_name_template.format(name)
-        default_name = html_file_name_template.format(fallback)
-        html_file_name = custom_name if os.path.isfile(custom_name) else default_name
-        
-        with open(html_file_name, 'r') as html_file:
-            template = jinja_env.from_string(html_file.read())
-
-        return template
-
-    @staticmethod
-    def get_template_string(not_type, name=None):
-        temp_name = 'default.html'
-        if name is not None:
-            temp_name = name + '.html'
-
-        temp_file = os.path.join(get_template_dir(),
-                                    not_type,
-                                    temp_name)
-        try:
-            temp = open(temp_file, 'r')
-            temp_str = temp.read()
-            temp.close()
-            return temp_str
-        except Exception:
-            return None
-
-    @staticmethod
-    def save_template(not_type, name, template_str):
-        temp_file = os.path.join(get_template_dir(),
-                                not_type,
-                                name + '.html')
-        temp_file = open(temp_file, 'w')
-        temp_file.write(template_str)
-        temp_file.close()
-        return temp_file
-
-    @staticmethod
-    def get_template_names():
-        '''
-        Get a list of the existing template names
-        '''
-        temp_folder = os.path.join(get_template_dir(),
-                                   'new_event')
-        file_list = os.listdir(temp_folder)
-
-        # get the names of the templates
-        just_names = [f.split('.')[0] for f in file_list if f[-5:] == '.json']
-        return just_names
-    
-    def create_new(self, name):
-        event_configs = self.get_configs('new_event', 'default')
-        event_temp = self.get_template_string('new_event', 'default')
-
-        insp_configs = self.get_configs('inspection', 'default')
-        insp_temp = self.get_template_string('inspection', 'default')
-    
-        pdf_configs = self.get_configs('pdf', 'default')
-
-        # save configs
-        event_configs_saved = self.save_configs('new_event', name, event_configs)
-        insp_configs_saved = self.save_configs('inspection', name, insp_configs)
-        pdf_configs_saved = self.save_configs('inspection', name, pdf_configs)
-        
-        # save templates
-        event_template_saved = self.save_template('new_event', name, event_temp)
-        insp_template_saved = self.save_template('inspection', name, insp_temp)
-
-        return (event_configs_saved and
-                insp_configs_saved and
-                pdf_configs_saved and
-                event_template_saved and
-                insp_template_saved)
 
 def get_image(image_path):
     default_image = os.path.join(sc_dir(),'view','assets', 'sc_logo.png')
@@ -396,14 +167,18 @@ def inspection_notification(notification=None,
             encoded_message = MIMEText(message.encode('utf-8'), message_type, 'utf-8')
             msg.attach(encoded_message)
 
-            # check for pdf
-            pdf_name = '{}_impact.pdf'.format(group.name)
-            pdf_location = os.path.join(shakemap.local_products_dir, pdf_name)
-            if (os.path.isfile(pdf_location)):
-                with open(pdf_location, 'rb') as pdf_file:
-                    attach_pdf = MIMEApplication(pdf_file.read(), _subtype='pdf')
-                    attach_pdf.add_header('Content-Disposition', 'attachment', filename='impact.pdf')
-                    msg.attach(attach_pdf)
+            # check for and attach local products
+            for product in shakemap.local_products:
+                if product.error:
+                    continue
+
+                try:
+                    content = product.read()
+                    attach_product = MIMEApplication(content, _subtype=product.product_type.subtype)
+                    attach_product.add_header('Content-Disposition', 'attachment', filename=product.name)
+                    msg.attach(attach_product)
+                except Exception as e:
+                    product.error = 'Unable to attach to email'
 
             # get and attach shakemap
             msg_shakemap = MIMEImage(shakemap.get_map(), _subtype='jpeg')

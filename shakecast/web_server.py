@@ -1,6 +1,13 @@
 from ast import literal_eval
 from csv import reader
 import datetime
+from functools import wraps
+import io
+import json
+import os
+import sys
+import time
+
 from flask import (
     Flask,
     render_template,
@@ -22,21 +29,17 @@ from flask_login import (
     login_required
 )
 from flask_uploads import UploadSet, configure_uploads, IMAGES
-from functools import wraps
-import io
-import json
-import os
-import sys
-import time
+from sqlalchemy import literal, func, desc
 from werkzeug.security import generate_password_hash, check_password_hash
+
 
 from app.impact import get_event_impact
 from app.inventory import determine_xml, get_facility_info
 from app.jsonencoders import AlchemyEncoder, sql_to_obj
-from app.notifications import NotificationBuilder, TemplateManager
+from app.notifications.builder import NotificationBuilder
+from app.notifications.templates import TemplateManager
 from app.orm import *
-from app.updates import SoftwareUpdater
-from app.util import SC, Clock
+from app.util import SC, Clock, get_tmp_dir
 from ui import UI
 
 # setup logging
@@ -689,20 +692,6 @@ def scenario_run(event_id):
         ui.send("{'scenario_run: %s': {'func': f.run_scenario, 'args_in': {'shakemap_id': r'%s'}, 'db_use': True, 'loop': False}}" % (event_id, event_id))
     
     return json.dumps({'success': True})
-
-@app.route('/api/software-update', methods=['GET','POST'])
-@admin_only
-@login_required
-def software_update():
-    s = SoftwareUpdater()
-    if request.method == 'POST':
-        s.update()
-        ui.send("{'Restart': {'func': self.restart, 'args_in': {}, 'db_use': True, 'loop': False}}")
-
-    update_required, notify, update_info = s.check_update()
-    return json.dumps({'required': update_required,
-                        'update_info': [info for info in update_info],
-                        'notify': notify})
 
 @app.route('/admin/upload/', methods=['GET','POST'])
 @admin_only

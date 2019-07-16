@@ -2,7 +2,7 @@ import csv
 import json
 import os
 
-from .notifications import TemplateManager
+from ..notifications.templates import TemplateManager
 
 def generate_impact_csv(shakemap, save=False, file_name='', template_name=''):
     '''
@@ -47,3 +47,6 @@ def save_csv(csv_rows, file_name, directory):
         csv_writer = csv.writer(csv_file)
         for row in csv_rows:
             csv_writer.writerow(row)
+
+def main(group, shakemap, name):
+    return generate_impact_csv(shakemap, save=True, file_name=name, template_name=group.template)

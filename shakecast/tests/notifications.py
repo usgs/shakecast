@@ -2,7 +2,7 @@ import shutil
 import sys
 import unittest
 
-from shakecast.app.notifications import *
+from shakecast.app.notifications.notifications import *
 from shakecast.app.orm import dbconnect, Facility, FacilityShaking, Group, Notification
 from util import create_group
 

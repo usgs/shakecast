@@ -1,7 +1,6 @@
 import time
 
 from sqlalchemy.orm import scoped_session, sessionmaker
-from werkzeug.security import generate_password_hash
 
 from .engine import engine
 from .migrations import migrate
@@ -27,20 +26,6 @@ def create_session(engine):
         time.sleep(5)
         metadata.create_all(engine, checkfirst=True)
 
-    # create scadmin if there are no other users
-    session = Session()
-    us = session.query(User).filter(User.user_type.like('admin')).all()
-    if not us:
-        u = User()
-        u.username = 'scadmin'
-        u.password = generate_password_hash('scadmin', method='pbkdf2:sha512')
-        u.user_type = 'ADMIN'
-        u.updated = time.time()
-        u.updated_by = 'shakecast'
-        session.add(u)
-        session.commit()
-
-    Session.remove()
     return Session
 
 engine = migrate(engine)
