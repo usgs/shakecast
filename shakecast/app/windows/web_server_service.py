@@ -15,8 +15,8 @@ app_dir = os.path.normpath(os.sep.join(path))
 if app_dir not in sys.path:
     sys.path += [app_dir]
 
-from app.util import get_logging_dir, SC
-from web_server import start as startweb
+from shakecast.app.util import get_logging_dir, SC
+from shakecast.web_server import start as startweb
 
 log_file = os.path.join(get_logging_dir(), 'sc-web-server.log')
 logging.basicConfig(

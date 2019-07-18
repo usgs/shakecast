@@ -14,9 +14,9 @@ app_dir = os.path.normpath(os.sep.join(path))
 if app_dir not in sys.path:
     sys.path += [app_dir]
 
-from app.server import Server
-from ui import UI
-from app.util import get_logging_dir, SC
+from shakecast.app.server import Server
+from shakecast.ui import UI
+from shakecast.app.util import get_logging_dir, SC
 
 sc = SC()
 if sc.dict['Logging']['level'] == 'info':
