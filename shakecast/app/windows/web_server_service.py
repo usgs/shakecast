@@ -8,15 +8,8 @@ import os, sys
 import traceback
 import urllib2
 
-# Windows makes it hard to import from parent modules
-path = os.path.dirname(os.path.abspath(__file__))
-path = path.split(os.sep)[:-2]
-app_dir = os.path.normpath(os.sep.join(path))
-if app_dir not in sys.path:
-    sys.path += [app_dir]
-
-from app.util import get_logging_dir, SC
-from web_server import start as startweb
+from ..util import get_logging_dir, SC
+from ...web_server import start as startweb
 
 log_file = os.path.join(get_logging_dir(), 'sc-web-server.log')
 logging.basicConfig(

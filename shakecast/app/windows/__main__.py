@@ -1,4 +1,5 @@
 import sys
+
 from controls import install, start, stop, uninstall
 
 def invalid():
