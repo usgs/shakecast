@@ -104,8 +104,8 @@ def logged_in():
     try:
         is_admin = current_user.is_admin()
     except Exception:
-        is_admin = false
-    return jsonify(success=True, 
+        is_admin = False
+    return jsonify(success=True,
                    loggedIn=bool(current_user.is_authenticated),
                    isAdmin=bool(is_admin))
 
