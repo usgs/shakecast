@@ -1,4 +1,4 @@
-from shakecast.app.util import on_windows
+from ..util import on_windows
 
 # Initialize control functions to be shadowed by real controls if
 # the user is on Windows

@@ -7,16 +7,9 @@ import logging
 import os, sys
 import traceback
 
-# Windows makes it hard to import from parent modules
-path = os.path.dirname(os.path.abspath(__file__))
-path = path.split(os.sep)[:-2]
-app_dir = os.path.normpath(os.sep.join(path))
-if app_dir not in sys.path:
-    sys.path += [app_dir]
-
-from shakecast.app.server import Server
-from shakecast.ui import UI
-from shakecast.app.util import get_logging_dir, SC
+from ..server import Server
+from ...ui import UI
+from ..util import get_logging_dir, SC
 
 sc = SC()
 if sc.dict['Logging']['level'] == 'info':
