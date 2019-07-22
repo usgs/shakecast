@@ -41,7 +41,12 @@
                     <tr>
                         <td>
                             <h2 style="margin-top:20px;margin-bottom:0px">Magnitude {{ shakemap.event.magnitude }}</h2>
-                            <h2 style="margin-top:5px;margin-bottom:5px;border-bottom:2px solid #444444">{{ shakemap.event.place }}</h2>
+                            <h2 style="margin-top:5px;margin-bottom:5px">{{ shakemap.event.place }}</h2>
+                            <a target="_blank"
+                                href="https://earthquake.usgs.gov/earthquakes/eventpage/{{ shakemap.event.event_id }}">
+                                    View on USGS Web
+                            </a>
+                            <h2 style="margin-top:5px;margin-bottom:5px;border-bottom:2px solid #444444"></h2>
                             <table>
                                 <tr>
                                     <td>Number of Facilities Evaluated</td>

@@ -620,7 +620,7 @@ def admin_only(func):
 @login_required
 @dbconnect
 def notification_html(notification_type, name, session=None):
-    no_preview = '<h1>No PDF Preview Available</h1>'
+    no_preview = '<h1>No Preview Available</h1>'
     html = None
     config = json.loads(request.args.get('config', 'null'))
     not_builder = NotificationBuilder()
