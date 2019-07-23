@@ -16,7 +16,7 @@ from .orm import (
     ShakeMap
 )
 from .products.geojson import generate_impact_geojson
-from .util import Clock, SC
+from .util import Clock, SC, DAY
 from .notifications.notifications import new_event_notification, inspection_notification
 
 
@@ -26,6 +26,11 @@ def can_process_event(event, scenario=False):
     sc = SC()
     if (clock.nighttime() is True) and (scenario is False):
         if event.magnitude < sc.night_eq_mag_cutoff:
+            return False
+
+    if ((sc.dict['Notification'].get('require_shakemap', False) is True)
+            and (scenario is False)):
+        if event.shakemap is None:
             return False
 
     return True
@@ -202,6 +207,9 @@ def process_events(events=None, session=None, scenario=False):
     '''
     for event in events:
         if can_process_event(event, scenario) is False:
+            if time.time() - DAY > event.time:
+                # timeout this event, it's been over a day
+                event.status = 'Not processed - Timeout'
             continue
 
         all_groups_affected = []
@@ -299,7 +307,8 @@ def process_shakemaps(shakemaps=None, session=None, scenario=False):
                                .all())
 
         if affected_facilities:
-            facility_shaking = compute_event_impact(affected_facilities, shakemap, grid)
+            facility_shaking = compute_event_impact(
+                affected_facilities, shakemap, grid)
 
             # Remove all old shaking and add all fac_shaking_lst
             shakemap.facility_shaking = []
@@ -365,6 +374,7 @@ def generate_local_products(group, shakemap, session=None):
 
         session.add(product)
     session.commit()
+
 
 @dbconnect
 def run_scenario(shakemap_id=None, session=None):
