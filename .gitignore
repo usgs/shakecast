@@ -28,6 +28,7 @@ sc_back.json
 pycast_watcher.pid
 .status
 npm-debug.log
+impact.json
 
 # See http://help.github.com/ignore-files/ for more about ignoring files.
 

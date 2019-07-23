@@ -1,7 +1,9 @@
+import os
 from sqlalchemy import MetaData
 import unittest
 
 from shakecast.app.eventprocessing import *
+from shakecast.app.grid import create_grid
 from shakecast.app.orm import (
     clear_data,
     dbconnect,
@@ -9,31 +11,31 @@ from shakecast.app.orm import (
     Event,
     ShakeMap
 )
+from shakecast.app.productdownload import grab_from_directory
+from shakecast.app.util import get_test_dir
 
-from .util import create_new_event, create_group, create_new_shakemap
+from .util import create_group, create_new_event, create_fac, preload_data
 
 class TestScenarioRun(unittest.TestCase):
     def test_badScenario(self):
         result = run_scenario('a_bad_Event_id')
         self.assertFalse(result['message']['success'])
 
+    @dbconnect
+    def test_scenarioRun(self, session=None):
+        # import from directory
+        scenario_directory = os.path.join(get_test_dir(), 'data', 'new_event', 'new_event-1')
+        event, shakemap = grab_from_directory(scenario_directory, session=session)
+
+        result = run_scenario(shakemap.shakemap_id)
+        self.assertTrue(result['message']['success'])
+
 
 class TestNewEvent(unittest.TestCase):
     @dbconnect
     def test_processNewEvent(self, session=None):
-        new_event = create_new_event()
-        processed_events = process_events([new_event], session)
-
-        for event in processed_events:
-            self.assertNotEqual(event.status, 'new')
-
-    @dbconnect
-    def test_processNewEventWithGroup(self, session=None):
-        new_event = create_new_event(type='ACTUAL')
-        group = create_group()
-        session.add(group)
-
-        session.commit()
+        preload_data()
+        new_event = session.query(Event).first()
         processed_events = process_events([new_event], session)
 
         for event in processed_events:
@@ -56,13 +58,15 @@ class TestNewEvent(unittest.TestCase):
         self.assertTrue('no_heartbeat' not in group_names)
 
 class TestNewShakemap(unittest.TestCase):
-    
     @dbconnect
     def test_process_Shakemap(self, session=None):
-        new_event = create_new_event()
-        shakemap = create_new_shakemap()
-        shakemap.event = new_event
+        preload_data()
+        shakemap = session.query(ShakeMap).first()
 
         processed_shakemaps = process_shakemaps([shakemap], session)
         for shakemap in processed_shakemaps:
             self.assertNotEqual(shakemap.status, 'new')
+
+        
+if __name__ == '__main__':
+    unittest.main()

@@ -777,6 +777,12 @@ class Event(Base):
     notifications = relationship('Notification',
                                  backref='event')
 
+    def __init__(self, save=False, *args, **kwargs):
+        super(Event, self).__init__(*args, **kwargs)
+        if save:
+            if not os.path.exists(self.directory_name):
+                os.makedirs(self.directory_name)
+
     def __repr__(self):
         return '''Event(event_id=%s,
                         all_event_ids=%s,
@@ -891,6 +897,16 @@ class ShakeMap(Base):
     local_products = relationship('LocalProduct',
                                   backref='shakemap',
                                   cascade='save-update, delete, delete-orphan')
+
+    def __init__(self, save=False, *args, **kwargs):
+        super(ShakeMap, self).__init__(*args, **kwargs)
+        if save:
+            if not os.path.exists(self.directory_name):
+                os.makedirs(self.directory_name)
+            if not os.path.exists(self.event.local_products_dir):
+                os.makedirs(self.event.local_products_dir)
+            if not os.path.exists(self.local_products_dir):
+                os.makedirs(self.local_products_dir)
 
     def __repr__(self):
         return '''ShakeMap(shakemap_id=%s,
