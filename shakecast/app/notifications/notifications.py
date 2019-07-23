@@ -17,7 +17,6 @@ from ..util import sc_dir, SC, get_template_dir, split_string_on_spaces
 jinja_env = Environment(extensions=['jinja2.ext.do'])
 
 
-
 def get_image(image_path):
     default_image = os.path.join(sc_dir(),'view','assets', 'sc_logo.png')
     try:
@@ -75,7 +74,15 @@ def new_event_notification(notifications=None,
         msg_gmap.add_header('Content-ID', '<gmap{0}_{1}>'.format(count, notification.shakecast_id))
         msg_gmap.add_header('Content-Disposition', 'inline')
         msg.attach(msg_gmap)
-    
+
+        # get and attach shakemap
+        if len(event.shakemaps) > 0:
+            shakemap = event.shakemaps[-1]
+            msg_shakemap = MIMEImage(shakemap.get_map(), _subtype='jpeg')
+            msg_shakemap.add_header('Content-ID', '<shakemap{0}>'.format(shakemap.shakecast_id))
+            msg_shakemap.add_header('Content-Disposition', 'inline')
+            msg.attach(msg_shakemap)
+
     # find the ShakeCast logo
     temp_manager = TemplateManager()
     configs = temp_manager.get_configs('new_event', 

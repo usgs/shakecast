@@ -1,10 +1,10 @@
+from math import floor
 import os
 import sys
 import time
-from math import floor
 from functools import wraps
 
-from sqlalchemy import MetaData, Column, Integer, String, Float, ForeignKey, Table, select
+from sqlalchemy import inspect, MetaData, Column, Integer, String, Float, ForeignKey, Table, select
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.ext.hybrid import hybrid_method, hybrid_property
 from sqlalchemy.orm import relationship
@@ -14,6 +14,7 @@ from .engine import engine
 from .util import IMPACT_RANKS
 from ..util import Clock, get_data_dir, get_local_products_dir, sc_dir
 from ..impact import get_event_impact, get_impact
+from ..jsonencoders import GeoJson, get_geojson_latlon
 from ..products import *
 
 # create a metadata object
@@ -307,6 +308,17 @@ class FacilityShaking(Base):
     @hybrid_property
     def exceedance_ratio(self):
         return getattr(self, self.alert_level, None)
+
+    @hybrid_property
+    def geojson(self):
+        shaking = sql_to_obj(self)
+        facility_obj = sql_to_obj(self.facility)
+        facility_obj['shaking'] = shaking
+
+        geojson = GeoJson()
+        geojson.set_coordinates(get_geojson_latlon(facility_obj))
+        geojson['properties'] = facility_obj
+        return geojson
 
     @hybrid_property
     def simple_exceedance(self):
@@ -765,6 +777,12 @@ class Event(Base):
     notifications = relationship('Notification',
                                  backref='event')
 
+    def __init__(self, save=False, *args, **kwargs):
+        super(Event, self).__init__(*args, **kwargs)
+        if save:
+            if not os.path.exists(self.directory_name):
+                os.makedirs(self.directory_name)
+
     def __repr__(self):
         return '''Event(event_id=%s,
                         all_event_ids=%s,
@@ -873,11 +891,22 @@ class ShakeMap(Base):
 
     facility_shaking = relationship('FacilityShaking',
                                     backref='shakemap',
+                                    order_by='desc(FacilityShaking.weight)',
                                     cascade='save-update, delete, delete-orphan')
 
     local_products = relationship('LocalProduct',
                                   backref='shakemap',
                                   cascade='save-update, delete, delete-orphan')
+
+    def __init__(self, save=False, *args, **kwargs):
+        super(ShakeMap, self).__init__(*args, **kwargs)
+        if save:
+            if not os.path.exists(self.directory_name):
+                os.makedirs(self.directory_name)
+            if not os.path.exists(self.event.local_products_dir):
+                os.makedirs(self.event.local_products_dir)
+            if not os.path.exists(self.local_products_dir):
+                os.makedirs(self.local_products_dir)
 
     def __repr__(self):
         return '''ShakeMap(shakemap_id=%s,
@@ -1102,3 +1131,67 @@ class LocalProductType(Base):
     read_type = Column(String(10))
     write_type = Column(String(10))
     subtype = Column(String(10), default='plain')
+
+
+def sql_to_obj(sql):
+    '''
+    Convert SQLAlchemy objects into dictionaries for use after
+    session closes
+    '''
+
+    if isinstance(sql, Base):
+        obj = {}
+
+        sql_class = type(sql)
+        class_keys = inspect(sql_class).all_orm_descriptors.keys()
+
+        filtered_keys = [key for key in class_keys if '__' not in key and key[0] != '_']
+        for attribute in filtered_keys:
+            if not obj.get(attribute, False):
+                try:
+                    obj_attr = getattr(sql, attribute)
+
+                    # don't include functions
+                    if (not hasattr(obj_attr, '__call__') and
+                            not isinstance(obj_attr, Base) and
+                            not isinstance(obj_attr, list) and
+                            not isinstance(obj_attr, dict)):
+                        obj[attribute] = obj_attr
+                except:
+                    # can't access it for some reason
+                    pass
+        
+        sql = obj
+
+    elif isinstance(sql, list):
+        obj = []
+
+        for item in sql:
+            if (isinstance(item, dict) or
+                    isinstance(item, list) or
+                    isinstance(item, Base)):
+                obj.append(sql_to_obj(item))
+
+    elif isinstance(sql, dict):
+        obj = {}
+
+        # remove sqlalchemy state
+        if sql.get('_sa_instance_state', False):
+            sql.pop('_sa_instance_state')
+
+        for key in sql.keys():
+            item = sql[key]
+            if isinstance(item, Base) or isinstance(item, dict):
+                item = sql_to_obj(item)
+            
+            elif isinstance(item, list):
+                for obj in item:
+                    if isinstance(obj, Base):
+                        item = sql_to_obj(item)
+            
+            obj[key] = item
+
+    else:
+        obj = sql
+
+    return obj

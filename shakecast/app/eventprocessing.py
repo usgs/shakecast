@@ -2,9 +2,8 @@ import itertools
 from sqlalchemy.sql.expression import any_
 import time
 
-from grid import create_grid
-from impact import get_event_impact, make_inspection_priority
-from jsonencoders import ImpactGeoJson
+from .grid import create_grid
+from .impact import get_event_impact, make_inspection_priority
 from .orm import (
     dbconnect,
     Event,
@@ -16,7 +15,8 @@ from .orm import (
     Notification,
     ShakeMap
 )
-from util import Clock, SC
+from .products.geojson import generate_impact_geojson
+from .util import Clock, SC, DAY
 from .notifications.notifications import new_event_notification, inspection_notification
 
 
@@ -26,6 +26,11 @@ def can_process_event(event, scenario=False):
     sc = SC()
     if (clock.nighttime() is True) and (scenario is False):
         if event.magnitude < sc.night_eq_mag_cutoff:
+            return False
+
+    if ((sc.dict['Notification'].get('require_shakemap', False) is True)
+            and (scenario is False)):
+        if len(event.shakemaps) == 0:
             return False
 
     return True
@@ -202,6 +207,9 @@ def process_events(events=None, session=None, scenario=False):
     '''
     for event in events:
         if can_process_event(event, scenario) is False:
+            if time.time() - DAY > event.time:
+                # timeout this event, it's been over a day
+                event.status = 'Not processed - Timeout'
             continue
 
         all_groups_affected = []
@@ -239,8 +247,8 @@ def process_events(events=None, session=None, scenario=False):
 
 
 def compute_event_impact(facilities, shakemap, grid):
-    impact = ImpactGeoJson()
-    impact.init_features(len(facilities))
+    facility_shaking = [None] * len(facilities)
+    count = 0
     for facility in facilities:
         fac_shaking = make_inspection_priority(facility=facility,
                                                shakemap=shakemap,
@@ -248,12 +256,10 @@ def compute_event_impact(facilities, shakemap, grid):
         if fac_shaking is False:
             continue
 
-        impact.add_facility_shaking(facility, fac_shaking)
+        facility_shaking[count] = FacilityShaking(**fac_shaking)
+        count += 1
 
-    impact.geo_json['properties']['impact-summary'] = get_event_impact(
-        impact.facility_shaking)
-
-    return impact
+    return facility_shaking
 
 
 @dbconnect
@@ -301,18 +307,15 @@ def process_shakemaps(shakemaps=None, session=None, scenario=False):
                                .all())
 
         if affected_facilities:
-            impact = compute_event_impact(affected_facilities, shakemap, grid)
+            facility_shaking = compute_event_impact(
+                affected_facilities, shakemap, grid)
 
             # Remove all old shaking and add all fac_shaking_lst
             shakemap.facility_shaking = []
             session.commit()
 
-            session.bulk_save_objects(impact.facility_shaking)
+            session.bulk_save_objects(facility_shaking)
             session.commit()
-
-            # save impact geo_json
-            impact.save_impact_geo_json(shakemap.local_products_dir)
-
         else:
             shakemap.mark_processing_finished()
             shakemap.status = 'processed - no facs'
@@ -343,6 +346,9 @@ def process_shakemaps(shakemaps=None, session=None, scenario=False):
             shakemap.status = 'scenario'
         session.commit()
 
+        # generate system level products
+        generate_impact_geojson(shakemap, save=True)
+
     return shakemaps
 
 
@@ -368,6 +374,7 @@ def generate_local_products(group, shakemap, session=None):
 
         session.add(product)
     session.commit()
+
 
 @dbconnect
 def run_scenario(shakemap_id=None, session=None):

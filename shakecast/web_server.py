@@ -35,7 +35,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 
 from app.impact import get_event_impact
 from app.inventory import determine_xml, get_facility_info
-from app.jsonencoders import AlchemyEncoder, sql_to_obj
+from app.jsonencoders import AlchemyEncoder
 from app.notifications.builder import NotificationBuilder
 from app.notifications.templates import TemplateManager
 from app.orm import *

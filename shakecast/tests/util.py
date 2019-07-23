@@ -1,6 +1,10 @@
+import os
 import time
 
-from shakecast.app.orm import Facility, Group, GroupSpecification, User, Event, ShakeMap
+from shakecast.app.grid import create_grid
+from shakecast.app.productdownload import grab_from_directory
+from shakecast.app.orm import Facility, Group, GroupSpecification, User, Event, ShakeMap, dbconnect
+from shakecast.app.util import get_test_dir, get_local_products_dir
 
 def create_new_event(**kwargs):
     defaults = {
@@ -125,3 +129,19 @@ def create_user(group_str=None, email=None, mms=None):
     user.group_string = group_str
 
     return user
+
+@dbconnect
+def preload_data(session=None):
+    # import from directory
+    scenario_directory = os.path.join(get_test_dir(), 'data', 'new_event', 'new_event-1')
+    event, shakemap = grab_from_directory(scenario_directory, session=session)
+
+    grid = create_grid(shakemap)
+    facility = create_fac(grid)
+    group = create_group('GLOBAL')
+    user = create_user()
+    group.facilities += [facility]
+    group.users += [user]
+
+    session.add(group)
+    session.commit()

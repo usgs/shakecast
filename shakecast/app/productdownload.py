@@ -108,13 +108,9 @@ class ProductGrabber(object):
                 continue
 
             # get event id and all ids
-            event = Event()
-            event.all_event_ids = eq['properties']['ids']
-            if scenario is False:
-                event.event_id = eq_id
-            else:
-                event.event_id = eq_id + '_scenario'
-                event.all_event_ids = event.event_id
+            event_id = eq_id if not scenario else eq_id + '_scenario'
+            event = Event(event_id=event_id, save=True)
+            event.all_event_ids = eq['properties']['ids'] if not scenario else event.event_id
 
             # use id and all ids to determine if the event is new and
             # query the old event if necessary
@@ -187,11 +183,6 @@ class ProductGrabber(object):
 
     @staticmethod
     def get_event_map(event):
-        if not os.path.exists(event.directory_name):
-            os.makedirs(event.directory_name)
-        if not os.path.exists(event.local_products_dir):
-            os.makedirs(event.local_products_dir)
-
         image_loc = os.path.join(event.directory_name,
                                  'image.png')
 
@@ -257,10 +248,6 @@ class ProductGrabber(object):
             if event is None:
                 continue
 
-            # pull the first shakemap associated with the event
-            shakemap = ShakeMap()
-            shakemap.shakemap_id = eq_id
-
             if 'shakemap-scenario' in eq_info['properties']['products'].keys():
                 sm_str = 'shakemap-scenario'
             else:
@@ -273,7 +260,12 @@ class ProductGrabber(object):
                     weight = eq_info['properties']['products'][sm_str][idx]['preferredWeight']
                     shakemap_json = eq_info['properties']['products'][sm_str][idx]
 
-            shakemap.shakemap_version = shakemap_json['properties']['version']
+            shakemap = ShakeMap(
+                shakemap_id=eq_id,
+                shakemap_version=shakemap_json['properties']['version'],
+                event=event,
+                save=True
+            )
 
             # check if we already have the shakemap
             if shakemap.is_new() is False:
@@ -310,11 +302,6 @@ class ProductGrabber(object):
             shakemap.generation_timestamp = shakemap_json['properties']['process-timestamp']
             shakemap.recieve_timestamp = time.time()
             shakemap.type = 'scenario' if scenario is True else 'event'
-
-            if not os.path.exists(shakemap.directory_name):
-                os.makedirs(shakemap.directory_name)
-            if not os.path.exists(shakemap.local_products_dir):
-                os.makedirs(shakemap.local_products_dir)
 
             # Try to download all prefered products
             for product_name in self.pref_products:
@@ -395,9 +382,8 @@ class ProductGrabber(object):
             make_hb = True
 
         if make_hb is True:
-            e = Event()
+            e = Event(event_id='heartbeat', save=True)
             e.time = time.time()
-            e.event_id = 'heartbeat'
             e.magnitude = 10
             e.lat = 0
             e.lon = 0
@@ -479,7 +465,8 @@ def grab_from_directory(directory, session=None):
         lat=event_info['latitude'],
         depth=event_info['depth'],
         override_directory=directory,
-        type='scenario'
+        type='scenario',
+        save=True
     )
 
     session.add(event)
@@ -497,7 +484,8 @@ def grab_from_directory(directory, session=None):
         recieve_timestamp=time.time(),
         override_directory=directory,
         shakemap_version=proc['shakemap_versions']['map_version'],
-        type='scenario'
+        type='scenario',
+        save=True
     )
 
     session.add(shakemap)

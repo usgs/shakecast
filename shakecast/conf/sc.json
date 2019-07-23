@@ -14,7 +14,8 @@
         "default_template_inspection": "default_insp.json", 
         "default_template_pdf": "default_pdf.json", 
         "max_facilities": 200, 
-        "notify": true
+        "notify": true,
+        "require_shakemap": false
     }, 
     "SMTP": {
         "username": "", 

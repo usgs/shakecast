@@ -25,7 +25,7 @@ function generatePopup(fac) {
 
     const popup = `
     <div style="min-width:300px;text-align:center">
-        <h3 style="margin-bottom:0;">${fac.facility_name}</h3>
+        <h3 style="margin-bottom:0;">${fac.name}</h3>
         <p style="margin-top:0;font-size:.8em;font-style:italic;">${fac.facility_type}</p>
         <p style="margin-bottom:0;">${fac.description ? fac.description : 'No Description'}</p>
         <p style="margin-top:5px;">${fac.lat}, ${fac.lon}</p>
