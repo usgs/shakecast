@@ -30,7 +30,7 @@ def can_process_event(event, scenario=False):
 
     if ((sc.dict['Notification'].get('require_shakemap', False) is True)
             and (scenario is False)):
-        if event.shakemap is None:
+        if len(event.shakemaps) == 0:
             return False
 
     return True
