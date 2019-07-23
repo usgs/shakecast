@@ -17,6 +17,12 @@ local_product_types = [
         read_type='rb',
         write_type='wb',
         subtype='pdf'
+    ),
+    LocalProductType(
+        type='json',
+        generate_function='geojson',
+        read_type='r',
+        write_type='w'
     )
 ]
 

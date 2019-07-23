@@ -24,7 +24,7 @@ class ImpactGeoJson(object):
 
     def save_impact_geo_json(self, directory, name='impact.json', geo_json=None):
         geo_json = geo_json or self.geo_json
-        json_file = os.path.join(directory, 'impact.json')
+        json_file = os.path.join(directory, name)
 
         with open(json_file, 'w') as f_:
             f_.write(json.dumps(geo_json))
