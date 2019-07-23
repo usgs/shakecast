@@ -382,9 +382,8 @@ class ProductGrabber(object):
             make_hb = True
 
         if make_hb is True:
-            e = Event()
+            e = Event(event_id='heartbeat', save=True)
             e.time = time.time()
-            e.event_id = 'heartbeat'
             e.magnitude = 10
             e.lat = 0
             e.lon = 0
