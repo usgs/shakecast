@@ -24,9 +24,23 @@ function .onInit
 	!insertmacro VerifyUserIsAdmin
 functionEnd
 
+Function StopShakecast
+    DetailPrint "Stop ShakeCast if running..."
+    ExecWait "net stop sc_server"
+    ExecWait "net stop sc_web_server"
+FunctionEnd
+
+Function PythonCheck
+    IfFileExists "C:\Python27\python.exe" 0 Skip
+
+    ExecWait '"$SYSDIR\msiExec" /x "$INSTDIR\python-2.7.13.msi" /qb'
+    rmDir /r "C:\Python27"
+
+    Skip:
+FunctionEnd
+
 # start default section
 Section "Install ShakeCast" IDOK
-
     # set the installation directory as the destination for the following actions
     SetOutPath $INSTDIR
 
@@ -46,6 +60,10 @@ Section "Install ShakeCast" IDOK
     DetailPrint "Extracting Files into Installation Directory" 
     # specify files to go into the installation directory path
     File "*"
+    File "..\requirements\python-2.7.13.msi"
+
+    Call StopShakecast
+    Call PythonCheck
 
     # Uninstaller - See function un.onInit and section "uninstall" for configuration
 	writeUninstaller "$INSTDIR\uninstall.exe"
@@ -55,32 +73,34 @@ SectionEnd
 Section "Python Installation"
 
     # run the python installer and wait for it to finish
-    File "..\requirements\python-2.7.13.msi"
     ExecWait '"$SYSDIR\msiExec" /i "$INSTDIR\python-2.7.13.msi" /qb TARGETDIR=C:\Python27 ALLUSERS=1'
 
     # install the windows extensions
-    File "..\requirements\pywin32-224.win32-py2.7.exe"
-    ExecWait 'C:\Python27\Scripts\easy_install.exe "$INSTDIR\pywin32-224.win32-py2.7.exe"'
+    ExecWait 'C:\Python27\Scripts\pip.exe install pywin32'
 
     DetailPrint "Python is ready..."
 SectionEnd
 
 Section "ShakeCast installation"
     DetailPrint "Installing ShakeCast"
+    ExecDos::exec /DETAILED "C:\Python27\python.exe -m pip install usgs-shakecast --upgrade --no-cache-dir --trusted-host pypi.python.org --trusted-host files.pythonhosted.org --trusted-host pypi.org"
 
-    ExecDos::exec /DETAILED "C:\Python27\python.exe -m pip install usgs-shakecast"
-    ExecDos::exec /DETAILED "C:\Python27\python.exe -m pip install usgs-shakecast --upgrade"
-
+    DetailPrint "Initializing ShakeCast..."
     ExecDos::exec /DETAILED "C:\Python27\python.exe -m shakecast.app.startup"
-    ExecDos::exec /DETAILED "C:\Python27\python.exe -m shakecast.app.windows.set_paths"
-    ExecDos::exec /DETAILED "C:\Python27\python.exe -m shakecast.app.windows install"
+    DetailPrint "Moved config files."
 
+    ExecDos::exec /DETAILED "C:\Python27\python.exe -m shakecast.app.windows.set_paths"
+    DetailPrint "Paths set."
+    
+    ExecDos::exec /DETAILED "C:\Python27\python.exe -m shakecast.app.windows install"
+    DetailPrint "Services installed."
+
+    DetailPrint "Starting ShakeCast..."
     ExecDos::exec /DETAILED "C:\Python27\python.exe -m shakecast start"
-    ExecDos::exec /DETAILED "C:\Python27\python.exe -m shakecast stop"
-    Sleep 10000
-    ExecDos::exec /DETAILED "C:\Python27\python.exe -m shakecast start"
+    DetailPrint "Started"
 
     # make a link to the python package from the install directory
+    DetailPrint "Adding links..."
     CreateShortCut "$INSTDIR\shakecast.lnk" "C:\Python27\Lib\site-packages\shakecast"
     CreateShortCut "$INSTDIR\user-data.lnk" "$PROFILE\.shakecast"
     DetailPrint "Finishing up Installation..."
