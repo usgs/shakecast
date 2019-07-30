@@ -354,26 +354,27 @@ def process_shakemaps(shakemaps=None, session=None, scenario=False):
 
 @dbconnect
 def generate_local_products(group, shakemap, session=None):
-    local_product_names = group.product_string.split(',')
-    product_types = session.query(LocalProductType).filter(
-        LocalProductType.type.in_(local_product_names)).all()
+    if group.product_string is not None:
+        local_product_names = group.product_string.split(',')
+        product_types = session.query(LocalProductType).filter(
+            LocalProductType.type.in_(local_product_names)).all()
 
-    for product_type in product_types:
-        product = LocalProduct(
-            group=group,
-            shakemap=shakemap,
-            product_type=product_type,
-            name='{}_impact.{}'.format(group.name, product_type.type)
-        )
+        for product_type in product_types:
+            product = LocalProduct(
+                group=group,
+                shakemap=shakemap,
+                product_type=product_type,
+                name='{}_impact.{}'.format(group.name, product_type.type)
+            )
 
-        try:
-            product.generate()
-            product.error = None
-        except Exception as e:
-            product.error = str(e)
+            try:
+                product.generate()
+                product.error = None
+            except Exception as e:
+                product.error = str(e)
 
-        session.add(product)
-    session.commit()
+            session.add(product)
+        session.commit()
 
 
 @dbconnect
