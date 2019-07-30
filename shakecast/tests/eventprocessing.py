@@ -67,6 +67,18 @@ class TestNewShakemap(unittest.TestCase):
         for shakemap in processed_shakemaps:
             self.assertNotEqual(shakemap.status, 'new')
 
+    @dbconnect
+    def test_process_NoProducts(self, session=None):
+        preload_data()
+        g = session.query(Group).first()
+        g.product_string = None
+        session.commit()
+
+        shakemap = session.query(ShakeMap).first()
+        processed_shakemaps = process_shakemaps([shakemap], session)
+        for shakemap in processed_shakemaps:
+            self.assertNotEqual(shakemap.status, 'new')
+
         
 if __name__ == '__main__':
     unittest.main()
