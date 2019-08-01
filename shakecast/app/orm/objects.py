@@ -985,16 +985,6 @@ class ShakeMap(Base):
 
         return len(old_shakemaps)
 
-    def is_new(self):
-        stmt = (select([ShakeMap.__table__.c.shakecast_id])
-                .where(and_(ShakeMap.__table__.c.shakemap_id == self.shakemap_id,
-                            ShakeMap.__table__.c.shakemap_version == self.shakemap_version)))
-
-        result = engine.execute(stmt)
-        shakemaps = [row for row in result]
-
-        return len(shakemaps) == 0
-
     def has_products(self, req_prods):
         shakemap_prods = [
             prod.product_type for prod in self.products if prod.status == 'downloaded' and prod.error is None]
