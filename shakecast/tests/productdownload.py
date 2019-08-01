@@ -36,7 +36,21 @@ class TestScenarioDownload(unittest.TestCase):
         self.assertEqual('failed', result['status'])
 
     def test_downloadActualScenario(self):
-        download_scenario('bssc2014903_m6p09_se', scenario=True)
+        result = download_scenario('bssc2014903_m6p09_se', scenario=True)
+        self.assertEqual('finished', result['status'])
+
+    @dbconnect
+    def test_doubleDownload(self, session=None):
+        result = download_scenario('bssc2014903_m6p09_se', scenario=True)
+        self.assertEqual('finished', result['status'])
+        result = download_scenario('bssc2014903_m6p09_se', scenario=True)
+        self.assertEqual('finished', result['status'])
+
+        shakemaps = session.query(ShakeMap).filter(ShakeMap.shakemap_id == 'bssc2014903_m6p09_se_scenario').all()
+
+        self.assertTrue(len(shakemaps) == 1)
+
+
 
 class TestImportFromDirectory(unittest.TestCase):
 

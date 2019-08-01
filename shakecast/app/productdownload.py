@@ -260,23 +260,23 @@ class ProductGrabber(object):
                     weight = eq_info['properties']['products'][sm_str][idx]['preferredWeight']
                     shakemap_json = eq_info['properties']['products'][sm_str][idx]
 
-            shakemap = ShakeMap(
-                shakemap_id=eq_id,
-                shakemap_version=shakemap_json['properties']['version'],
-                event=event,
-                save=True
-            )
+            # grab an existing shakemap
+            shakemap_version = shakemap_json['properties']['version']
+            shakemap = (session.query(ShakeMap)
+                        .filter(ShakeMap.shakemap_id == eq_id)
+                        .filter(ShakeMap.shakemap_version == shakemap_version)
+                        .first())
 
-            # check if we already have the shakemap
-            if shakemap.is_new() is False:
-                shakemap = (
-                    session.query(ShakeMap)
-                    .filter(ShakeMap.shakemap_id == shakemap.shakemap_id)
-                    .filter(ShakeMap.shakemap_version == shakemap.shakemap_version)
-                    .first()
+            if shakemap is None:
+                # create a new shakemap
+                shakemap = ShakeMap(
+                    shakemap_id=eq_id,
+                    shakemap_version=shakemap_version,
+                    event=event,
+                    save=True
                 )
 
-            # Check for new shakemaps without statuses; git them a
+            # Check for new shakemaps without statuses; get them a
             # status so we know what to do with them later
             if shakemap.status is None:
                 shakemap.status = 'downloading'
@@ -350,7 +350,6 @@ class ProductGrabber(object):
                     self.log += 'Failed to download: %s %s' % (
                         eq_id, product_name)
 
-            event.shakemaps.append(shakemap)
             if (scenario is False and
                     shakemap.has_products(self.req_products) and
                     shakemap.status == 'downloading'):
