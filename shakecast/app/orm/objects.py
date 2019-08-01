@@ -404,6 +404,7 @@ class Notification(Base):
     notification_type = Column(String(25))
     status = Column(String(64))
     sent_timestamp = Column(Float)
+    generated_timestamp = Column(Float)
     notification_file = Column(String(255))
 
     def __repr__(self):
@@ -418,6 +419,29 @@ class Notification(Base):
                                                            self.status,
                                                            self.sent_timestamp,
                                                            self.notification_file)
+    def get_sent_timestamp(self):
+        """
+        Non-static timestamp that changes based on the user's defined
+        timezone
+        """
+        if not self.sent_timestamp:
+            return None
+
+        clock = Clock()
+        return (clock.from_time(self.sent_timestamp)
+                .strftime('%Y-%m-%d %H:%M:%S'))
+
+    def get_generated_timestamp(self):
+        """
+        Non-static timestamp that changes based on the user's defined
+        timezone
+        """
+        if not self.generated_timestamp:
+            return None
+
+        clock = Clock()
+        return (clock.from_time(self.sent_timestamp)
+                .strftime('%Y-%m-%d %H:%M:%S'))
 
 
 class User(Base):

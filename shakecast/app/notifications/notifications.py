@@ -54,6 +54,7 @@ def new_event_notification(notifications=None,
     message = not_builder.build_new_event_html(events=events, notification=notification, name=group.template)
     
     notification.status = 'Message built'
+    notification.generated_timestamp = time.time()
 
     #initiate message
     msg = MIMEMultipart()

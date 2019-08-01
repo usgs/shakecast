@@ -20,7 +20,7 @@ class NotificationBuilder(object):
         template = temp_manager.get_template('new_event',
                                             name=template_name)
         
-
+        events.sort(key=lambda x: x.magnitude, reverse=True)
         return template.render(events=events,
                                group=group,
                                notification=notification,
