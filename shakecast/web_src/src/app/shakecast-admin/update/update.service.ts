@@ -12,10 +12,13 @@ export class UpdateService {
                 private notService: NotificationsService) {}
 
     getData() {
+        // This function is out of date with ShakeCast update practices
+        /*
         this._http.get('api/software-update')
             .subscribe((result: any) => {
                 this.info.next(result);
             });
+            */
     }
 
     updateShakecast() {

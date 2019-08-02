@@ -4,8 +4,8 @@
 </head>
 
 <table style="font-family:Arial, Helvetica, sans-serif"
-        width=700 border=1 bordercolor=black
-        cellpadding=15 cellspacing=0 bgcolor=white>
+        width=700 border=1 bordercolor={{ config.table.border_color }}
+        cellpadding=15 cellspacing=0 bgcolor={{ config.body_color }}>
 
     <tr>
         <td>
@@ -38,13 +38,13 @@
     </tr>
     
     <tr>
-        <td height=30 bgcolor=black>
-            <b style="font-size:3; color:white">Preliminary Earthquake Notification</b>
+        <td height=30 bgcolor={{ config.section_head.back_color }}>
+            <b style="font-size:3; color:{{ config.section_head.font_color }};">Preliminary Earthquake Notification</b>
         </td>
     </tr>
-    
+
     <tr>
-        <td style="font-size:2">
+        <td style="font-size:2;color:{{ config.intro.font_color }};background-color:{{ config.intro.back_color }}">
             {{ config['intro']['text'] }}
             An interactive version of this 
             report is accessible on the <a href="http://{{ sc.dict['Server']['DNS'] }}">ShakeCast internet/intranet website</a>.  
@@ -53,8 +53,8 @@
     </tr>
     
     <tr>
-        <td height=30 bgcolor=black>
-            <b style="font-size:3; color:white">Earthquake Details</b>
+        <td height=30 bgcolor={{ config.section_head.back_color }}>
+            <b style="font-size:3; color:{{ config.section_head.font_color }};">Earthquake Details</b>
         </td>
     </tr>
     
@@ -66,13 +66,25 @@
             {% else %}
             <img width="612" src="api/shakemaps/{{ events[0].shakemaps[-1].shakemap_id }}/shakemap">
             {% endif %}
+            
+            <br>
+
+            <b>Event ID:</b>
+            <a target="_blank"
+                href="https://earthquake.usgs.gov/earthquakes/eventpage/{{ events[0].event_id }}">
+                {{ events[0].event_id }}
+            </a>,
+            <b>Time:</b> {{ events[0].timestamp() }},
+            <b>Magnitude:</b> {{ events[0].magnitude }},
+            <b>Location:</b> {{ events[0].lat }}, {{ events[0].lon }},
+            <b>Description:</b> {{ events[0].place }}
         </td>
     </tr>
     {% endif %}
     
-    <br>
 
     {% if events|length > 1 or events[0].shakemaps|length == 0 %}
+    <br>
     <tr>
         <td>
             <table style="font-size:2"
@@ -113,8 +125,8 @@
     {% endif %}
 
     <tr>
-        <td height=30 bgcolor=black>
-            <b style="font-size:3; color:white">ShakeCast Server</b>
+        <td height=30 bgcolor={{ config.section_head.back_color }}>
+            <b style="font-size:3; color:{{ config.section_head.font_color }};">ShakeCast Server</b>
         </td>
     </tr>
 
