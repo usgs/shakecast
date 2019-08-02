@@ -98,6 +98,17 @@ def new_event_notification(notifications=None,
     msg_image.add_header('Content-Disposition', 'inline')
     msg.attach(msg_image)
     
+    # attach a header if it's needed
+    if configs['header']:
+        header_str = os.path.join(sc_dir(),'view','assets',configs['header'])
+        header_file = get_image(header_str)
+        msg_image = MIMEImage(header_file.read(), _subtype='jpg')
+        header_file.close()
+        msg_image.add_header('Content-ID', '<header>')
+        msg_image.add_header('Content-Disposition', 'inline')
+        msg.attach(msg_image)
+
+
     mailer = Mailer()
     me = mailer.me
 

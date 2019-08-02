@@ -1,10 +1,15 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+</head>
+
 <table style="font-family:Arial, Helvetica, sans-serif"
         width=700 border=1 bordercolor=black
         cellpadding=15 cellspacing=0 bgcolor=white>
 
     <tr>
         <td>
-            {% if not config['banner'] %}
+            {% if not config['header'] %}
             <table>
                 <tr>
                     <td>
@@ -22,7 +27,12 @@
             </table>
 
             {% else %}
-            <img alt="ShakeCast" height=60 width=700 src="cid:header.jpg">
+
+                {% if web is sameas false %}
+                <img alt="ShakeCast header" height=60 width=700 src="cid:header">
+                {% else %}
+                <img alt="ShakeCast header" height=60 width=700 src="assets/{{ config.header }}">
+                {% endif %}
             {% endif %}
         </td>
     </tr>
@@ -116,6 +126,7 @@
                         ShakeCast Web: <b><a href="http://{{ sc.dict['Server']['DNS'] }}">{{ sc.dict['Server']['DNS'] }}</a></b><br>
                         Software:  <b>ShakeCast V4</b><br>
                         Reported by: <b>Server ID {{ sc.dict['Server']['name'] }}</b><br>
+                        Notification Group: <b>{{ group.name }}</b><br>
                         Template:  <b>{{ group.template or 'default' }}</b><br>
                         <br><br>
                         Questions about ShakeCast?  Contact Administrator at <a href="mailto:{{ config.admin_email }}?subject=ShakeCast+Inquiry" target="_blank">{{ config.admin_email }}</a>.
@@ -125,3 +136,5 @@
         </table>
     </tr>
 </table>
+
+</html>
