@@ -28,11 +28,17 @@
     </div>
     <div class="item">
       <p class="label">Title:</p>
-      <input class="conf" *ngIf="config" [(ngModel)]="config.head_text" />
+      <input aria-label="Header text"
+            class="conf"
+            *ngIf="config"
+            [(ngModel)]="config.head_text" />
     </div>
     <div class="item">
       <p class="label">Body Color:</p>
-      <input class="conf" *ngIf="config" [(ngModel)]="config.body_color" />
+      <input aria-label="Body color"
+            class="conf"
+            *ngIf="config"
+            [(ngModel)]="config.body_color" />
     </div>
   </div>
 
@@ -40,11 +46,15 @@
     <h1 class="header">Labels</h1>
     <div class="item" *ngIf="config.section_head">
       <p class="label">Background Color:</p>
-      <input class="conf" [(ngModel)]="config.section_head.background_color" />
+      <input aria-label="Header background color"
+            class="conf"
+            [(ngModel)]="config.section_head.background_color" />
     </div>
     <div class="item" *ngIf="config.section_head">
       <p class="label">Font Color:</p>
-      <input class="conf" [(ngModel)]="config.section_head.font_color" />
+      <input aria-label="Header font color"
+            class="conf"
+            [(ngModel)]="config.section_head.font_color" />
     </div>
   </div>
 
@@ -52,15 +62,21 @@
     <h1 class="header">Introduction</h1>
     <div class="item">
       <p class="label">Font Color:</p>
-      <input class="conf" [(ngModel)]="config.intro.font_color" />
+      <input aria-label="Introduction text color"
+            class="conf"
+            [(ngModel)]="config.intro.font_color" />
     </div>
     <div class="item" *ngIf="config.intro">
       <p class="label">Background Color:</p>
-      <input class="conf" [(ngModel)]="config.intro.background_color" />
+      <input aria-label="Introduction background color"
+            class="conf"
+            [(ngModel)]="config.intro.background_color" />
     </div>
     <div class="item" *ngIf="config.intro">
       <p class="label">Text:</p>
-      <textarea [(ngModel)]="config.intro.text"> </textarea>
+      <textarea aria-label="Notification introduction"
+            [(ngModel)]="config.intro.text">
+      </textarea>
     </div>
   </div>
 
@@ -68,13 +84,13 @@
     <h1 class="header">Table</h1>
     <div class="item" *ngIf="config.table.intro">
       <label class="label">Intro:</label>
-      <textarea [(ngModel)]="config.table.intro"> </textarea>
+      <textarea aria-label="Table introduction" [(ngModel)]="config.table.intro"> </textarea>
     </div>
     <div>
         <label>Facility Content:</label>
         <div class="item" *ngFor="let field of config.table.headers">
-        <input type="checkbox" [(ngModel)]="field.use" />
-        <p>{{ field.val }}</p>
+            <input type="checkbox" [(ngModel)]="field.use" [attr.aria-label]="field.val"/>
+            <p>{{ field.val }}</p>
         </div>
     </div>
   </div>
