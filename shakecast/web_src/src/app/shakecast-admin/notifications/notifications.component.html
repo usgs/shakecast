@@ -9,12 +9,10 @@
     <div class="section">
       <div class="item" *ngIf="!enteringNew">
         <label for="notDropdown">Pick a template: </label>
-        <select
-          class="not-dropdown"
-          id="notDropdown"
-          [(ngModel)]="name"
-          (change)="getNotification(name, eventType)"
-        >
+        <select class="not-dropdown"
+            id="notDropdown"
+            [(ngModel)]="name"
+            (change)="getNotification(name, eventType)">
           <ng-container *ngIf="notHTMLService.tempNames | async as tempNames">
             <option *ngFor="let eachName of tempNames" [ngValue]="eachName">
               {{ eachName }}
@@ -25,50 +23,40 @@
 
       <div class="item">
         <label for="newTemplate" *ngIf="!enteringNew">Or</label>
-        <h3
-          class="button"
-          id="newTemplate"
-          *ngIf="!enteringNew"
-          (click)="enteringNew = true"
-        >
+        <h3 class="button"
+            id="newTemplate"
+            *ngIf="!enteringNew"
+            (click)="enteringNew = true">
           Create a New Template
         </h3>
 
         <label for="templateName" *ngIf="enteringNew"
-          >Creating New Template</label
-        >
-        <input
-          class="template-name"
-          id="templateName"
-          *ngIf="enteringNew"
-          [(ngModel)]="newName"
-          placeholder="Give it a name, then hit enter"
-        />
+          >Creating New Template</label>
+        <input class="template-name"
+            id="templateName"
+            *ngIf="enteringNew"
+            [(ngModel)]="newName"
+            placeholder="Give it a name, then hit enter" />
         <h3 class="button" *ngIf="enteringNew" (click)="enteringNew = false">
           Cancel
         </h3>
       </div>
 
       <div class="item">
-        <h3
-          class="conf event-type button"
-          [ngClass]="{ selected: eventType == 'new_event' }"
-          (click)="getNotification(name, 'new_event')"
-        >
+        <h3 class="conf event-type button"
+            [ngClass]="{ selected: eventType == 'new_event' }"
+            (click)="getNotification(name, 'new_event')">
           New Event
         </h3>
         <h3
-          class="conf event-type button"
-          [ngClass]="{ selected: eventType == 'inspection' }"
-          (click)="getNotification(name, 'inspection')"
-        >
+            class="conf event-type button"
+            [ngClass]="{ selected: eventType == 'inspection' }"
+            (click)="getNotification(name, 'inspection')">
           Facilities
         </h3>
-        <h3
-          class="conf event-type button"
-          [ngClass]="{ selected: eventType == 'pdf' }"
-          (click)="getNotification(name, 'pdf')"
-        >
+        <h3 class="conf event-type button"
+            [ngClass]="{ selected: eventType == 'pdf' }"
+            (click)="getNotification(name, 'pdf')">
           PDF
         </h3>
       </div>

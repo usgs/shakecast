@@ -1,141 +1,164 @@
-{% if web is sameas false %}
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
 </head>
-{% endif %}
-<{{ 'body' if web is sameas false else 'div' }} style="background-color:{{ config.body_color }};width:700px;margin-top:5px">
-    <table style="table-layout:fixed;width:100%">
-        <tr>
-            <td>
-                <table>
-                    <tr>
-                        <td>
-                            <div style="width: 80px">
-                                {% if web is sameas false %}
-                                    <img style="border-radius:50%;max-height:100%;max-width:100%;" src="cid:sc_logo_{{ notification.shakecast_id }}">
-                                {% else %}
-                                    <img style="border-radius:50%;max-height:100%;max-width:100%;" src="assets/{{ config.logo }}">
-                                {% endif %}
-                            </div>
-                        </td>
-                        <td>
-                            <h1 style="color:#444444;font-size:50px;font-family:Arial;margin:0px">{{ config.head_text }}</h1>
-                        </td>
-                    </tr>
-                </table>
-            </td>
-        </tr>
-        <tr>
-            <td>
-                <table style="width:95%;margin-left:2.5%">
-                    <tr>
-                        <td>
-                            <h2 style="font-family:Arial;color:{{ config.section_head.font_color }};background-color:{{ config.section_head.back_color }};padding:10px;margin-top:20px;margin-bottom:5px">Preliminary Earthquake Notification</h2>
-                        </td>
-                    </tr>
-                </table>
-            </td>
-        </tr>
-        <tr style="background-color:{{ config.intro.back_color }}">
-            <td>
-                <table style="width:90%;margin-left:5%">
-                    <tr>
-                        <td>
-                            <p style="font-family:Arial;color:{{ config.intro.font_color }};margin:0px">{{ config.intro.text }} An interactive version of this report is accessible on the <a href="{{ sc.server_dns }}" target="_blank">ShakeCast internet/intranet.</a></p>
-                        </td>
-                    </tr>
-                </table>
-            </td>
-        </tr>
-        
 
-        <tr style="text-align:center">
-            <td>
-                <h2 style="color:{{ config.second_head.font_color }};border-bottom:2px solid {{ config.section_head.border_color }};width:200px;margin-left:auto;margin-right:auto;font-family:Arial">Earthquake Details</h2>
-            </td>
-        </tr>
-        <tr>
-        
-            <td>
-                <table style="text-align:center;border: 2px solid #444444;border-collapse: collapse;padding: 5px;font-family:Arial; width:100%">
-                    <tbody style="position: relative">
-                        <tr style="border: 2px solid #444444">
-                            <th style="border: 2px solid #444444;padding: 5px;">Map</th>
-                            <th style="border: 2px solid #444444;padding: 5px;">ID</th>
-                            <th style="border: 2px solid #444444;padding: 5px;">Time</th>
-                            <th style="border: 2px solid #444444;padding: 5px;">Mag</th>
-                            <th style="border: 2px solid #444444;padding: 5px;">Lat</th>
-                            <th style="border: 2px solid #444444;padding: 5px;">Lon</th>
-                            <th style="border: 2px solid #444444;padding: 5px;">Location</th>
-                        </tr>
-                        {% for event in events %}
-                        <tr>
-                            <td style="border: 2px solid #444444">
-                                {% if web is sameas false %}
-                                    <img src="cid:gmap{{ loop.index0 }}_{{ notification.shakecast_id }}">
-                                {% else %}
-                                    <img src="api/events/{{ event.event_id }}/image">
-                                {% endif %}
-                            </td>
-                            <td style="border: 2px solid #444444;padding: 5px;">
-                                {% if event.event_id is equalto 'heartbeat' %}
-                                    {{ event.event_id }}
-                                {% else %}
-                                    <a target="_blank"
-                                        href="https://earthquake.usgs.gov/earthquakes/eventpage/{{ event.event_id }}">
-                                        {{ event.event_id }}
-                                    </a>
-                                {% endif %}
-                            </td>
-                            <td style="border: 2px solid #444444;padding: 5px;">{{ event.timestamp() }}</td>
-                            <td style="border: 2px solid #444444;padding: 5px;">
-                                {% if event.event_id is equalto 'heartbeat' %}
-                                    None
-                                {% else %}
-                                    {{ event.magnitude }}
-                                {% endif %}
-                            </td>
-                            <td style="border: 2px solid #444444;padding: 5px;">{{ event.lat }}</td>
-                            <td style="border: 2px solid #444444;padding: 5px;">{{ event.lon}}</td>
-                            <td style="border: 2px solid #444444;padding: 5px;">{{ event.place }}</td>
-                        </tr>
-                        {% endfor %}
-                        </tbody>
-                </table>
-            </td>
-        </tr>
-        <tr>
-            <td>
-                <h3 style="color: {{ config.footer.header_color }};font-family:Arial;margin-top:50px;margin-bottom:0px">ShakeCast Server:</h3>
-            </td>
-        </tr>
-        
-        <tr>
-            <td>
-                <table style="color:{{ config.footer.header_color }};margin-left:10px">
-                    <tr>
-                        <td>
-                            <p style="margin-bottom:2px;margin-top:0px;font-size: small;font-family: Arial;">ShakeCast Web: <a href="{{ sc.server_dns }}" target="_blank">{{ sc.server_dns }}</a></p>
-                            <p style="margin-bottom:2px;margin-top:0px;font-size: small;font-family: Arial;">Software: {{ sc.software_version }}</p>
-                            <p style="margin-bottom:2px;margin-top:0px;font-size: small;font-family: Arial;">Reported by: {{ sc.server_name }}</p>
-                            {% if notification.group %}
-                                <p style="margin-bottom:2px;margin-top:0px;font-size: small;font-family: Arial;">Notification Group: {{ notification.group.name }}</p>
-                            {% endif %}
-                        </td>
-                    </tr>
-                </table>
-            </td>
-        </tr>
-        <tr>
-            <td>
-                <p style="font-size: medium;font-family: Arial;">Questions about ShakeCast?  Contact Administrator at <a href="mailto:{{ config.admin_email }}?subject=ShakeCast+V3+Inquiry" target="_blank">{{ config.admin_email }}</a>.</p> 
-            </td>
-        </tr>
+<table style="font-family:Arial, Helvetica, sans-serif"
+        width=700 border=1 bordercolor={{ config.table.border_color }}
+        cellpadding=15 cellspacing=0 bgcolor={{ config.body_color }}>
 
-    </table>
+    <tr>
+        <td>
+            {% if not config['header'] %}
+            <table>
+                <tr>
+                    <td>
+                        {% if web is sameas false %}
+                        <img alt="ShakeCast Logo"
+                                style="border-radius:50%;max-height:70px;max-width:70px;display:inline-block"
+                                src="cid:sc_logo_{{ notification.shakecast_id }}">
+                        {% else %}
+                        <img alt="ShakeCast Logo"
+                                style="display:inline-block;border-radius:50%;max-height:70px;max-width:70px;"
+                                src="assets/{{ config.logo }}">
+                        {% endif %}
+                    </td>
 
-</{{ 'body' if web is sameas false else 'div' }}>
-{% if web is sameas false %}
+                    <td>
+                        <h1>{{ config.head_text }}</h1>
+                    </td>
+                </tr>
+            </table>
+
+            {% else %}
+
+                {% if web is sameas false %}
+                <img alt="ShakeCast header" height=60 width=700 src="cid:header">
+                {% else %}
+                <img alt="ShakeCast header" height=60 width=700 src="assets/{{ config.header }}">
+                {% endif %}
+            {% endif %}
+        </td>
+    </tr>
+    
+    <tr>
+        <td height=30 bgcolor={{ config.section_head.back_color }}>
+            <b style="font-size:3; color:{{ config.section_head.font_color }};">Preliminary Earthquake Notification</b>
+        </td>
+    </tr>
+
+    <tr>
+        <td style="font-size:2;color:{{ config.intro.font_color }};background-color:{{ config.intro.back_color }}">
+            {{ config['intro']['text'] }}
+            An interactive version of this 
+            report is accessible on the <a href="http://{{ sc.dict['Server']['DNS'] }}">ShakeCast internet/intranet website</a>.  
+        <br>
+        </td>
+    </tr>
+    
+    <tr>
+        <td height=30 bgcolor={{ config.section_head.back_color }}>
+            <b style="font-size:3; color:{{ config.section_head.font_color }};">Earthquake Details</b>
+        </td>
+    </tr>
+    
+    {% if events[0].shakemaps|length > 0 %}
+    <tr>
+        <td style="text-align:center;padding-top:20px">
+            {% if web is sameas false %}
+            <img width="612"
+                    alt="Shakemap Image"
+                    src="cid:shakemap{{ events[0].shakemaps[-1].shakecast_id }}">
+            {% else %}
+            <img width="612"
+                    alt="Shakemap Image"
+                    src="api/shakemaps/{{ events[0].shakemaps[-1].shakemap_id }}/shakemap">
+            {% endif %}
+            
+            <br>
+
+            <b>Event ID:</b>
+            <a target="_blank"
+                href="https://earthquake.usgs.gov/earthquakes/eventpage/{{ events[0].event_id }}">
+                {{ events[0].event_id }}
+            </a>,
+            <b>Time:</b> {{ events[0].timestamp() }},
+            <b>Magnitude:</b> {{ events[0].magnitude }},
+            <br>
+            <b>Location:</b> {{ events[0].lat }}, {{ events[0].lon }},
+            <b>Description:</b> {{ events[0].place }}
+        </td>
+    </tr>
+    {% endif %}
+    
+
+    {% if events|length > 1 or events[0].shakemaps|length == 0 %}
+    <br>
+    <tr>
+        <td>
+            <table style="font-size:2"
+                    border=1 bordercolor=black cellpadding=5 cellspacing=0>
+                <tr>
+                    <th>Map</th>
+                    <th>Event ID</th>
+                    <th>Time</th>
+                    <th>Mag</th>
+                    <th>Lat</th>
+                    <th>Lon</th>
+                    <th>Location</th>
+                </tr>
+                {% for event in events %}
+                <tr>
+                    <td>
+                        <img alt="Epicenter map is not available at this time"
+                                src="{{'https://api.mapbox.com/styles/v1/mapbox/streets-v10/static/pin-s+F00({0},{1})/{0},{1},5/200x200?access_token={2}'.format(event.lon,
+                                event.lat,
+                                sc.map_key)}}">
+                    </td>
+                    <td>
+                        <a target="_blank"
+                            href="https://earthquake.usgs.gov/earthquakes/eventpage/{{ event.event_id }}">
+                            {{ event.event_id }}
+                        </a>
+                    </td>
+                    <td>{{ event.timestamp() }}</td>
+                    <td>{{ event.magnitude }}</td>
+                    <td>{{ event.lat }}</td>
+                    <td>{{ event.lon }}</td>
+                    <td style="word-wrap: break-word">{{ event.place }}</td>
+                </tr>
+                {% endfor %}
+            </table>
+        </td>
+    </tr>
+    {% endif %}
+
+    <tr>
+        <td height=30 bgcolor={{ config.section_head.back_color }}>
+            <b style="font-size:3; color:{{ config.section_head.font_color }};">ShakeCast Server</b>
+        </td>
+    </tr>
+
+    <tr>
+        <table>
+            <tr>
+                <td>
+                    <font size=2 face="Arial">
+                        ShakeCast Web: <b><a href="http://{{ sc.dict['Server']['DNS'] }}">{{ sc.dict['Server']['DNS'] }}</a></b><br>
+                        Software:  <b>ShakeCast V4</b><br>
+                        Reported by: <b>Server ID {{ sc.dict['Server']['name'] }}</b><br>
+                        Notification Group: 
+                        <b>
+                            {% if notification %} {{ notification.group.name or 'None' }} {% endif %}
+                        </b>
+                        <br>
+                        Template:  <b>{{ template_name or 'default' }}</b><br>
+                        <br><br>
+                        Questions about ShakeCast?  Contact Administrator at <a href="mailto:{{ config.admin_email }}?subject=ShakeCast+Inquiry" target="_blank">{{ config.admin_email }}</a>.
+                    </font>
+                </td>
+            </tr>
+        </table>
+    </tr>
+</table>
+
 </html>
-{% endif %}

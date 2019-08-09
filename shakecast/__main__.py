@@ -7,6 +7,7 @@ import time
 from .app.startup import pip_init
 pip_init()
 
+import app.admin as admin
 from .app.util import SC, sc_dir, on_windows
 import app.windows as winControls
 import app.linux as controls
@@ -59,6 +60,10 @@ def main(command = None):
 
         elif command == 'stop':
             shutdown()
+        
+        # pass command through to admin module
+        elif hasattr(admin, command):
+            getattr(admin, command)()
 
         else:
             invalid()

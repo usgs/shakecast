@@ -1,6 +1,21 @@
 <ng-container *ngIf="notService.config | async as config">
   <div class="section">
     <h1 class="header">Header</h1>
+
+    <div class="item">
+        <p class="label">Banner:</p>
+        <select [(ngModel)]="config.header">
+            <ng-container *ngIf="notService.imageNames | async as imageNames">
+            <option value="">
+                (None)
+            </option>
+            <option [value]="name" *ngFor="let name of imageNames">
+                {{ name }}
+            </option>
+            </ng-container>
+        </select>
+    </div>
+
     <div class="item" *ngIf="config.logo">
       <p class="label">Logo:</p>
       <select [(ngModel)]="config.logo">
@@ -13,23 +28,33 @@
     </div>
     <div class="item">
       <p class="label">Title:</p>
-      <input class="conf" *ngIf="config" [(ngModel)]="config.head_text" />
+      <input aria-label="Header text"
+            class="conf"
+            *ngIf="config"
+            [(ngModel)]="config.head_text" />
     </div>
     <div class="item">
       <p class="label">Body Color:</p>
-      <input class="conf" *ngIf="config" [(ngModel)]="config.body_color" />
+      <input aria-label="Body color"
+            class="conf"
+            *ngIf="config"
+            [(ngModel)]="config.body_color" />
     </div>
   </div>
 
   <div class="section">
-    <h1 class="header">Label</h1>
+    <h1 class="header">Labels</h1>
     <div class="item" *ngIf="config.section_head">
       <p class="label">Background Color:</p>
-      <input class="conf" [(ngModel)]="config.section_head.back_color" />
+      <input aria-label="Header background color"
+            class="conf"
+            [(ngModel)]="config.section_head.background_color" />
     </div>
     <div class="item" *ngIf="config.section_head">
       <p class="label">Font Color:</p>
-      <input class="conf" [(ngModel)]="config.section_head.font_color" />
+      <input aria-label="Header font color"
+            class="conf"
+            [(ngModel)]="config.section_head.font_color" />
     </div>
   </div>
 
@@ -37,28 +62,36 @@
     <h1 class="header">Introduction</h1>
     <div class="item">
       <p class="label">Font Color:</p>
-      <input class="conf" [(ngModel)]="config.intro.font_color" />
+      <input aria-label="Introduction text color"
+            class="conf"
+            [(ngModel)]="config.intro.font_color" />
     </div>
     <div class="item" *ngIf="config.intro">
       <p class="label">Background Color:</p>
-      <input class="conf" [(ngModel)]="config.intro.back_color" />
+      <input aria-label="Introduction background color"
+            class="conf"
+            [(ngModel)]="config.intro.background_color" />
     </div>
     <div class="item" *ngIf="config.intro">
       <p class="label">Text:</p>
-      <textarea [(ngModel)]="config.intro.text"> </textarea>
+      <textarea aria-label="Notification introduction"
+            [(ngModel)]="config.intro.text">
+      </textarea>
     </div>
   </div>
 
-  <div class="section">
+  <div class="section" *ngIf="config.table">
     <h1 class="header">Table</h1>
-    <div *ngIf="config.section_head">
-      <label class="label">Title Color:</label>
-      <input class="conf item" [(ngModel)]="config.second_head.font_color" />
+    <div class="item" *ngIf="config.table.intro">
+      <label class="label">Intro:</label>
+      <textarea aria-label="Table introduction" [(ngModel)]="config.table.intro"> </textarea>
     </div>
-    <label>Facility Content:</label>
-    <div class="item" *ngFor="let field of config.table_head">
-      <input type="checkbox" [(ngModel)]="field.use" />
-      <p>{{ field.val }}</p>
+    <div>
+        <label>Facility Content:</label>
+        <div class="item" *ngFor="let field of config.table.headers">
+            <input type="checkbox" [(ngModel)]="field.use" [attr.aria-label]="field.val"/>
+            <p>{{ field.val }}</p>
+        </div>
     </div>
   </div>
 

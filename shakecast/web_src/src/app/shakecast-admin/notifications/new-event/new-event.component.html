@@ -1,7 +1,22 @@
 <ng-container *ngIf="notService.config | async as config">
   <div class="section">
     <h1 class="header">Header</h1>
-    <div class="item" *ngIf="config.logo">
+
+    <div class="item">
+      <p class="label">Banner:</p>
+      <select [(ngModel)]="config.header">
+        <ng-container *ngIf="notService.imageNames | async as imageNames">
+          <option value="">
+            (None)
+          </option>
+          <option [value]="name" *ngFor="let name of imageNames">
+            {{ name }}
+          </option>
+        </ng-container>
+      </select>
+    </div>
+
+    <div class="item">
       <p class="label">Logo:</p>
       <select [(ngModel)]="config.logo">
         <ng-container *ngIf="notService.imageNames | async as imageNames">
@@ -11,25 +26,31 @@
         </ng-container>
       </select>
     </div>
+
     <div class="item">
       <p class="label">Title:</p>
       <input class="conf" *ngIf="config" [(ngModel)]="config.head_text" />
     </div>
     <div class="item">
       <p class="label">Body Color:</p>
-      <input class="conf" *ngIf="config" [(ngModel)]="config.body_color" />
+      <input
+        aria-label="Body color"
+        class="conf"
+        *ngIf="config"
+        [(ngModel)]="config.body_color"
+      />
     </div>
   </div>
 
   <div class="section">
-    <h1 class="header">Label</h1>
+    <h1 class="header">Labels</h1>
     <div class="item" *ngIf="config.section_head">
       <p class="label">Background Color:</p>
-      <input class="conf" [(ngModel)]="config.section_head.back_color" />
+      <input aria-label="Header background color" class="conf" [(ngModel)]="config.section_head.back_color" />
     </div>
     <div class="item" *ngIf="config.section_head">
       <p class="label">Font Color:</p>
-      <input class="conf" [(ngModel)]="config.section_head.font_color" />
+      <input aria-label="Header font color" class="conf" [(ngModel)]="config.section_head.font_color" />
     </div>
   </div>
 
@@ -37,30 +58,30 @@
     <h1 class="header">Introduction</h1>
     <div class="item">
       <p class="label">Font Color:</p>
-      <input class="conf" [(ngModel)]="config.intro.font_color" />
+      <input aria-label="Introduction font color" class="conf" [(ngModel)]="config.intro.font_color" />
     </div>
     <div class="item" *ngIf="config.intro">
       <p class="label">Background Color:</p>
-      <input class="conf" [(ngModel)]="config.intro.back_color" />
+      <input aria-label="Introduction background color" class="conf" [(ngModel)]="config.intro.back_color" />
     </div>
     <div class="item" *ngIf="config.intro">
       <p class="label">Text:</p>
-      <textarea [(ngModel)]="config.intro.text"> </textarea>
+      <textarea aria-label="Notification introduction text" [(ngModel)]="config.intro.text"> </textarea>
     </div>
   </div>
 
   <div class="section">
     <h1 class="header">Table</h1>
     <div *ngIf="config.section_head">
-      <label class="label">Title Color:</label>
-      <input class="conf item" [(ngModel)]="config.second_head.font_color" />
+      <label class="label">Border Color:</label>
+      <input aria-label="Border color" class="conf item" [(ngModel)]="config.table.border_color" />
     </div>
   </div>
 
   <div class="section last">
     <div class="item">
       <p class="label">Admin Email:</p>
-      <input class="conf" *ngIf="config" [(ngModel)]="config.admin_email" />
+      <input aria-label="Admin email" class="conf" *ngIf="config" [(ngModel)]="config.admin_email" />
     </div>
   </div>
 </ng-container>
