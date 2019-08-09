@@ -242,12 +242,32 @@ def get_event_impact(facility_shaking):
              'yellow': 0,
              'orange': 0,
              'red': 0,
-             'all': 0}
-    
+             'all': 0,
+             'max_pga': 0,
+             'max_pgv': 0,
+             'max_psa03': 0,
+             'max_psa10': 0,
+             'max_psa30': 0,
+             'max_mmi': 0}
+
     for s in facility_shaking:
         # record number of facs at each alert level
         impact_sum[s.alert_level] += 1
         impact_sum['all'] += 1
+
+        # record max shaking values
+        if s.pga > impact_sum['max_pga']:
+            impact_sum['max_pga'] = s.pga
+        if s.pga > impact_sum['max_pgv']:
+            impact_sum['max_pgv'] = s.pgv
+        if s.pga > impact_sum['max_psa03']:
+            impact_sum['max_psa03'] = s.psa03
+        if s.pga > impact_sum['max_psa10']:
+            impact_sum['max_psa10'] = s.psa10
+        if s.pga > impact_sum['max_psa30']:
+            impact_sum['max_psa30'] = s.psa30
+        if s.pga > impact_sum['max_mmi']:
+            impact_sum['max_mmi'] = s.mmi
 
     return impact_sum
 

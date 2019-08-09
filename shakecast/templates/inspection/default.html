@@ -1,167 +1,188 @@
-{% if web is sameas false %}
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
 </head>
-{% endif %}
-<{{ 'body' if web is sameas false else 'div' }} style="background-color:{{ config.body_color }};width:700px;margin-top:5px">
-    <table style="table-layout:fixed;width:100%">
-        <tr>
-            <td>
-                <table>
-                    <tr>
-                        <td style="max-width: 612px">                       
-                            {% if web is sameas false %}
-                                <img style="border-radius:50%;max-height:100%;max-width:100%;" src="cid:sc_logo{{ shakemap.shakecast_id }}">
-                            {% else %}
-                                <img style="border-radius:50%;max-height:100%;max-width:100%;" src="assets/{{ config.logo }}">
-                            {% endif %}
-                        </td>
-                        <td>
-                            <h1 style="color:#444444;font-size:50px;font-family:Arial;margin:0px">{{ config.head_text }}</h1>
-                        </td>
-                    </tr>
-                </table>
-            </td>
-        </tr>
-        <tr>
-            <td>
-                <table style="width:95%;margin-left:2.5%">
-                    <tr>
-                        <td>
-                            <h2 style="font-family:Arial;color:{{ config.section_head.font_color }};background-color:{{ config.section_head.back_color }};padding:10px;margin-top:20px;margin-bottom:5px">Inspection Notification</h2>
-                        </td>
-                    </tr>
-                </table>
-            </td>
-        </tr>
-        <tr>
-            <td>
-                <table style="width:90%;margin-left:5%;font-family:Arial;color:#444444;font-weight:bold">
-                    <tr>
-                        <td>
-                            <h2 style="margin-top:20px;margin-bottom:0px">Magnitude {{ shakemap.event.magnitude }}</h2>
-                            <h2 style="margin-top:5px;margin-bottom:5px">{{ shakemap.event.place }}</h2>
-                            <a target="_blank"
-                                href="https://earthquake.usgs.gov/earthquakes/eventpage/{{ shakemap.event.event_id }}">
-                                    View on USGS Web
-                            </a>
-                            <h2 style="margin-top:5px;margin-bottom:5px;border-bottom:2px solid #444444"></h2>
-                            <table>
-                                <tr>
-                                    <td>Number of Facilities Evaluated</td>
-                                    <td>: {{ fac_details.all }}</td>
-                                </tr>
-                                <tr>
-                                    <td style="color:red">High Impact</td>
-                                    <td>: {{ fac_details.red }}</td>
-                                </tr>
-                                <tr>
-                                    <td style="color:orange">Moderate-High Impact</td>
-                                    <td>: {{ fac_details.orange }}</td>
-                                </tr>
-                                <tr>
-                                    <td style="color:gold">Moderate Impact</td>
-                                    <td>: {{ fac_details.yellow }}</td>
-                                </tr>
-                                <tr>
-                                    <td style="color:green">Low Impact</td>
-                                    <td>: {{ fac_details.green }}</td>
-                                </tr>
-                                <tr>
-                                    <td style="color:gray">No Impact</td>
-                                    <td>: {{ fac_details.gray }}</td>
-                                </tr>
-                            </table>
-                        </td>
-                    </tr>
-                </table>
-            </td>
-        </tr>
-        
-        <tr>
-            <td style="text-align:center;padding-top:20px">
-                {% if web is sameas false %}
-                    <img width="612" src="cid:shakemap{{ shakemap.shakecast_id }}">
-                {% else %}
-                    <img width="612" src="api/shakemaps/{{ shakemap.shakemap_id }}/shakemap">
-                {% endif %}
-            </td>
-        </tr>
-        
-        <tr>
-            <td>
-                <h2 style="color:{{ config.second_head.font_color }};margin-top:20px;margin-bottom:15px;border-bottom:2px solid {{ config.second_head.border_color }};margin-left:2.5%;width:90%">Impact Estimates:</h2>
-            </td>
-        </tr>
-        
-        <tr>
-            <td>
-                <table style="text-align:center;border: 2px solid #444444;border-collapse:collapse;padding:5px;margin-left:5%">
-                    <tr style="border: 2px solid #444444;padding: 5px;">
-                    {% for head in config.table_head %}
-                        {% if head.use == true %}
-                            <th style="border: 2px solid #444444;padding: 5px;">{{ head.val }}</th>
+
+<table style="font-family:Arial, Helvetica, sans-serif"
+        width=700 border=1 bordercolor={{ config.table.border_color }}
+        cellpadding=15 cellspacing=0 bgcolor={{ config.body_color }}>
+
+    <tr>
+        <td>
+            {% if not config['header'] %}
+            <table>
+                <tr>
+                    <td>
+                        {% if web is sameas false %}
+                        <img style="border-radius:50%;max-height:70px;max-width:70px;display:inline-block" src="cid:sc_logo_{{ notification.shakecast_id }}">
+                        {% else %}
+                        <img style="display:inline-block;border-radius:50%;max-height:70px;max-width:70px;" src="assets/{{ config.logo }}">
                         {% endif %}
-                    {% endfor %}
-                    </tr>
-                    
-                    {% for fs in facility_shaking[0:200] %}
-                        <tr style="border: 2px solid #444444;padding: 5px;">
-                        {% for head in config.table_head %}
-                            {% if head.use == true %}
-                                {% if fs.facility.__dict__.get(head.name, False) %}
-                                    <td style="border: 2px solid #444444;padding: 5px;">{{ fs.facility.__dict__[head.name] }}</td>
-                                {% elif head.name == 'inspection_priority' %}
-                                    <td style="border: 2px solid #444444;padding: 5px;background-color:{{ fs.alert_level }}">{{ fs.alert_level }}</td>
-                                {% elif head.name == 'shaking_value' %}
-                                    <td style="border: 2px solid #444444;padding: 5px;">{{ fs[fs.metric.lower()] }}</td>
-                                {% elif fs.facility.get_attribute(head.name) %}
-                                    <td style="border: 2px solid #444444;padding: 5px;">{{ fs[head.name] }}</td>
-                                {% elif fs.__dict__.get(head.name, False) %}
-                                    <td style="border: 2px solid #444444;padding: 5px;">{{ fs[head.name] }}</td>
-                                {% else %}
-                                    <td style="border: 2px solid #444444;padding: 5px;">-</td>
-                                {% endif %}
-                            {% endif %}
-                        {% endfor %}
-                        </tr>
-                    {% endfor %}
-                </table>
-            </td>
-        </tr>
-        
-        <tr>
-            <td>
-                <h3 style="color: {{ config.footer.header_color }};font-family:Arial;margin-top:50px;margin-bottom:0px">ShakeCast Server:</h3>
-            </td>
-        </tr>
-        
-        <tr>
-            <td>
-                <table style="color:{{ config.footer.header_color }};margin-left:10px">
-                    <tr>
-                        <td>
-                            <p style="margin-bottom:2px;margin-top:0px;font-size: small;font-family: Arial;">ShakeCast Web: <a href="{{ sc.server_dns }}" target="_blank">{{ sc.server_dns }}</a></p>
-                            <p style="margin-bottom:2px;margin-top:0px;font-size: small;font-family: Arial;">Software: {{ sc.software_version }}</p>
-                            {% if notification.group %}
-                                <p style="margin-bottom:2px;margin-top:0px;font-size: small;font-family: Arial;">Notification Group: {{ notification.group.name }}</p>
-                            {% endif %}
-                            <p style="margin-bottom:2px;margin-top:0px;font-size: small;font-family: Arial;">Reported by: {{ sc.server_name }}</p>
-                        </td>
-                    </tr>
-                </table>
-            </td>
-        </tr>
-        <tr>
-            <td>
-                <p style="font-size: medium;font-family: Arial;">Questions about ShakeCast?  Contact Administrator at <a href="mailto:{{ config.admin_email }}?subject=ShakeCast+V3+Inquiry" target="_blank">{{ config.admin_email }}</a>.</p> 
-            </td>
-        </tr>
+                    </td>
 
-    </table>
+                    <td>
+                        <h1>{{ config.head_text }}</h1>
+                    </td>
+                </tr>
+            </table>
 
-</{{ 'body' if web is sameas false else 'div' }}>
-{% if web is sameas false %}
+            {% else %}
+
+                {% if web is sameas false %}
+                <img alt="ShakeCast header" height=60 width=700 src="cid:header">
+                {% else %}
+                <img alt="ShakeCast header" height=60 width=700 src="assets/{{ config.header }}">
+                {% endif %}
+            {% endif %}
+        </td>
+    </tr>
+    
+    <tr>
+        <td bgcolor={{ config.section_head.back_color }}>
+            <b style="font-size:3; color:{{ config.section_head.font_color }};">Potential Impacts: {% if notification %} {{ notification.group.facility_type or 'None' }} {% endif %}</b>
+        </td>
+    </tr>
+    
+    <tr>
+        <td size=2>
+            {{ config.intro }}
+        </td>
+    </tr>
+    
+    <tr>
+        <td bgcolor={{ config.section_head.back_color }}>
+            <b style="font-size:3; color:{{ config.section_head.font_color }};">Earthquake Details</b>
+        </td>
+    </tr>
+    
+    <tr>
+        <td style="text-align:center">
+            {% if web is sameas false %}
+            <img width="612" src="cid:shakemap{{ shakemap.shakecast_id }}">
+            {% else %}
+            <img width="612" src="api/shakemaps/{{ shakemap.shakemap_id }}/shakemap">
+            {% endif %}
+
+        <br>
+        <font size=2>
+            <b>Magnitude:</b>  {{ shakemap.event.magnitude }},
+            <b>ShakeMap ID:</b>
+            <a target="_blank"
+                    href="https://earthquake.usgs.gov/earthquakes/eventpage/{{ shakemap.event.event_id }}">
+                {{ shakemap.shakemap_id }}-{{ shakemap.shakemap_version }}
+            </a>,
+            <b>Location:</b>{{ shakemap.event.place }},
+            <br>
+            <b>Latitude-Longitude:</b> {{ shakemap.event.lat }}, {{ shakemap.event.lon }},
+            <b>Local Time:</b> {{ shakemap.event.timestamp() }}
+        </font>
+        <br>
+        </td>
+    </tr>
+    
+    
+    
+    <tr>
+        <td bgcolor={{ config.section_head.back_color }}>
+            <b style="font-size:3; color:{{ config.section_head.font_color }};">
+                Summary of Potential Impacts: {% if notification %} {{ notification.group.facility_type or 'None' }} {% endif %}
+            </b>
+        </td>
+    </tr>
+    
+    <tr>
+        <td>
+            <font size=2 face="Arial">
+
+                {% if fac_details.max_psa10 %}
+                Maximum PSA (1.0): <b>{{ fac_details.max_psa10 }} %g</b>
+                {% elif fac_details.max_pga %}
+                Maximum PGA: <b>{{ fac_details.max_pga }} %g</b>
+                {% elif fac_details.max_mmi %}
+                Maximum MMI: <b>{{ fac_details.max_mmi }}</b>
+                {% else %}
+                Maxiumum Shaking: <b>None</b>
+                {% endif %}
+
+                <br>
+                Total number of bridges analyzed: <b>{{ fac_details.all }}</b>
+                <br>
+                Summary by impact rank:
+            </font>
+        <br>
+        <br>
+
+        <table border=0 bordercolor=#F0F0F0 cellpadding=3 cellspacing=0 bgcolor=#F0F0F0>
+            <tr>
+                <td width=110 align="center" bgcolor="red"><font size=2 face="Arial"><b>High</b></font>
+                <td width=70 align="center"><font size=2 face="Arial"><b>{{ fac_details.red }}</b></font>
+                <td width=500><font size=2 face="Arial">High impact potential</font>
+            </tr>
+            <tr>
+                <td width=110 align="center" bgcolor="darkorange"><font size=2 face="Arial"><b>Medium-High</b></font>
+                <td width=70 align="center"><font size=2 face="Arial"><b>{{ fac_details.orange }}</b></font>
+                <td width=500><font size=2 face="Arial">Medium-High impact potential</font>
+            </tr>
+            <tr>
+                <td width=110 align="center" bgcolor="gold"><font size=2 face="Arial"><b>Medium</b></font>
+                <td width=70 align="center"><font size=2 face="Arial"><b>{{ fac_details.yellow }}</b></font>
+                <td width=500><font size=2 face="Arial">Medium impact potential</font>
+            </tr>
+            <tr>
+                <td width=110 align="center" bgcolor="green"><font size=2 face="Arial"><b>Low</b></font>
+                <td width=70 align="center"><font size=2 face="Arial"><b>{{ fac_details.green }}</b></font>
+                <td width=500><font size=2 face="Arial">Low impact potential</font>
+            </tr>
+        </table>
+        
+        <br>
+        </td>
+    </tr>
+    
+    
+    <tr>
+        <td bgcolor={{ config.section_head.back_color }}>
+            <b style="font-size:3; color:{{ config.section_head.font_color }};">List of Potentially Impacted Facilities: {% if notification %} {{ notification.group.facility_type or 'None' }} {% endif %}</b></font>
+        </td>
+    </tr>
+    
+    <tr><td>
+    <font size=2>
+    Facilities presented in the table below are sorted in order of impact potential. The list includes the top 200 facilities in the area of shaking.
+    </font>
+    <br><br>
+
+
+    <table width=680 border=0 bordercolor=black cellpadding=3 cellspacing=0 bgcolor=#F0F0F0>
+            <tr bgcolor=#D8D8D8>
+            {% for head in config.table_head %}
+                {% if head.use == true %}
+                    <th>{{ head.val }}</th>
+                {% endif %}
+            {% endfor %}
+            </tr>
+            
+            {% for fs in facility_shaking[0:200] %}
+            <tr bgcolor="#F0F0F0">
+                {% for head in config.table_head %}
+                    {% if head.use == true %}
+                        {% if fs.facility.__dict__.get(head.name, False) %}
+                            <td>{{ fs.facility.__dict__[head.name] }}</td>
+                        {% elif head.name == 'inspection_priority' %}
+                            <td style="background-color:{{ fs.alert_level }};text-align:center">
+                                <b>{{ head.translate[fs.alert_level] }}</b>    
+                            </td>
+                        {% elif head.name == 'shaking_value' %}
+                            <td>{{ fs[fs.metric.lower()] }}</td>
+                        {% elif fs.facility.get_attribute(head.name) %}
+                            <td>{{ fs[head.name] }}</td>
+                        {% elif fs.__dict__.get(head.name, False) %}
+                            <td>{{ fs[head.name] }}</td>
+                        {% else %}
+                            <td>-</td>
+                        {% endif %}
+                    {% endif %}
+                {% endfor %}
+                </tr>
+            {% endfor %}
+        </table>
 </html>
-{% endif %}

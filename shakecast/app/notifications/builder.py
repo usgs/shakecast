@@ -46,6 +46,7 @@ class NotificationBuilder(object):
                                notification=notification,
                                sc=SC(),
                                config=config,
+                               template_name=template_name,
                                web=web)
 
     @staticmethod

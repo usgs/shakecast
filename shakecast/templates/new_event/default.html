@@ -62,9 +62,9 @@
     <tr>
         <td style="text-align:center;padding-top:20px">
             {% if web is sameas false %}
-            <img width="612" src="cid:shakemap{{ events[0].shakemaps[-1].shakecast_id }}">
+            <img width="612" alt="Shakemap Image" src="cid:shakemap{{ events[0].shakemaps[-1].shakecast_id }}">
             {% else %}
-            <img width="612" src="api/shakemaps/{{ events[0].shakemaps[-1].shakemap_id }}/shakemap">
+            <img width="612" alt="Shakemap Image" src="api/shakemaps/{{ events[0].shakemaps[-1].shakemap_id }}/shakemap">
             {% endif %}
             
             <br>
@@ -76,6 +76,7 @@
             </a>,
             <b>Time:</b> {{ events[0].timestamp() }},
             <b>Magnitude:</b> {{ events[0].magnitude }},
+            <br>
             <b>Location:</b> {{ events[0].lat }}, {{ events[0].lon }},
             <b>Description:</b> {{ events[0].place }}
         </td>
@@ -138,8 +139,12 @@
                         ShakeCast Web: <b><a href="http://{{ sc.dict['Server']['DNS'] }}">{{ sc.dict['Server']['DNS'] }}</a></b><br>
                         Software:  <b>ShakeCast V4</b><br>
                         Reported by: <b>Server ID {{ sc.dict['Server']['name'] }}</b><br>
-                        Notification Group: <b>{{ group.name }}</b><br>
-                        Template:  <b>{{ group.template or 'default' }}</b><br>
+                        Notification Group: 
+                        <b>
+                            {% if notification %} {{ notification.group.name or 'None' }} {% endif %}
+                        </b>
+                        <br>
+                        Template:  <b>{{ template_name or 'default' }}</b><br>
                         <br><br>
                         Questions about ShakeCast?  Contact Administrator at <a href="mailto:{{ config.admin_email }}?subject=ShakeCast+Inquiry" target="_blank">{{ config.admin_email }}</a>.
                     </font>
