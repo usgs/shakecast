@@ -37,19 +37,19 @@
     </tr>
     
     <tr>
-        <td bgcolor={{ config.section_head.back_color }}>
+        <td bgcolor={{ config.section_head.background_color }}>
             <b style="font-size:3; color:{{ config.section_head.font_color }};">Potential Impacts: {% if notification %} {{ notification.group.facility_type or 'None' }} {% endif %}</b>
         </td>
     </tr>
     
     <tr>
-        <td size=2>
-            {{ config.intro }}
+        <td style="font-size:2; background-color: {{ config.intro.background_color }}; color: {{ config.intro.font_color }}">
+            {{ config.intro.text }}
         </td>
     </tr>
     
     <tr>
-        <td bgcolor={{ config.section_head.back_color }}>
+        <td bgcolor={{ config.section_head.background_color }}>
             <b style="font-size:3; color:{{ config.section_head.font_color }};">Earthquake Details</b>
         </td>
     </tr>
@@ -65,12 +65,12 @@
         <br>
         <font size=2>
             <b>Magnitude:</b>  {{ shakemap.event.magnitude }},
-            <b>ShakeMap ID:</b>
+            <b>ShakeMap ID:</b> 
             <a target="_blank"
                     href="https://earthquake.usgs.gov/earthquakes/eventpage/{{ shakemap.event.event_id }}">
                 {{ shakemap.shakemap_id }}-{{ shakemap.shakemap_version }}
             </a>,
-            <b>Location:</b>{{ shakemap.event.place }},
+            <b>Location:</b> {{ shakemap.event.place }},
             <br>
             <b>Latitude-Longitude:</b> {{ shakemap.event.lat }}, {{ shakemap.event.lon }},
             <b>Local Time:</b> {{ shakemap.event.timestamp() }}
@@ -82,7 +82,7 @@
     
     
     <tr>
-        <td bgcolor={{ config.section_head.back_color }}>
+        <td bgcolor={{ config.section_head.background_color }}>
             <b style="font-size:3; color:{{ config.section_head.font_color }};">
                 Summary of Potential Impacts: {% if notification %} {{ notification.group.facility_type or 'None' }} {% endif %}
             </b>
@@ -140,21 +140,21 @@
     
     
     <tr>
-        <td bgcolor={{ config.section_head.back_color }}>
+        <td bgcolor={{ config.section_head.background_color }}>
             <b style="font-size:3; color:{{ config.section_head.font_color }};">List of Potentially Impacted Facilities: {% if notification %} {{ notification.group.facility_type or 'None' }} {% endif %}</b></font>
         </td>
     </tr>
     
     <tr><td>
     <font size=2>
-    Facilities presented in the table below are sorted in order of impact potential. The list includes the top 200 facilities in the area of shaking.
+        {{ config.table.intro }}
     </font>
     <br><br>
 
 
     <table width=680 border=0 bordercolor=black cellpadding=3 cellspacing=0 bgcolor=#F0F0F0>
             <tr bgcolor=#D8D8D8>
-            {% for head in config.table_head %}
+            {% for head in config.table.headers %}
                 {% if head.use == true %}
                     <th>{{ head.val }}</th>
                 {% endif %}
@@ -163,7 +163,7 @@
             
             {% for fs in facility_shaking[0:200] %}
             <tr bgcolor="#F0F0F0">
-                {% for head in config.table_head %}
+                {% for head in config.table.headers %}
                     {% if head.use == true %}
                         {% if fs.facility.__dict__.get(head.name, False) %}
                             <td>{{ fs.facility.__dict__[head.name] }}</td>

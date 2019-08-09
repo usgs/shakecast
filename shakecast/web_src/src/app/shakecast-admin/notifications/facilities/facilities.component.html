@@ -1,6 +1,21 @@
 <ng-container *ngIf="notService.config | async as config">
   <div class="section">
     <h1 class="header">Header</h1>
+
+    <div class="item">
+        <p class="label">Banner:</p>
+        <select [(ngModel)]="config.header">
+            <ng-container *ngIf="notService.imageNames | async as imageNames">
+            <option value="">
+                (None)
+            </option>
+            <option [value]="name" *ngFor="let name of imageNames">
+                {{ name }}
+            </option>
+            </ng-container>
+        </select>
+    </div>
+
     <div class="item" *ngIf="config.logo">
       <p class="label">Logo:</p>
       <select [(ngModel)]="config.logo">
@@ -22,10 +37,10 @@
   </div>
 
   <div class="section">
-    <h1 class="header">Label</h1>
+    <h1 class="header">Labels</h1>
     <div class="item" *ngIf="config.section_head">
       <p class="label">Background Color:</p>
-      <input class="conf" [(ngModel)]="config.section_head.back_color" />
+      <input class="conf" [(ngModel)]="config.section_head.background_color" />
     </div>
     <div class="item" *ngIf="config.section_head">
       <p class="label">Font Color:</p>
@@ -41,7 +56,7 @@
     </div>
     <div class="item" *ngIf="config.intro">
       <p class="label">Background Color:</p>
-      <input class="conf" [(ngModel)]="config.intro.back_color" />
+      <input class="conf" [(ngModel)]="config.intro.background_color" />
     </div>
     <div class="item" *ngIf="config.intro">
       <p class="label">Text:</p>
@@ -49,16 +64,18 @@
     </div>
   </div>
 
-  <div class="section">
+  <div class="section" *ngIf="config.table">
     <h1 class="header">Table</h1>
-    <div *ngIf="config.section_head">
-      <label class="label">Title Color:</label>
-      <input class="conf item" [(ngModel)]="config.second_head.font_color" />
+    <div class="item" *ngIf="config.table.intro">
+      <label class="label">Intro:</label>
+      <textarea [(ngModel)]="config.table.intro"> </textarea>
     </div>
-    <label>Facility Content:</label>
-    <div class="item" *ngFor="let field of config.table_head">
-      <input type="checkbox" [(ngModel)]="field.use" />
-      <p>{{ field.val }}</p>
+    <div>
+        <label>Facility Content:</label>
+        <div class="item" *ngFor="let field of config.table.headers">
+        <input type="checkbox" [(ngModel)]="field.use" />
+        <p>{{ field.val }}</p>
+        </div>
     </div>
   </div>
 
