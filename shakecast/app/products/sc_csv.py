@@ -4,10 +4,15 @@ import os
 
 from ..notifications.templates import TemplateManager
 
-def generate_impact_csv(shakemap, save=False, file_name='', template_name=''):
+def generate_impact_csv(shakemap, group=None, save=False, file_name='', template_name=''):
     '''
     Generate CSV product containing shaking information from an event
     '''
+
+    if group:
+        facility_shaking = filter(lambda x: group in x.facility.groups, shakemap.facility_shaking)
+    else:
+        facility_shaking = shakemap.facility_shaking
 
     tm = TemplateManager()
     configs = tm.get_configs('csv', template_name or 'default.json')
@@ -15,7 +20,7 @@ def generate_impact_csv(shakemap, save=False, file_name='', template_name=''):
     headers = filter(lambda x: x['use'] is True, configs['headers'])
     csv_rows = [[header['name'] for header in headers]]
     
-    facility_shaking_lst = sorted(shakemap.facility_shaking,
+    facility_shaking_lst = sorted(facility_shaking,
             key=lambda x: x.weight, reverse=True)
 
     for fac_shaking in facility_shaking_lst:
@@ -49,4 +54,4 @@ def save_csv(csv_rows, file_name, directory):
             csv_writer.writerow(row)
 
 def main(group, shakemap, name):
-    return generate_impact_csv(shakemap, save=True, file_name=name, template_name=group.template)
+    return generate_impact_csv(shakemap, save=True, group=group, file_name=name, template_name=group.template)

@@ -327,7 +327,7 @@ def process_shakemaps(shakemaps=None, session=None, scenario=False):
         notifications = (session.query(Notification)
                          .filter(Notification.shakemap == shakemap)
                          .filter(Notification.notification_type == 'DAMAGE')
-                         .filter(Notification.status != 'sent')
+                         .filter(Notification.status == 'created')
                          .all())
 
         if notifications:
@@ -360,12 +360,19 @@ def generate_local_products(group, shakemap, session=None):
             LocalProductType.type.in_(local_product_names)).all()
 
         for product_type in product_types:
-            product = LocalProduct(
-                group=group,
-                shakemap=shakemap,
-                product_type=product_type,
-                name='{}_impact.{}'.format(group.name, product_type.type)
-            )
+            # check if product exists
+            product = (session.query(LocalProduct)
+                    .filter(LocalProduct.group == group)
+                    .filter(LocalProduct.shakemap == shakemap)
+                    .filter(LocalProduct.product_type == product_type).first())
+
+            if not product:
+                product = LocalProduct(
+                    group=group,
+                    shakemap=shakemap,
+                    product_type=product_type,
+                    name='{}_impact.{}'.format(group.name, product_type.type)
+                )
 
             try:
                 product.generate()

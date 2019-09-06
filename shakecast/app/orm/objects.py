@@ -25,8 +25,6 @@ Base = declarative_base(metadata=metadata)
 
 #######################################################################
 ########################## Facility Tables ############################
-
-
 class Facility(Base):
     __tablename__ = 'facility'
     shakecast_id = Column(Integer, primary_key=True)
@@ -143,6 +141,10 @@ class Facility(Base):
     @hybrid_property
     def lon(self):
         return (self.lon_max + self.lon_min) / 2
+
+    @hybrid_property
+    def location(self):
+        return '{}, {}'.format(self.lat, self.lon)
 
     @hybrid_method
     def in_grid(self, grid):

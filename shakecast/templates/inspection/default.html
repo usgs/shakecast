@@ -169,20 +169,20 @@
             <tr bgcolor="#F0F0F0">
                 {% for head in config.table.headers %}
                     {% if head.use == true %}
-                        {% if fs.facility.__dict__.get(head.name, False) %}
-                            <td>{{ fs.facility.__dict__[head.name] }}</td>
+                        {% if fs.facility[head.name] %}
+                            <td>{{ fs.facility[head.name] }}</td>
                         {% elif head.name == 'inspection_priority' %}
                             <td style="background-color:{{ fs.alert_level }};text-align:center">
                                 <b>{{ head.translate[fs.alert_level] }}</b>    
                             </td>
                         {% elif head.name == 'shaking_value' %}
-                            <td>{{ fs[fs.metric.lower()] }}</td>
+                            <td style="text-align:center">{{ fs[fs.metric.lower()] }}</td>
                         {% elif fs.facility.get_attribute(head.name) %}
-                            <td>{{ fs[head.name] }}</td>
-                        {% elif fs.__dict__.get(head.name, False) %}
-                            <td>{{ fs[head.name] }}</td>
+                            <td style="text-align:center">{{ fs[head.name] }}</td>
+                        {% elif fs[head.name] %}
+                            <td style="text-align:center">{{ fs[head.name] }}</td>
                         {% else %}
-                            <td>-</td>
+                            <td style="text-align:center">-</td>
                         {% endif %}
                     {% endif %}
                 {% endfor %}
