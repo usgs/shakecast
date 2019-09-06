@@ -17,6 +17,11 @@
                 "val": "Facility Type"
             },  
             {
+                "use": false, 
+                "name": "short_name", 
+                "val": "Short Name"
+            },  
+            {
                 "use": true, 
                 "name": "epicentral_distance", 
                 "val": "Distance (km)"
