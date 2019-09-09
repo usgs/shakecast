@@ -1,6 +1,4 @@
-from sqlalchemy import Column, Integer, String, Float
-
-from ..util import SC
+from sqlalchemy import Column, Integer, String, Float, PrimaryKeyConstraint
 
 ############### DB Migrations ################
 def migrate_1to2(engine):
@@ -136,6 +134,39 @@ def migrate_9to10(engine):
 
     return engine
 
+def migrate_10to11(engine):
+
+    file_name = Column('file_name', String)
+    try:
+        add_column(engine, 'local_product_types', file_name)
+    except Exception:
+        pass
+
+    name = Column('name', String)
+    try:
+        add_column(engine, 'local_product_types', name)
+    except Exception:
+        pass
+
+    try:
+        engine.execute('drop table local_product_types')
+    except Exception:
+        pass
+
+    begin_timestamp = Column('begin_timestamp', Float)
+    try:
+        add_column(engine, 'local_products', begin_timestamp)
+    except Exception:
+        pass
+    
+    finish_timestamp = Column('finish_timestamp', Float, default=0)
+    try:
+        add_column(engine, 'local_products', finish_timestamp)
+    except Exception:
+        pass
+
+    return engine
+
 def add_column(engine, table_name, column):
     '''
     Add a column to an existing table
@@ -152,7 +183,8 @@ def add_column(engine, table_name, column):
 
 # List of database migrations for export
 migrations = [migrate_1to2, migrate_2to3, migrate_3to4, migrate_4to5,
-        migrate_5to6, migrate_6to7, migrate_7to8, migrate_8to9, migrate_9to10]
+        migrate_5to6, migrate_6to7, migrate_7to8, migrate_8to9, migrate_9to10,
+        migrate_10to11]
 
 def migrate(engine):
     '''

@@ -3,7 +3,7 @@ import os
 
 from sqlalchemy import create_engine as sqla_create_engine
 
-from .migrations import migrations
+from .migrations import migrate
 from .util import check_testing
 from ..util import SC, get_db_dir
 
@@ -43,3 +43,4 @@ def create_engine():
     return engine
 
 engine = create_engine()
+engine = migrate(engine)

@@ -330,10 +330,8 @@ class FacilityShaking(Base):
         for level in IMPACT_RANKS:
             if level['name'] == self.alert_level:
                 alert_level = level
-                break
 
-        for level in IMPACT_RANKS:
-            if level['rank'] > alert_level['rank']:
+            if alert_level and (level['rank'] > alert_level['rank']):
                 if getattr(self.facility, level['name'], False):
                     next_alert_level = level
                     break
@@ -351,6 +349,15 @@ class FacilityShaking(Base):
                 exceedance = (shaking - threshold) / threshold
 
         return exceedance
+
+    @hybrid_property
+    def impact_rank(self):
+        for level in IMPACT_RANKS:
+            if level['name'] == self.alert_level:
+                alert_level = level
+                break
+
+        return self.simple_exceedance + alert_level['rank']
 
     def __repr__(self):
         return '''FacilityShaking(shakemap_id=%s,
@@ -1047,10 +1054,7 @@ class ShakeMap(Base):
 
     def mark_processing_start(self):
         self.status = 'processing_started'
-        if self.begin_timestamp is None:
-            self.begin_timestamp = time.time()
-        else:
-            self.superceded_timestamp = time.time()
+        self.begin_timestamp = time.time()
 
     def mark_processing_finished(self):
         self.status = 'processed'
@@ -1110,7 +1114,8 @@ class LocalProduct(Base):
                          ForeignKey('group.shakecast_id'))
     name = Column(String(255))
     status = Column(String(255), default='created')
-    timestamp = Column(Float)
+    begin_timestamp = Column(Float)
+    finish_timestamp = Column(Float, default=0)
     error = Column(String(255))
 
     product_type = relationship('LocalProductType',
@@ -1120,9 +1125,23 @@ class LocalProduct(Base):
 
     def __init__(self, *args, **kwargs):
         super(LocalProduct, self).__init__(*args, **kwargs)
-        self.timestamp = time.time()
+        self.begin_timestamp = time.time()
+
+    def __repr__(self):
+        return '''LocalProduct(type: {},
+        shakemap_id: {},
+        group_id: {},
+        name: {},
+        status: {},
+        begin_timestamp: {},
+        finish_timestamp: {}
+        error: {}'''.format(self.type, self.shakemap_id, self.group_id, self.name,
+        self.status, self.begin_timestamp, self.finish_timestamp, self.error)
 
     def generate(self):
+        if self.finish_timestamp > self.shakemap.begin_timestamp:
+            # skip rebuilding products already generated for this shakemap
+            return None
         generate_function = eval(self.product_type.generate_function)
         result = generate_function.main(self.group, self.shakemap, self.name)
 
@@ -1142,10 +1161,12 @@ class LocalProduct(Base):
 
 class LocalProductType(Base):
     __tablename__ = 'local_product_types'
-    type = Column(String(100), primary_key=True)
+    name = Column(String(100), primary_key=True)
+    type = Column(String(100))
     generate_function = Column(String(100))
     read_type = Column(String(10))
     write_type = Column(String(10))
+    file_name = Column(String(100))
     subtype = Column(String(10), default='plain')
 
 

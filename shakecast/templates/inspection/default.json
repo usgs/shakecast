@@ -5,6 +5,7 @@
     },
     "table": {
         "border_color": "#000",
+        "sort": "weight",
         "headers": [
             {
                 "use": true, 

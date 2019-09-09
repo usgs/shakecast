@@ -11,9 +11,9 @@ def check_testing():
 ###################################################
 
 IMPACT_RANKS = [
-    {'name': 'gray', 'rank': 1},
-    {'name': 'green', 'rank': 2},
-    {'name': 'yellow', 'rank': 3},
-    {'name': 'orange', 'rank': 4},
-    {'name': 'red', 'rank': 5}
+    {'name': 'gray', 'rank': 100},
+    {'name': 'green', 'rank': 200},
+    {'name': 'yellow', 'rank': 300},
+    {'name': 'orange', 'rank': 400},
+    {'name': 'red', 'rank': 500}
 ]
