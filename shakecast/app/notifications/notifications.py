@@ -189,7 +189,7 @@ def inspection_notification(notification=None,
 
             # check for and attach local products
             for product in shakemap.local_products:
-                if product.error:
+                if product.error or product.group != group:
                     continue
 
                 try:

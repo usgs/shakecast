@@ -37,11 +37,17 @@ class NotificationBuilder(object):
         
         template = temp_manager.get_template('inspection', name=template_name)
 
-        shakemap.sort_facility_shaking('weight')
+        shakemap.sort_facility_shaking(config['table'].get('sort', 'weight'))
+
+        if notification:
+            facility_shaking = filter(lambda x: notification.group in x.facility.groups, shakemap.facility_shaking)
+        else:
+            facility_shaking = shakemap.facility_shaking
+    
         fac_details = shakemap.get_impact_summary()
 
         return template.render(shakemap=shakemap,
-                               facility_shaking=shakemap.facility_shaking,
+                               facility_shaking=facility_shaking,
                                fac_details=fac_details,
                                notification=notification,
                                sc=SC(),

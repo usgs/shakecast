@@ -3,7 +3,6 @@ import time
 from sqlalchemy.orm import scoped_session, sessionmaker
 
 from .engine import engine
-from .migrations import migrate
 from .objects import metadata, User
 from .util import check_testing
 
@@ -28,5 +27,4 @@ def create_session(engine):
 
     return Session
 
-engine = migrate(engine)
 Session = create_session(engine)

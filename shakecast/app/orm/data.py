@@ -7,8 +7,17 @@ from .utils import dbconnect
 local_product_types = [
     LocalProductType(
         type='csv',
+        generate_function='summary_csv',
+        read_type='r',
+        write_type='w',
+        name='csv',
+        file_name='FacilityImpact.csv'
+    ),
+    LocalProductType(
+        type='csv',
         generate_function='sc_csv',
         read_type='r',
+        name='group_csv',
         write_type='w'
     ),
     LocalProductType(
@@ -16,12 +25,14 @@ local_product_types = [
         generate_function='pdf',
         read_type='rb',
         write_type='wb',
+        name='pdf',
         subtype='pdf'
     ),
     LocalProductType(
         type='json',
         generate_function='geojson',
         read_type='r',
+        name='geojson',
         write_type='w'
     )
 ]
@@ -42,7 +53,9 @@ def load_data(session=None):
     # add product types
     for product_type in local_product_types:
         existing_type = session.query(LocalProductType).filter(
-            LocalProductType.type == product_type.type).first()
+            LocalProductType.type == product_type.type,
+            LocalProductType.generate_function == product_type.generate_function
+            ).first()
 
         if existing_type:
             continue

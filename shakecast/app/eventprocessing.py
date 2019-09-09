@@ -205,45 +205,47 @@ def process_events(events=None, session=None, scenario=False):
                     'log': message to be added to ShakeCast log
                            and should contain info on error}
     '''
-    for event in events:
-        if can_process_event(event, scenario) is False:
-            if time.time() - DAY > event.time:
-                # timeout this event, it's been over a day
-                event.status = 'Not processed - Timeout'
-            continue
+    if events:
+        for event in events:
+            if can_process_event(event, scenario) is False:
+                if time.time() - DAY > event.time:
+                    # timeout this event, it's been over a day
+                    event.status = 'Not processed - Timeout'
+                continue
 
-        all_groups_affected = []
-        event.status = 'processing_started'
-        groups_affected = get_new_event_groups(event, scenario, session)
+            all_groups_affected = []
+            event.status = 'processing_started'
+            groups_affected = get_new_event_groups(event, scenario, session)
 
-        # if there aren't any groups, just skip to the next event
-        if not groups_affected:
-            event.status = 'processed - no groups'
+            # if there aren't any groups, just skip to the next event
+            if not groups_affected:
+                event.status = 'processed - no groups'
+                session.commit()
+                continue
+
+            new_notifications = create_new_event_notifications(
+                groups_affected,
+                event,
+                scenario)
+            session.add_all(new_notifications)
             session.commit()
-            continue
 
-        new_notifications = create_new_event_notifications(
-            groups_affected,
-            event,
-            scenario)
-        session.add_all(new_notifications)
-        session.commit()
+            all_groups_affected += groups_affected
 
-        all_groups_affected += groups_affected
+        processed_events = []
+        for group in all_groups_affected:
+            notifications = get_new_event_notifications(group, scenario, session)
+            if len(notifications) > 0:
+                new_event_notification(notifications=notifications,
+                                    scenario=scenario)
 
-    processed_events = []
-    for group in all_groups_affected:
-        notifications = get_new_event_notifications(group, scenario, session)
-        if len(notifications) > 0:
-            new_event_notification(notifications=notifications,
-                                   scenario=scenario)
+                processed_events += [n.event for n in notifications]
 
-            processed_events += [n.event for n in notifications]
+        for e in processed_events:
+            e.status = 'processed' if scenario is False else 'scenario'
 
-    for e in processed_events:
-        e.status = 'processed' if scenario is False else 'scenario'
-
-    return processed_events
+        return processed_events
+    return []
 
 
 def compute_event_impact(facilities, shakemap, grid):
@@ -357,7 +359,7 @@ def generate_local_products(group, shakemap, session=None):
     if group.product_string is not None:
         local_product_names = group.product_string.split(',')
         product_types = session.query(LocalProductType).filter(
-            LocalProductType.type.in_(local_product_names)).all()
+            LocalProductType.name.in_(local_product_names)).all()
 
         for product_type in product_types:
             # check if product exists
@@ -370,9 +372,11 @@ def generate_local_products(group, shakemap, session=None):
                 product = LocalProduct(
                     group=group,
                     shakemap=shakemap,
-                    product_type=product_type,
-                    name='{}_impact.{}'.format(group.name, product_type.type)
+                    product_type=product_type
                 )
+
+                product.name = (product_type.file_name or
+                        '{}_impact.{}'.format(group.name, product_type.type))
 
             try:
                 product.generate()
@@ -380,6 +384,7 @@ def generate_local_products(group, shakemap, session=None):
             except Exception as e:
                 product.error = str(e)
 
+            product.finish_timestamp = time.time()
             session.add(product)
         session.commit()
 
