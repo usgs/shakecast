@@ -150,7 +150,7 @@ class TestGroupGetsNotification(unittest.TestCase):
 
         fs = FacilityShaking(
             shakemap = sm2,
-            weight = .5
+            alert_level = 'gray'
         )
 
         session.add(fs)
@@ -204,18 +204,17 @@ class TestGroupGetsNotification(unittest.TestCase):
 
         fs1 = FacilityShaking(
             shakemap = sm1,
-            weight = .1
+            alert_level = 'gray'
         )
 
         fs2 = FacilityShaking(
             shakemap = sm2,
-            weight = 1
+            alert_level = 'green'
         )
 
         session.add_all([fs1, fs2])
 
         session.commit()
-
         # check notification 1
         has_alert_level, new_inspection, update = check_notification_for_group(
                                                     group,
@@ -266,13 +265,13 @@ class TestGroupGetsNotification(unittest.TestCase):
 
         fs1 = FacilityShaking(
             shakemap = sm1,
-            weight = 1,
+            alert_level = 'green',
             facility = fac1
         )
 
         fs2 = FacilityShaking(
             shakemap = sm2,
-            weight = 1,
+            alert_level = 'green',
             facility = fac1
         )
 
@@ -334,13 +333,13 @@ class TestGroupGetsNotification(unittest.TestCase):
 
         fs1 = FacilityShaking(
             shakemap = sm1,
-            weight = 1,
+            alert_level = 'green',
             facility = fac1
         )
 
         fs2 = FacilityShaking(
             shakemap = sm2,
-            weight = 1,
+            alert_level = 'green',
             facility = fac2
         )
 
@@ -406,19 +405,19 @@ class TestGroupGetsNotification(unittest.TestCase):
 
         fs1 = FacilityShaking(
             shakemap = sm1,
-            weight = 1,
+            alert_level = 'green',
             facility = fac1
         )
 
         fs2 = FacilityShaking(
             shakemap = sm2,
-            weight = 1,
+            alert_level = 'green',
             facility = fac2
         )
 
         fs3 = FacilityShaking(
             shakemap = sm2,
-            weight = .1,
+            alert_level = 'gray',
             facility = fac3
         )
 
