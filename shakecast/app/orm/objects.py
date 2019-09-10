@@ -336,9 +336,9 @@ class FacilityShaking(Base):
                     next_alert_level = level
                     break
 
-        shaking = getattr(self, self.metric.lower())
-        threshold = getattr(self.facility, alert_level['name'])
-        if shaking and threshold:
+        shaking = getattr(self, self.metric.lower(), None)
+        threshold = getattr(self.facility, alert_level['name'], None)
+        if shaking is not None and threshold is not None:
             if next_alert_level:
                 next_threshold = getattr(
                     self.facility, next_alert_level['name'])
@@ -348,6 +348,8 @@ class FacilityShaking(Base):
             elif alert_level:
                 exceedance = (shaking - threshold) / threshold
 
+        if exceedance < 0:
+            exceedance = 0
         return exceedance
 
     @hybrid_property
@@ -415,6 +417,7 @@ class Notification(Base):
     sent_timestamp = Column(Float)
     generated_timestamp = Column(Float)
     notification_file = Column(String(255))
+    error = Column(String(255))
 
     def __repr__(self):
         return '''Notification(shakemap_id=%s,

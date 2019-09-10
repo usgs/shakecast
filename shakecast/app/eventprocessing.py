@@ -206,6 +206,7 @@ def process_events(events=None, session=None, scenario=False):
                            and should contain info on error}
     '''
     if events:
+        all_groups_affected = set([])
         for event in events:
             if can_process_event(event, scenario) is False:
                 if time.time() - DAY > event.time:
@@ -213,7 +214,6 @@ def process_events(events=None, session=None, scenario=False):
                     event.status = 'Not processed - Timeout'
                 continue
 
-            all_groups_affected = []
             event.status = 'processing_started'
             groups_affected = get_new_event_groups(event, scenario, session)
 
@@ -230,7 +230,7 @@ def process_events(events=None, session=None, scenario=False):
             session.add_all(new_notifications)
             session.commit()
 
-            all_groups_affected += groups_affected
+            all_groups_affected.update(groups_affected)
 
         processed_events = []
         for group in all_groups_affected:

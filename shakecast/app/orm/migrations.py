@@ -165,6 +165,12 @@ def migrate_10to11(engine):
     except Exception:
         pass
 
+    error = Column('error', String(255),)
+    try:
+        add_column(engine, 'notifications', error)
+    except Exception:
+        pass
+
     return engine
 
 def add_column(engine, table_name, column):
