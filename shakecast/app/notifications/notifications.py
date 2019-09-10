@@ -264,6 +264,7 @@ def inspection_notification(notification=None,
         except Exception as e:
             error = str(e)
             notification.status = 'send failed'
+            notification.error = error
             
     elif new_inspection:
         notification.status = 'not sent: low inspection priority'
