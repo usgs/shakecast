@@ -1047,7 +1047,7 @@ class ShakeMap(Base):
         alert_level = None
         if len(self.facility_shaking) > 0:
             if group is not None:
-                facility_shaking = filter(lambda x: x.group == group, self.facility_shaking)
+                facility_shaking = filter(lambda x: group in x.facility.groups, self.facility_shaking)
             else:
                 facility_shaking = self.facility_shaking
 

@@ -441,6 +441,61 @@ class TestGroupGetsNotification(unittest.TestCase):
         
         session.commit()
 
+    @dbconnect
+    def test_DifferentGroupAlertLevels(self, session=None):
+        sm1 = ShakeMap(
+            shakemap_id = 'shakemap1',
+            shakemap_version = 1
+        )
+
+        session.add(sm1)
+
+        group1 = create_group(name='GLOBAL')
+        group2 = create_group(name='GLOBAL2')
+
+        session.add_all([group1, group2])
+
+        fac1 = Facility(
+            facility_id = 1,
+            groups = [group1]
+        )
+
+        fac2 = Facility(
+            facility_id = 2,
+            groups = [group2]
+        )
+
+
+        fs1 = FacilityShaking(
+            shakemap = sm1,
+            alert_level = 'gray',
+            facility = fac1
+        )
+
+        fs2 = FacilityShaking(
+            shakemap = sm1,
+            alert_level = 'green',
+            facility = fac2
+        )
+
+        session.add_all([fac1, fac2, fs1, fs2])
+
+        session.commit()
+
+        import pdb
+        pdb.set_trace()
+        level1 = sm1.get_alert_level(group1)
+        level2 = sm1.get_alert_level(group2)
+
+        self.assertTrue(level1 == 'gray')
+        self.assertTrue(level2 == 'green')
+
+        objs = [sm1, group1, group2, fac1, fac2]
+        for obj in objs:
+            session.delete(obj)
+        
+        session.commit()
+
 
 class TestTemplateManager(unittest.TestCase):
     '''
