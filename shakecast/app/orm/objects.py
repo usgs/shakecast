@@ -1043,13 +1043,16 @@ class ShakeMap(Base):
             if os.path.isfile(full_name):
                 return full_name
 
-    def get_alert_level(self):
+    def get_alert_level(self, group=None):
         alert_level = None
         if len(self.facility_shaking) > 0:
-            insp_val = self.facility_shaking[0].weight
-            alert_levels = ['gray', 'green', 'yellow', 'orange', 'red', 'red']
-            alert_level = alert_levels[int(floor(insp_val))]
+            if group is not None:
+                facility_shaking = filter(lambda x: group in x.facility.groups, self.facility_shaking)
+            else:
+                facility_shaking = self.facility_shaking
 
+            if len(facility_shaking) > 0:
+                alert_level = facility_shaking[0].alert_level
         return alert_level
 
     def get_impact_summary(self):
