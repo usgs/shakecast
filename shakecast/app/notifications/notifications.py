@@ -279,7 +279,7 @@ def check_notification_for_group(group, notification, session=None, scenario=Fal
     shakemap = notification.shakemap
 
     # Check that the inspection status merits a sent notification
-    alert_level = shakemap.get_alert_level()
+    alert_level = shakemap.get_alert_level(group)
 
     # check if inspection list has changed
     new_inspection = True
@@ -295,7 +295,7 @@ def check_notification_for_group(group, notification, session=None, scenario=Fal
             .order_by(ShakeMap.shakemap_version.desc())
         ).first()
 
-        prev_alert_level = previous_map.get_alert_level()
+        prev_alert_level = previous_map.get_alert_level(group)
 
         # ignore changes if they don't merit inspection (grey and None)
         if (((prev_alert_level is None) and 

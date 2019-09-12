@@ -109,6 +109,7 @@ class TestGroupGetsNotification(unittest.TestCase):
                                                     n2,
                                                     session=session
                                                 )
+                                     
         self.assertTrue(has_alert_level)
         self.assertFalse(new_inspection)
         self.assertTrue(update)
@@ -148,9 +149,14 @@ class TestGroupGetsNotification(unittest.TestCase):
 
         session.add_all([n1, n2])
 
+        facility = Facility(
+            groups = [group]
+        )
+
         fs = FacilityShaking(
             shakemap = sm2,
-            alert_level = 'gray'
+            alert_level = 'gray',
+            facility = facility
         )
 
         session.add(fs)
@@ -202,14 +208,20 @@ class TestGroupGetsNotification(unittest.TestCase):
 
         session.add_all([n1, n2])
 
+        facility = Facility(
+            groups = [group]
+        )
+
         fs1 = FacilityShaking(
             shakemap = sm1,
-            alert_level = 'gray'
+            alert_level = 'gray',
+            facility = facility
         )
 
         fs2 = FacilityShaking(
             shakemap = sm2,
-            alert_level = 'green'
+            alert_level = 'green',
+            facility = facility
         )
 
         session.add_all([fs1, fs2])
@@ -234,12 +246,12 @@ class TestGroupGetsNotification(unittest.TestCase):
     @dbconnect
     def test_unchangedNotificationGreenGreen(self, session=None):
         sm1 = ShakeMap(
-            shakemap_id = 'shakemap1',
+            shakemap_id = 'test_unchangedNotificationGreenGreen',
             shakemap_version = 1
         )
 
         sm2 = ShakeMap(
-            shakemap_id = 'shakemap1',
+            shakemap_id = 'test_unchangedNotificationGreenGreen',
             shakemap_version = 2
         )
 
@@ -260,7 +272,8 @@ class TestGroupGetsNotification(unittest.TestCase):
         session.add_all([n1, n2])
 
         fac1 = Facility(
-            facility_id = 1
+            facility_id = 1,
+            groups = [group]
         )
 
         fs1 = FacilityShaking(
@@ -278,13 +291,14 @@ class TestGroupGetsNotification(unittest.TestCase):
         session.add_all([fac1, fs1, fs2])
 
         session.commit()
-
+ 
         # check notification 1
         has_alert_level, new_inspection, update = check_notification_for_group(
                                                     group,
                                                     n2,
                                                     session=session
                                                 )
+                                     
         self.assertTrue(has_alert_level)
         self.assertFalse(new_inspection)
         self.assertTrue(update)
@@ -298,12 +312,12 @@ class TestGroupGetsNotification(unittest.TestCase):
     @dbconnect
     def test_changedNotificationGreenGreen(self, session=None):
         sm1 = ShakeMap(
-            shakemap_id = 'shakemap1',
+            shakemap_id = 'test_changedNotificationGreenGreen',
             shakemap_version = 1
         )
 
         sm2 = ShakeMap(
-            shakemap_id = 'shakemap1',
+            shakemap_id = 'test_changedNotificationGreenGreen',
             shakemap_version = 2
         )
 
@@ -324,11 +338,13 @@ class TestGroupGetsNotification(unittest.TestCase):
         session.add_all([n1, n2])
 
         fac1 = Facility(
-            facility_id = 1
+            facility_id = 1,
+            groups = [group]
         )
 
         fac2 = Facility(
-            facility_id = 2
+            facility_id = 2,
+            groups = [group]
         )
 
         fs1 = FacilityShaking(
@@ -366,12 +382,12 @@ class TestGroupGetsNotification(unittest.TestCase):
     @dbconnect
     def test_changedNotificationLength(self, session=None):
         sm1 = ShakeMap(
-            shakemap_id = 'shakemap1',
+            shakemap_id = 'test_changedNotificationLength',
             shakemap_version = 1
         )
 
         sm2 = ShakeMap(
-            shakemap_id = 'shakemap1',
+            shakemap_id = 'test_changedNotificationLength',
             shakemap_version = 2
         )
 
@@ -392,15 +408,18 @@ class TestGroupGetsNotification(unittest.TestCase):
         session.add_all([n1, n2])
 
         fac1 = Facility(
-            facility_id = 1
+            facility_id = 1,
+            groups = [group]
         )
 
         fac2 = Facility(
-            facility_id = 2
+            facility_id = 2,
+            groups = [group]
         )
 
         fac3 = Facility(
-            facility_id = 3
+            facility_id = 3,
+            groups = [group]
         )
 
         fs1 = FacilityShaking(
@@ -431,6 +450,7 @@ class TestGroupGetsNotification(unittest.TestCase):
                                                     n2,
                                                     session=session
                                                 )
+        
         self.assertTrue(has_alert_level)
         self.assertTrue(new_inspection)
         self.assertTrue(update)
@@ -482,8 +502,6 @@ class TestGroupGetsNotification(unittest.TestCase):
 
         session.commit()
 
-        import pdb
-        pdb.set_trace()
         level1 = sm1.get_alert_level(group1)
         level2 = sm1.get_alert_level(group2)
 
