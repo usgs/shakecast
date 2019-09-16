@@ -691,8 +691,8 @@ class Group(Base):
 
         return False
 
-    def get_alert_levels(self):
-        specs = self._get_specs('damage')
+    def get_alert_levels(self, scenario=False):
+        specs = self._get_specs('damage', scenario=scenario)
 
         return [spec.inspection_priority.lower() for spec in specs
                 if spec is not None]

@@ -40,8 +40,14 @@ class NotificationBuilder(object):
         shakemap.sort_facility_shaking(config['table'].get('sort', 'weight'))
 
         if notification:
-            facility_shaking = filter(lambda x: notification.group in x.facility.groups, shakemap.facility_shaking)
-            fac_details = shakemap.get_impact_summary(notification.group)
+            group = notification.group
+            scenario = True if shakemap.type == 'scenario' else False
+            alert_levels = group.get_alert_levels(scenario)
+            facility_shaking = filter(
+                lambda x: group in x.facility.groups and x.alert_level in alert_levels,
+                shakemap.facility_shaking
+            )
+            fac_details = shakemap.get_impact_summary(group)
         else:
             facility_shaking = shakemap.facility_shaking
             fac_details = shakemap.get_impact_summary()
