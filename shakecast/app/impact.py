@@ -201,7 +201,7 @@ def compute_hazus_impact(facility, shaking_point, shakemap):
             shakemap.event.lon
         )
 
-        fac_shake['epicentral_distance'] = r_rup
+        fac_shake['epicentral_distance'] = round(r_rup * 100)/100
 
     return fac_shake
 
@@ -258,15 +258,15 @@ def get_event_impact(facility_shaking):
         # record max shaking values
         if s.pga > impact_sum['max_pga']:
             impact_sum['max_pga'] = s.pga
-        if s.pga > impact_sum['max_pgv']:
+        if s.pgv > impact_sum['max_pgv']:
             impact_sum['max_pgv'] = s.pgv
-        if s.pga > impact_sum['max_psa03']:
+        if s.psa03 > impact_sum['max_psa03']:
             impact_sum['max_psa03'] = s.psa03
-        if s.pga > impact_sum['max_psa10']:
+        if s.psa10 > impact_sum['max_psa10']:
             impact_sum['max_psa10'] = s.psa10
-        if s.pga > impact_sum['max_psa30']:
+        if s.psa30 > impact_sum['max_psa30']:
             impact_sum['max_psa30'] = s.psa30
-        if s.pga > impact_sum['max_mmi']:
+        if s.mmi > impact_sum['max_mmi']:
             impact_sum['max_mmi'] = s.mmi
 
     return impact_sum

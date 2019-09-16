@@ -44,7 +44,7 @@ class NotificationBuilder(object):
         else:
             facility_shaking = shakemap.facility_shaking
     
-        fac_details = shakemap.get_impact_summary()
+        fac_details = shakemap.get_impact_summary(notification.group)
 
         return template.render(shakemap=shakemap,
                                facility_shaking=facility_shaking,
