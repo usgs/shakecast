@@ -716,7 +716,7 @@ class Group(Base):
 
     def get_notification_format(self, notification, scenario=False):
         if (notification.notification_type == 'DAMAGE'):
-            alert_level = notification.shakemap.get_alert_level()
+            alert_level = notification.shakemap.get_alert_level(self)
             spec = self.get_inspection_spec(alert_level, scenario)
         else:
             heartbeat = notification.event.type == 'heartbeat'
@@ -1055,8 +1055,13 @@ class ShakeMap(Base):
                 alert_level = facility_shaking[0].alert_level
         return alert_level
 
-    def get_impact_summary(self):
-        return get_event_impact(self.facility_shaking)
+    def get_impact_summary(self, group=None):
+        if group is not None:
+            facility_shaking = filter(lambda x: group in x.facility.groups, self.facility_shaking)
+        else:
+            facility_shaking = self.facility_shaking
+
+        return get_event_impact(facility_shaking)
 
     def mark_processing_start(self):
         self.status = 'processing_started'

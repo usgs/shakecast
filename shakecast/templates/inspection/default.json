@@ -46,6 +46,11 @@
             }, 
             {
                 "use": false, 
+                "name": "pga", 
+                "val": "PGA (%g)"
+            }, 
+            {
+                "use": false, 
                 "name": "pgv", 
                 "val": "PGV (cm/s)"
             }, 
