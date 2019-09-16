@@ -716,7 +716,7 @@ class Group(Base):
 
     def get_notification_format(self, notification, scenario=False):
         if (notification.notification_type == 'DAMAGE'):
-            alert_level = notification.shakemap.get_alert_level()
+            alert_level = notification.shakemap.get_alert_level(self)
             spec = self.get_inspection_spec(alert_level, scenario)
         else:
             heartbeat = notification.event.type == 'heartbeat'
