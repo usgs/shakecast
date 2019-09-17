@@ -127,6 +127,8 @@ class TestImport(unittest.TestCase):
                 self.assertTrue(group.gets_notification('new_event', scenario=True))
                 self.assertTrue(group.gets_notification('damage', scenario=True))
                 self.assertTrue('green' in group.get_scenario_alert_levels())
+                self.assertTrue('gray' in group.get_alert_levels(scenario=True))
+                self.assertTrue('grey' in group.get_alert_levels(scenario=True))
 
             self.assertEqual('Ex1', group.updated_by)
         
