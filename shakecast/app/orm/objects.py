@@ -694,8 +694,14 @@ class Group(Base):
     def get_alert_levels(self, scenario=False):
         specs = self._get_specs('damage', scenario=scenario)
 
-        return [spec.inspection_priority.lower() for spec in specs
+        alert_levels = [spec.inspection_priority.lower() for spec in specs
                 if spec is not None]
+        
+        # allow gray, grey mixup
+        if 'gray' in alert_levels or 'grey' in alert_levels:
+            alert_levels += ['grey', 'gray']
+        
+        return alert_levels
 
     def get_scenario_alert_levels(self):
         specs = self._get_specs('damage', scenario=True)
