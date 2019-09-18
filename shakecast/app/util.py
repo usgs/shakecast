@@ -503,5 +503,24 @@ def split_string_on_spaces(string, split_count):
 
     return new_string
 
+def get_gps_distance(lat1, lon1, lat2, lon2):
+  earthRadiusKm = 6371
+  latDiff = degreesToRadians(lat2-lat1)
+  lonDiff = degreesToRadians(lon2-lon1)
+
+  lat1 = degreesToRadians(lat1)
+  lat2 = degreesToRadians(lat2)
+
+  a = (math.sin(latDiff/2) * math.sin(latDiff/2) +
+          math.sin(lonDiff/2) * math.sin(lonDiff/2) *
+          math.cos(lat1) * math.cos(lat2))
+
+  c = 2 * math.atan2(math.sqrt(a), math.sqrt(1-a))
+  return earthRadiusKm * c
+
+def degreesToRadians(degrees):
+  return degrees * math.pi / 180
+
+
 DAY = 60 * 60 * 24
 DEFAULT_CONFIG_DIR = os.path.join(sc_dir(), 'conf')

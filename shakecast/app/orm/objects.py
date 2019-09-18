@@ -1156,9 +1156,6 @@ class LocalProduct(Base):
         self.status, self.begin_timestamp, self.finish_timestamp, self.error)
 
     def generate(self):
-        if self.finish_timestamp > self.shakemap.begin_timestamp:
-            # skip rebuilding products already generated for this shakemap
-            return None
         generate_function = eval(self.product_type.generate_function)
         result = generate_function.main(self.group, self.shakemap, self.name)
 
