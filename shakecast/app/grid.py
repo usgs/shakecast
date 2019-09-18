@@ -1,6 +1,8 @@
 import os
 import xml.etree.ElementTree as ET
 
+from util import get_gps_distance
+
 class Point(dict):
     
     '''
@@ -177,12 +179,7 @@ class ShakeMapGrid(object):
             lat = facility.lat
             lon = facility.lon
             metric = facility.metric
-        
-        lat_max = lat + self.nom_lat_spacing / 2
-        lon_max = lon + self.nom_lon_spacing / 2
-        lat_min = lat - self.nom_lat_spacing / 2
-        lon_min = lon - self.nom_lon_spacing / 2
-            
+
         if not self.grid:
             return None
 
@@ -197,21 +194,27 @@ class ShakeMapGrid(object):
             self.sort_grid('LON')
         
         # figure out where in the point list we should look for shaking
-        in_each = len(self.grid) / self.num_lon
-        start = int((lon_min - self.grid[0]['LON']) / self.nom_lon_spacing * in_each)
-        end = int((lon_max - self.grid[0]['LON']) / self.nom_lon_spacing * in_each)
+        position = int((lon - self.lon_min) / self.nom_lon_spacing)
+        start = (position - 1) * self.num_lat
+        end = (position + 1) * self.num_lat
         if start < 0:
             start = 0
 
+        lat_max = lat + self.nom_lat_spacing
+        lat_min = lat - self.nom_lat_spacing
         shaking = [point for point in self.grid[start:end] if
                                     (point['LAT'] > lat_min and
                                         point['LAT'] < lat_max)]
 
-        Point.sort_by = metric if metric in self.grid[0].keys() else 'MMI'
-        shaking = sorted(shaking)
+        if len(shaking) > 1:
+            for point in shaking:
+                point['gps_distance'] = get_gps_distance(point['LAT'], point['LON'], lat, lon)
+
+            Point.sort_by = 'gps_distance'
+            shaking = sorted(shaking)
 
         if len(shaking) > 0:
-            return shaking[-1]
+            return shaking[0]
         else:
             return empty_shaking
 

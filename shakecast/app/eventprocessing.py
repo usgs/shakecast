@@ -379,6 +379,10 @@ def generate_local_products(group, shakemap, session=None):
                         '{}_impact.{}'.format(group.name, product_type.type))
 
             try:
+                if (product.finish_timestamp and
+                        product.finish_timestamp > product.shakemap.begin_timestamp):
+                    continue
+
                 product.generate()
                 product.error = None
             except Exception as e:

@@ -1,7 +1,7 @@
 import math
 
 import shakecastaebm as aebm
-from util import lower_case_keys, non_null
+from util import get_gps_distance, lower_case_keys, non_null
 
 class ImpactInterface(dict):
     '''
@@ -20,12 +20,12 @@ class ImpactInterface(dict):
             'red': 0,
             'alert_level': '',
             'weight': 0,
-            'MMI': 0,
-            'PGA': 0,
-            'PSA03': 0,
-            'PSA10': 0,
-            'PSA30': 0,
-            'PGV': 0,
+            'MMI': None,
+            'PGA': None,
+            'PSA03': None,
+            'PSA10': None,
+            'PSA30': None,
+            'PGV': None,
             'aebm_extras': None,
             'metric': metric,
             'facility_id': facility_id,
@@ -153,13 +153,14 @@ def compute_hazus_impact(facility, shaking_point, shakemap):
         shakemap.shakecast_id
     )
     
+    # add shaking levels to fac_shake for record in db
+    fac_shake.update(shaking_point)
+
     if shaking_level is None:
         fac_shake['alert_level'] = 'gray'
+        fac_shake['gray'] = 100
     
     else:
-        # add shaking levels to fac_shake for record in db
-        fac_shake.update(shaking_point)
-            
         # get_exceedence green
         fragility = [{'med': facility.red, 'spread': facility.red_beta, 'level': 'red'},
                       {'med': facility.orange, 'spread': facility.orange_beta, 'level': 'orange'},
@@ -218,23 +219,6 @@ def get_psa_spectrum(shaking):
     # return a sorted spectrum
     return sorted(spectrum, key=lambda x: x['x'])
 
-def degreesToRadians(degrees):
-  return degrees * math.pi / 180
-
-def get_gps_distance(lat1, lon1, lat2, lon2):
-  earthRadiusKm = 6371
-  latDiff = degreesToRadians(lat2-lat1)
-  lonDiff = degreesToRadians(lon2-lon1)
-
-  lat1 = degreesToRadians(lat1)
-  lat2 = degreesToRadians(lat2)
-
-  a = (math.sin(latDiff/2) * math.sin(latDiff/2) +
-          math.sin(lonDiff/2) * math.sin(lonDiff/2) *
-          math.cos(lat1) * math.cos(lat2))
-
-  c = 2 * math.atan2(math.sqrt(a), math.sqrt(1-a))
-  return earthRadiusKm * c
 
 def get_event_impact(facility_shaking):
     impact_sum = {'gray': 0,
@@ -324,6 +308,5 @@ def make_inspection_priority(facility=None,
     
     # use the max shaking value to create fragility curves for the
     # damage states
-    fac_shaking = facility.make_alert_level(shaking_point=shaking_point,
-                                            shakemap=shakemap)
+    fac_shaking = get_impact(facility, shaking_point, shakemap)
     return fac_shaking
