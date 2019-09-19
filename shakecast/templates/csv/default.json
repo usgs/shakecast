@@ -21,7 +21,7 @@
       }
     },
     { "use": true, "val": "simple_exceedance", "name": "Exceedance Ratio" },
-    { "use": true, "val": "weight", "name": "Impact Rank" },
+    { "use": true, "val": "impact_rank", "name": "Impact Rank" },
     { "use": true, "val": "metric", "name": "Ground Motion Metric" },
     { "use": true, "val": "mmi", "name": "MMI" },
     { "use": true, "val": "pga", "name": "PGA" },
