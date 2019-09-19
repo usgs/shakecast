@@ -4,7 +4,7 @@ import sys
 import time
 from functools import wraps
 
-from sqlalchemy import inspect, MetaData, Column, Integer, String, Float, ForeignKey, Table, select
+from sqlalchemy import case, inspect, MetaData, Column, Integer, String, Float, ForeignKey, Table, select
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.ext.hybrid import hybrid_method, hybrid_property
 from sqlalchemy.orm import relationship
@@ -149,74 +149,85 @@ class Facility(Base):
     @hybrid_method
     def in_grid(self, grid):
         # check if a point is within the boundaries of the grid
-        return ((self.lon_min > grid.lon_min and
-                 self.lon_min < grid.lon_max and
-                 self.lat_min > grid.lat_min and
-                 self.lat_min < grid.lat_max) or
-                (self.lon_min > grid.lon_min and
+        if self.geom_type != 'POINT':
+            return ((self.lon_min > grid.lon_min and
                     self.lon_min < grid.lon_max and
-                    self.lat_max > grid.lat_min and
-                    self.lat_max < grid.lat_max) or
-                (self.lon_max > grid.lon_min and
-                    self.lon_max < grid.lon_max and
                     self.lat_min > grid.lat_min and
                     self.lat_min < grid.lat_max) or
-                (self.lon_max > grid.lon_min and
-                    self.lon_max < grid.lon_max and
-                    self.lat_max > grid.lat_min and
-                    self.lat_max < grid.lat_max) or
-                (self.lon_min < grid.lon_min and
-                    self.lon_max > grid.lon_min and
-                    self.lat_min < grid.lat_min and
-                    self.lat_max > grid.lat_min) or
-                (self.lon_min < grid.lon_min and
-                    self.lon_max > grid.lon_min and
-                    self.lat_min < grid.lat_max and
-                    self.lat_max > grid.lat_max) or
-                (self.lon_min < grid.lon_max and
-                    self.lon_max > grid.lon_max and
-                    self.lat_min < grid.lat_min and
-                    self.lat_max > grid.lat_min) or
-                (self.lon_min < grid.lon_min and
-                    self.lon_max > grid.lon_max and
-                    self.lat_min < grid.lat_min and
-                    self.lat_max > grid.lat_max))
+                    (self.lon_min > grid.lon_min and
+                        self.lon_min < grid.lon_max and
+                        self.lat_max > grid.lat_min and
+                        self.lat_max < grid.lat_max) or
+                    (self.lon_max > grid.lon_min and
+                        self.lon_max < grid.lon_max and
+                        self.lat_min > grid.lat_min and
+                        self.lat_min < grid.lat_max) or
+                    (self.lon_max > grid.lon_min and
+                        self.lon_max < grid.lon_max and
+                        self.lat_max > grid.lat_min and
+                        self.lat_max < grid.lat_max) or
+                    (self.lon_min < grid.lon_min and
+                        self.lon_max > grid.lon_min and
+                        self.lat_min < grid.lat_min and
+                        self.lat_max > grid.lat_min) or
+                    (self.lon_min < grid.lon_min and
+                        self.lon_max > grid.lon_min and
+                        self.lat_min < grid.lat_max and
+                        self.lat_max > grid.lat_max) or
+                    (self.lon_min < grid.lon_max and
+                        self.lon_max > grid.lon_max and
+                        self.lat_min < grid.lat_min and
+                        self.lat_max > grid.lat_min) or
+                    (self.lon_min < grid.lon_min and
+                        self.lon_max > grid.lon_max and
+                        self.lat_min < grid.lat_min and
+                        self.lat_max > grid.lat_max))
+        else:
+            return (self.lon > grid.lon_min and
+                    self.lon < grid.lon_max and
+                    self.lat > grid.lat_min and
+                    self.lat < grid.lat_max)
 
     @in_grid.expression
     def in_grid(cls, grid):
         # check if a point is within the boundaries of the grid
-        return or_(and_(cls.lon_min > grid.lon_min,
+        return case([(cls.geom_type != 'POINT',  or_(and_(cls.lon_min > grid.lon_min,
                         cls.lon_min < grid.lon_max,
                         cls.lat_min > grid.lat_min,
                         cls.lat_min < grid.lat_max),
-                   and_(cls.lon_min > grid.lon_min,
+                and_(cls.lon_min > grid.lon_min,
                         cls.lon_min < grid.lon_max,
                         cls.lat_max > grid.lat_min,
                         cls.lat_max < grid.lat_max),
-                   and_(cls.lon_max > grid.lon_min,
+                and_(cls.lon_max > grid.lon_min,
                         cls.lon_max < grid.lon_max,
                         cls.lat_min > grid.lat_min,
                         cls.lat_min < grid.lat_max),
-                   and_(cls.lon_max > grid.lon_min,
+                and_(cls.lon_max > grid.lon_min,
                         cls.lon_max < grid.lon_max,
                         cls.lat_max > grid.lat_min,
                         cls.lat_max < grid.lat_max),
-                   and_(cls.lon_min < grid.lon_min,
+                and_(cls.lon_min < grid.lon_min,
                         cls.lon_max > grid.lon_min,
                         cls.lat_min < grid.lat_min,
                         cls.lat_max > grid.lat_min),
-                   and_(cls.lon_min < grid.lon_min,
+                and_(cls.lon_min < grid.lon_min,
                         cls.lon_max > grid.lon_min,
                         cls.lat_min < grid.lat_max,
                         cls.lat_max > grid.lat_max),
-                   and_(cls.lon_min < grid.lon_max,
+                and_(cls.lon_min < grid.lon_max,
                         cls.lon_max > grid.lon_max,
                         cls.lat_min < grid.lat_min,
                         cls.lat_max > grid.lat_min),
-                   and_(cls.lon_min < grid.lon_max,
+                and_(cls.lon_min < grid.lon_max,
                         cls.lon_max > grid.lon_max,
                         cls.lat_min < grid.lat_max,
-                        cls.lat_max > grid.lat_max))
+                        cls.lat_max > grid.lat_max))),],
+        else_ = and_(cls.lon > grid.lon_min,
+                        cls.lon < grid.lon_max,
+                        cls.lat > grid.lat_min,
+                        cls.lat < grid.lat_max)
+        )
 
 
 class Attribute(Base):
