@@ -11,7 +11,7 @@ local_product_types = [
         read_type='r',
         write_type='w',
         name='csv',
-        file_name='FacilityImpact.csv'
+        file_name='FacilityImpacts.csv'
     ),
     LocalProductType(
         type='csv',
