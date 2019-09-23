@@ -343,6 +343,9 @@ class FacilityShaking(Base):
                     next_alert_level = level
                     break
 
+        if not self.metric or not alert_level:
+            return None
+
         shaking = getattr(self, self.metric.lower(), None)
         threshold = getattr(self.facility, alert_level['name'], None)
 
@@ -370,7 +373,9 @@ class FacilityShaking(Base):
                 alert_level = level
                 break
 
-        return self.simple_exceedance + alert_level['rank']
+        simple_exceedance = self.simple_exceedance
+        if simple_exceedance is not None:
+            return self.simple_exceedance + alert_level['rank']
 
     def __repr__(self):
         return '''FacilityShaking(shakemap_id=%s,
