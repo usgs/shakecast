@@ -172,7 +172,7 @@ def compute_hazus_impact(facility, shaking_point, shakemap):
         for level in fragility:
             
             # skips non-user-defined levels 
-            if level['med'] < 0 or level['spread'] < 0:
+            if level['med'] is None or level['med'] < 0 or level['spread'] < 0:
                 continue
             
             # calculate probability of exceedence

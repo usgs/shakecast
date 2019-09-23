@@ -23,7 +23,7 @@ def generate_impact_csv(shakemap, group=None, save=False, file_name='', template
     csv_rows = [[header['name'] for header in headers]]
 
     facility_shaking_lst = sorted(facility_shaking,
-                                  key=lambda x: x.weight, reverse=True)
+                                  key=lambda x: x.impact_rank, reverse=True)
 
     for fac_shaking in facility_shaking_lst:
         facility_row = []
