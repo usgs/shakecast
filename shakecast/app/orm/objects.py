@@ -290,7 +290,6 @@ class FacilityShaking(Base):
     metric = Column(String(20))
     alert_level = Column(String(20))
     epicentral_distance = Column(Float(2))
-    weight = Column(Float)
     gray = Column(Float)
     green = Column(Float)
     yellow = Column(Float)
@@ -303,6 +302,7 @@ class FacilityShaking(Base):
     psa10 = Column(Float)
     psa30 = Column(Float)
     aebm = Column(String(50))
+    weight = Column(Float)
 
     def __init__(self, **kwargs):
         '''
@@ -317,10 +317,6 @@ class FacilityShaking(Base):
 
         # now let sqlalchemy do the real initialization
         super(FacilityShaking, self).__init__(**move_on)
-
-    @hybrid_property
-    def exceedance_ratio(self):
-        return getattr(self, self.alert_level, None)
 
     @hybrid_property
     def geojson(self):
@@ -347,8 +343,15 @@ class FacilityShaking(Base):
                     next_alert_level = level
                     break
 
+        if not self.metric or not alert_level:
+            return None
+
         shaking = getattr(self, self.metric.lower(), None)
         threshold = getattr(self.facility, alert_level['name'], None)
+
+        if threshold == 0:
+            return 1
+
         if shaking is not None and threshold is not None:
             if next_alert_level:
                 next_threshold = getattr(
@@ -370,7 +373,9 @@ class FacilityShaking(Base):
                 alert_level = level
                 break
 
-        return self.simple_exceedance + alert_level['rank']
+        simple_exceedance = self.simple_exceedance
+        if simple_exceedance is not None:
+            return self.simple_exceedance + alert_level['rank']
 
     def __repr__(self):
         return '''FacilityShaking(shakemap_id=%s,

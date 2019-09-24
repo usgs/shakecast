@@ -17,6 +17,7 @@ from .impact import *
 from .inventory import *
 from .jsonencoders import *
 from .notifications import *
+from .orm import *
 from .productdownload import *
 from .products import *
 from .urlopener import *
