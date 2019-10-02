@@ -25,7 +25,7 @@ setup(
     # Versions should comply with PEP440.  For a discussion on single-sourcing
     # the version across setup.py and the project code, see
     # https://packaging.python.org/en/latest/single_source_version.html
-    version='4.0.12',
+    version='4.0.13',
 
     description='Real time facility monitoring and notifications for earthquake impacts',
     long_description=long_description,
