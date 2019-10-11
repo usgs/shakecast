@@ -13,6 +13,7 @@ from .mailer import Mailer
 from ..orm import dbconnect, ShakeMap
 from .templates import TemplateManager
 from ..util import sc_dir, SC, get_template_dir, split_string_on_spaces
+import shakecast.app.sc_logging as logging
 
 jinja_env = Environment(extensions=['jinja2.ext.do'])
 
@@ -164,6 +165,9 @@ def inspection_notification(notification=None,
     '''
     shakemap = notification.shakemap
     group = notification.group
+
+    logging.info('Creating inspeciton notificaiton: \nShakemap: {}-{}\nGroup:{}'
+            .format(shakemap.shakemap_id, shakemap.shakemap_version, group.name))
     error = ''
 
     has_alert_level, new_inspection, update = check_notification_for_group(
@@ -179,9 +183,10 @@ def inspection_notification(notification=None,
             msg = MIMEMultipart()
 
             # build the notification
+            logging.info('Generating html...')
             not_builder = NotificationBuilder()
             message = not_builder.build_insp_html(shakemap, notification=notification, name=group.template)
-
+            logging.info('Done.')
             # attach html
             message_type = 'html' if '<html>' in message else 'plain'
             encoded_message = MIMEText(message.encode('utf-8'), message_type, 'utf-8')
@@ -197,7 +202,9 @@ def inspection_notification(notification=None,
                     attach_product = MIMEApplication(content, _subtype=product.product_type.subtype)
                     attach_product.add_header('Content-Disposition', 'attachment', filename=product.name)
                     msg.attach(attach_product)
+                    logging.info('Attached: {}'.format(product.product_type.name))
                 except Exception as e:
+                    logging.info('Unable to attach: {}'.format(product.product_type.name))
                     product.error = 'Unable to attach to email'
 
             # get and attach shakemap
@@ -258,18 +265,22 @@ def inspection_notification(notification=None,
                 
                 notification.status = 'sent'
                 notification.sent_timestamp = time.time()
-
+                logging.info('Notification sent.')
             else:
+                logging.info('Notification not sent: no users.')
                 notification.status = 'not sent - no users'
         except Exception as e:
             error = str(e)
             notification.status = 'send failed'
             notification.error = error
+            logging.info('Notification failed: {}'.format(str(e)))
             
     elif new_inspection:
         notification.status = 'not sent: low inspection priority'
+        logging.info('Notification not sent due to low inspection priority')
     else:
         notification.status = 'not sent: update without impact changes'
+        logging.info('Notification not sent due to lack of changes in map update')
 
     return {'status': notification.status,
             'error': error}
