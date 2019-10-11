@@ -206,6 +206,8 @@ def process_events(events=None, session=None, scenario=False):
                     'log': message to be added to ShakeCast log
                            and should contain info on error}
     '''
+    logging.info('Picked up {} new events.'
+            .format(len(events)))
     if events:
         all_groups_affected = set([])
         for event in events:
@@ -213,17 +215,21 @@ def process_events(events=None, session=None, scenario=False):
                 if time.time() - DAY > event.time:
                     # timeout this event, it's been over a day
                     event.status = 'Not processed - Timeout'
+                    logging.info('Event ({}) was not processed due to timeout'
+                            .format(event.event_id))
                 continue
 
-            event.status = 'processing_started'
             groups_affected = get_new_event_groups(event, scenario, session)
-
             # if there aren't any groups, just skip to the next event
             if not groups_affected:
                 event.status = 'processed - no groups'
                 session.commit()
+                logging.info('Event ({}) did not affect any groups'
+                        .format(event.event_id))
                 continue
 
+            event.status = 'processing_started'
+            logging.info('Processing event...')
             new_notifications = create_new_event_notifications(
                 groups_affected,
                 event,
@@ -231,11 +237,16 @@ def process_events(events=None, session=None, scenario=False):
             session.add_all(new_notifications)
             session.commit()
 
+            logging.info('Generating {} new notifications.'
+                    .format(len(new_notifications)))
             all_groups_affected.update(groups_affected)
 
         processed_events = []
         for group in all_groups_affected:
             notifications = get_new_event_notifications(group, scenario, session)
+            
+            logging.info('Attempting to send {} notifications total.'
+                    .format(len(notifications)))
             if len(notifications) > 0:
                 new_event_notification(notifications=notifications,
                                     scenario=scenario)
@@ -245,6 +256,7 @@ def process_events(events=None, session=None, scenario=False):
         for e in processed_events:
             e.status = 'processed' if scenario is False else 'scenario'
 
+        logging.info('Finished processing events.')
         return processed_events
     return []
 

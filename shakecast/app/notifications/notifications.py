@@ -46,14 +46,19 @@ def new_event_notification(notifications=None,
     group = notifications[0].group
     notification = notifications[0]
     
+    logging.info('Creating new notification for events:\n{}'
+            .format(events))
+
     # aggregate multiple events
     for n in notifications[1:]:
         n.status = 'aggregated'
 
+    logging.info('Generating HTML...')
     # create HTML for the event email
     not_builder = NotificationBuilder()
     message = not_builder.build_new_event_html(events=events, notification=notification, name=group.template)
-    
+    logging.info('Done.')
+
     notification.status = 'Message built'
     notification.generated_timestamp = time.time()
 
@@ -142,12 +147,15 @@ def new_event_notification(notifications=None,
         msg['To'] = ', '.join(you)
         msg['From'] = me
         
+        logging.info('Sending notification...')
         mailer.send(msg=msg, you=you)
+        logging.info('Done.')
         
         notification.status = 'sent'
         notification.sent_timestamp = time.time()
         
     else:
+        logging.info('Notification not sent due to lack of users')
         notification.status = 'not sent - no users'
 
 @dbconnect
