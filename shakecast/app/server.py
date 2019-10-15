@@ -10,20 +10,7 @@ from task import Task
 import functions as f
 from util import *
 from startup import startup
-import logging
-
-log_dir = get_logging_dir()
-log_path = os.path.join(get_logging_dir(), 'sc-service.log')
-sc = SC()
-if sc.dict['Logging']['level'] == 'info':
-    log_level = logging.INFO
-elif sc.dict['Logging']['level'] == 'debug':
-    log_level = logging.DEBUG
-
-logging.basicConfig(
-    filename = os.path.normpath(log_path),
-    level = log_level, 
-    format = '%(asctime)s: [ShakeCast Server] %(levelname)-7.7s %(message)s')
+import sc_logging as logging
 
 class Server(object):
     

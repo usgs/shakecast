@@ -16,6 +16,7 @@ from .orm import (
     ShakeMap
 )
 from .products.geojson import generate_impact_geojson
+import sc_logging as logging
 from .util import Clock, SC, DAY
 from .notifications.notifications import new_event_notification, inspection_notification
 
@@ -205,6 +206,8 @@ def process_events(events=None, session=None, scenario=False):
                     'log': message to be added to ShakeCast log
                            and should contain info on error}
     '''
+    logging.info('Picked up {} new events.'
+            .format(len(events)))
     if events:
         all_groups_affected = set([])
         for event in events:
@@ -212,17 +215,21 @@ def process_events(events=None, session=None, scenario=False):
                 if time.time() - DAY > event.time:
                     # timeout this event, it's been over a day
                     event.status = 'Not processed - Timeout'
+                    logging.info('Event ({}) was not processed due to timeout'
+                            .format(event.event_id))
                 continue
 
-            event.status = 'processing_started'
             groups_affected = get_new_event_groups(event, scenario, session)
-
             # if there aren't any groups, just skip to the next event
             if not groups_affected:
                 event.status = 'processed - no groups'
                 session.commit()
+                logging.info('Event ({}) did not affect any groups'
+                        .format(event.event_id))
                 continue
 
+            event.status = 'processing_started'
+            logging.info('Processing event...')
             new_notifications = create_new_event_notifications(
                 groups_affected,
                 event,
@@ -230,11 +237,16 @@ def process_events(events=None, session=None, scenario=False):
             session.add_all(new_notifications)
             session.commit()
 
+            logging.info('Generating {} new notifications.'
+                    .format(len(new_notifications)))
             all_groups_affected.update(groups_affected)
 
         processed_events = []
         for group in all_groups_affected:
             notifications = get_new_event_notifications(group, scenario, session)
+            
+            logging.info('Attempting to send {} notifications total.'
+                    .format(len(notifications)))
             if len(notifications) > 0:
                 new_event_notification(notifications=notifications,
                                     scenario=scenario)
@@ -244,6 +256,7 @@ def process_events(events=None, session=None, scenario=False):
         for e in processed_events:
             e.status = 'processed' if scenario is False else 'scenario'
 
+        logging.info('Finished processing events.')
         return processed_events
     return []
 
@@ -283,7 +296,10 @@ def process_shakemaps(shakemaps=None, session=None, scenario=False):
                            and should contain info on error}
     '''
     for shakemap in shakemaps:
+        logging.info('Processing {}, version: {}'
+                .format(shakemap.shakemap_id, shakemap.shakemap_version))
         if can_process_event(shakemap.event, scenario) is False:
+            logging.info('Unable to process event due to configurations.')
             continue
         shakemap.mark_processing_start()
 
@@ -292,6 +308,7 @@ def process_shakemaps(shakemaps=None, session=None, scenario=False):
         groups_affected = get_inspection_groups(grid, scenario, session)
 
         if not groups_affected:
+            logging.info('No groups are affected.')
             shakemap.mark_processing_finished()
             session.commit()
             continue
@@ -303,22 +320,28 @@ def process_shakemaps(shakemaps=None, session=None, scenario=False):
         session.add_all(new_notifications)
         session.commit()
 
+        logging.info('Creating {} new inspection notifications'.format(len(new_notifications)))
         # get a set of all affected facilities
         affected_facilities = (session.query(Facility)
                                .filter(Facility.in_grid(grid))
                                .all())
 
         if affected_facilities:
+            logging.info('Computing facility impacts...')
             facility_shaking = compute_event_impact(
                 affected_facilities, shakemap, grid)
+            logging.info('Done.')
 
             # Remove all old shaking and add all fac_shaking_lst
             shakemap.facility_shaking = []
             session.commit()
 
+            logging.info('Saving facility shaking info...')
             session.bulk_save_objects(facility_shaking)
             session.commit()
+            logging.info('Done.')
         else:
+            logging.info('No facilities affected.')
             shakemap.mark_processing_finished()
             shakemap.status = 'processed - no facs'
 
@@ -339,9 +362,11 @@ def process_shakemaps(shakemaps=None, session=None, scenario=False):
                 # generate pdf for specific group
                 generate_local_products(n.group, n.shakemap, session=session)
 
+                logging.info('Generating inspection notification {}'.format(n))
                 inspection_notification(notification=n,
                                         scenario=scenario,
                                         session=session)
+                logging.info('Done with inspection notification.')
 
         shakemap.mark_processing_finished()
         if scenario is True:
@@ -349,13 +374,17 @@ def process_shakemaps(shakemaps=None, session=None, scenario=False):
         session.commit()
 
         # generate system level products
+        logging.info('Generating geojson product...')
         generate_impact_geojson(shakemap, save=True)
+        logging.info('Done.')
 
+        logging.info('Shakemap processing finished.')
     return shakemaps
 
 
 @dbconnect
 def generate_local_products(group, shakemap, session=None):
+    logging.info('Generating local products...')
     if group.product_string is not None:
         local_product_names = group.product_string.split(',')
         product_types = session.query(LocalProductType).filter(
@@ -382,12 +411,17 @@ def generate_local_products(group, shakemap, session=None):
                 if (product.finish_timestamp and
                         product.finish_timestamp > product.shakemap.begin_timestamp):
                     continue
-
+                
+                logging.info('Generating product: {}, for shakemap: {}-{}, for group: {}'
+                        .format(product.product_type.name, shakemap.shakemap_id, shakemap.shakemap_version, group.name))
                 product.generate()
+                logging.info('Done.')
                 product.error = None
             except Exception as e:
+                logging.info('Product generation error: {}'.format(str(e)))
                 product.error = str(e)
 
+            logging.info('Done generating products.')
             product.finish_timestamp = time.time()
             session.add(product)
         session.commit()
