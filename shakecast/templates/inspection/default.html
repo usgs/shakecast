@@ -97,9 +97,9 @@
         <td>
             <font size=2 face="Arial">
 
-                {% if fac_details.max_psa10 %}
+                {% if config['summary'] and config.summary.max_metric == 'psa10' %}
                 Maximum PSA (1.0): <b>{{ fac_details.max_psa10 }} %g</b>
-                {% elif fac_details.max_pga %}
+                {% elif config['summary'] and config.summary.max_metric == 'pga' %}
                 Maximum PGA: <b>{{ fac_details.max_pga }} %g</b>
                 {% elif fac_details.max_mmi %}
                 Maximum MMI: <b>{{ fac_details.max_mmi }}</b>

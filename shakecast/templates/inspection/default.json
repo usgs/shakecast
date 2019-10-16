@@ -87,6 +87,9 @@
         "font_color": "#000",
         "background_color": "#fff"
     },
+    "summary": {
+        "max_metric": "pga"
+    },
     "logo": "sc_logo.png", 
     "admin_email": "sc.admin@gmail.com", 
     "type": "inspection", 
