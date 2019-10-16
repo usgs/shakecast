@@ -157,36 +157,63 @@
 
 
     <table width=680 border=0 bordercolor=black cellpadding=3 cellspacing=0 bgcolor=#F0F0F0>
-            <tr bgcolor=#D8D8D8>
+        <tr bgcolor=#D8D8D8>
+        {% for head in config.table.headers %}
+            {% if head.use == true %}
+                <th>{{ head.val }}</th>
+            {% endif %}
+        {% endfor %}
+        </tr>
+        
+        {% for fs in facility_shaking[0:200] %}
+        <tr bgcolor="#F0F0F0">
             {% for head in config.table.headers %}
                 {% if head.use == true %}
-                    <th>{{ head.val }}</th>
+                    {% if fs.facility[head.name] %}
+                        <td>{{ fs.facility[head.name] }}</td>
+                    {% elif head.name == 'inspection_priority' %}
+                        <td style="background-color:{{ fs.alert_level }};text-align:center">
+                            <b>{{ head.translate[fs.alert_level] }}</b>    
+                        </td>
+                    {% elif head.name == 'shaking_value' %}
+                        <td style="text-align:center">{{ fs[fs.metric.lower()] }}</td>
+                    {% elif fs.facility.get_attribute(head.name) %}
+                        <td style="text-align:center">{{ fs[head.name] }}</td>
+                    {% elif fs[head.name] %}
+                        <td style="text-align:center">{{ fs[head.name] }}</td>
+                    {% else %}
+                        <td style="text-align:center">-</td>
+                    {% endif %}
                 {% endif %}
             {% endfor %}
             </tr>
-            
-            {% for fs in facility_shaking[0:200] %}
-            <tr bgcolor="#F0F0F0">
-                {% for head in config.table.headers %}
-                    {% if head.use == true %}
-                        {% if fs.facility[head.name] %}
-                            <td>{{ fs.facility[head.name] }}</td>
-                        {% elif head.name == 'inspection_priority' %}
-                            <td style="background-color:{{ fs.alert_level }};text-align:center">
-                                <b>{{ head.translate[fs.alert_level] }}</b>    
-                            </td>
-                        {% elif head.name == 'shaking_value' %}
-                            <td style="text-align:center">{{ fs[fs.metric.lower()] }}</td>
-                        {% elif fs.facility.get_attribute(head.name) %}
-                            <td style="text-align:center">{{ fs[head.name] }}</td>
-                        {% elif fs[head.name] %}
-                            <td style="text-align:center">{{ fs[head.name] }}</td>
-                        {% else %}
-                            <td style="text-align:center">-</td>
-                        {% endif %}
-                    {% endif %}
-                {% endfor %}
-                </tr>
-            {% endfor %}
-        </table>
+        {% endfor %}
+    </table>
+
+    <tr>
+        <td height=30 bgcolor={{ config.section_head.back_color }}>
+            <b style="font-size:3; color:{{ config.section_head.font_color }};">ShakeCast Server</b>
+        </td>
+    </tr>
+
+    <table>
+        <tr>
+            <td>
+                <font size=2 face="Arial">
+                    ShakeCast Web: <b><a href="http://{{ sc.dict['Server']['DNS'] }}">{{ sc.dict['Server']['DNS'] }}</a></b><br>
+                    Software:  <b>ShakeCast V4</b><br>
+                    Reported by: <b>Server ID {{ sc.dict['Server']['name'] }}</b><br>
+                    Notification Group: 
+                    <b>
+                        {% if notification %} {{ notification.group.name or 'None' }} {% endif %}
+                    </b>
+                    <br>
+                    Template:  <b>{{ template_name or 'default' }}</b><br>
+                    <br><br>
+                    Questions about ShakeCast?  Contact Administrator at <a href="mailto:{{ config.admin_email }}?subject=ShakeCast+Inquiry" target="_blank">{{ config.admin_email }}</a>.
+                </font>
+            </td>
+        </tr>
+    </table>
+</table>
 </html>
