@@ -190,6 +190,19 @@
         {% endfor %}
     </table>
 
+    {% if config.table.footnotes %}
+    <tr>
+        <td>
+            {% for footnote in config.table.footnotes %}
+            <font size=2 face="Arial">
+                {{ footnote }}
+            </font>
+            <br>
+            {% endfor %}
+        </td>
+    </tr>
+    {% endif %}
+
     <tr>
         <td height=30 bgcolor={{ config.section_head.background_color }}>
             <b style="font-size:3; color:{{ config.section_head.font_color }};">ShakeCast Server</b>
