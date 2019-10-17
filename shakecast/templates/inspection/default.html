@@ -178,7 +178,7 @@
                     {% elif head.name == 'shaking_value' %}
                         <td style="text-align:center">{{ fs[fs.metric.lower()] }}</td>
                     {% elif fs.facility.get_attribute(head.name) %}
-                        <td style="text-align:center">{{ fs[head.name] }}</td>
+                        <td style="text-align:center">{{ fs.facility.get_attribute(head.name) }}</td>
                     {% elif fs[head.name] %}
                         <td style="text-align:center">{{ fs[head.name] }}</td>
                     {% else %}
