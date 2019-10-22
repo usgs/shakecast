@@ -42,19 +42,25 @@
     
     <tr>
         <td bgcolor={{ config.section_head.background_color }}>
-            <b style="font-size:3; color:{{ config.section_head.font_color }};">Potential Impacts: {% if notification %} {{ notification.group.facility_type or 'None' }} {% endif %}</b>
+            <font size=3 face="Arial">
+                <b style="color:{{ config.section_head.font_color }};">Potential Impacts: {% if notification %} {{ notification.group.facility_type or 'None' }} {% endif %}</b>
+            </font>
         </td>
     </tr>
     
     <tr>
-        <td style="font-size:2; background-color: {{ config.intro.background_color }}; color: {{ config.intro.font_color }}">
-            {{ config.intro.text }}
-        </td>
+        <font size=2 face="Arial">
+            <td style="background-color: {{ config.intro.background_color }}; color: {{ config.intro.font_color }}">
+                {{ config.intro.text }}
+            </td>
+        </font>
     </tr>
     
     <tr>
         <td bgcolor={{ config.section_head.background_color }}>
-            <b style="font-size:3; color:{{ config.section_head.font_color }};">Earthquake Details</b>
+            <font size=3 face="Arial">
+                <b style="color:{{ config.section_head.font_color }};">Earthquake Details</b>
+            </font>
         </td>
     </tr>
     
@@ -87,9 +93,11 @@
     
     <tr>
         <td bgcolor={{ config.section_head.background_color }}>
-            <b style="font-size:3; color:{{ config.section_head.font_color }};">
-                Summary of Potential Impacts: {% if notification %} {{ notification.group.facility_type or 'None' }} {% endif %}
-            </b>
+            <font size=3 face="Arial">
+                <b style="color:{{ config.section_head.font_color }};">
+                    Summary of Potential Impacts: {% if notification %} {{ notification.group.facility_type or 'None' }} {% endif %}
+                </b>
+            </font>
         </td>
     </tr>
     
@@ -145,7 +153,9 @@
     
     <tr>
         <td bgcolor={{ config.section_head.background_color }}>
-            <b style="font-size:3; color:{{ config.section_head.font_color }};">List of Potentially Impacted Facilities: {% if notification %} {{ notification.group.facility_type or 'None' }} {% endif %}</b></font>
+            <font size=3 face="Arial">
+                <b style="color:{{ config.section_head.font_color }};">List of Potentially Impacted Facilities: {% if notification %} {{ notification.group.facility_type or 'None' }} {% endif %}</b></font>
+            </font>
         </td>
     </tr>
     
@@ -205,28 +215,34 @@
 
     <tr>
         <td height=30 bgcolor={{ config.section_head.background_color }}>
-            <b style="font-size:3; color:{{ config.section_head.font_color }};">ShakeCast Server</b>
+            <font size=3 face="Arial">
+                <b style="color:{{ config.section_head.font_color }};">ShakeCast Server</b>
+            </font>
         </td>
     </tr>
 
-    <table>
-        <tr>
-            <td>
-                <font size=2 face="Arial">
-                    ShakeCast Web: <b><a href="http://{{ sc.dict['Server']['DNS'] }}">{{ sc.dict['Server']['DNS'] }}</a></b><br>
-                    Software:  <b>ShakeCast V4</b><br>
-                    Reported by: <b>Server ID {{ sc.dict['Server']['name'] }}</b><br>
-                    Notification Group: 
-                    <b>
-                        {% if notification %} {{ notification.group.name or 'None' }} {% endif %}
-                    </b>
-                    <br>
-                    Template:  <b>{{ template_name or 'default' }}</b><br>
-                    <br><br>
-                    Questions about ShakeCast?  Contact Administrator at <a href="mailto:{{ config.admin_email }}?subject=ShakeCast+Inquiry" target="_blank">{{ config.admin_email }}</a>.
-                </font>
-            </td>
-        </tr>
-    </table>
+    <tr>
+        <td>
+            <table>
+                <tr>
+                    <td>
+                        <font size=2 face="Arial">
+                            ShakeCast Web: <b><a href="http://{{ sc.dict['Server']['DNS'] }}">{{ sc.dict['Server']['DNS'] }}</a></b><br>
+                            Software:  <b>ShakeCast V4</b><br>
+                            Reported by: <b>Server ID {{ sc.dict['Server']['name'] }}</b><br>
+                            Notification Group: 
+                            <b>
+                                {% if notification %} {{ notification.group.name or 'None' }} {% endif %}
+                            </b>
+                            <br>
+                            Template:  <b>{{ template_name or 'default' }}</b><br>
+                            <br><br>
+                            Questions about ShakeCast?  Contact Administrator at <a href="mailto:{{ config.admin_email }}?subject=ShakeCast+Inquiry" target="_blank">{{ config.admin_email }}</a>.
+                        </font>
+                    </td>
+                </tr>
+            </table>
+        </td>
+    </tr>
 </table>
 </html>
