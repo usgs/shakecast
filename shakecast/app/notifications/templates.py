@@ -131,7 +131,7 @@ class TemplateManager(object):
         # save configs
         event_configs_saved = self.save_configs('new_event', name, event_configs)
         insp_configs_saved = self.save_configs('inspection', name, insp_configs)
-        pdf_configs_saved = self.save_configs('inspection', name, pdf_configs)
+        pdf_configs_saved = self.save_configs('pdf', name, pdf_configs)
         
         # save templates
         event_template_saved = self.save_template('new_event', name, event_temp)
