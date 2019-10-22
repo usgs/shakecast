@@ -42,22 +42,28 @@
     
     <tr>
         <td height=30 bgcolor={{ config.section_head.back_color }}>
-            <b style="font-size:3; color:{{ config.section_head.font_color }};">Preliminary Earthquake Notification</b>
+            <font size=3 face="Arial">
+                <b style="color:{{ config.section_head.font_color }};">Preliminary Earthquake Notification</b>
+            </font>
         </td>
     </tr>
 
     <tr>
-        <td style="font-size:2;color:{{ config.intro.font_color }};background-color:{{ config.intro.back_color }}">
-            {{ config['intro']['text'] }}
-            An interactive version of this 
-            report is accessible on the <a href="http://{{ sc.dict['Server']['DNS'] }}">ShakeCast internet/intranet website</a>.  
-        <br>
-        </td>
+        <font size=2 face="Arial">
+            <td style="color:{{ config.intro.font_color }};background-color:{{ config.intro.back_color }}">
+                {{ config['intro']['text'] }}
+                An interactive version of this 
+                report is accessible on the <a href="http://{{ sc.dict['Server']['DNS'] }}">ShakeCast internet/intranet website</a>.  
+            <br>
+            </td>
+        </font>
     </tr>
     
     <tr>
         <td height=30 bgcolor={{ config.section_head.back_color }}>
-            <b style="font-size:3; color:{{ config.section_head.font_color }};">Earthquake Details</b>
+            <font size=3 face="Arial">
+                <b style="color:{{ config.section_head.font_color }};">Earthquake Details</b>
+            </font> 
         </td>
     </tr>
     
@@ -95,38 +101,39 @@
     <br>
     <tr>
         <td>
-            <table style="font-size:2"
-                    border=1 bordercolor=black cellpadding=5 cellspacing=0>
-                <tr>
-                    <th>Map</th>
-                    <th>Event ID</th>
-                    <th>Time</th>
-                    <th>Mag</th>
-                    <th>Lat</th>
-                    <th>Lon</th>
-                    <th>Location</th>
-                </tr>
-                {% for event in events %}
-                <tr>
-                    <td>
-                        <img alt="Epicenter map is not available at this time"
-                                src="{{'https://api.mapbox.com/styles/v1/mapbox/streets-v10/static/pin-s+F00({0},{1})/{0},{1},5/200x200?access_token={2}'.format(event.lon,
-                                event.lat,
-                                sc.map_key)}}">
-                    </td>
-                    <td>
-                        <a target="_blank"
-                            href="https://earthquake.usgs.gov/earthquakes/eventpage/{{ event.event_id }}">
-                            {{ event.event_id }}
-                        </a>
-                    </td>
-                    <td>{{ event.timestamp() }}</td>
-                    <td>{{ event.magnitude }}</td>
-                    <td>{{ event.lat }}</td>
-                    <td>{{ event.lon }}</td>
-                    <td style="word-wrap: break-word">{{ event.place }}</td>
-                </tr>
-                {% endfor %}
+            <table border=1 bordercolor=black cellpadding=5 cellspacing=0>
+                <font size=2 face="Arial">
+                    <tr>
+                        <th>Map</th>
+                        <th>Event ID</th>
+                        <th>Time</th>
+                        <th>Mag</th>
+                        <th>Lat</th>
+                        <th>Lon</th>
+                        <th>Location</th>
+                    </tr>
+                    {% for event in events %}
+                    <tr>
+                        <td>
+                            <img alt="Epicenter map is not available at this time"
+                                    src="{{'https://api.mapbox.com/styles/v1/mapbox/streets-v10/static/pin-s+F00({0},{1})/{0},{1},5/200x200?access_token={2}'.format(event.lon,
+                                    event.lat,
+                                    sc.map_key)}}">
+                        </td>
+                        <td>
+                            <a target="_blank"
+                                href="https://earthquake.usgs.gov/earthquakes/eventpage/{{ event.event_id }}">
+                                {{ event.event_id }}
+                            </a>
+                        </td>
+                        <td>{{ event.timestamp() }}</td>
+                        <td>{{ event.magnitude }}</td>
+                        <td>{{ event.lat }}</td>
+                        <td>{{ event.lon }}</td>
+                        <td style="word-wrap: break-word">{{ event.place }}</td>
+                    </tr>
+                    {% endfor %}
+                </font>
             </table>
         </td>
     </tr>
@@ -134,30 +141,34 @@
 
     <tr>
         <td height=30 bgcolor={{ config.section_head.back_color }}>
-            <b style="font-size:3; color:{{ config.section_head.font_color }};">ShakeCast Server</b>
+            <font size=2 face="Arial">
+                <b style="color:{{ config.section_head.font_color }};">ShakeCast Server</b>
+            </font>
         </td>
     </tr>
 
     <tr>
-        <table>
-            <tr>
-                <td>
-                    <font size=2 face="Arial">
-                        ShakeCast Web: <b><a href="http://{{ sc.dict['Server']['DNS'] }}">{{ sc.dict['Server']['DNS'] }}</a></b><br>
-                        Software:  <b>ShakeCast V4</b><br>
-                        Reported by: <b>Server ID {{ sc.dict['Server']['name'] }}</b><br>
-                        Notification Group: 
-                        <b>
-                            {% if notification %} {{ notification.group.name or 'None' }} {% endif %}
-                        </b>
-                        <br>
-                        Template:  <b>{{ template_name or 'default' }}</b><br>
-                        <br><br>
-                        Questions about ShakeCast?  Contact Administrator at <a href="mailto:{{ config.admin_email }}?subject=ShakeCast+Inquiry" target="_blank">{{ config.admin_email }}</a>.
-                    </font>
-                </td>
-            </tr>
-        </table>
+        <td>
+            <table>
+                <tr>
+                    <td>
+                        <font size=2 face="Arial">
+                            ShakeCast Web: <b><a href="http://{{ sc.dict['Server']['DNS'] }}">{{ sc.dict['Server']['DNS'] }}</a></b><br>
+                            Software:  <b>ShakeCast V4</b><br>
+                            Reported by: <b>Server ID {{ sc.dict['Server']['name'] }}</b><br>
+                            Notification Group: 
+                            <b>
+                                {% if notification %} {{ notification.group.name or 'None' }} {% endif %}
+                            </b>
+                            <br>
+                            Template:  <b>{{ template_name or 'default' }}</b><br>
+                            <br><br>
+                            Questions about ShakeCast?  Contact Administrator at <a href="mailto:{{ config.admin_email }}?subject=ShakeCast+Inquiry" target="_blank">{{ config.admin_email }}</a>.
+                        </font>
+                    </td>
+                </tr>
+            </table>
+        </td>
     </tr>
 </table>
 
