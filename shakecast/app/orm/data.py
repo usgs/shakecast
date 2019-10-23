@@ -53,7 +53,7 @@ def load_data(session=None):
     # add product types
     for product_type in local_product_types:
         existing_type = session.query(LocalProductType).filter(
-            LocalProductType.type == product_type.type,
+            LocalProductType.name == product_type.name,
             LocalProductType.generate_function == product_type.generate_function
             ).first()
 

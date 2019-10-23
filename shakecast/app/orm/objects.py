@@ -1030,6 +1030,13 @@ class ShakeMap(Base):
             self.shakemap_id,
             self.shakemap_id + '-' + str(self.shakemap_version))
 
+    def save_local_product(self, name, content, write_method='w'):
+        product_name = os.path.join(self.local_products_dir, name)
+        with open(product_name, write_method) as file_:
+            file_.write(content)
+        
+        return product_name
+
     def old_maps(self):
         """
         Returns 0 for false and an integer count of old shakemaps for true

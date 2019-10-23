@@ -77,5 +77,6 @@
         "level": "info"
     }, 
     "user_directory": "", 
-    "port": 1981
+    "port": 1981,
+    "image_server": "http://image-server:5000/screenshot/impact"
 }
