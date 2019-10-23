@@ -421,6 +421,14 @@ class ProductGrabber(object):
 
 @dbconnect
 def grab_from_directory(directory, session=None):
+    """
+    Import an event and shakemap from a local directory
+
+    There are no naming convensions for the directory, but it must
+    contain an info.json and grid.xml shakemap product. Event and
+    ShakeMap database entries will be created as Scenario products
+    and the event can be triggered through the UI as a scenario
+    """
     info_loc = os.path.join(directory, 'info.json')
 
     error = ''

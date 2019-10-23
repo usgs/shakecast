@@ -5,7 +5,8 @@ import time
 from ..impact import get_event_impact
 from ..notifications.builder import NotificationBuilder
 from ..notifications.templates import TemplateManager
-from ..util import Clock
+from ..urlopener import URLOpener
+from ..util import Clock, SC
 
 
 class Pdf(FPDF):
@@ -33,6 +34,12 @@ def generate_impact_pdf(group, shakemap, save=False, pdf_name='', template_name=
 
     pdf.ln(pdf.font_size * 2)
     add_summary_to_pdf(pdf, shakemap)
+
+    try:
+        add_impact_image_to_pdf(pdf, shakemap)
+    except Exception:
+        # can't add impact pdf
+        pass
 
     pdf.add_page()
     add_shakemap_details_to_pdf(pdf, shakemap)
@@ -68,6 +75,18 @@ def add_header_to_pdf(pdf, shakemap, configs):
     pdf.multi_cell(pdf.w, pdf.font_size, shakemap.event.title)
 
     pdf.set_font(font, style, size)
+
+def add_impact_image_to_pdf(pdf, shakemap):
+    width = pdf.w * .75
+    top = pdf.get_y() + 10
+    left = (pdf.w - width) / 2
+
+    url_opener = URLOpener()
+    sc = SC()
+    image = url_opener.open('{}/{}'.format(sc.dict.get('image_server', ''), shakemap.shakemap_id))
+    image_location = shakemap.save_local_product('impact.png', image, write_method='wb')
+
+    pdf.image(image_location, x=left, y=top, w=width)
 
 
 def add_shakemap_details_to_pdf(pdf, shakemap):

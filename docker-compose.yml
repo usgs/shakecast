@@ -5,8 +5,8 @@ services:
     build:
       context: .
       dockerfile: sc-server.dockerfile
-    ports:
-      - "1981:1981"
+    expose:
+      - "1981"
     networks:
       - sc-network
     volumes:
@@ -38,6 +38,16 @@ services:
       - "~/pycast/local_products:/usr/local/shakecast/shakecast/local_products"
     user: "${DOCKER_UID}:${DOCKER_GID}"
     restart: unless-stopped
+
+  image-server:
+    image: shakecast/imaging
+    networks:
+      - sc-network
+    volumes:
+      - "~/pycast:/root/.shakecast"
+    expose:
+    - "5000"
+
 
 networks:
   sc-network:
