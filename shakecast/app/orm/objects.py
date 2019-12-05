@@ -320,13 +320,36 @@ class FacilityShaking(Base):
 
     @hybrid_property
     def geojson(self):
-        shaking = sql_to_obj(self)
-        facility_obj = sql_to_obj(self.facility)
-        facility_obj['shaking'] = shaking
-
         geojson = GeoJson()
-        geojson.set_coordinates(get_geojson_latlon(facility_obj))
-        geojson['properties'] = facility_obj
+        geojson['properties'] = {
+            'lat': self.facility.lat,
+            'lon': self.facility.lon,
+            'name': self.facility.name,
+            'facility_type': self.facility.facility_type,
+            'description': self.facility.description,
+            'shaking': {
+                'metric': self.metric,
+                'alert_level': self.alert_level,
+                'epicentral_distance': self.epicentral_distance,
+                'gray': self.gray,
+                'green': self.green,
+                'yellow': self.yellow,
+                'orange': self.orange,
+                'red': self.red,
+                'pga': self.pga,
+                'pgv': self.pgv,
+                'mmi': self.mmi,
+                'psa03': self.psa03,
+                'psa10': self.psa10,
+                'psa30': self.psa30,
+                'weight': self.weight
+            }
+        }
+
+        geojson.set_coordinates(
+            get_geojson_latlon(geojson['properties'])
+        )
+
         return geojson
 
     @hybrid_property

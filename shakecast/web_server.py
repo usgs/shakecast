@@ -42,11 +42,6 @@ from app.orm import *
 from app.util import SC, Clock, get_tmp_dir
 from ui import UI
 
-# setup logging
-import logging
-log = logging.getLogger('werkzeug')
-log.setLevel(logging.ERROR)
-
 BASE_DIR = os.path.join(sc_dir(),'view')
 STATIC_DIR = os.path.join(sc_dir(),'view','assets')
 app = Flask(__name__,
@@ -893,6 +888,6 @@ if __name__ == '__main__':
     if len(sys.argv) > 1:
         if sys.argv[1] == '-d':
             # run in debug mode
-            app.run(host='0.0.0.0', port=5000, debug=True, threaded=True)
+            app.run(host='0.0.0.0', port=5000, debug=True)
     else:
         start()
