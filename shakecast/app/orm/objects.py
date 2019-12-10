@@ -1096,6 +1096,10 @@ class ShakeMap(Base):
                 return full_name
 
     def get_alert_level(self, group=None):
+        """
+        Determine the alert level for a shakemap or for a specific group
+        """
+
         alert_level = None
         if len(self.facility_shaking) > 0:
             if group is not None:
@@ -1104,7 +1108,8 @@ class ShakeMap(Base):
                 facility_shaking = self.facility_shaking
 
             if len(facility_shaking) > 0:
-                alert_level = facility_shaking[0].alert_level
+                facility_shaking = sorted(facility_shaking, key=lambda x: x.weight)
+                alert_level = facility_shaking[-1].alert_level
         return alert_level
 
     def get_impact_summary(self, group=None):
