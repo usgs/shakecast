@@ -850,6 +850,7 @@ class Event(Base):
     title = Column(String(100))
     place = Column(String(255))
     time = Column(Integer)
+    updated = Column(Integer)
     override_directory = Column(String(255))
 
     shakemaps = relationship('ShakeMap',

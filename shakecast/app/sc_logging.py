@@ -1,5 +1,6 @@
 from functools import wraps
 import logging
+from logging.handlers import TimedRotatingFileHandler
 import os
 import time
 
@@ -22,6 +23,18 @@ logging.basicConfig(
     filename = os.path.normpath(log_path),
     level = log_level, 
     format = '%(asctime)s: [ShakeCast Server] %(levelname)-7.7s %(message)s')
+
+def get_logger(name='sc-service.log'):
+    path = os.path.join(get_logging_dir(), name)
+    logger = logging.getLogger("Rotating Log")
+    logger.setLevel(logging.INFO)
+
+    handler = TimedRotatingFileHandler(path,
+                                        when="d",
+                                        interval=1,
+                                        backupCount=7)
+    logger.addHandler(handler)
+    return logger
 
 def check_size_to_create_new():
     log_size = os.path.getsize(log_path)

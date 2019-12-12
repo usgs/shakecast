@@ -48,6 +48,10 @@ app = Flask(__name__,
             template_folder=BASE_DIR,
             static_folder=STATIC_DIR)
 
+import logging
+log = logging.getLogger('werkzeug')
+log.setLevel(logging.ERROR)
+
 ################################ Login ################################
 
 app.secret_key = 'super secret key'

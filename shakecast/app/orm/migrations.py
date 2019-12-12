@@ -173,6 +173,16 @@ def migrate_10to11(engine):
 
     return engine
 
+
+def migrate_11to12(engine):
+    update = Column('updated', Integer)
+    try:
+        add_column(engine, 'event', update)
+    except Exception:
+        pass
+
+    return engine
+
 def add_column(engine, table_name, column):
     '''
     Add a column to an existing table
@@ -190,7 +200,7 @@ def add_column(engine, table_name, column):
 # List of database migrations for export
 migrations = [migrate_1to2, migrate_2to3, migrate_3to4, migrate_4to5,
         migrate_5to6, migrate_6to7, migrate_7to8, migrate_8to9, migrate_9to10,
-        migrate_10to11]
+        migrate_10to11, migrate_11to12]
 
 def migrate(engine):
     '''

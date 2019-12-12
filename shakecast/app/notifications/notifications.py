@@ -8,9 +8,10 @@ import os
 import shutil
 import time
 
+from ..products.geojson import generate_impact_geojson
 from .builder import NotificationBuilder
 from .mailer import Mailer
-from ..orm import dbconnect, ShakeMap
+from ..orm import dbconnect, ShakeMap, Notification
 from .templates import TemplateManager
 from ..util import sc_dir, SC, get_template_dir, split_string_on_spaces
 from ..sc_logging import info as log_info
@@ -339,3 +340,36 @@ def check_notification_for_group(group, notification, session=None, scenario=Fal
                     break
 
     return group.has_alert_level(alert_level, scenario), new_inspection, update
+
+
+@dbconnect
+def send_inspection_notifications(session=None):
+    # grab new notifications, and any that might have failed to send
+    notification = (session.query(Notification)
+                        .filter(Notification.notification_type == 'DAMAGE')
+                        .filter(Notification.status == 'ready')
+                        .first())
+
+    if not notification:
+        return None
+
+    notification.status = 'generating-notification'
+    session.commit()
+
+    log_info('Generating inspection notification {}'.format(notification))
+
+    shakemap = notification.shakemap
+    try:
+        inspection_notification(notification=notification,
+                                scenario='scenario' == shakemap.type,
+                                session=session)
+    except Exception as e:
+        notification.status = 'error'
+        notification.error = str(e)
+        session.commit()
+
+        log_info('Error generation inspection notification. \n{}'.format(str(e)))
+        raise
+
+    log_info('Sent notification: {}'.format(str(notification)))
+    return notification
