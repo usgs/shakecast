@@ -204,9 +204,9 @@ def process_events(events=None, session=None, scenario=False):
                     'log': message to be added to ShakeCast log
                            and should contain info on error}
     '''
-    logging.info('Picked up {} new events. {}'.format([event.event_id for event in events])
-            .format(len(events)))
     if events:
+        logging.info('Picked up {} new events. {}'
+            .format(len(events), [event.event_id for event in events]))
         all_groups_affected = set([])
         for event in events:
             if can_process_event(event, scenario) is False:
