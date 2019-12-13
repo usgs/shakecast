@@ -17,7 +17,7 @@ from .orm import (
 )
 from .util import Clock, SC, DAY
 from .notifications.notifications import new_event_notification, inspection_notification
-import sc_logging as logging
+from .sc_logging import server_logger as logging
 
 def can_process_event(event, scenario=False):
     # check if we should wait until daytime to process

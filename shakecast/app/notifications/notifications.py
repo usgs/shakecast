@@ -14,7 +14,7 @@ from .mailer import Mailer
 from ..orm import dbconnect, ShakeMap, Notification
 from .templates import TemplateManager
 from ..util import sc_dir, SC, get_template_dir, split_string_on_spaces
-from ..sc_logging import info as log_info
+from ..sc_logging import server_logger as logging
 
 jinja_env = Environment(extensions=['jinja2.ext.do'])
 
@@ -47,18 +47,18 @@ def new_event_notification(notifications=None,
     group = notifications[0].group
     notification = notifications[0]
     
-    log_info('Creating new notification for events:\n{}'
+    logging.info('Creating new notification for events:\n{}'
             .format(events))
 
     # aggregate multiple events
     for n in notifications[1:]:
         n.status = 'aggregated'
 
-    log_info('Generating HTML...')
+    logging.info('Generating HTML...')
     # create HTML for the event email
     not_builder = NotificationBuilder()
     message = not_builder.build_new_event_html(events=events, notification=notification, name=group.template)
-    log_info('Done.')
+    logging.info('Done.')
 
     notification.status = 'Message built'
     notification.generated_timestamp = time.time()
@@ -148,15 +148,15 @@ def new_event_notification(notifications=None,
         msg['To'] = ', '.join(you)
         msg['From'] = me
         
-        log_info('Sending notification...')
+        logging.info('Sending notification...')
         mailer.send(msg=msg, you=you)
-        log_info('Done.')
+        logging.info('Done.')
         
         notification.status = 'sent'
         notification.sent_timestamp = time.time()
         
     else:
-        log_info('Notification not sent due to lack of users')
+        logging.info('Notification not sent due to lack of users')
         notification.status = 'not sent - no users'
 
 @dbconnect
@@ -175,7 +175,7 @@ def inspection_notification(notification=None,
     shakemap = notification.shakemap
     group = notification.group
 
-    log_info('Creating inspeciton notificaiton: \nShakemap: {}-{}\nGroup:{}'
+    logging.info('Creating inspeciton notificaiton: \nShakemap: {}-{}\nGroup:{}'
             .format(shakemap.shakemap_id, shakemap.shakemap_version, group.name))
     error = ''
 
@@ -192,10 +192,10 @@ def inspection_notification(notification=None,
             msg = MIMEMultipart()
 
             # build the notification
-            log_info('Generating html...')
+            logging.info('Generating html...')
             not_builder = NotificationBuilder()
             message = not_builder.build_insp_html(shakemap, notification=notification, name=group.template)
-            log_info('Done.')
+            logging.info('Done.')
             # attach html
             message_type = 'html' if '<html>' in message else 'plain'
             encoded_message = MIMEText(message.encode('utf-8'), message_type, 'utf-8')
@@ -211,9 +211,9 @@ def inspection_notification(notification=None,
                     attach_product = MIMEApplication(content, _subtype=product.product_type.subtype)
                     attach_product.add_header('Content-Disposition', 'attachment', filename=product.name)
                     msg.attach(attach_product)
-                    log_info('Attached: {}'.format(product.product_type.name))
+                    logging.info('Attached: {}'.format(product.product_type.name))
                 except Exception as e:
-                    log_info('Unable to attach: {}'.format(product.product_type.name))
+                    logging.info('Unable to attach: {}'.format(product.product_type.name))
                     product.error = 'Unable to attach to email'
 
             # get and attach shakemap
@@ -274,22 +274,22 @@ def inspection_notification(notification=None,
                 
                 notification.status = 'sent'
                 notification.sent_timestamp = time.time()
-                log_info('Notification sent.')
+                logging.info('Notification sent.')
             else:
-                log_info('Notification not sent: no users.')
+                logging.info('Notification not sent: no users.')
                 notification.status = 'not sent - no users'
         except Exception as e:
             error = str(e)
             notification.status = 'send failed'
             notification.error = error
-            log_info('Notification failed: {}'.format(str(e)))
+            logging.info('Notification failed: {}'.format(str(e)))
             
     elif new_inspection:
         notification.status = 'not sent: low inspection priority'
-        log_info('Notification not sent due to low inspection priority')
+        logging.info('Notification not sent due to low inspection priority')
     else:
         notification.status = 'not sent: update without impact changes'
-        log_info('Notification not sent due to lack of changes in map update')
+        logging.info('Notification not sent due to lack of changes in map update')
 
     return {'status': notification.status,
             'error': error}
@@ -356,7 +356,7 @@ def send_inspection_notifications(session=None):
     notification.status = 'generating-notification'
     session.commit()
 
-    log_info('Generating inspection notification {}'.format(notification))
+    logging.info('Generating inspection notification {}'.format(notification))
 
     shakemap = notification.shakemap
     try:
@@ -368,8 +368,8 @@ def send_inspection_notifications(session=None):
         notification.error = str(e)
         session.commit()
 
-        log_info('Error generation inspection notification. \n{}'.format(str(e)))
+        logging.info('Error generation inspection notification. \n{}'.format(str(e)))
         raise
 
-    log_info('Sent notification: {}'.format(str(notification)))
+    logging.info('Sent notification: {}'.format(str(notification)))
     return notification

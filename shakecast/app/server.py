@@ -10,7 +10,7 @@ from task import Task
 import functions as f
 from util import *
 from startup import startup
-import sc_logging as logging
+from sc_logging import server_logger as logging
 
 class Server(object):
     

@@ -39,6 +39,7 @@ from app.jsonencoders import AlchemyEncoder
 from app.notifications.builder import NotificationBuilder
 from app.notifications.templates import TemplateManager
 from app.orm import *
+from app.sc_logging import web_logger as log
 from app.util import SC, Clock, get_tmp_dir
 from ui import UI
 
@@ -47,10 +48,6 @@ STATIC_DIR = os.path.join(sc_dir(),'view','assets')
 app = Flask(__name__,
             template_folder=BASE_DIR,
             static_folder=STATIC_DIR)
-
-import logging
-log = logging.getLogger('werkzeug')
-log.setLevel(logging.ERROR)
 
 ################################ Login ################################
 

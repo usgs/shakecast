@@ -2,7 +2,7 @@ import time
 
 from .orm import dbconnect, LocalProduct, LocalProductType, Notification
 from .products.geojson import generate_impact_geojson
-import sc_logging as logging
+from .sc_logging import server_logger as logging
 
 @dbconnect
 def create_products(session=None):
