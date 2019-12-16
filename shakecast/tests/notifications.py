@@ -2,9 +2,12 @@ import shutil
 import sys
 import unittest
 
+from shakecast.app.eventprocessing import process_shakemaps
 from shakecast.app.notifications.notifications import *
 from shakecast.app.orm import dbconnect, Facility, FacilityShaking, Group, Notification
-from util import create_group
+from shakecast.app.productgeneration import create_products
+
+from util import create_group, preload_data
 
 class TestMailer(unittest.TestCase):
     '''
@@ -561,6 +564,32 @@ class TestTemplateManager(unittest.TestCase):
         result = temp_manager.create_new(new_temp_name)
 
         self.assertTrue(result)
+
+class TestSendInspectionNotifications(unittest.TestCase):
+
+    @dbconnect
+    def test_process_Shakemap(self, session=None):
+        preload_data()
+        shakemap = session.query(ShakeMap).first()
+
+        shakemap.notifications = []
+        session.commit()
+
+        process_shakemaps([shakemap], session=session, scenario=True)
+
+        notification = (session.query(Notification)
+                .filter(Notification.shakemap == shakemap)
+                .join(Group)
+                .filter(Group.name == 'GLOBAL_SCENARIO')
+                .first())
+
+        notification = create_products(notification=notification, session=session)
+
+        self.assertIsNone(notification.error)
+        self.assertEqual(notification.status, 'ready')
+
+        for notification in shakemap.notifications:
+            inspection_notification_service(session=session)
 
 
 def set_email():

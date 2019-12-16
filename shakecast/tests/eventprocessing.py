@@ -5,7 +5,6 @@ import unittest
 from shakecast.app.eventprocessing import *
 from shakecast.app.grid import create_grid
 from shakecast.app.orm import (
-    clear_data,
     dbconnect,
     engine,
     Event,
@@ -64,6 +63,7 @@ class TestNewShakemap(unittest.TestCase):
         shakemap = session.query(ShakeMap).first()
 
         processed_shakemaps = process_shakemaps([shakemap], session)
+
         for shakemap in processed_shakemaps:
             self.assertNotEqual(shakemap.status, 'new')
 
@@ -75,7 +75,7 @@ class TestNewShakemap(unittest.TestCase):
         session.commit()
 
         shakemap = session.query(ShakeMap).first()
-        processed_shakemaps = process_shakemaps([shakemap], session)
+        processed_shakemaps = process_shakemaps([shakemap], session=session)
         for shakemap in processed_shakemaps:
             self.assertNotEqual(shakemap.status, 'new')
 

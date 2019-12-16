@@ -13,4 +13,6 @@ from inventory import (
     import_user_xml
 )
 from productdownload import geo_json, download_scenario
+from productgeneration import create_products
+from notifications.notifications import inspection_notification_service
 from servertestfunctions import system_test

@@ -10,7 +10,7 @@ from task import Task
 import functions as f
 from util import *
 from startup import startup
-import sc_logging as logging
+from sc_logging import server_logger as logging
 
 class Server(object):
     
@@ -47,7 +47,9 @@ class Server(object):
             'fast_geo_json',
             'check_new',
             'check_for_updates',
-            'record_messages'
+            'record_messages',
+            'send_notifications',
+            'create_products'
         ]
         
         sc = SC()
@@ -199,17 +201,19 @@ class Server(object):
         Check the output from a finished task and determines whether
         the task should be removed from the queue
         """
+        if task.output and type(task.output) is not dict:
+            task.output = task.output.__dict__
         if task.loop is False:
             out_str = ''
             server_log = ''
-            if task.output['status'] == 'finished':
-                out_str = task.output['message']
+            if task.output.get('status') == 'finished':
+                out_str = task.output.get('message')
                 server_log = 'Task: %s :: finished'
-            elif task.output['status'] == 'force_stop':
+            elif task.output.get('status') == 'force_stop':
                 out_str = task.output.get('message', 'No Message')
                 server_log = 'Task: %s :: force stopped'
-            elif task.output['status'] == 'failed':
-                out_str = "FAILED: %s" % task.output['message']
+            elif task.output.get('status') == 'failed':
+                out_str = "FAILED: %s" % task.output.get('message')
                 server_log = 'Task: %s :: failed to finish'
             elif task.status == 'failed':
                 out_str = '{} failed to run... \n{}: {}'.format(task.name,
@@ -233,7 +237,7 @@ class Server(object):
 
         # only log results from failed normal tasks or abnormal tasks
         if ((task.name not in self.debug_only) or
-                    task.error or (task.output and task.output['error'])):
+                    task.error or (task.output and task.output.get('error'))):
             logging.info('{}: \n\tSTATUS: {} \n\tOUTPUT: {}'.format(task.name,
                                                                     task.status,
                                                                     task.output))
@@ -347,6 +351,28 @@ class Server(object):
                 
                 self.queue += [task]
                 message += "Waiting for new events"
+
+            if 'create_products' not in task_names:
+                task = Task()
+                task.id = int(time.time() * 1000000)
+                task.func = f.create_products
+                task.loop = True
+                task.interval = 3
+                task.db_use = True
+                task.name = 'create_products'
+
+                self.queue += [task]
+
+            if 'send_notifications' not in task_names:
+                task = Task()
+                task.id = int(time.time() * 1000000)
+                task.func = f.inspection_notification_service
+                task.loop = True
+                task.interval = 3
+                task.db_use = True
+                task.name = 'send_notifications'
+
+                self.queue += [task]
 
             if 'record_messages' not in task_names:
                 task = Task()

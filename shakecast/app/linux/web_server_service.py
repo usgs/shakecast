@@ -1,5 +1,4 @@
 import socket
-import logging
 from multiprocessing import Process
 import os, sys
 import traceback
@@ -7,14 +6,6 @@ import urllib2
 
 from shakecast.app.util import SC, get_logging_dir
 from shakecast.web_server import start as start_web_server
-
-logs_dir = get_logging_dir()
-log_file = os.path.join(logs_dir, 'sc-web-server.log')
-logging.basicConfig(
-    filename = log_file,
-    level = logging.INFO, 
-    format = '%(asctime)s: [ShakeCast - Web] %(levelname)-7.7s %(message)s'
-)
 
 
 class ShakecastWebServer(object):
@@ -29,11 +20,10 @@ class ShakecastWebServer(object):
         # Send the http request to shutdown the server
         sc = SC()
         try:
-            logging.info('Stopping web server...')
             urllib2.urlopen('http://localhost:{}/shutdown'.format(sc.dict['web_port']))
-            logging.info('Done.')
         except Exception:
-            logging.info('Web server is not running.')
+            # web server is not running
+            pass
         
     def start(self):
         self.main()
@@ -46,22 +36,7 @@ class ShakecastWebServer(object):
 
     @staticmethod
     def main():
-        logging.info(' ** Starting ShakeCast Web Server ** ')
-        try:
-            start_web_server()
-
-        except Exception as e:
-            logging.info('FAILED')
-            exc_tb = sys.exc_info()[2]
-            filename, line_num, func_name, text = traceback.extract_tb(exc_tb)[-1]
-            logging.info('{}: {} - line: {}\nOriginated: {} {} {} {}'.format(type(e), 
-                                                                             e, 
-                                                                             exc_tb.tb_lineno,
-                                                                             filename, 
-                                                                             line_num, 
-                                                                             func_name, 
-                                                                             text))
-        return
+        start_web_server()
 
 def invalid():
     print '''

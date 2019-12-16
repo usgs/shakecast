@@ -39,6 +39,7 @@ from app.jsonencoders import AlchemyEncoder
 from app.notifications.builder import NotificationBuilder
 from app.notifications.templates import TemplateManager
 from app.orm import *
+from app.sc_logging import web_logger as log
 from app.util import SC, Clock, get_tmp_dir
 from ui import UI
 

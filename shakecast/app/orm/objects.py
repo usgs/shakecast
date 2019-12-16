@@ -460,12 +460,12 @@ class Notification(Base):
 
     def __repr__(self):
         return '''Notification(shakemap_id=%s,
-                               group_id=%s,
+                               group=%s,
                                notification_type=%s,
                                status=%s,
                                sent_timestamp=%s,
                                notification_file=%s)''' % (self.shakemap_id,
-                                                           self.group_id,
+                                                           self.group.name,
                                                            self.notification_type,
                                                            self.status,
                                                            self.sent_timestamp,
@@ -704,6 +704,11 @@ class Group(Base):
         specs = self._get_specs(
             'damage', inspection=inspection, scenario=scenario)
 
+        # check for english spelling "grey"
+        if not specs and inspection == 'gray':
+            specs = self._get_specs(
+                'damage', inspection='grey', scenario=scenario)            
+
         return specs[0] if len(specs) > 0 else None
 
     def gets_notification(self, notification_type, scenario=False, heartbeat=False):
@@ -850,6 +855,7 @@ class Event(Base):
     title = Column(String(100))
     place = Column(String(255))
     time = Column(Integer)
+    updated = Column(Integer)
     override_directory = Column(String(255))
 
     shakemaps = relationship('ShakeMap',

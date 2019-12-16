@@ -15,11 +15,9 @@ from .orm import (
     Notification,
     ShakeMap
 )
-from .products.geojson import generate_impact_geojson
-import sc_logging as logging
 from .util import Clock, SC, DAY
 from .notifications.notifications import new_event_notification, inspection_notification
-
+from .sc_logging import server_logger as logging
 
 def can_process_event(event, scenario=False):
     # check if we should wait until daytime to process
@@ -206,9 +204,9 @@ def process_events(events=None, session=None, scenario=False):
                     'log': message to be added to ShakeCast log
                            and should contain info on error}
     '''
-    logging.info('Picked up {} new events.'
-            .format(len(events)))
     if events:
+        logging.info('Picked up {} new events. {}'
+            .format(len(events), [event.event_id for event in events]))
         all_groups_affected = set([])
         for event in events:
             if can_process_event(event, scenario) is False:
@@ -313,14 +311,6 @@ def process_shakemaps(shakemaps=None, session=None, scenario=False):
             session.commit()
             continue
 
-        # send out new events and create inspection notifications
-        new_notifications = create_inspection_notifications(
-            groups_affected, shakemap, scenario)
-
-        session.add_all(new_notifications)
-        session.commit()
-
-        logging.info('Creating {} new inspection notifications'.format(len(new_notifications)))
         # get a set of all affected facilities
         affected_facilities = (session.query(Facility)
                                .filter(Facility.in_grid(grid))
@@ -348,83 +338,21 @@ def process_shakemaps(shakemaps=None, session=None, scenario=False):
             session.commit()
             continue
 
-        # grab new notifications, and any that might have failed to send
-        notifications = (session.query(Notification)
-                         .filter(Notification.shakemap == shakemap)
-                         .filter(Notification.notification_type == 'DAMAGE')
-                         .filter(Notification.status == 'created')
-                         .all())
+        # send out new events and create inspection notifications
+        new_notifications = create_inspection_notifications(
+            groups_affected, shakemap, scenario)
 
-        if notifications:
-            # send inspection notifications for the shaking levels we
-            # just computed
-            for n in notifications:
-                # generate pdf for specific group
-                generate_local_products(n.group, n.shakemap, session=session)
-
-                logging.info('Generating inspection notification {}'.format(n))
-                inspection_notification(notification=n,
-                                        scenario=scenario,
-                                        session=session)
-                logging.info('Done with inspection notification.')
-
-        shakemap.mark_processing_finished()
-        if scenario is True:
-            shakemap.status = 'scenario'
+        session.add_all(new_notifications)
         session.commit()
 
-        # generate system level products
-        logging.info('Generating geojson product...')
-        generate_impact_geojson(shakemap, save=True)
-        logging.info('Done.')
+        logging.info('Creating {} new inspection notifications'.format(len(new_notifications)))
+
+        shakemap.mark_processing_finished()
+        session.commit()
+
 
         logging.info('Shakemap processing finished.')
     return shakemaps
-
-
-@dbconnect
-def generate_local_products(group, shakemap, session=None):
-    logging.info('Generating local products...')
-    if group.product_string is not None:
-        local_product_names = group.product_string.split(',')
-        product_types = session.query(LocalProductType).filter(
-            LocalProductType.name.in_(local_product_names)).all()
-
-        for product_type in product_types:
-            # check if product exists
-            product = (session.query(LocalProduct)
-                    .filter(LocalProduct.group == group)
-                    .filter(LocalProduct.shakemap == shakemap)
-                    .filter(LocalProduct.product_type == product_type).first())
-
-            if not product:
-                product = LocalProduct(
-                    group=group,
-                    shakemap=shakemap,
-                    product_type=product_type
-                )
-
-                product.name = (product_type.file_name or
-                        '{}_impact.{}'.format(group.name, product_type.type))
-
-            try:
-                if (product.finish_timestamp and
-                        product.finish_timestamp > product.shakemap.begin_timestamp):
-                    continue
-                
-                logging.info('Generating product: {}, for shakemap: {}-{}, for group: {}'
-                        .format(product.product_type.name, shakemap.shakemap_id, shakemap.shakemap_version, group.name))
-                product.generate()
-                logging.info('Done.')
-                product.error = None
-            except Exception as e:
-                logging.info('Product generation error: {}'.format(str(e)))
-                product.error = str(e)
-
-            logging.info('Done generating products.')
-            product.finish_timestamp = time.time()
-            session.add(product)
-        session.commit()
 
 
 @dbconnect

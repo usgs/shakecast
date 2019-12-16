@@ -124,26 +124,33 @@ class ProductGrabber(object):
                                .first())
                               for each_id in ids]
 
-                # remove older events
+                reprocess = False
                 for old_event in old_events:
-                    if old_event is not None:
-                        old_notifications += old_event.notifications
-                        old_shakemaps += old_event.shakemaps
+                    if event.updated and event.updated < eq['properties']['updated']:
+                        reprocess = True
 
-                        # if one of these old events hasn't had
-                        # notifications sent, this event should be sent
-                        if old_event.status == 'new':
-                            event.status = 'new'
-                        session.delete(old_event)
+                if reprocess is True:
+                    for old_event in old_events:
+                        if old_event is not None:
+                            old_notifications += old_event.notifications
+                            old_shakemaps += old_event.shakemaps
+
+                            # if one of these old events hasn't had
+                            # notifications sent, this event should be sent
+                            if old_event.status == 'new':
+                                event.status = 'new'
+                            session.delete(old_event)
+                else:
+                    continue
             else:
                 event.status = 'new'
 
             # Fill the rest of the event info
-            event.title = self.earthquakes[eq_id]['properties']['title']
-            event.place = self.earthquakes[eq_id]['properties']['place']
-            event.time = self.earthquakes[eq_id]['properties']['time']/1000.0
+            event.title = eq['properties']['title']
+            event.place = eq['properties']['place']
+            event.time = eq['properties']['time']/1000.0
             event.magnitude = eq['properties']['mag']
-            event_coords = self.earthquakes[eq_id]['geometry']['coordinates']
+            event_coords = eq['geometry']['coordinates']
             event.lon = event_coords[0]
             event.lat = event_coords[1]
             event.depth = event_coords[2]
@@ -190,11 +197,12 @@ class ProductGrabber(object):
             sc = SC()
             # download the google maps image
             url_opener = URLOpener()
-            gmap = url_opener.open("https://api.mapbox.com/styles/v1/mapbox/streets-v10/static/pin-s+F00(%s,%s)/%s,%s,5/200x200?access_token=%s" % (event.lon,
-                                                                                                                                                    event.lat,
-                                                                                                                                                    event.lon,
-                                                                                                                                                    event.lat,
-                                                                                                                                                    sc.map_key))
+            gmap = url_opener.open(
+                    'https://api.mapbox.com/styles/v1/mapbox/streets-v10/static/pin-s+F00(%s,%s)/%s,%s,5/200x200?access_token=%s' % (event.lon,
+                    event.lat,
+                    event.lon,
+                    event.lat,
+                    sc.map_key))
             # and save it
             image = open(image_loc, 'wb')
             image.write(gmap)
