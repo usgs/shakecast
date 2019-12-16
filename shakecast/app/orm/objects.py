@@ -460,12 +460,12 @@ class Notification(Base):
 
     def __repr__(self):
         return '''Notification(shakemap_id=%s,
-                               group_id=%s,
+                               group=%s,
                                notification_type=%s,
                                status=%s,
                                sent_timestamp=%s,
                                notification_file=%s)''' % (self.shakemap_id,
-                                                           self.group_id,
+                                                           self.group.name,
                                                            self.notification_type,
                                                            self.status,
                                                            self.sent_timestamp,

@@ -572,13 +572,12 @@ class TestSendInspectionNotifications(unittest.TestCase):
         preload_data()
         shakemap = session.query(ShakeMap).first()
 
-        process_shakemaps([shakemap], session)
+        process_shakemaps([shakemap], session=session, scenario=True)
         notification = create_products(session=session)
 
         self.assertIsNone(notification.error)
         self.assertEqual(notification.status, 'ready')
 
-        notification = inspection_notification_service(session=session)
         notification = inspection_notification_service(session=session)
 
 

@@ -139,6 +139,7 @@ def preload_data(session=None):
     grid = create_grid(shakemap)
     facility = create_fac(grid)
     group = create_group('GLOBAL')
+    group = create_group('GLOBAL_SCENARIO', event_type='SCENARIO')
     user = create_user()
     group.facilities += [facility]
     group.users += [user]

@@ -183,7 +183,7 @@ def inspection_notification(notification=None,
         group,
         notification,
         session=session,
-        scenario=scenario
+        scenario=shakemap.type == 'scenario'
     )
 
     if has_alert_level and new_inspection:
@@ -376,5 +376,5 @@ def send_inspection_notification(notification, session=None):
         logging.info('Error generation inspection notification. \n{}'.format(str(e)))
         raise
 
-    logging.info('Sent notification: {}'.format(str(notification)))
+    logging.info(str(notification))
     return notification

@@ -75,7 +75,7 @@ class TestNewShakemap(unittest.TestCase):
         session.commit()
 
         shakemap = session.query(ShakeMap).first()
-        processed_shakemaps = process_shakemaps([shakemap], session)
+        processed_shakemaps = process_shakemaps([shakemap], session=session)
         for shakemap in processed_shakemaps:
             self.assertNotEqual(shakemap.status, 'new')
 
