@@ -572,13 +572,24 @@ class TestSendInspectionNotifications(unittest.TestCase):
         preload_data()
         shakemap = session.query(ShakeMap).first()
 
+        shakemap.notifications = []
+        session.commit()
+
         process_shakemaps([shakemap], session=session, scenario=True)
-        notification = create_products(session=session)
+
+        notification = (session.query(Notification)
+                .filter(Notification.shakemap == shakemap)
+                .join(Group)
+                .filter(Group.name == 'GLOBAL_SCENARIO')
+                .first())
+
+        notification = create_products(notification=notification, session=session)
 
         self.assertIsNone(notification.error)
         self.assertEqual(notification.status, 'ready')
 
-        notification = inspection_notification_service(session=session)
+        for notification in shakemap.notifications:
+            inspection_notification_service(session=session)
 
 
 def set_email():

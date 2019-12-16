@@ -5,17 +5,17 @@ from .products.geojson import generate_impact_geojson
 from .sc_logging import server_logger as logging
 
 @dbconnect
-def create_products(session=None):
+def create_products(notification=None, session=None):
     '''
     Check for new notifications and generate products for that are still
     missing
     '''
-    notification = (session.query(Notification)
+    notification = notification or (session.query(Notification)
             .filter(Notification.status == 'created')
             .filter(Notification.notification_type.like('damage'))
             .first())
     
-    if not notification:
+    if not notification or not notification.shakemap:
         return None
 
     notification.status = 'generating-products'

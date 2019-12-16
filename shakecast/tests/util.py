@@ -78,7 +78,7 @@ def create_group(name=None,
                     insp_prios=None):
 
     insp_prios = insp_prios if insp_prios else [
-        'GREY',
+        'GRAY',
         'GREEN',
         'YELLOW',
         'ORANGE',
@@ -139,10 +139,13 @@ def preload_data(session=None):
     grid = create_grid(shakemap)
     facility = create_fac(grid)
     group = create_group('GLOBAL')
-    group = create_group('GLOBAL_SCENARIO', event_type='SCENARIO')
+    group2 = create_group('GLOBAL_SCENARIO', event_type='SCENARIO')
     user = create_user()
     group.facilities += [facility]
+    group2.facilities += [facility]
     group.users += [user]
+    group2.users += [user]
 
     session.add(group)
+    session.add(group2)
     session.commit()
