@@ -14,5 +14,5 @@ from inventory import (
 )
 from productdownload import geo_json, download_scenario
 from productgeneration import create_products
-from notifications.notifications import send_inspection_notifications
+from notifications.notifications import inspection_notification_service
 from servertestfunctions import system_test

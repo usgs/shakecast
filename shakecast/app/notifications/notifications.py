@@ -175,7 +175,7 @@ def inspection_notification(notification=None,
     shakemap = notification.shakemap
     group = notification.group
 
-    logging.info('Creating inspeciton notificaiton: \nShakemap: {}-{}\nGroup:{}'
+    logging.info('Creating inspeciton notification: \nShakemap: {}-{}\nGroup:{}'
             .format(shakemap.shakemap_id, shakemap.shakemap_version, group.name))
     error = ''
 
@@ -343,13 +343,18 @@ def check_notification_for_group(group, notification, session=None, scenario=Fal
 
 
 @dbconnect
-def send_inspection_notifications(session=None):
+def inspection_notification_service(session=None):
     # grab new notifications, and any that might have failed to send
     notification = (session.query(Notification)
                         .filter(Notification.notification_type == 'DAMAGE')
                         .filter(Notification.status == 'ready')
                         .first())
 
+    notification = send_inspection_notification(notification, session)
+    return notification
+
+@dbconnect
+def send_inspection_notification(notification, session=None):
     if not notification:
         return None
 

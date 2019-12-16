@@ -10,6 +10,8 @@ from shakecast.app.productdownload import grab_from_directory
 from shakecast.app.util import get_test_dir
 
 from .util import create_group, create_new_event, create_fac, preload_data
+
+
 class TestProductGeneration(unittest.TestCase):
     @dbconnect
     def test_process_Shakemap(self, session=None):

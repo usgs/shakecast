@@ -366,7 +366,7 @@ class Server(object):
             if 'send_notifications' not in task_names:
                 task = Task()
                 task.id = int(time.time() * 1000000)
-                task.func = f.send_inspection_notifications
+                task.func = f.inspection_notification_service
                 task.loop = True
                 task.interval = 3
                 task.db_use = True

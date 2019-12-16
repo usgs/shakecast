@@ -704,6 +704,11 @@ class Group(Base):
         specs = self._get_specs(
             'damage', inspection=inspection, scenario=scenario)
 
+        # check for english spelling "grey"
+        if not specs and inspection == 'gray':
+            specs = self._get_specs(
+                'damage', inspection='grey', scenario=scenario)            
+
         return specs[0] if len(specs) > 0 else None
 
     def gets_notification(self, notification_type, scenario=False, heartbeat=False):
