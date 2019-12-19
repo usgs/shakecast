@@ -17,6 +17,7 @@ services:
       - "~/pycast/templates:/usr/local/shakecast/shakecast/templates"
       - "~/pycast/logs:/usr/local/shakecast/shakecast/logs"
       - "~/pycast/local_products:/usr/local/shakecast/shakecast/local_products"
+      - "~/pycast/assets:/usr/local/shakecast/shakecast/view/assets"
     user: "${DOCKER_UID}:${DOCKER_GID}"
     restart: unless-stopped
   
@@ -36,6 +37,7 @@ services:
       - "~/pycast/templates:/usr/local/shakecast/shakecast/templates"
       - "~/pycast/logs:/usr/local/shakecast/shakecast/logs"
       - "~/pycast/local_products:/usr/local/shakecast/shakecast/local_products"
+      - "~/pycast/assets:/usr/local/shakecast/shakecast/view/assets"
     user: "${DOCKER_UID}:${DOCKER_GID}"
     restart: unless-stopped
 

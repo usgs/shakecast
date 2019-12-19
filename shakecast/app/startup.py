@@ -26,14 +26,18 @@ def copy_backups():
     dir_ = sc_dir()
     docker_templates = os.path.join(dir_, 'backups', 'templates')
     docker_conf = os.path.join(dir_, 'backups', 'conf')
+    docker_assets = os.path.join(dir_, 'backups', 'assets')
     templates = os.path.join(dir_, 'templates')
     conf = os.path.join(dir_, 'conf')
+    assets = os.path.join(dir_, 'view', 'assets')
 
     if not os.path.isdir(os.path.join(templates, 'new_event')):
         os.system('cp -r {}/* {}'.format(docker_templates, templates))
     
     if not os.path.isfile(os.path.join(conf, 'sc.json')):
         os.system('cp -r {}/* {}'.format(docker_conf, conf))
+
+    os.system('cp -r {}/* {}'.format(docker_assets, assets))
 
 def ci_init():
     sc = SC()
