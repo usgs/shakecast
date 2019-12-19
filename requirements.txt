@@ -9,7 +9,7 @@ click==6.6
 configparser==3.7.3
 coverage==4.5.3
 enum34==1.1.6
-Flask==0.12.3
+Flask==1.0
 Flask-Login==0.4.1
 Flask-Uploads==0.2.1
 fpdf==1.7.2
