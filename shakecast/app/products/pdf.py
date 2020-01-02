@@ -163,14 +163,15 @@ def add_pdf_table(pdf, headers, data):
 
     line_count = 0
     for line in facility_values:
-        pdf.set_x(x_offset)
+        # add a new page if we have to
         max_cell_height = get_line_height(line)
+        if pdf.get_y() + max_cell_height > pdf.h - pdf.t_margin - pdf.b_margin:
+            add_pdf_table_page(use_headers, pdf, padding, x_offset)
+    
+        pdf.set_x(x_offset)
         add_line_to_pdf(line, use_headers, pdf, padding=padding)
 
         pdf.ln(max_cell_height + padding)
-
-        if pdf.get_y() > pdf.h - pdf.t_margin - pdf.b_margin:
-            add_pdf_table_page(use_headers, pdf, padding, x_offset)
 
         line_count += 1
 
