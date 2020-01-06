@@ -1066,6 +1066,16 @@ class ShakeMap(Base):
         
         return product_name
 
+    def get_local_product(self, name, read_method='r'):
+        product_name = os.path.join(self.local_products_dir, name)
+
+        contents = None
+        if os.path.isfile(product_name):
+            with open(product_name, read_method) as file_:
+                contents = file_.read()
+        
+        return contents
+
     def old_maps(self):
         """
         Returns 0 for false and an integer count of old shakemaps for true
