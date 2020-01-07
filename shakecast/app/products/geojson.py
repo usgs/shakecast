@@ -54,4 +54,4 @@ def generate_impact_geojson(shakemap, group=None, save=False, name='impact.json'
 
 
 def main(group, shakemap, name):
-    return generate_impact_geojson(shakemap, group=group, save=True, name=name)
+    return generate_impact_geojson(shakemap, group=group, save=True)
