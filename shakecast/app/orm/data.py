@@ -33,7 +33,8 @@ local_product_types = [
         generate_function='geojson',
         read_type='r',
         name='geojson',
-        write_type='w'
+        write_type='w',
+        file_name='impact.json'
     )
 ]
 

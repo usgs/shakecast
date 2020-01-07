@@ -1066,15 +1066,12 @@ class ShakeMap(Base):
         
         return product_name
 
-    def get_local_product(self, name, read_method='r'):
-        product_name = os.path.join(self.local_products_dir, name)
-
-        contents = None
-        if os.path.isfile(product_name):
-            with open(product_name, read_method) as file_:
-                contents = file_.read()
+    def get_local_product(self, name):
+        for product in self.local_products:
+            if product.product_type.name == name:
+                return product
         
-        return contents
+        return None
 
     def old_maps(self):
         """
@@ -1191,7 +1188,7 @@ class LocalProduct(Base):
     __tablename__ = 'local_products'
     id = Column(Integer, primary_key=True)
     type = Column(String,
-                     ForeignKey('local_product_types.type'))
+                     ForeignKey('local_product_types.name'))
     shakemap_id = Column(Integer,
                          ForeignKey('shakemap.shakecast_id'))
     group_id = Column(Integer,
@@ -1214,13 +1211,29 @@ class LocalProduct(Base):
     def __repr__(self):
         return '''LocalProduct(type: {},
         shakemap_id: {},
+        shakemap_version: {},
         group_id: {},
         name: {},
         status: {},
         begin_timestamp: {},
         finish_timestamp: {}
-        error: {}'''.format(self.type, self.shakemap_id, self.group_id, self.name,
+        error: {}'''.format(self.type, self.shakemap_id, self.shakemap.shakemap_version, self.group_id, self.name,
         self.status, self.begin_timestamp, self.finish_timestamp, self.error)
+
+
+    def __str__(self):
+        return '''LocalProduct(type: {},
+        shakemap_id: {},
+        shakemap_version: {},
+        group_name: {},
+        name: {},
+        status: {},
+        begin_timestamp: {},
+        finish_timestamp: {}
+        error: {}'''.format(self.type, self.shakemap_id, self.shakemap.shakemap_version,
+        None if not self.group else self.group.name, self.name,
+        self.status, self.begin_timestamp, self.finish_timestamp, self.error)
+
 
     def generate(self):
         generate_function = eval(self.product_type.generate_function)
