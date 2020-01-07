@@ -1,3 +1,4 @@
+import base64
 from math import floor
 import os
 import sys
@@ -1068,7 +1069,8 @@ class ShakeMap(Base):
 
     def get_local_product(self, name, group=None):
         for product in self.local_products:
-            if (product.product_type.name == name and
+            if (product.product_type and
+                    (product.product_type.name == name) and
                     (group is None or product.group == group)):
                 return product
         
@@ -1108,6 +1110,23 @@ class ShakeMap(Base):
             full_name = os.path.join(self.directory_name, name)
             if os.path.isfile(full_name):
                 return full_name
+
+    def get_overlay_base64(self):
+        overlay_names = ['intensity_overlay.png', 'ii_overlay.png']
+        for name in overlay_names:
+            full_name = os.path.join(self.directory_name, name)
+            if os.path.isfile(full_name):
+                file_name = full_name
+                break
+
+        if not file_name:
+            return None
+
+        with open(file_name, 'rb') as file_:
+            encoded_string = base64.b64encode(file_.read())
+
+        return encoded_string
+
 
     def get_alert_level(self, group=None):
         """
