@@ -1066,9 +1066,10 @@ class ShakeMap(Base):
         
         return product_name
 
-    def get_local_product(self, name):
+    def get_local_product(self, name, group=None):
         for product in self.local_products:
-            if product.product_type.name == name:
+            if (product.product_type.name == name and
+                    (group is None or product.group == group)):
                 return product
         
         return None

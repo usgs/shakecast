@@ -18,6 +18,25 @@ class TestShakeMap(unittest.TestCase):
 
         alert_level = sm.get_alert_level()
         self.assertEqual(alert_level, 'red')
+    
+    @dbconnect
+    def test_getProduct(self, session=None):
+        sm = ShakeMap()
+        lpt = session.query(LocalProductType).first()
+        p = LocalProduct(
+            product_type = lpt,
+            shakemap=sm
+        )
+
+        p = sm.get_local_product(lpt.name)
+        self.assertIsNotNone(p)
+
+    def test_getProductNone(self):
+        sm = ShakeMap()
+        p = sm.get_local_product('DOES_NOT_EXIST')
+
+        self.assertIsNone(p)
+
 
 class TestFacilityShaking(unittest.TestCase):
     def test_impactRankNoMetric(self):
