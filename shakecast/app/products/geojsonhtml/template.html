@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html>
+<head>
+	
+	<title>ShakeCast Impact Capture</title>
+
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.6.0/dist/leaflet.css" integrity="sha512-xwE/Az9zrjBIphAcBb3F6JVqxf46+CDLwfLMHloNu6KEQCAWi6HcDUbeOfBIptF7tcCzusKFjFw2yuvEpDL9wQ==" crossorigin=""/>
+    <script src="https://unpkg.com/leaflet@1.6.0/dist/leaflet.js" integrity="sha512-gZwIG9x3wUXg2hdXF6+rVkLF/0Vi9U8D2Ntg4Ga5I5BZpVkVxlJWbSQtXPSiUTtC0TjtGOmxa1AJPuV0CPthew==" crossorigin=""></script>
+
+	<link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.4.1/dist/MarkerCluster.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.4.1/dist/MarkerCluster.Default.css" />
+    <script src="https://unpkg.com/leaflet.markercluster@1.4.1/dist/leaflet.markercluster-src.js"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.9.1/underscore-min.js"></script>
+	<style>
+		html, body {
+			height: 100%;
+			margin: 0;
+		}
+		#map {
+			width: 600px;
+			height: 400px;
+        }
+
+        .marker-cluster-gray {
+            background: rgba(127,127,127,.7)
+        }
+
+        .marker-cluster-gray div {
+            background: rgba(127,127,127,.9)
+        }
+
+        .marker-cluster-green {
+            background: rgba(0,127,0,.7)
+        }
+
+        .marker-cluster-green div {
+            background: rgba(0,127,0,.9)
+        }
+
+        .marker-cluster-yellow {
+            background: rgba(255,215,0,.7)
+        }
+
+        .marker-cluster-yellow div {
+            background: rgba(255,215,0,.9)
+        }
+
+        .marker-cluster-orange {
+            background: rgba(255,165,0,.7)
+        }
+
+        .marker-cluster-orange div {
+            background: rgba(255,165,0,.9)
+        }
+
+        .marker-cluster-red {
+            background: rgba(255,0,0,.7)
+        }
+
+        .marker-cluster-red div {
+            background: rgba(255,0,0,.9)
+        }
+
+        .marker-cluster span {
+            color: white;
+            font-weight: bold;
+        }
+	</style>
+
+
+</head>
+<body>
+
+<div id='map'></div>
+
+<script>
+    function createFacCluster(cluster) {
+        var childCount = cluster.getChildCount();
+        var facs = cluster.getAllChildMarkers();
+
+        var c = ' marker-cluster-';
+        if (childCount < 10) {
+            c += 'small';
+        } else if (childCount < 100) {
+            c += 'medium';
+        } else {
+            c += 'large';
+        }
+
+        var color_c = ''
+        var shaking = 'gray';
+        for (let eachFac of facs) {
+            let fac = eachFac.feature.properties;
+
+            if ((!_.contains(['green', 'yellow', 'orange', 'red'], shaking)) &&
+                    (_.contains(['green', 'yellow', 'orange', 'red'], fac['shaking']['alert_level']))) {
+                shaking = fac['shaking']['alert_level'];
+            } else if ((!_.contains(['yellow', 'orange', 'red'], shaking)) &&
+                    (_.contains(['yellow', 'orange', 'red'], fac['shaking']['alert_level']))) {
+                shaking = fac['shaking']['alert_level'];
+            } else if ((!_.contains(['orange', 'red'], shaking)) &&
+                    (_.contains(['orange', 'red'], fac['shaking']['alert_level']))) {
+                shaking = fac['shaking']['alert_level'];
+            } else if ((!_.contains(['red'], shaking)) &&
+                    (_.contains(['red'], fac['shaking']['alert_level']))) {
+                shaking = fac['shaking']['alert_level'];
+            }
+        }
+
+        color_c = 'marker-cluster-' + shaking;
+
+        return new L.DivIcon({ html: '<div><span>' + childCount + '</span></div>', className: 'marker-cluster' + c + ' ' + color_c, iconSize: new L.Point(40, 40) });
+    }
+</script>
+
+<script>
+    var map = L.map('map', {
+        zoomControl: false,
+        attributionControl: false
+    }).setView([39.74739, -105], 13);
+
+    L.tileLayer(
+            'https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={{ sc.map_key }}',
+            {
+                maxZoom: 18,
+                id: 'mapbox.light'
+            }
+    ).addTo(map);
+
+    var markers = L.markerClusterGroup({
+        iconCreateFunction: createFacCluster
+    });
+
+    // IMPACT GEOJSON LAYER
+    var defaultStyle = {
+        'color': '#000000',
+        'weight': 2,
+        'opacity': 1,
+        'fillOpacity': 1,
+        'fillColor': '#ffffff',
+        'radius': 8
+    };
+
+	L.geoJSON({{ impact_geojson }}, {
+
+		style: function (feature) {
+			return feature.properties && feature.properties.style;
+		},
+
+		pointToLayer: function (feature, latlng) {
+            let style = defaultStyle;
+            style.fillColor = feature.properties.shaking.alert_level;
+
+            return L.circleMarker(latlng, defaultStyle);
+        }
+    }).addTo(markers);
+    markers.addTo(map);
+
+
+    // IMAGE OVERLAY LAYER
+    var image = 'data:image/jpeg;base64,{{ shakemap.get_overlay_base64() }}';
+    var imageBounds = [[{{ shakemap.lat_min }}, {{shakemap.lon_min }}], [{{ shakemap.lat_max }}, {{ shakemap.lon_max }}]];
+
+    L.imageOverlay(image,
+                    imageBounds,
+                    {opacity: .4}).addTo(map)
+
+    
+    // EPICENTER LAYER
+    var epicIcon = L.icon({
+        iconUrl: 'https://earthquake.usgs.gov/earthquakes/eventpage/assets/star.png',
+        iconSize:     [20, 20], // size of the icon
+        iconAnchor:   [10, 10], // point of the icon which will correspond to marker's location
+        popupAnchor:  [0, 0] // point from which the popup should open relative to the iconAnchor
+    });
+
+    L.marker([{{ shakemap.event.lat }}, {{ shakemap.event.lon }}],
+            {icon: epicIcon})
+            .addTo(map);
+    
+    map.fitBounds(imageBounds);
+</script>
+
+
+
+</body>
+</html>

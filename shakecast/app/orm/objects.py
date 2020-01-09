@@ -1068,10 +1068,18 @@ class ShakeMap(Base):
         return product_name
 
     def get_local_product(self, name, group=None):
+        # check for group specific products first
         for product in self.local_products:
             if (product.product_type and
                     (product.product_type.name == name) and
-                    (group is None or product.group == group)):
+                    (product.group == group)):
+                return product
+        
+        # check for products not associated with the group
+        for product in self.local_products:
+            if (product.product_type and
+                    (product.product_type.name == name) and
+                    (product.group is None)):
                 return product
         
         return None
@@ -1215,6 +1223,7 @@ class LocalProduct(Base):
                          ForeignKey('group.shakecast_id'))
     name = Column(String(255))
     status = Column(String(255), default='created')
+    tries = Column(Integer, default=0)
     begin_timestamp = Column(Float)
     finish_timestamp = Column(Float, default=0)
     error = Column(String(255))
@@ -1227,6 +1236,8 @@ class LocalProduct(Base):
     def __init__(self, *args, **kwargs):
         super(LocalProduct, self).__init__(*args, **kwargs)
         self.begin_timestamp = time.time()
+        self.finish_timestamp = 0
+        self.tries = 0
 
     def __repr__(self):
         return '''LocalProduct(type: {},
@@ -1261,6 +1272,17 @@ class LocalProduct(Base):
 
         return result
 
+    def check_dependencies(self):
+        if self.product_type.dependencies:
+            dep_list = self.product_type.dependencies.split(',')
+            for dep in dep_list:
+                product = self.shakemap.get_local_product(dep, self.group)
+
+                if product is None or (product.error or not product.finish_timestamp):
+                    return False
+
+        return True
+
     def read(self):
         name = os.path.join(self.shakemap.local_products_dir, self.name)
         with open(name, self.product_type.read_type) as product:
@@ -1276,6 +1298,7 @@ class LocalProduct(Base):
 class LocalProductType(Base):
     __tablename__ = 'local_product_types'
     name = Column(String(100), primary_key=True)
+    dependencies = Column(String(100))
     type = Column(String(100))
     generate_function = Column(String(100))
     read_type = Column(String(10))

@@ -26,7 +26,8 @@ local_product_types = [
         read_type='rb',
         write_type='wb',
         name='pdf',
-        subtype='pdf'
+        subtype='pdf',
+        dependencies='geojson_html'
     ),
     LocalProductType(
         type='json',
@@ -35,6 +36,15 @@ local_product_types = [
         name='geojson',
         write_type='w',
         file_name='impact.json'
+    ),
+    LocalProductType(
+        type='html',
+        generate_function='geojsonhtml',
+        read_type='r',
+        name='geojson_html',
+        write_type='w',
+        file_name='impact_capture.html',
+        dependencies='geojson'
     )
 ]
 

@@ -183,6 +183,21 @@ def migrate_11to12(engine):
 
     return engine
 
+def migrate_12to13(engine):
+    dependencies = Column('dependencies', String)
+    tries = Column('tries', Integer, default=0)
+    try:
+        add_column(engine, 'local_product_types', dependencies)
+    except Exception:
+        pass
+    try:
+        add_column(engine, 'local_products', tries)
+    except Exception:
+        pass
+
+    return engine
+
+
 def add_column(engine, table_name, column):
     '''
     Add a column to an existing table
@@ -200,7 +215,7 @@ def add_column(engine, table_name, column):
 # List of database migrations for export
 migrations = [migrate_1to2, migrate_2to3, migrate_3to4, migrate_4to5,
         migrate_5to6, migrate_6to7, migrate_7to8, migrate_8to9, migrate_9to10,
-        migrate_10to11, migrate_11to12]
+        migrate_10to11, migrate_11to12, migrate_12to13]
 
 def migrate(engine):
     '''
