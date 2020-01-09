@@ -110,18 +110,7 @@ def get_products(group, shakemap, session=None):
     product_types = session.query(LocalProductType).filter(
         LocalProductType.name.in_(local_product_names)).all()
 
-    for product_type in product_types:
-        if product_type.dependencies is not None:
-            dependencies = product_type.dependencies.split(',')
-            for dependency in dependencies:
-                if dependency not in local_product_names:
-                    product_type = (session.query(LocalProductType)
-                            .filter(LocalProductType.name == dependency)
-                            .first())
-
-                    if product_type not in product_types:
-                        product_types += [product_type]
-
+    product_types = get_all_required_products(product_types, session)
     products = []
     for product_type in product_types:
         product_group = (group if product_type.name in group_product_names
@@ -145,3 +134,26 @@ def get_products(group, shakemap, session=None):
         products += [product]
     
     return products
+
+@dbconnect
+def get_all_required_products(product_types, session=None):
+    '''
+    Collect the the dependencies required to produce these product types
+    '''
+    all_required_products = []
+    for product_type in product_types:
+        if not product_type or product_type in all_required_products:
+            continue
+
+        all_required_products += [product_type]
+        if product_type.dependencies is not None:
+            dependency_names = product_type.dependencies.split(',')
+            for dependency in dependency_names:
+                product_type = (session.query(LocalProductType)
+                        .filter(LocalProductType.name == dependency)
+                        .first())
+
+                if product_type and product_type not in all_required_products:
+                    all_required_products += get_all_required_products([product_type], session)
+
+    return list(set(all_required_products))
