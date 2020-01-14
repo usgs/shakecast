@@ -46,9 +46,9 @@ services:
     networks:
       - sc-network
     volumes:
-      - "~/pycast:/root/.shakecast"
+      - "~/pycast/local_products:/usr/local/shakecast/shakecast/local_products"
     expose:
-    - "5000"
+      - "5000"
 
 
 networks:

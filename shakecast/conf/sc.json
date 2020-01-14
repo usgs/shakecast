@@ -78,5 +78,5 @@
     }, 
     "user_directory": "", 
     "port": 1981,
-    "image_server": "http://image-server:5000/screenshot/impact"
+    "image_server": "http://image-server:5000/screenshot?file_path={}&element_id={}"
 }

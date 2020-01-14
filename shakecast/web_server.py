@@ -520,10 +520,12 @@ def shakemap_overlay(shakemap_id, session=None):
                     .filter(ShakeMap.shakemap_id == shakemap_id)
                     .order_by(desc(ShakeMap.shakemap_version))
                     .limit(1)).first()
+
+    img = None
     if shakemap is not None:
         img = shakemap.get_overlay()
-        
-    else:
+
+    if shakemap is None or img is None:
         img = app.send_static_file('sc_logo.png')
 
     return send_file(img, mimetype='image/gif')
