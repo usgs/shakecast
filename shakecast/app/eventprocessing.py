@@ -205,8 +205,6 @@ def process_events(events=None, session=None, scenario=False):
                            and should contain info on error}
     '''
     if events:
-        logging.info('Picked up {} new events. {}'
-            .format(len(events), [event.event_id for event in events]))
         all_groups_affected = set([])
         for event in events:
             if can_process_event(event, scenario) is False:
@@ -216,6 +214,9 @@ def process_events(events=None, session=None, scenario=False):
                     logging.info('Event ({}) was not processed due to timeout'
                             .format(event.event_id))
                 continue
+
+            
+            logging.info('Processing event: {}'.format(event))
 
             groups_affected = get_new_event_groups(event, scenario, session)
             # if there aren't any groups, just skip to the next event
