@@ -230,6 +230,53 @@ class Facility(Base):
                         cls.lat < grid.lat_max)
         )
 
+    @hybrid_property
+    def geojson(self):
+        geojson = GeoJson()
+        geojson['properties'] = {
+            'shakecast_id': self.shakecast_id,
+            'facility_id': self.facility_id,
+            'facility_type': self.facility_type,
+            'component': self.component,
+            'component_class': self.component_class,
+            'name': self.name,
+            'short_name': self.short_name,
+            'description': self.description,
+            'html': self.html,
+            'geom_type': self.geom_type,
+            'lat_min': self.lat_min,
+            'lat_max': self.lat_max,
+            'lon_min': self.lon_min,
+            'lon_max': self.lon_max,
+            'model': self.model,
+            'gray': self.gray,
+            'green': self.green,
+            'yellow': self.yellow,
+            'orange': self.orange,
+            'red': self.red,
+            'gray_beta': self.gray_beta,
+            'green_beta': self.green_beta,
+            'yellow_beta': self.yellow_beta,
+            'orange_beta': self.orange_beta,
+            'red_beta': self.red_beta,
+            'gray_metric': self.gray_metric,
+            'green_metric': self.green_metric,
+            'yellow_metric': self.yellow_metric,
+            'orange_metric': self.orange_metric,
+            'red_metric': self.red_metric,
+            'metric': self.metric,
+            'updated': self.updated,
+            'updated_by': self.updated_by,
+            'lat': self.lat,
+            'lon': self.lon,
+        }
+
+        geojson.set_coordinates(
+            get_geojson_latlon(geojson['properties'])
+        )
+
+        return geojson
+
 
 class Attribute(Base):
     __tablename__ = 'attributes'

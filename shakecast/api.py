@@ -130,7 +130,7 @@ def get_messages():
 
     return messages
 
-@app.route('/api/earthquake-data')
+@app.route('/api/events')
 @login_required
 @dbconnect
 def get_eq_data(session=None):
@@ -193,24 +193,20 @@ def get_eq_data(session=None):
 
     return jsonify(eq_geojson)
 
-@app.route('/api/earthquake-data/facility/<facility_id>')
+@app.route('/api/events/facility/<facility_id>')
 @login_required
 @dbconnect
 def get_shaking_events(facility_id, session=None):
     fac = session.query(Facility).filter(Facility.shakecast_id == facility_id).first()
     eqs = [fs.shakemap.event for fs in fac.shaking_history if fs.shakemap is not None]
 
-    eq_dicts = []
+    eq_geojson = GeoJsonFeatureCollection()
     for eq in eqs:
-        if eq is not None:
-            eq_dict = eq.__dict__.copy()
-            eq_dict['shakemaps'] = len(eq.shakemaps)
-            eq_dict.pop('_sa_instance_state', None)
-            eq_dicts += [eq_dict]
+        eq_geojson.add_feature(eq.geojson)
 
-    return jsonify(success=True, data=eq_dicts)
+    return jsonify(eq_geojson)
 
-@app.route('/api/facility-data')
+@app.route('/api/facilities')
 @login_required
 @dbconnect
 def get_fac_data(session=None):
@@ -272,25 +268,19 @@ def get_fac_data(session=None):
                         .count())
         }]
 
-    if filter_.get('count', None) is None:
-        facs = query.limit(50).all()
+    count = request.args.get('count', None)
+    if count is not None:
+        facs = query.limit(count).all()
     else:
-        all_facs = query.all()
+        facs = query.all()
 
-        if len(all_facs) > filter_['count'] + 50:
-            facs = all_facs[filter_['count']:filter_['count'] + 50]
-        else:
-            facs = all_facs[filter_['count']:]
-
-    dicts = []
+    fac_geojson = GeoJsonFeatureCollection()
     for fac in facs:
-        dict_ = fac.__dict__.copy()
-        dict_.pop('_sa_instance_state', None)
-        dicts += [dict_]
+        fac_geojson.add_feature(fac.geojson)
 
-    return jsonify(success=True, data=dicts, count=fac_count)
+    return jsonify(fac_geojson)
 
-@app.route('/api/facility-shaking/<facility_id>/<eq_id>')
+@app.route('/api/facilities/<facility_id>/shaking/<eq_id>')
 @login_required
 @dbconnect
 def get_shaking_data(facility_id, eq_id, session=None):
@@ -307,7 +297,7 @@ def get_shaking_data(facility_id, eq_id, session=None):
 
     return jsonify(success=True, data=shaking_dict)
 
-@app.route('/api/delete/inventory', methods=['DELETE'])
+@app.route('/api/inventory/delete', methods=['DELETE'])
 @login_required
 def delete_inventory():
     inventory = json.loads(request.args.get('inventory', '[]'))
