@@ -35,7 +35,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 
 from app.impact import get_event_impact
 from app.inventory import determine_xml, get_facility_info
-from app.jsonencoders import AlchemyEncoder
+from app.jsonencoders import AlchemyEncoder, GeoJsonFeatureCollection
 from app.notifications.builder import NotificationBuilder
 from app.notifications.templates import TemplateManager
 from app.orm import *
@@ -187,14 +187,11 @@ def get_eq_data(session=None):
                 .limit(50)
                 .all())
     
-    eq_dicts = []
+    eq_geojson = GeoJsonFeatureCollection()
     for eq in eqs:
-        eq_dict = eq.__dict__.copy()
-        eq_dict['shakemaps'] = len(eq.shakemaps)
-        eq_dict.pop('_sa_instance_state', None)
-        eq_dicts += [eq_dict]
+        eq_geojson.add_feature(eq.geojson)
 
-    return jsonify(success=True, data=eq_dicts)
+    return jsonify(eq_geojson)
 
 @app.route('/api/earthquake-data/facility/<facility_id>')
 @login_required

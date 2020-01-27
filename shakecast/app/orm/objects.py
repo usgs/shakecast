@@ -939,6 +939,33 @@ class Event(Base):
         clock = Clock()
         return (clock.from_time(self.time)
                 .strftime('%Y-%m-%d %H:%M:%S'))
+    
+
+    @hybrid_property
+    def geojson(self):
+        geojson = GeoJson()
+        geojson['properties'] = {
+            'shakecast_id': self.shakecast_id,
+            'event_id': self.event_id,
+            'status': self.status,
+            'type': self.type,
+            'all_event_ids': self.all_event_ids,
+            'lat': self.lat,
+            'lon': self.lon,
+            'depth': self.depth,
+            'magnitude': self.magnitude,
+            'title': self.title,
+            'place': self.place,
+            'time': self.time,
+            'updated': self.updated,
+            'override_directory': self.override_directory
+        }
+
+        geojson.set_coordinates(
+            get_geojson_latlon(geojson['properties'])
+        )
+
+        return geojson
 
 
 class ShakeMap(Base):
