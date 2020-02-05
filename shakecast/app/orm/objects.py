@@ -833,6 +833,28 @@ class Group(Base):
         # Return email as default
         return 'email'
 
+    @hybrid_property
+    def geojson(self):
+        geojson = GeoJson()
+        geojson['properties'] = {
+            'shakecast_id': self.shakecast_id,
+            'name': self.name, 
+            'facility_type': self.facility_type,
+            'lon_min': self.lon_min,
+            'lon_max': self.lon_max,
+            'lat_min': self.lat_min,
+            'lat_max': self.lat_max,
+            'template': self.template,
+            'updated': self.updated,
+            'updated_by': self.updated_by,
+            'product_string': self.product_string
+        }
+
+        geojson.set_coordinates(
+            get_geojson_latlon(geojson['properties'])
+        )
+
+        return geojson
 
 class GroupSpecification(Base):
     __tablename__ = 'group_specification'
@@ -1037,11 +1059,6 @@ class ShakeMap(Base):
     begin_timestamp = Column(Float)
     end_timestamp = Column(Float)
     superceded_timestamp = Column(Float)
-    gray = Column(Integer)
-    green = Column(Integer)
-    yellow = Column(Integer)
-    orage = Column(Integer)
-    red = Column(Integer)
     override_directory = Column(String(255))
 
     products = relationship('Product',
@@ -1157,6 +1174,13 @@ class ShakeMap(Base):
                 return product
         
         return None
+    
+    def get_product(self, product_type):
+        for product in self.products:
+            if product.product_type == product_type:
+                return product
+        
+        return None
 
     def old_maps(self):
         """
@@ -1247,6 +1271,38 @@ class ShakeMap(Base):
         FacilityShaking.sort_by = sort_by
         self.facility_shaking = sorted(self.facility_shaking, reverse=reverse)
 
+    @hybrid_property
+    def geojson(self):
+        geojson = GeoJson()
+        geojson['properties'] = {
+            'shakecast_id': self.shakecast_id,
+            'shakemap_id': self.shakemap_id,
+            'event_id': self.event_id,
+            'shakemap_version': self.shakemap_version,
+            'status': self.status,
+            'type': self.type,
+            'map_status': self.map_status,
+            'event_version': self.event_version,
+            'generating_server': self.generating_server,
+            'region': self.region,
+            'lat_min': self.lat_min,
+            'lat_max': self.lat_max,
+            'lon_min': self.lon_min,
+            'lon_max': self.lon_max,
+            'generation_timestamp': self.generation_timestamp,
+            'recieve_timestamp': self.recieve_timestamp,
+            'begin_timestamp': self.begin_timestamp,
+            'end_timestamp': self.end_timestamp,
+            'superceded_timestamp': self.superceded_timestamp,
+            'override_directory': self.override_directory
+        }
+
+        geojson.set_coordinates(
+            get_geojson_latlon(geojson['properties'])
+        )
+
+        return geojson
+
 
 class Product(Base):
     __tablename__ = 'product'
@@ -1284,6 +1340,14 @@ class Product(Base):
                                                      self.source,
                                                      self.update_username,
                                                      self.update_timestamp)
+
+    @hybrid_property
+    def file_name(self):
+        if self.shakemap:
+            file_name = os.path.join(self.shakemap.directory_name, self.product_type)
+            return file_name
+        
+        return None
 
 
 class LocalProduct(Base):
