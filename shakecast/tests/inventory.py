@@ -239,6 +239,7 @@ class TestImportFacilities(unittest.TestCase):
 
         facility = session.query(Facility).filter(Facility.name == 'AEBM Campus').first()
         self.assertIsNotNone(facility)
+        self.assertIsNotNone(facility.aebm)
     
     @dbconnect
     def test_FacilityImport(self, session):
