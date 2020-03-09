@@ -674,7 +674,7 @@ def parse_aebm_from_xml_dict(aebm_xml_dict):
     If available, create an AEBM orm object for facility
     '''
     aebm = None
-    if aebm_xml_dict and aebm_xml_dict.get('AEBM', False):
+    if aebm_xml_dict:
         aebm = Aebm(
             mbt = aebm_xml_dict.get('MBT', None),
             sdl = aebm_xml_dict.get('SDL', None),
