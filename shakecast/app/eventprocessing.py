@@ -106,6 +106,14 @@ def create_new_event_notifications(groups, event, scenario=False):
 def create_inspection_notifications(groups, shakemap, scenario=False):
     notifications = []
     for group in groups:
+        # check new_event magnitude to make sure the group wants a
+        # notificaiton
+
+        event_spec = group.get_new_event_spec(scenario=scenario)
+        if (event_spec is None or
+                event_spec.minimum_magnitude > shakemap.event.magnitude):
+            continue
+        
         notification = Notification(group=group,
                                     shakemap=shakemap,
                                     event=shakemap.event,
