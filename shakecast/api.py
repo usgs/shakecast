@@ -39,7 +39,7 @@ from app.jsonencoders import AlchemyEncoder, GeoJsonFeatureCollection
 from app.notifications.builder import NotificationBuilder
 from app.notifications.templates import TemplateManager
 from app.orm import *
-from app.sc_logging import web_logger as log
+# from app.sc_logging import web_logger as log
 from app.util import SC, Clock, get_tmp_dir
 from ui import UI
 
@@ -75,12 +75,12 @@ def load_user(user_id, session=None):
 @app.route('/api/login', methods=['POST'])
 @dbconnect
 def login(session=None):
-    username = request.form.get('username', '')
-    password = request.form.get('password', '')
+    username = request.json.get('username', '')
+    password = request.json.get('password', '')
     
     registered_user = (session.query(User)
-                            .filter(and_(User.username==username)).first())
-    
+                            .filter(User.username==username).first())
+
     if (registered_user is None or not
             check_password_hash(registered_user.password, password)):
         return jsonify(success=False)
@@ -799,6 +799,6 @@ if __name__ == '__main__':
     if len(sys.argv) > 1:
         if sys.argv[1] == '-d':
             # run in debug mode
-            app.run(host='0.0.0.0', port=5000, debug=True)
+            app.run(host='0.0.0.0', port=80, debug=True)
     else:
         start()

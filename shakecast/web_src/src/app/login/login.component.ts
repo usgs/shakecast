@@ -18,7 +18,7 @@ export class LoginComponent {
 
     onSubmit(username, password) {
         this.userService.login(username, password).subscribe((result: any) => {
-            if (result.success) {
+            if (result.shakecast_id) {
                 this.userService.loggedIn = true;
                 this.userService.isAdmin = result.isAdmin;
                 this.userService.username = username;
