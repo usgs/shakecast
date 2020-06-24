@@ -72,7 +72,7 @@ export class EarthquakeService {
         }
 
         const params = new HttpParams().set('filter', JSON.stringify(filter));
-        this._http.get('api/earthquake-data', {params: params})
+        this._http.get('api/events', {params: params})
             .subscribe(
                 (result: any) => {
                     this.earthquakeData.next(result.data);
