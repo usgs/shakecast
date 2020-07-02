@@ -567,17 +567,20 @@ def shakemap_product_by_name(shakemap_id, product_name, session=None):
     product = shakemap.get_product(product_name)
     return jsonify(product)
 
-@app.route('/api/shakemaps/<shakemap_id>/notifications')
+@app.route('/api/notifications')
 @login_required
 @dbconnect
-def get_shakemap_notifications(shakemap_id, session=None):
-    shakemap = session.query(ShakeMap).filter(ShakeMap.shakecast_id == shakemap_id).first()
+def get_notifications(session=None):
+  event_id = request.args.get('event_id', None)
+  query = session.query(Notification)
 
-    notifications = []
-    if shakemap:
-        notifications = shakemap.notifications
+  if event_id is not None:
+      query = query.filter(Notification.event.has(Event.event_id == event_id))
 
-    return jsonify(notifications)
+  notifications = query.all()
+
+  json_notifications = [n.get_json() for n in notifications]
+  return jsonify(json_notifications)
 
 @app.route('/api/images/')
 @login_required

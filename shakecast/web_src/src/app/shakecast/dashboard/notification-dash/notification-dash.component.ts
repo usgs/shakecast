@@ -18,7 +18,7 @@ export class NotificationDashComponent implements OnInit, OnDestroy {
     public newEventGroups = '';
     public inspGroups = '';
     private subscriptions = new Subscription;
-    constructor(private notService: NotificationService,
+    constructor(public notService: NotificationService,
                 private eqService: EarthquakeService) {}
 
     ngOnInit() {

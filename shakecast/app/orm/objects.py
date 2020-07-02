@@ -506,6 +506,21 @@ class Notification(Base):
     notification_file = Column(String(255))
     error = Column(String(255))
 
+    def get_json(self):
+      return {
+          'shakecastId': self.shakecast_id,
+          'shakemapId': self.shakemap_id,
+          'eventId': self.event_id,
+          'groupId': self.group_id,
+          'group': self.group.name,
+          'notificationType': self.notification_type,
+          'status': self.status,
+          'sentTimestamp': self.sent_timestamp,
+          'generatedTimestamp': self.generated_timestamp,
+          'notificationFile': self.notification_file,
+          'error': self.error
+      }
+
     def __repr__(self):
         return '''Notification(shakemap_id=%s,
                                group=%s,
