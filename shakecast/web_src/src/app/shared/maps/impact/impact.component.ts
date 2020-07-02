@@ -28,10 +28,10 @@ export class ImpactComponent implements OnInit {
       this.shakingData = shaking;
 
       if (shaking) {
-          this.totalShaking = shaking['gray'] + 
-                                  shaking['green'] + 
-                                  shaking['yellow'] + 
-                                  shaking['orange'] + 
+          this.totalShaking = shaking['gray'] +
+                                  shaking['green'] +
+                                  shaking['yellow'] +
+                                  shaking['orange'] +
                                   shaking['red'];
       } else {
           this.totalShaking = 0;

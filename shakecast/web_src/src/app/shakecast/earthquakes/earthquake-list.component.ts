@@ -49,7 +49,7 @@ export class EarthquakeListComponent implements OnInit, OnDestroy {
                 private _router: Router) {}
 
     ngOnInit() {
-        this.subs.add(this.eqService.earthquakeData.subscribe((eqs: any[]) => {
+        this.subs.add(this.eqService.earthquakeData.subscribe((eqs: any) => {
             this.onEqs(eqs);
         }));
 
@@ -62,15 +62,15 @@ export class EarthquakeListComponent implements OnInit, OnDestroy {
         }));
     }
 
-    onEqs(eqs) {
-        if (eqs == null) {
+    onEqs(eqFeatureCollection) {
+        if (!eqFeatureCollection || !eqFeatureCollection.features) {
             this.earthquakeData = [];
-            return;
+            return null;
         }
 
         // update data if required
-        if (!_.isEqual(this.earthquakeData, eqs)) {
-            this.earthquakeData = eqs
+        if (!_.isEqual(this.earthquakeData, eqFeatureCollection.features)) {
+            this.earthquakeData = eqFeatureCollection.features;
         }
     }
 

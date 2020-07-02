@@ -44,14 +44,18 @@ export class DashboardComponent implements OnInit, OnDestroy {
         }));
     }
 
-    onEqData(eqs) {
+    onEqData(eqFeatureCollection) {
+        if (!eqFeatureCollection) {
+          return null;
+        }
         // if the list is updated, show it
-        if (!_.isEqual(this.earthquakeData, eqs)) {
-            this.earthquakeData = eqs;
-            if (eqs && eqs.length > 0) {
+        const events = eqFeatureCollection.features;
+        if (!_.isEqual(this.earthquakeData, events)) {
+            this.earthquakeData = events;
+            if (events && events.length > 0) {
 
                 // select new event if it just showed up
-                this.eqService.selectEvent.next(eqs[0]);
+                this.eqService.selectEvent.next(events[0]);
             }
         }
     }

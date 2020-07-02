@@ -75,7 +75,7 @@ export class EarthquakeService {
         this._http.get('api/events', {params: params})
             .subscribe(
                 (result: any) => {
-                    this.earthquakeData.next(result.data);
+                    this.earthquakeData.next(result);
                 },
                 (err: any) => {
                     this.toastService.alert('Event Error', 'Unable to retreive some event information')
