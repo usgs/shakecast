@@ -22,10 +22,10 @@ export class DashboardComponent implements OnInit, OnDestroy {
     public earthquakeData: any = [];
     private subscriptions = new Subscription();
 
-    constructor(private eqService: EarthquakeService,
-                private facService: FacilityService,
-                private titleService: TitleService,
-                private loadingService: LoadingService) {}
+    constructor(
+      public eqService: EarthquakeService,
+      private titleService: TitleService
+    ) {}
 
     ngOnInit() {
         this.titleService.title.next('Dashboard');
