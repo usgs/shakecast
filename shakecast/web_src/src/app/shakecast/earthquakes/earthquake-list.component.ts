@@ -1,13 +1,10 @@
-import { Component,
-         OnInit,
-         OnDestroy } from '@angular/core';
+import { Component } from '@angular/core';
 
 import { trigger,
          state,
          style,
          animate,
          transition } from '@angular/animations';
-import { Router } from '@angular/router';
 
 import { Subscription } from 'rxjs';
 import * as _ from 'underscore';
@@ -32,11 +29,7 @@ import { filter } from '@core/earthquake.service';
       ])
     ]
 })
-export class EarthquakeListComponent implements OnInit, OnDestroy {
-    public earthquakeData: any = [];
-    public pulledRight = false;
-    public dataLoading = false;
-    public moreData = false;
+export class EarthquakeListComponent {
     public selected: Earthquake = null;
 
     public filter: filter = {

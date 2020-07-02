@@ -76,6 +76,7 @@ export class EarthquakeService {
             .subscribe(
                 (result: any) => {
                     this.earthquakeData.next(result);
+                    this.selected = result.features[0];
                 },
                 (err: any) => {
                     this.toastService.alert('Event Error', 'Unable to retreive some event information')
