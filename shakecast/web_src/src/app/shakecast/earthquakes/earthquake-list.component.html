@@ -1,11 +1,11 @@
 <div class="data-list-inner-container">
     <div class="data-list">
 
-        <ng-container *ngIf="earthquakeData as eqData;
+        <ng-container *ngIf="eqService.earthquakeData | async as eqData;
                                 else noData">
-                <div class="data" [@selected]="eq?.event_id === selected?.event_id" *ngFor="let eq of eqData" (click)="plotEq(eq)">
+                <div class="data" [@selected]="eq?.properties.event_id === selected?.properties.event_id" *ngFor="let eq of eqData.features" (click)="plotEq(eq)">
                   <ng-container *ngIf="eq.properties as props">
-                    <div class="data-header" [@headerSelected]="eq?.event_id === selected?.event_id">
+                    <div class="data-header" [@headerSelected]="props?.event_id === selected?.properties.event_id">
                         <h3>{{eq.properties.event_id}}</h3>
                     </div>
                     <div class="data-body">

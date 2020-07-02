@@ -42,59 +42,13 @@ export class EarthquakeListComponent implements OnInit, OnDestroy {
     public filter: filter = {
         shakemap: false,
         facilities: false
-    }
-    private subs = new Subscription();
+    };
 
-    constructor(private eqService: EarthquakeService,
-                private _router: Router) {}
-
-    ngOnInit() {
-        this.subs.add(this.eqService.earthquakeData.subscribe((eqs: any) => {
-            this.onEqs(eqs);
-        }));
-
-        this.subs.add(this.eqService.dataLoading.subscribe((loading: boolean) => {
-            this.dataLoading = loading;
-        }));
-
-        this.subs.add(this.eqService.selectEvent.subscribe(event => {
-            this.onSelectEvent(event);
-        }));
-    }
-
-    onEqs(eqFeatureCollection) {
-        if (!eqFeatureCollection || !eqFeatureCollection.features) {
-            this.earthquakeData = [];
-            return null;
-        }
-
-        // update data if required
-        if (!_.isEqual(this.earthquakeData, eqFeatureCollection.features)) {
-            this.earthquakeData = eqFeatureCollection.features;
-        }
-    }
-
-    onSelectEvent(event) {
-        this.selected = event;
-    }
+    constructor(public eqService: EarthquakeService) {}
 
     plotEq(eq: Earthquake) {
-        this.selectEq(eq);
-    }
-
-    selectEq(eq: Earthquake) {
         this.selected = eq;
         this.eqService.selected = eq;
         this.eqService.selectEvent.next(eq);
-    }
-
-    ngOnDestroy() {
-        this.earthquakeData = [];
-        this.eqService.current = [];
-        this.endSubscriptions();
-    }
-
-    endSubscriptions() {
-        this.subs.unsubscribe();
     }
 }
