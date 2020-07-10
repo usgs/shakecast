@@ -34,10 +34,10 @@ import * as _ from 'underscore';
     ]
 })
 export class FacilityListComponent implements OnInit, OnDestroy {
-    public loadingData: boolean = false
+    public loadingData = false;
     public shownFacilityData: any = [];
     public facilityData: any = [];
-    public lastShownFacIndex: number = 0;
+    public lastShownFacIndex = 0;
     public selectedFacs: any = [];
     public filter: filter = {};
     private subscriptions = new Subscription();
@@ -136,11 +136,6 @@ export class FacilityListComponent implements OnInit, OnDestroy {
 
     plotFac(fac: Facility) {
         this.facService.select.next(fac);
-    }
-
-    loadMore() {
-        this.filter['count'] = this.facilityData.length;
-        this.facService.updateData(this.filter);
     }
 
     ngOnDestroy() {
