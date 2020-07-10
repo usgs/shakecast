@@ -14,6 +14,7 @@ import { Subscription } from 'rxjs';
 export class UserProfileComponent implements OnInit, OnDestroy {
     public user: any = null;
     private subs = new Subscription();
+
     constructor(public usersService: UsersService,
                 private titleService: TitleService) {}
 

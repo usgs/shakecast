@@ -40,7 +40,6 @@ export class FacilityListComponent implements OnInit, OnDestroy {
     public lastShownFacIndex: number = 0;
     public selectedFacs: any = [];
     public filter: filter = {};
-    public initPlot: boolean = false;
     private subscriptions = new Subscription();
     constructor(public facService: FacilityService,
                 private element: ElementRef,
@@ -63,20 +62,19 @@ export class FacilityListComponent implements OnInit, OnDestroy {
                 this.facService.selectedFacs = this.selectedFacs;
             }
 
-            if ((this.facilityData.length > 0) && (this._router.url === '/shakecast-admin/facilities')) {
+            if ((this.facilityData.features.length > 0) && (this._router.url === '/shakecast-admin/facilities')) {
                 if (!this.selectedFacs) {
                     this.selectedFacs.push(this.facilityData[0]);
                     this.facService.selectedFacs.push(this.facilityData[0]);
                 }
 
-                this.facilityData[0].selected = 'yes';
+                this.facilityData.features[0].selected = 'yes';
             }
         }));
 
         this.subscriptions.add(this.facService.facilityDataUpdate.subscribe((facs: any) => {
             if (facs != null) {
-                this.facilityData = this.facilityData.concat(facs);
-                this.shownFacilityData = this.facilityData;
+                this.facilityData.features = this.facilityData.features.concat(facs.features);
             }
         }));
 
@@ -95,9 +93,9 @@ export class FacilityListComponent implements OnInit, OnDestroy {
 
     clickFac(fac: Facility) {
         if (fac.selected === 'yes') {
-            fac.selected = 'no'
+            fac.selected = 'no';
         } else {
-            fac.selected = 'yes'
+            fac.selected = 'yes';
         }
 
         if (fac.selected === 'yes') {
@@ -106,7 +104,7 @@ export class FacilityListComponent implements OnInit, OnDestroy {
             this.plotFac(fac);
         } else {
             // remove it from the list
-            var index: number = _.findIndex(this.selectedFacs,{shakecast_id: fac.shakecast_id});
+            const index = _.findIndex(this.selectedFacs, {shakecast_id: fac.shakecast_id});
             this.selectedFacs.splice(index, 1);
             this.removeFac(fac);
         }
@@ -116,8 +114,7 @@ export class FacilityListComponent implements OnInit, OnDestroy {
 
     selectAll() {
         this.unselectAll();
-        for (var facID in this.facilityData) {
-            var fac: Facility = this.facilityData[facID];
+        for (const fac of this.facilityData.features) {
             fac.selected = 'yes';
             this.selectedFacs.push(fac);
             this.plotFac(fac);
@@ -125,8 +122,7 @@ export class FacilityListComponent implements OnInit, OnDestroy {
     }
 
     unselectAll() {
-        for (var facID in this.selectedFacs) {
-            var fac: Facility = this.selectedFacs[facID];
+        for (const fac of this.selectedFacs) {
             fac.selected = 'no';
             this.removeFac(fac);
         }

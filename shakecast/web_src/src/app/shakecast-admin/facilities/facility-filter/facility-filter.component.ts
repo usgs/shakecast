@@ -8,10 +8,11 @@ import { ScreenDimmerService } from '@core/screen-dimmer.service';
     styleUrls: ['./facility-filter.component.css']
 })
 export class FacilityFilter {
-    public filter: filter = {};
+    public filter: filter = {
+      limit: 50
+    };
 
-    constructor(private facService: FacilityService,
-                private sdService: ScreenDimmerService) {}
+    constructor(private facService: FacilityService) {}
 
     selectAll() {
         this.facService.selectAll();
@@ -45,4 +46,5 @@ export interface filter  {
     lonMin?: number;
     groupAffected?: string;
     keywords?: string;
+    limit?: number;
 }

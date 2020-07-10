@@ -1,27 +1,27 @@
 <div class="data-list-inner-container" *ngIf="facilityData as facData">
     <div *ngIf="!loadingData">
-        <div *ngIf="facData.length > 0">
+        <div *ngIf="facData.features as facilities">
             <div class="data" 
                     [@selected]="fac?.selected" 
-                    *ngFor="let fac of shownFacilityData" 
+                    *ngFor="let fac of facilities" 
                     (click)="clickFac(fac)">
                 <div [@headerSelected]="fac?.selected" class="data-header" [style.border]="'5px solid ' + fac?.shaking?.alert_level">
-                    <h3>{{ fac.name }}</h3>
+                    <h3>{{ fac.properties.name }}</h3>
                 </div>
                 <div class="data-body">
                     <div class="data-info-container">
                         <table class="container-table">
                             <tr>
-                                <th>Type: </th><td><p>{{ fac.facility_type }}</p></td>
+                                <th>Type: </th><td><p>{{ fac.properties.facility_type }}</p></td>
                             </tr>
                             <tr>
-                                <th>Location: </th><td><p>{{ (fac.lat_max + fac.lat_min) / 2 }}, {{ (fac.lon_max + fac.lon_min) / 2 }}</p></td>
+                                <th>Location: </th><td><p>{{ (fac.properties.lat_max + fac.properties.lat_min) / 2 }}, {{ (fac.properties.lon_max + fac.properties.lon_min) / 2 }}</p></td>
                             </tr>
                         </table>
                         <div class="updated">
-                            <p>Updated: {{ fac.updated * 1000 | date }}</p>
+                            <p>Updated: {{ fac.properties.updated * 1000 | date }}</p>
                             <p>|</p>
-                            <p>{{ fac.updated_by }}</p>
+                            <p>{{ fac.properties.updated_by }}</p>
                         </div>
                     </div>
                 </div>

@@ -4,13 +4,22 @@
     text-align: center;
 }
 
-.filter-form input {
+#limitSlider {
     font-size: 18px;
     width:80%;
     text-align: left;
     box-shadow: 1px 1px 3px 1px rgba(0,0,0,0.3);
     -webkit-box-shadow: 1px 1px 3px 1px rgba(0,0,0,0.3);
     -moz-box-shadow: 1px 1px 3px 1px rgba(0,0,0,0.3);
+}
+
+.useLimit input, label {
+  display: inline-block
+}
+
+.filter-form label {
+  color: white;
+  padding-top: 10px;
 }
 
 h2 {
