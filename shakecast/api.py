@@ -170,7 +170,7 @@ def get_eq_data(session=None):
             query = (query.filter(ShakeMap
                                     .facility_shaking
                                     .any(FacilityShaking
-                                            .facility_id == args['facility']['shakecast_id'])))
+                                            .facility_id == args['facility'])))
 
     # get the time of the last earthquake in UI,
     # should be 0 for a new request

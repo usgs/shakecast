@@ -19,25 +19,28 @@ export class FacilityInfoComponent implements OnInit, OnDestroy{
     public facility: Facility = null;
     public facilityShaking: any = null;
     public showFragilityInfo = false;
-    constructor(private facService: FacilityService,
-                private eqService: EarthquakeService,
-                public _router: Router) {}
+
+    constructor(
+      private facService: FacilityService,
+      private eqService: EarthquakeService,
+      public _router: Router
+    ) {}
 
     ngOnInit() {
-        this.subscriptions.add(this.facService.select.subscribe((facility: Facility) => {
-            this.onFacility(facility);
-        }));
+      this.subscriptions.add(this.facService.select.subscribe((facility: Facility) => {
+        this.onFacility(facility);
+      }));
 
-        this.subscriptions.add(this.facService.facilityShaking.subscribe((shaking: any) => {
-            this.facilityShaking = shaking;
-        }));
+      this.subscriptions.add(this.facService.facilityShaking.subscribe((shaking: any) => {
+        this.facilityShaking = shaking;
+      }));
     }
 
     onFacility(facility) {
         if (facility === null) {
-                this.facility = null;
-                return;
-            }
+          this.facility = null;
+          return;
+        }
         this.setFacility(facility);
     }
 

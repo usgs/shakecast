@@ -52,8 +52,7 @@ export class MapComponent implements OnInit, OnDestroy {
 
     initMap() {
         this.map = L.map('map', {
-            scrollWheelZoom: false,
-            minZoom: 3
+            scrollWheelZoom: false
         }).setView([51.505, -0.09], 8);
 
         this.map.on('moveend', (event) => { this.updateBounds(event); });
@@ -128,10 +127,7 @@ export class MapComponent implements OnInit, OnDestroy {
         });
 
         const group = L.featureGroup(layers);
-
-        if (layers.length > 2) {
-            this.map.fitBounds(group.getBounds().pad(0.1));
-        }
+        this.map.fitBounds(group.getBounds().pad(0.1));
 
         // open epicenter popup
         if (layer.id === 'epicenter') {

@@ -37,47 +37,34 @@ export class GroupListComponent implements OnInit, OnDestroy {
     public userGroupData: any = [];
     public noUserGroupData: any = [];
     public filter: any = {};
-    public selected: Group;
+    public selected: any;
     private subscriptions: any[] = [];
     private _this: any = this;
 
     constructor(public groupService: GroupService) {}
     ngOnInit() {
         this.subscriptions.push(this.groupService.groupData.subscribe((data: any) => {
+            if (!data || !data.features) {
+              this.groupData = null;
+            }
+
             this.groupData = data;
-            for (const group of this.groupData) {
-                group.selected = false;
-                this.selected = this.groupData[0];
-                this.selected['selected'] = true;
-            }
-        }));
 
-        this.subscriptions.push(this.groupService.userGroupData.subscribe((data: any) => {
-            this.userGroupData = data;
-            for (const eachGroup of this.userGroupData) {
-                eachGroup.selected = false;
-                this.selected = this.userGroupData[0];
-                this.selected['selected'] = true;
-            }
-
-            // build non-user data
-            this.noUserGroupData = [];
-            for (const group in this.groupData) {
-                if (!_.findWhere(this.userGroupData, {'name': this.groupData[group]['name']})){
-                    this.noUserGroupData.push(this.groupData[group]);
-                }
-            }
-            this.groupService.clearMap();
-            if (this.userGroupData.length > 0) {
-                this.groupService.plotGroup(this.userGroupData[0]);
-            }
+            this.clickGroup(this.groupData.features[0]);
         }));
 
         this.groupService.getData(this.filter);
     }
 
     clickGroup(group: Group) {
-        this.selected['selected'] = false;
+        if (this.selected) {
+          this.selected.selected = false;
+        }
+
+        if (!group) {
+          return null;
+        }
+
         group['selected'] = true;
         this.selected = group;
         this.groupService.current_group = group;

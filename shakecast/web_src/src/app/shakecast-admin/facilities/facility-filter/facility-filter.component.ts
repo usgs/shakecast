@@ -1,6 +1,5 @@
 import { Component, HostListener} from '@angular/core';
 import { FacilityService } from '@core/facility.service';
-import { ScreenDimmerService } from '@core/screen-dimmer.service';
 
 @Component({
     selector: 'facility-filter',
@@ -12,19 +11,7 @@ export class FacilityFilter {
       limit: 50
     };
 
-    constructor(private facService: FacilityService) {}
-
-    selectAll() {
-        this.facService.selectAll();
-    }
-
-    unselectAll() {
-        this.facService.unselectAll();
-    }
-
-    deleteFacs() {
-        this.facService.deleteFacs();
-    }
+    constructor(public facService: FacilityService) {}
 
     search() {
         this.facService.getData(this.filter);
@@ -39,7 +26,7 @@ export class FacilityFilter {
 
 }
 
-export interface filter  {
+export interface filter {
     latMax?:  number;
     latMin?: number;
     lonMax?: number;

@@ -180,11 +180,12 @@ export class EarthquakeService {
     }
 
     getFacilityData(facility: any) {
-        this._http.get('api/earthquake-data/facility/' + facility['shakecast_id'])
-            .subscribe((result: any) => {
-                this.earthquakeData.next(result.data);
-                this.current = result.data;
-            });
+      const params_ = new HttpParams().set('facility', JSON.stringify(facility['properties']['shakecast_id']));
+      this._http.get('api/events', {params: params_})
+          .subscribe((result: any) => {
+              this.earthquakeData.next(result.data);
+              this.current = result.data;
+          });
     }
 
     plotEq(eq: Earthquake) {

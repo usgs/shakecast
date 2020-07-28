@@ -47,15 +47,12 @@ export class FacilityListComponent implements OnInit, OnDestroy {
 
     ngOnInit() {
         this.subscriptions.add(this.facService.facilityData.subscribe(facs => {
-            if (facs === null) {
+            if (!facs || !facs.features) {
                 this.facilityData = null;
                 return;
             }
 
             this.facilityData = facs;
-
-            // only display the first 50 facs
-            this.shownFacilityData = this.facilityData;
 
             if (this.selectedFacs.length === 0) {
                 // add a facility if the array is empty
@@ -68,7 +65,7 @@ export class FacilityListComponent implements OnInit, OnDestroy {
                     this.facService.selectedFacs.push(this.facilityData[0]);
                 }
 
-                this.facilityData.features[0].selected = 'yes';
+                this.clickFac(this.facilityData.features[0]);
             }
         }));
 

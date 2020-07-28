@@ -17,38 +17,43 @@ export interface Group {
 export class GroupService {
     public loadingData = new ReplaySubject(1);
     public groupData = new ReplaySubject(1);
-    public userGroupData = new ReplaySubject(1);
+    public groupUsers = new ReplaySubject(1);
+    public groupFacilities = new ReplaySubject(1);
     public selection = new ReplaySubject(1);
     public dataList: any = [];
     public current_group: Group = null;
     public filter = {};
 
-    constructor(private _http: HttpClient,
+    constructor(private http: HttpClient,
                 private mapService: MapService) {}
 
     getData(filter: any = {}) {
-        this.loadingData.next(true)
+        this.loadingData.next(true);
         let params = new HttpParams();
-        params = params.set('filter', JSON.stringify(filter))
-        this._http.get('api/groups', { params })
+        params = params.set('filter', JSON.stringify(filter));
+        this.http.get('api/groups', { params })
             .subscribe((result: any) => {
-                if (filter['user']) {
-                    this.userGroupData.next(result)
-                } else {
-                    this.groupData.next(result);
-                }
+                this.groupData.next(result);
                 this.dataList = result;
                 this.current_group = result[0];
                 this.loadingData.next(false);
-
-                if (this.dataList.length > 0) {
-                    for (var group in this.dataList) {
-                        // this.mapService.plotGroup(this.dataList[group])
-                    }
-                }
-            })
+            });
     }
-    
+
+    getUsers(groupId) {
+      this.http.get(`/api/groups/${groupId}/users`).subscribe(users => {
+          this.groupUsers.next(users);
+        }
+      );
+    }
+
+    getFacilities(groupId) {
+      this.http.get(`/api/groups/${groupId}/facilities`).subscribe(facilities => {
+          this.groupFacilities.next(facilities);
+        }
+      );
+    }
+
     selectAll() {
         this.selection.next('all');
     }
@@ -62,7 +67,7 @@ export class GroupService {
         let params = new HttpParams();
         params = params.append('inventory', JSON.stringify(group))
         params = params.append('inventory_type', 'group')
-        this._http.delete('api/delete/inventory', { params })
+        this.http.delete('api/delete/inventory', { params })
             .subscribe((result: any) => {
                 this.getData();
                 this.loadingData.next(false)
@@ -76,5 +81,5 @@ export class GroupService {
     clearMap() {
         this.mapService.clearMap();
     }
-    
+
 }

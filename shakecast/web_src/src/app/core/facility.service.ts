@@ -66,7 +66,7 @@ export class FacilityService {
                 this.loadingService.finish('Facilities');
             }, (error: any) => {
                 this.loadingService.finish('Facilities');
-            })
+            });
     }
 
     updateData(filter: any = {}) {

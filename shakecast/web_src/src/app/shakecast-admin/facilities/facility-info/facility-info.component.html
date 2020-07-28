@@ -1,6 +1,6 @@
 <div class="fac-info">
-  <div class="info-content" *ngIf="props">
-      <ng-container *ngIf="props.properties as props">
+  <div class="info-content" *ngIf="facility">
+      <ng-container *ngIf="facility.properties as props">
       <div class="header">
           <h1 class="info-header">{{ props.name }}</h1>
           <p class="type">Type: {{ props.props_type }}</p>
@@ -29,12 +29,10 @@
           </table>
       </div>
 
-      <div class="shaking" *ngIf="eqService.current.length > 0">
-          <h2 class="info-header">Shaking History</h2>
+      <h2 class="info-header">Shaking History</h2>
 
-          <div class="eq-list">
-              <earthquake-list></earthquake-list>
-          </div>
+      <div class="eq-list">
+          <earthquake-list></earthquake-list>
       </div>
     </ng-container>
   </div>
