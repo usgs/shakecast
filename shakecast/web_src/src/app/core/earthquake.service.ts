@@ -148,7 +148,12 @@ export class EarthquakeService {
                     eq['scenario'] = scenario;
                 }
 
-                this.earthquakeData.next(data);
+                const geoJson = {
+                  features: data,
+                  type: 'FeatureCollection'
+                };
+
+                this.earthquakeData.next(geoJson);
                 this.loadingService.finish('Scenarios');
             },
             (error: any) => {
@@ -203,18 +208,18 @@ export class EarthquakeService {
         */
 
         for (const eq of geoJson) {
-            eq['shakecast_id'] = null;
-            eq['event_id'] = eq['id'];
-            eq['magnitude'] = eq['properties']['mag'];
-            eq['lon'] = eq['geometry']['coordinates'][0];
-            eq['lat'] = eq['geometry']['coordinates'][1];
-            eq['depth'] = eq['geometry']['coordinates'][2];
-            eq['place'] = eq['properties']['place'];
+            eq.properties['shakecast_id'] = null;
+            eq.properties['event_id'] = eq['id'];
+            eq.properties['magnitude'] = eq['properties']['mag'];
+            eq.properties['lon'] = eq['geometry']['coordinates'][0];
+            eq.properties['lat'] = eq['geometry']['coordinates'][1];
+            eq.properties['depth'] = eq['geometry']['coordinates'][2];
+            eq.properties['place'] = eq['properties']['place'];
 
             if (eq['properties']['types'].indexOf('shakemap') > 0) {
-                eq['shakemaps'] = 1;
+                eq.properties['shakemaps'] = 1;
             } else {
-                eq['shakemaps'] = 0;
+                eq.properties['shakemaps'] = 0;
             }
         }
         return geoJson;

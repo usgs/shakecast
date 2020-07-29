@@ -24,7 +24,7 @@
             <h3 class="button" (click)="deleteScenario()">Delete Selected</h3>
         </div>
         <div *ngIf="searchShown">
-            <h3 class="button" (click)="eqService.downloadScenario(eqService.selected.event_id, eqService.selected.scenario)">Download Selected</h3>
+            <h3 class="button" (click)="eqService.downloadScenario(eqService.selected.properties.event_id, eqService.selected.scenario)">Download Selected</h3>
             <h3 class="button" (click)="userScenarios()">Back</h3>
         </div>
     </div>

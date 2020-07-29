@@ -536,7 +536,7 @@ def shakemap_overlay(shakemap_id, session=None):
 
     return send_file(img, mimetype='image/gif')
 
-@app.route('/api/shakemaps/<shakemap_id>/image')
+@app.route('/api/shakemaps/<shakemap_id>/shakemap')
 @login_required
 @dbconnect
 def shakemap_map(shakemap_id, session=None):
@@ -606,7 +606,7 @@ def admin_only(func):
             return redirect(url_for('login'))
     return func_wrapper
 
-@app.route('/admin/api/configs', methods=['GET','POST'])
+@app.route('/api/configs', methods=['GET','POST'])
 @admin_only
 @login_required
 def get_settings():
@@ -669,7 +669,7 @@ def template_names():
     temp_manager = TemplateManager()
     return json.dumps(temp_manager.get_template_names())
 
-@app.route('/admin/scenario-download/<event_id>', methods=['GET'])
+@app.route('/api/scenario-download/<event_id>', methods=['GET'])
 @admin_only
 @login_required
 def scenario_download(event_id):
@@ -679,7 +679,7 @@ def scenario_download(event_id):
     
     return json.dumps({'success': True})
 
-@app.route('/admin/scenario-delete/<event_id>', methods=['DELETE'])
+@app.route('/api/scenario-delete/<event_id>', methods=['DELETE'])
 @admin_only
 @login_required
 def scenario_delete(event_id):
@@ -688,7 +688,7 @@ def scenario_delete(event_id):
     
     return json.dumps({'success': True})
 
-@app.route('/admin/scenario-run/<event_id>', methods=['POST'])
+@app.route('/api/scenario-run/<event_id>', methods=['POST'])
 @admin_only
 @login_required
 def scenario_run(event_id):
@@ -697,7 +697,7 @@ def scenario_run(event_id):
     
     return json.dumps({'success': True})
 
-@app.route('/admin/upload/', methods=['GET','POST'])
+@app.route('/api/upload/', methods=['GET','POST'])
 @admin_only
 @login_required
 def upload():
@@ -729,7 +729,7 @@ def upload():
 
     return 'file uploaded'
 
-@app.route('/admin/new-template/<name>')
+@app.route('/api/new-template/<name>')
 @admin_only
 @login_required
 def new_not_template(name):
@@ -738,7 +738,7 @@ def new_not_template(name):
 
     return json.dumps(True)
 
-@app.route('/admin/system-test')
+@app.route('/api/system-test')
 @admin_only
 @login_required
 def system_test():
@@ -758,7 +758,7 @@ def shutdown():
     shutdown_server()
     return 'Server shutting down...'
 
-@app.route('/admin/restart')
+@app.route('/api/restart')
 def restart():
     result = ui.send("{'Restart': {'func': self.restart, 'args_in': {}, 'db_use': True, 'loop': False}}")
     return json.dumps(result)

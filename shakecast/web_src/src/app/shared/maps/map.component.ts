@@ -127,7 +127,11 @@ export class MapComponent implements OnInit, OnDestroy {
         });
 
         const group = L.featureGroup(layers);
-        this.map.fitBounds(group.getBounds().pad(0.1));
+        const bounds = group.getBounds();
+
+        if (bounds._southWest && bounds._northEast) {
+          this.map.fitBounds(bounds.pad(0.1));
+        }
 
         // open epicenter popup
         if (layer.id === 'epicenter') {
