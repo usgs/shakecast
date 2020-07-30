@@ -63,15 +63,15 @@ export class EarthquakeService {
                 private loadingService: LoadingService) {}
 
     getData(filter: any = {}) {
-        this.loadingService.finish('Facilities');
-        if (this.facService.sub) {
-            this.facService.sub.unsubscribe();
-        }
-        if (this.filter) {
-            this.filter = filter;
+        this.filter = filter;
+
+        let params = new HttpParams().set('filter', JSON.stringify(filter));
+        for (const key in filter) {
+          if (filter[key]) {
+            params = params.set(key, JSON.stringify(filter[key]));
+          }
         }
 
-        const params = new HttpParams().set('filter', JSON.stringify(filter));
         this._http.get('api/events', {params: params})
             .subscribe(
                 (result: any) => {

@@ -131,7 +131,10 @@ def get_messages():
 @login_required
 @dbconnect
 def get_eq_data(session=None):
-    args = request.args
+    args = {}
+    for key in request.args.keys():
+      args[key] = json.loads(request.args[key])
+
     DAY = 24*60*60
     query = session.query(Event)
 
