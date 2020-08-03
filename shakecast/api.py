@@ -131,9 +131,7 @@ def get_messages():
 @login_required
 @dbconnect
 def get_eq_data(session=None):
-    args = {}
-    for key in request.args.keys():
-      args[key] = json.loads(request.args[key])
+    args = parse_args(request.args)
 
     DAY = 24*60*60
     query = session.query(Event)
@@ -414,7 +412,7 @@ def get_group_info(group_id, session=None):
 @dbconnect
 def get_users(session=None):
     if request.method == 'GET':
-        args = request.args
+        args = parse_args(request.args)
         query = session.query(User)
 
         if args.get('group', None):
@@ -423,15 +421,21 @@ def get_users(session=None):
         users = query.all()
         
     else:
-        users = request.json.get('users', 'null')
+        users = request.json.get('users')
+        import pdb
+        pdb.set_trace()
+
+        if not users:
+            return jsonify(False)
+
+        dict_users = []
         for user in users:
-            if user['password'] == '':
-                user.pop('password')
+          dict_users += [json.loads(user)]
 
         if users is not None:
             ui.send("{'import_user_dicts': {'func': f.import_user_dicts, \
                                            'args_in': {'users': %s, '_user': %s}, \
-                                           'db_use': True, 'loop': False}}" % (str(users), 
+                                           'db_use': True, 'loop': False}}" % (dict_users, 
                                                                                 current_user.shakecast_id))
 
     return jsonify(users)
@@ -793,6 +797,13 @@ def get_file_type(file_name):
         return 'image'
     elif ext in ['xml']:
         return 'xml'
+
+def parse_args(args_in):
+    args = {}
+    for key in args_in.keys():
+      args[key] = json.loads(args_in[key])
+
+    return args
 
 def start():
     sc = SC()
