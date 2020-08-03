@@ -31,7 +31,7 @@ export class UserService {
   }
 
    logout() {
-    this._http.get('logout')
+    this._http.get('api/logout')
       .subscribe(resp => {
         this.loggedIn = false;
         this.router.navigate(['/login']);
