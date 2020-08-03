@@ -339,6 +339,19 @@ class Server(object):
             
                 self.queue += [task]
                 message += 'Started monitoring earthquake feed \n'
+
+            if 'day_geo_json' not in task_names:
+                task = Task(run_in=DAY)
+                task.id = int(time.time() * 1000000)
+                task.func = f.geo_json
+                task.loop = True
+                task.interval = 60
+                task.db_use = True
+                task.name = 'day_geo_json'
+                task.args_in = {'query_period': 'day'}
+            
+                self.queue += [task]
+                message += 'Started monitoring earthquake feed \n'
             
             if 'check_new' not in task_names:
                 task = Task()
