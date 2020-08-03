@@ -45,7 +45,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
     }
 
     onEqData(eqFeatureCollection) {
-        if (!eqFeatureCollection) {
+        if (!eqFeatureCollection || !eqFeatureCollection.features) {
           return null;
         }
         // if the list is updated, show it
