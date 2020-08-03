@@ -26,10 +26,10 @@ import { ScreenDimmerService } from '@core/screen-dimmer.service';
     ]
 })
 export class UploadComponent implements OnInit, OnDestroy {
-    public uploader:FileUploader = new FileUploader({url: 'admin/upload/'});
-    public hasBaseDropZoneOver:boolean = false;
-    public hasAnotherDropZoneOver:boolean = false;
-    public show: string = 'no';
+    public uploader: FileUploader = new FileUploader({url: 'api/upload/'});
+    public hasBaseDropZoneOver = false;
+    public hasAnotherDropZoneOver = false;
+    public show = 'no';
     private subscriptions: any = [];
 
     constructor(private uploadService: UploadService,
@@ -46,9 +46,9 @@ export class UploadComponent implements OnInit, OnDestroy {
 
         this.uploader.onCompleteItem = (item: any, response: any, status: any, headers: any) => {
             if (status === 200) {
-                this.notService.success('File Upload', 'Success!')
+                this.notService.success('File Upload', 'Success!');
             } else {
-                this.notService.error('File Upload', 'Error')
+                this.notService.error('File Upload', 'Error');
             }
         };
     }
@@ -83,12 +83,12 @@ export class UploadComponent implements OnInit, OnDestroy {
     }
 
     ngOnDestroy() {
-        this.endSubscriptions()
+        this.endSubscriptions();
     }
 
     endSubscriptions() {
-        for (var sub in this.subscriptions) {
-            this.subscriptions[sub].unsubscribe()
+        for (const sub of this.subscriptions) {
+            sub.unsubscribe();
         }
     }
 }
