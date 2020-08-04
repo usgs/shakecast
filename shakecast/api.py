@@ -422,9 +422,6 @@ def get_users(session=None):
         
     else:
         users = request.json.get('users')
-        import pdb
-        pdb.set_trace()
-
         if not users:
             return jsonify(False)
 
