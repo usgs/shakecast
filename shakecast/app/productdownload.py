@@ -110,6 +110,8 @@ class ProductGrabber(object):
             # get event id and all ids
             event_id = eq_id if not scenario else eq_id + '_scenario'
             event = Event(event_id=event_id, save=True)
+
+            event.updated = eq['properties']['updated']
             event.all_event_ids = eq['properties']['ids'] if not scenario else event.event_id
 
             # use id and all ids to determine if the event is new and
@@ -124,10 +126,10 @@ class ProductGrabber(object):
                                .first())
                               for each_id in ids]
 
-                reprocess = False
+                reprocess = True
                 for old_event in old_events:
-                    if event.updated and event.updated < eq['properties']['updated']:
-                        reprocess = True
+                    if old_event.updated and old_event.updated >= event.updated:
+                        reprocess = False
 
                 if reprocess is True:
                     for old_event in old_events:

@@ -246,6 +246,7 @@ class TestImportFacilities(unittest.TestCase):
         import_facility_xml(xml_file)
 
         facility = session.query(Facility).filter(Facility.name == 'AEBM Campus').first()
+        self.assertIsNotNone(facility.aebm)
         self.assertIsNotNone(facility.geojson)
     
     @dbconnect
