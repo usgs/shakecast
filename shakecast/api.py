@@ -195,14 +195,15 @@ def get_eq_data(session=None):
 @login_required
 @dbconnect
 def event_by_id(event_id, session=None):
-    events = (session.query(Event)
+    event = (session.query(Event)
                     .filter(Event.shakecast_id == event_id)
-                    .limit(1)).all()
+                    .first())
 
-    
+    if event is None:
+      return jsonify(False)
+
     eq_geojson = GeoJsonFeatureCollection()
-    for eq in events:
-        eq_geojson.add_feature(eq.geojson)
+    eq_geojson.add_feature(event.geojson)
 
     return jsonify(eq_geojson)
 
@@ -425,14 +426,10 @@ def get_users(session=None):
         if not users:
             return jsonify(False)
 
-        dict_users = []
-        for user in users:
-          dict_users += [json.loads(user)]
-
         if users is not None:
             ui.send("{'import_user_dicts': {'func': f.import_user_dicts, \
                                            'args_in': {'users': %s, '_user': %s}, \
-                                           'db_use': True, 'loop': False}}" % (dict_users, 
+                                           'db_use': True, 'loop': False}}" % (users, 
                                                                                 current_user.shakecast_id))
 
     return jsonify(users)
@@ -445,8 +442,7 @@ def get_current_user():
     user_dict.pop('_sa_instance_state', None)
     user_dict['password'] = ''
         
-    user_json = json.dumps(user_dict, cls=AlchemyEncoder)
-    return jsonify(user_json)
+    return jsonify(user_dict)
 
 @app.route('/api/shakemaps')
 @login_required

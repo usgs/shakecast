@@ -71,7 +71,7 @@ class GeoJsonFeatureCollection(dict):
 
 def get_geojson_latlon(obj):
     # check for lat/lon
-    if obj.get('lat', False) and obj.get('lon', False):
+    if (type(obj.get('lat', False)) is not bool) and (type(obj.get('lon', False)) is not bool):
         return [obj['lon'], obj['lat']]
 
     elif (obj.get('lat_max', False) and
