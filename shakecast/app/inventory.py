@@ -351,6 +351,7 @@ def import_group_dicts(groups=None, _user=None, session=None):
             
             session.add(g)
             if group.get('NOTIFICATION', None) is not None:
+                g.template = group['NOTIFICATION'].get('TEMPLATE', group['NOTIFICATION'].get('MESSAGE_FORMAT', 'DEFAULT'))
                 notification_type = group['NOTIFICATION'].get('NOTIFICATION_TYPE', None)
                 damage_level = group['NOTIFICATION'].get('DAMAGE_LEVEL', None)
 
