@@ -239,6 +239,14 @@ class TestImportFacilities(unittest.TestCase):
 
         facility = session.query(Facility).filter(Facility.name == 'AEBM Campus').first()
         self.assertIsNotNone(facility)
+
+    @dbconnect
+    def test_geoJSON(self, session):
+        xml_file = os.path.join(sc_dir(), 'tests', 'data', 'aebm_fac.xml')
+        import_facility_xml(xml_file)
+
+        facility = session.query(Facility).filter(Facility.name == 'AEBM Campus').first()
+        self.assertIsNotNone(facility.geojson)
     
     @dbconnect
     def test_FacilityImport(self, session):
@@ -256,6 +264,25 @@ class TestImportFacilities(unittest.TestCase):
         facility = session.query(Facility).filter(Facility.name == 'Attribute Campus').first()
         self.assertIsNotNone(facility)
         self.assertTrue(len(facility.attributes) > 0)
+
+class TestImportGroups(unittest.TestCase):
+    @dbconnect
+    def test_groupImport(self, session):
+      group_file = os.path.join(sc_dir(), 'tests', 'data', 'test_groups.xml')
+      file_type = determine_xml(group_file)
+      import_group_xml(group_file, 1)
+      self.assertEqual(file_type, 'group')
+
+    @dbconnect
+    def test_geoJSON(self, session):
+      group_file = os.path.join(sc_dir(), 'tests', 'data', 'test_groups.xml')
+      file_type = determine_xml(group_file)
+      import_group_xml(group_file, 1)
+
+      group = session.query(Group).first()
+      self.assertIsNotNone(group.geojson)
+
+
 
 if __name__ == '__main__':
     unittest.main()
