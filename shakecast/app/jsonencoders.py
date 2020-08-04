@@ -60,10 +60,18 @@ class GeoJson(dict):
     def get_json(self, indent=0):
         return json.dumps(self, indent=indent)
 
+class GeoJsonFeatureCollection(dict):
+    def __init__(self):
+        self['type'] = 'FeatureCollection'
+        self['features'] = []
+    
+    def add_feature(self, feature):
+        self['features'] += [feature]
+
 
 def get_geojson_latlon(obj):
     # check for lat/lon
-    if obj.get('lat', False) and obj.get('lon', False):
+    if (type(obj.get('lat', False)) is not bool) and (type(obj.get('lon', False)) is not bool):
         return [obj['lon'], obj['lat']]
 
     elif (obj.get('lat_max', False) and

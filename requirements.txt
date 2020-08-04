@@ -9,7 +9,7 @@ click==6.6
 configparser==3.7.3
 coverage==4.5.3
 enum34==1.1.6
-Flask==0.12.3
+Flask==1.1.2
 Flask-Login==0.4.1
 Flask-Uploads==0.2.1
 fpdf==1.7.2
@@ -30,6 +30,7 @@ pycodestyle==2.5.0
 pylint==1.9.4
 PySocks==1.5.7
 pytest==4.5.0
+pytz==2019.2
 requests==2.21.0
 scandir==1.10.0
 shakecast-aebm==0.0a10

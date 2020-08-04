@@ -52,8 +52,7 @@ export class MapComponent implements OnInit, OnDestroy {
 
     initMap() {
         this.map = L.map('map', {
-            scrollWheelZoom: false,
-            minZoom: 3
+            scrollWheelZoom: false
         }).setView([51.505, -0.09], 8);
 
         this.map.on('moveend', (event) => { this.updateBounds(event); });
@@ -80,7 +79,7 @@ export class MapComponent implements OnInit, OnDestroy {
 
         this.subscriptions.add(this.facService.select.subscribe(fac => {
             if (fac != null) {
-                const facMarker = this.mapService.makeFacMarker(fac);
+                const facMarker = this.mapService.makeFacMarker(fac.properties);
                 this.layerService.addFacMarker(facMarker);
 
                 this.map.panTo(new L.LatLng(facMarker.lat,
@@ -128,9 +127,10 @@ export class MapComponent implements OnInit, OnDestroy {
         });
 
         const group = L.featureGroup(layers);
+        const bounds = group.getBounds();
 
-        if (layers.length > 2) {
-            this.map.fitBounds(group.getBounds().pad(0.1));
+        if (bounds._southWest && bounds._northEast) {
+          this.map.fitBounds(bounds.pad(0.1));
         }
 
         // open epicenter popup
@@ -144,14 +144,17 @@ export class MapComponent implements OnInit, OnDestroy {
 
     getBasemap() {
         return L.tileLayer(
-            'https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token=' + this.mapKey,
-            {
-                maxZoom: 18,
-                attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, ' +
-                '<a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ' +
-                'Imagery � <a href="http://mapbox.com">Mapbox</a>',
-                id: 'mapbox.streets'
-            }
+          'https://services.arcgisonline.com/' +
+              'arcgis/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}',
+          {
+            attribution:
+              'Esri, HERE, Garmin, Intermap, increment P Corp., ' +
+              'GEBCO, USGS, FAO, NPS, NRCAN, GeoBase, IGN, Kadaster NL, ' +
+              'Ordnance Survey, Esri Japan, METI, Esri China (Hong Kong), ' +
+              'swisstopo, © OpenStreetMap contributors, and the GIS User ' +
+              'Community',
+            maxZoom: 16
+          }
         );
     }
 

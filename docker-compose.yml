@@ -49,6 +49,7 @@ services:
       - "~/pycast/local_products:/usr/local/shakecast/shakecast/local_products"
     expose:
       - "5000"
+    user: "${DOCKER_UID}:${DOCKER_GID}"
     restart: unless-stopped
 
 

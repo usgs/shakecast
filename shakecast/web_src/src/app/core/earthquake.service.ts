@@ -63,19 +63,20 @@ export class EarthquakeService {
                 private loadingService: LoadingService) {}
 
     getData(filter: any = {}) {
-        this.loadingService.finish('Facilities');
-        if (this.facService.sub) {
-            this.facService.sub.unsubscribe();
-        }
-        if (this.filter) {
-            this.filter = filter;
+        this.filter = filter;
+
+        let params = new HttpParams().set('filter', JSON.stringify(filter));
+        for (const key in filter) {
+          if (filter[key]) {
+            params = params.set(key, JSON.stringify(filter[key]));
+          }
         }
 
-        const params = new HttpParams().set('filter', JSON.stringify(filter));
-        this._http.get('api/earthquake-data', {params: params})
+        this._http.get('api/events', {params: params})
             .subscribe(
                 (result: any) => {
-                    this.earthquakeData.next(result.data);
+                    this.earthquakeData.next(result);
+                    this.selected = result.features[0];
                 },
                 (err: any) => {
                     this.toastService.alert('Event Error', 'Unable to retreive some event information')
@@ -147,7 +148,12 @@ export class EarthquakeService {
                     eq['scenario'] = scenario;
                 }
 
-                this.earthquakeData.next(data);
+                const geoJson = {
+                  features: data,
+                  type: 'FeatureCollection'
+                };
+
+                this.earthquakeData.next(geoJson);
                 this.loadingService.finish('Scenarios');
             },
             (error: any) => {
@@ -179,11 +185,12 @@ export class EarthquakeService {
     }
 
     getFacilityData(facility: any) {
-        this._http.get('api/earthquake-data/facility/' + facility['shakecast_id'])
-            .subscribe((result: any) => {
-                this.earthquakeData.next(result.data);
-                this.current = result.data;
-            });
+      const params_ = new HttpParams().set('facility', JSON.stringify(facility['properties']['shakecast_id']));
+      this._http.get('api/events', {params: params_})
+          .subscribe((result: any) => {
+              this.earthquakeData.next(result.data);
+              this.current = result.data;
+          });
     }
 
     plotEq(eq: Earthquake) {
@@ -201,18 +208,18 @@ export class EarthquakeService {
         */
 
         for (const eq of geoJson) {
-            eq['shakecast_id'] = null;
-            eq['event_id'] = eq['id'];
-            eq['magnitude'] = eq['properties']['mag'];
-            eq['lon'] = eq['geometry']['coordinates'][0];
-            eq['lat'] = eq['geometry']['coordinates'][1];
-            eq['depth'] = eq['geometry']['coordinates'][2];
-            eq['place'] = eq['properties']['place'];
+            eq.properties['shakecast_id'] = null;
+            eq.properties['event_id'] = eq['id'];
+            eq.properties['magnitude'] = eq['properties']['mag'];
+            eq.properties['lon'] = eq['geometry']['coordinates'][0];
+            eq.properties['lat'] = eq['geometry']['coordinates'][1];
+            eq.properties['depth'] = eq['geometry']['coordinates'][2];
+            eq.properties['place'] = eq['properties']['place'];
 
             if (eq['properties']['types'].indexOf('shakemap') > 0) {
-                eq['shakemaps'] = 1;
+                eq.properties['shakemaps'] = 1;
             } else {
-                eq['shakemaps'] = 0;
+                eq.properties['shakemaps'] = 0;
             }
         }
         return geoJson;

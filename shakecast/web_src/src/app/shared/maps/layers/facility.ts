@@ -8,21 +8,21 @@ import { Layer } from './layer';
 
 function initIcons() {
 
-    L.MakiMarkers.accessToken = this.mapKey
+    L.MakiMarkers.accessToken = this.mapKey;
 
-    const greyIcon: any = L.MakiMarkers.icon({color: "#808080", size: "m"});
-    const greenIcon: any = L.MakiMarkers.icon({color: "#008000", size: "m"});
-    const yellowIcon: any = L.MakiMarkers.icon({color: "#FFD700", size: "m"});
-    const orangeIcon: any = L.MakiMarkers.icon({color: "#FFA500", size: "m"});
-    const redIcon: any = L.MakiMarkers.icon({color: "#FF0000", size: "m"});
+    const greyIcon: any = L.MakiMarkers.icon({color: '#808080', size: 'm'});
+    const greenIcon: any = L.MakiMarkers.icon({color: '#008000', size: 'm'});
+    const yellowIcon: any = L.MakiMarkers.icon({color: '#FFD700', size: 'm'});
+    const orangeIcon: any = L.MakiMarkers.icon({color: '#FFA500', size: 'm'});
+    const redIcon: any = L.MakiMarkers.icon({color: '#FF0000', size: 'm'});
 
-    let impactIcons = {
-                gray: greyIcon,
-                green: greenIcon,
-                yellow: yellowIcon,
-                orange: orangeIcon,
-                red: redIcon
-            };
+    const impactIcons = {
+      gray: greyIcon,
+      green: greenIcon,
+      yellow: yellowIcon,
+      orange: orangeIcon,
+      red: redIcon
+    };
 
     return impactIcons;
 }
@@ -31,8 +31,9 @@ function addFacMarker(fac: any,
                         silent: boolean = false) {
 
     // create event marker and plot it
-    var marker: any = this.createFacMarker(fac);
-    var existingMarker: any = this.data.facilityMarkers[fac.shakecast_id.toString()];
+    const marker: any = this.createFacMarker(fac);
+    const sc_id = fac.shakecast_id.toString();
+    const existingMarker: any = this.data.facilityMarkers[sc_id];
 
     // Check if the marker already exists
     if (_.isEqual(this.data.facMarker, marker)) {
@@ -61,12 +62,11 @@ function addFacMarker(fac: any,
             this.data.facilityLayer.addTo(this.map);
         }
         this.data.facMarker = marker;
-        this.data.facilityMarkers[fac.shakecast_id.toString()] = marker;
+        this.data.facilityMarkers[sc_id] = marker;
 
         this.data.facMarker.addTo(this.data.facilityLayer);
         this.data.facilityLayer.addTo(this.map);
-        marker.bindPopup(marker.popupContent)
-        //marker.openPopup();
+        marker.bindPopup(marker.popupContent);
     }
 
     if (silent === false) {
@@ -79,23 +79,23 @@ function createFacMarker(fac: any) {
         this.data.impactIcons = this.initIcons()
     }
 
-    let alert = 'gray'
+    let alert = 'gray';
     if ((fac['shaking']) && (fac['shaking']['alert_level'] !== 'gray')) {
         alert = fac['shaking']['alert_level']
     }
 
-    var marker = L.marker([fac.lat, fac.lon], {icon: this.data.impactIcons[alert]});
-    var desc: string = ''
+    const marker = L.marker([fac.lat, fac.lon], {icon: this.data.impactIcons[alert]});
+    let desc = '';
     if (fac.html) {
-        marker['popupContent'] = fac.html
+        marker['popupContent'] = fac.html;
     } else {
         if (fac.description) {
-            desc = fac.description
+            desc = fac.description;
         } else {
-            desc = 'No Description'
+            desc = 'No Description';
         }
 
-        var colorTable = `
+        let colorTable = `
         <table class="colors-table" style="width:100%;text-align:center">
             <tr>
                 <th>Fragility</th>
@@ -104,30 +104,30 @@ function createFacMarker(fac: any) {
                 <td>
                 <table style="width:100%">
                     <tr>
-                `
+                `;
 
         if (fac['green'] > 0) {
             colorTable += `<th style="background-color:green;padding:2px;color:white">
                         ` + fac['metric']+ ': ' + fac['green'] + ` 
-                    </th>`
-        } 
-        
+                    </th>`;
+        }
+
         if (fac['yellow'] > 0) {
             colorTable += `<th style="background-color:gold;padding:2px;color:white">
-                        ` + fac['metric']+ ': ' + fac['yellow'] + ` 
-                    </th>`
-        } 
-        
+                        ` + fac['metric'] + ': ' + fac['yellow'] + `
+                    </th>`;
+        }
+
         if (fac['orange'] > 0) {
             colorTable += `<th style="background-color:orange;padding:2px;color:white">
-                        ` + fac['metric']+ ': ' + fac['orange'] + ` 
-                    </th>`
-        } 
-        
+                        ` + fac['metric'] + ': ' + fac['orange'] + `
+                    </th>`;
+        }
+
         if (fac['red'] > 0) {
             colorTable += `<th style="background-color:red;padding:2px;color:white">
-                        ` + fac['metric']+ ': ' + fac['red'] + ` 
-                    </th>`
+                        ` + fac['metric'] + ': ' + fac['red'] + `
+                    </th>`;
         }
 
         colorTable += `</td>
@@ -156,9 +156,9 @@ function createFacMarker(fac: any) {
     }
 
     if (fac['shaking']) {
-        var shakingColor = fac['shaking']['alert_level']
-        if (shakingColor == 'yellow') {
-            shakingColor = 'gold'
+        let shakingColor = fac['shaking']['alert_level'];
+        if (shakingColor === 'yellow') {
+            shakingColor = 'gold';
         }
         marker['popupContent'] += `<table style="border-top:2px solid #444444;width:100%;">
                                         <tr>
@@ -171,33 +171,36 @@ function createFacMarker(fac: any) {
                                         <tr>
                                             <table style="width:100%;text-align:center;">
                                                 <tr style="background:` + shakingColor + `">
-                                                    <th style="text-align:center;color:white">` + fac['shaking']['metric'] + `: ` + fac['shaking'][fac['shaking']['metric'].toLowerCase()] + `</th>
+                                                    <th style="text-align:center;color:white">` + fac['shaking']['metric'] + `: ` +
+                                                    fac['shaking'][fac['shaking']['metric'].toLowerCase()] + `</th>
                                                 </tr>
                                             </table>
                                         </tr>
-                                    </table>`
+                                    </table>`;
     }
     marker['facility'] = fac;
-    return marker
+
+    return marker;
 }
 
 function removeFacMarker(fac: any) {
-    var marker: any = this.data.facilityMarkers[fac.shakecast_id.toString()];
+  const sc_id = fac.properties.shakecast_id.toString();
+  const marker: any = this.data.facilityMarkers[sc_id];
 
-    if (this.data.facilityLayer.hasLayer(marker)) {
-        this.data.facilityLayer.removeLayer(marker);
-    } else if (this.data.facilityCluster.hasLayer(marker)) {
-        this.data.facilityCluster.removeLayer(marker)
-    }
+  if (this.data.facilityLayer.hasLayer(marker)) {
+      this.data.facilityLayer.removeLayer(marker);
+  } else if (this.data.facilityCluster.hasLayer(marker)) {
+      this.data.facilityCluster.removeLayer(marker);
+  }
 
-    delete this.data.facilityMarkers[fac.shakecast_id.toString()]
+  delete this.data.facilityMarkers[sc_id];
 }
 
 function createFacCluster(cluster: any) {
-    var childCount = cluster.getChildCount();
-    var facs = cluster.getAllChildMarkers();
+    const childCount = cluster.getChildCount();
+    const facs = cluster.getAllChildMarkers();
 
-    var c = ' marker-cluster-';
+    let c = ' marker-cluster-';
     if (childCount < 10) {
         c += 'small';
     } else if (childCount < 100) {
@@ -206,10 +209,10 @@ function createFacCluster(cluster: any) {
         c += 'large';
     }
 
-    var color_c = ''
+    let color_c = '';
     if (facs[0]['facility']['shaking']) {
-        var shaking = 'gray';
-        for (var fac_id in facs) {
+        let shaking = 'gray';
+        for (const fac_id in facs) {
             if ((!_.contains(['green', 'yellow', 'orange', 'red'], shaking)) &&
                     (_.contains(['green', 'yellow', 'orange', 'red'], facs[fac_id]['facility']['shaking']['alert_level']))) {
                 shaking = facs[fac_id]['facility']['shaking']['alert_level'];
@@ -230,7 +233,8 @@ function createFacCluster(cluster: any) {
         color_c = 'marker-cluster-green';
     }
 
-    return new L.DivIcon({ html: '<div><span>' + childCount + '</span></div>', className: 'marker-cluster' + c + ' ' + color_c, iconSize: new L.Point(40, 40) });
+    return new L.DivIcon({ html: '<div><span>' + childCount + '</span></div>',
+        className: 'marker-cluster' + c + ' ' + color_c, iconSize: new L.Point(40, 40) });
 }
 
 function clear() {
@@ -244,9 +248,7 @@ function clear() {
     };
 }
 
-function layerGenerator(event, facData) {
-    
-}
+function layerGenerator(event, facData) {}
 
 class FacilityLayer extends Layer {
     addFacMarker: any = addFacMarker;
@@ -268,10 +270,10 @@ class FacilityLayer extends Layer {
 
 }
 
-let fLayer = new FacilityLayer('Facility', 'facility', layerGenerator);
+const fLayer = new FacilityLayer('Facility', 'facility', layerGenerator);
 
 fLayer.url = (event) => {
     return 'api/shakemaps/' + event.event_id + '/facilities';
-}
+};
 
 export let facilityLayer = fLayer;

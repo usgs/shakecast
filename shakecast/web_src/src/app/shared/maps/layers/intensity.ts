@@ -1,20 +1,26 @@
 import * as L from 'leaflet';
 import { Layer } from './layer';
 
-function generateLayer(event, product = null) {
-    // Grab the latest map
-    const latestProduct = product[0];
+function generateLayer(event, product) {
 
-    if (!latestProduct) {
+    if (!product || !product.features) {
         return null;
     }
+    const latestProduct = product.features[0];
 
-    const imageUrl = 'api/shakemaps/' + latestProduct.shakemap_id + '/overlay';
-    const imageBounds = [[latestProduct.lat_min, latestProduct.lon_min], [latestProduct.lat_max, latestProduct.lon_max]];
+    if (!latestProduct) {
+      return null;
+    }
+
+    const imageUrl = `api/shakemaps/${latestProduct.properties.shakemap_id}/overlay`;
+    const imageBounds = [[latestProduct.properties.lat_min,
+            latestProduct.properties.lon_min],
+            [latestProduct.properties.lat_max,
+            latestProduct.properties.lon_max]];
 
     const overlayLayer = L.imageOverlay(imageUrl,
-                    imageBounds,
-                    {opacity: .4});
+            imageBounds,
+            {opacity: .4});
 
     return overlayLayer;
 }
@@ -24,7 +30,7 @@ const intLayer = new Layer('Intensity Map',
                             generateLayer);
 
 intLayer.url = (event) => {
-    return 'api/shakemaps/' + event.event_id;
+    return `api/shakemaps/${event.properties.event_id}`;
 };
 
 intLayer.productType = 'json';

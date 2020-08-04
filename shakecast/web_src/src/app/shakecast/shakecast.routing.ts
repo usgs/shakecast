@@ -15,7 +15,7 @@ const appRoutes: Routes = [
         canActivate: [LoginGuard],
         children: [
             {
-                path: 'dashboard',
+                path: '',
                 component: DashboardComponent
             },
             {
@@ -23,9 +23,8 @@ const appRoutes: Routes = [
                 component: UserProfileComponent
             },
             {
-                path: '',
-                redirectTo: 'dashboard',
-                pathMatch: 'full'
+                path: 'dashboard',
+                redirectTo: ''
             }
         ]
     }

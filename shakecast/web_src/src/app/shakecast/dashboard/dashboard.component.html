@@ -15,12 +15,17 @@
 
 <panels-left-panel
     [title]="'Notifications'">
-    <info [text]="'A list of notifications sent to specific groups for
-                                                                this event. Double check your notification group settings 
-                                                                if you should have received a notification for this event, 
-                                                                but did not.'"
-                                                                [side]="'left'"></info>
-    <notification-dash></notification-dash>
+    <info 
+        text="A list of notifications sent to specific groups for
+        this event. Double check your notification group settings 
+        if you should have received a notification for this event, 
+        but did not."
+        side="left"></info>
+    <ng-container *ngIf="eqService.selectEvent | async as selected">
+      <notification-dash
+        [event]="selected">
+      </notification-dash>
+    </ng-container>
 </panels-left-panel>
 
 

@@ -60,7 +60,7 @@ export class UsersService {
         };
         this.notService.success('User Info', 'Saving your changes...');
         this._http.post('api/users',
-                        JSON.stringify({users: users}),
+                        {users: users},
                         httpOptions
         )
             .subscribe((result: any) => {

@@ -31,7 +31,7 @@ export class UserService {
   }
 
    logout() {
-    this._http.get('logout')
+    this._http.get('api/logout')
       .subscribe(resp => {
         this.loggedIn = false;
         this.router.navigate(['/login']);
@@ -39,7 +39,7 @@ export class UserService {
   }
 
   checkLoggedIn() {
-    return this._http.get('logged_in');
+    return this._http.get('/api/logged_in');
   }
 
   private handleError (error: any) {

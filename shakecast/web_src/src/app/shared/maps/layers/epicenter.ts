@@ -9,32 +9,33 @@ const epicIcon = L.icon({
 });
 
 function createEventMarker(event: any) {
-    const marker: any = L.marker([event.lat, event.lon], {icon: epicIcon});
+    const props = event.properties;
+    const marker: any = L.marker([props.lat, props.lon], {icon: epicIcon});
 
     const popup = `<table class="my-table">
                             <tr>
                                 <th>ID:</th>
-                                <td>` + event.event_id + `</td>
+                                <td>` + props.event_id + `</td>
                             </tr>
                             <tr> 
                                 <th>Magnitude:</th>
-                                <td>` + event.magnitude + `</td>
+                                <td>` + props.magnitude + `</td>
                             </tr>
                             <tr>
                                 <th>Depth:</th>
-                                <td>` + event.depth + `</td>
+                                <td>` + props.depth + `</td>
                             </tr>
                             <tr>
                                 <th>Latitude:</th>
-                                <td>` + event.lat + `</td>
+                                <td>` + props.lat + `</td>
                             </tr>
                             <tr>
                                 <th>Longitude:</th>
-                                <td>` + event.lon + `</td>
+                                <td>` + props.lon + `</td>
                             </tr>
                             <tr>
                                 <th>Description:</th>
-                                <td>` + event.place + `</td>
+                                <td>` + props.place + `</td>
                             </tr>
                         </table>`;
 

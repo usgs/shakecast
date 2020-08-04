@@ -30,12 +30,13 @@ export class FacilityService {
     public selection = new BehaviorSubject(null);
     public select = new BehaviorSubject(null);
     public selectedFacs: Facility[] = [];
-    public filter = {};
+    public filter = {
+      limit: 50
+    };
     public sub: any = null;
 
     constructor(private _http: HttpClient,
                 private mapService: MapService,
-                private _router: Router,
                 private notService: NotificationsService,
                 private loadingService: LoadingService) {}
 
@@ -48,16 +49,24 @@ export class FacilityService {
         this.unselectAll();
 
         this.loadingService.add('Facilities');
-        const params = new HttpParams().set('filter', JSON.stringify(filter));
-        this.sub = this._http.get('api/facility-data', {params: params})
+        let params_ = new HttpParams();
+        params_ = params_.append('filter', JSON.stringify(filter));
+
+        for (const key in filter) {
+          if (filter[key]) {
+            params_ = params_.append(key, filter[key]);
+          }
+        }
+
+        this.sub = this._http.get('api/facilities', {params: params_})
             .subscribe((result: any) => {
                 this.selectedFacs = [];
-                this.facilityData.next(result.data);
-                this.facilityCount.next(result.count);
+                this.facilityData.next(result);
+                this.facilityCount.next(result.features.count);
                 this.loadingService.finish('Facilities');
             }, (error: any) => {
                 this.loadingService.finish('Facilities');
-            })
+            });
     }
 
     updateData(filter: any = {}) {
@@ -65,7 +74,7 @@ export class FacilityService {
         this._http.get('api/facility-data', {params: params})
             .subscribe((result: any) => {
                 this.facilityDataUpdate.next(result.data);
-            })
+            });
     }
 
     getImpactSummary(event_id: string) {

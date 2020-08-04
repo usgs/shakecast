@@ -1,11 +1,24 @@
 <div class="filter-form">
-    <input [(ngModel)]="filter.keywords" placeholder="Search...">
+  <input class="search" [(ngModel)]="filter.keywords" placeholder="Search...">
+
+  <div class="useLimit">
+    <label for="useLimit">Limit facilities</label>
+    <input id="useLimit" name="useLimit" type="checkbox" (click)="filter.limit = filter.limit ? null : 50" checked>
+  </div>
+
+  <ng-container *ngIf="filter.limit !== null">
+    <label for="limit">Limit: {{ filter.limit }}</label>
+    <input name="limit" id="limitSlider"
+        [(ngModel)]="filter.limit" type="range" min="5" max="5000" step="5" value="50"
+    />
+  </ng-container>
+
 </div>
 
 <div class="control">
-    <div class="buttons-container">
-        <h3 class="button" (click)="selectAll()">Select All</h3>
-        <h3 class="button" (click)="unselectAll()">Unselect All</h3>
-        <h3 class="button" (click)="deleteFacs()">Delete Selected</h3>
-    </div>
+  <div class="buttons-container">
+    <h3 class="button" (click)="facService.selectAll()">Select All</h3>
+    <h3 class="button" (click)="facService.unselectAll()">Unselect All</h3>
+    <h3 class="button" (click)="facService.deleteFacs()">Delete Selected</h3>
+  </div>
 </div>

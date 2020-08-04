@@ -1,14 +1,17 @@
-<div *ngIf="notifications.length > 0">
-    <div *ngIf="newEventGroups != ''">
-        <h3>New Event:</h3><p>{{ newEventGroups }}</p>
-    </div>
-    <div *ngIf="inspGroups != ''">
-        <h3>Inspection:</h3><p>{{ inspGroups }}</p>
-    </div>
-</div>
-
-<div *ngIf="notifications.length == 0">
-    
-    <h1 class="data-list-no-data">No Notifications</h1>
-
+<div *ngIf="notService.notifications | async as notifications">
+  <h3>New Event:</h3>
+  <ng-container *ngFor="let not of notifications">
+    <p *ngIf="not.notificationType=='NEW_EVENT'">
+      {{ not.group }}:{{ not.status }}
+    </p>
+  </ng-container>
+  <h3>Inspection:</h3>
+  <ng-container *ngFor="let not of notifications">
+    <p *ngIf="not.notificationType=='DAMAGE'">
+      {{ not.group }}:{{ not.status }}
+      <span *ngIf="not.error" class="error">
+        Error: {{ not.error }}
+      </span>
+    </p>
+  </ng-container>
 </div>

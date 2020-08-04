@@ -200,7 +200,7 @@ class ProductGrabber(object):
             # download the google maps image
             url_opener = URLOpener()
             gmap = url_opener.open(
-                    'https://api.mapbox.com/styles/v1/mapbox/streets-v10/static/pin-s+F00(%s,%s)/%s,%s,5/200x200?access_token=%s' % (event.lon,
+                    'https://api.mapbox.com/styles/v1/mapbox/streets-v11/static/pin-s+F00(%s,%s)/%s,%s,5/200x200?access_token=%s' % (event.lon,
                     event.lat,
                     event.lon,
                     event.lat,

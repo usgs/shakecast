@@ -2,31 +2,12 @@ import * as L from 'leaflet';
 import { Layer } from './layer';
 
 function generateGroupPoly(group) {
-    var groupLayer: any = new L.GeoJSON(makePoly(group));
+    const groupLayer_: any = new L.GeoJSON(group);
 
-    var popupStr: string = generatePopup(group);
-    groupLayer.bindPopup(popupStr);
-    
-    return groupLayer;
-}
+    const popupStr: string = generatePopup(group);
+    groupLayer_.bindPopup(popupStr);
 
-function makePoly(notPoly: any) {
-    var poly: any = {
-        type: '',
-        properties: {},
-        geometry: {}
-    }
-
-    poly.type = 'Feature'
-    poly['name'] = notPoly.name
-    poly['info'] = notPoly.info
-    poly['popupContent'] = notPoly.name
-    poly.geometry['type'] = 'Polygon'
-    poly.geometry['coordinates'] = [[[notPoly.lon_min, notPoly.lat_min],
-                                        [notPoly.lon_max, notPoly.lat_min],
-                                        [notPoly.lon_max, notPoly.lat_max],
-                                        [notPoly.lon_min, notPoly.lat_max]]]
-    return poly
+    return groupLayer_;
 }
 
 function generatePopup(group) {
@@ -44,8 +25,8 @@ function generatePopup(group) {
                 <tr>
                     <td>
                         <table>`;
-
-    for (var fac_type in group['info']['facilities']) {
+/*
+    for (const fac_type in group['info']['facilities']) {
         if (group['info']['facilities'].hasOwnProperty(fac_type)) {
             popupStr += `
                             <tr>
@@ -132,8 +113,8 @@ function generatePopup(group) {
                     </table>
                 </tr>
             </table>`;
-
-    return popupStr
+*/
+    return popupStr;
 }
 
 function layerGenerator(group, product=null) {

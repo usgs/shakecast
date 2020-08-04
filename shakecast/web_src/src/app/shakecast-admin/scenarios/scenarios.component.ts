@@ -18,7 +18,6 @@ export class ScenariosComponent implements OnInit, OnDestroy {
 
     constructor(private titleService: TitleService,
                 public eqService: EarthquakeService,
-                private facService: FacilityService,
                 private panelService: PanelService) {}
 
     ngOnInit() {
@@ -36,11 +35,11 @@ export class ScenariosComponent implements OnInit, OnDestroy {
     }
 
     onEqData(eqs) {
-        if ( (!eqs) || (eqs == null) || (eqs.length === 0)) {
-            return;
+        if ( (!eqs) || (!eqs.features) || (eqs.features.length === 0)) {
+            return null;
         }
 
-        this.eqService.selectEvent.next(eqs[0]);
+        this.eqService.selectEvent.next(eqs.features[0]);
     }
 
     getMore() {

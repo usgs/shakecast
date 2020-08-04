@@ -30,6 +30,7 @@ class TestScenarioRun(unittest.TestCase):
         self.assertTrue(result['message']['success'])
 
 
+
 class TestNewEvent(unittest.TestCase):
     @dbconnect
     def test_processNewEvent(self, session=None):
@@ -39,6 +40,8 @@ class TestNewEvent(unittest.TestCase):
 
         for event in processed_events:
             self.assertNotEqual(event.status, 'new')
+        
+        self.assertIsNotNone(event.geojson)
 
     @dbconnect
     def test_heartbeat(self, session=None):
@@ -66,6 +69,8 @@ class TestNewShakemap(unittest.TestCase):
 
         for shakemap in processed_shakemaps:
             self.assertNotEqual(shakemap.status, 'new')
+        
+        self.assertIsNotNone(shakemap.geojson)
 
     @dbconnect
     def test_process_NoProducts(self, session=None):

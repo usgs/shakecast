@@ -32,7 +32,9 @@ export class FacilitiesComponent implements OnInit, OnDestroy {
             }
         }));
 
-        this.facService.getData();
+        this.facService.getData(
+          this.facService.filter
+        );
     }
 
     plotFac(fac) {

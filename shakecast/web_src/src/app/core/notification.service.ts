@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 
 import { ReplaySubject } from 'rxjs';
 
@@ -15,10 +15,11 @@ export class NotificationService {
 
     getNotifications(eq: any) {
         if (eq) {
-            this._http.get('api/notifications/' + eq.event_id + '/')
-                .subscribe((result: any) => {
-                    this.notifications.next(result);
-                });
+          const params_ = new HttpParams().append('event_id', eq.properties.event_id);
+          this._http.get('api/notifications', {params: params_})
+              .subscribe((result: any) => {
+                  this.notifications.next(result);
+              });
         }
     }
 }

@@ -230,6 +230,53 @@ class Facility(Base):
                         cls.lat < grid.lat_max)
         )
 
+    @hybrid_property
+    def geojson(self):
+        geojson = GeoJson()
+        geojson['properties'] = {
+            'shakecast_id': self.shakecast_id,
+            'facility_id': self.facility_id,
+            'facility_type': self.facility_type,
+            'component': self.component,
+            'component_class': self.component_class,
+            'name': self.name,
+            'short_name': self.short_name,
+            'description': self.description,
+            'html': self.html,
+            'geom_type': self.geom_type,
+            'lat_min': self.lat_min,
+            'lat_max': self.lat_max,
+            'lon_min': self.lon_min,
+            'lon_max': self.lon_max,
+            'model': self.model,
+            'gray': self.gray,
+            'green': self.green,
+            'yellow': self.yellow,
+            'orange': self.orange,
+            'red': self.red,
+            'gray_beta': self.gray_beta,
+            'green_beta': self.green_beta,
+            'yellow_beta': self.yellow_beta,
+            'orange_beta': self.orange_beta,
+            'red_beta': self.red_beta,
+            'gray_metric': self.gray_metric,
+            'green_metric': self.green_metric,
+            'yellow_metric': self.yellow_metric,
+            'orange_metric': self.orange_metric,
+            'red_metric': self.red_metric,
+            'metric': self.metric,
+            'updated': self.updated,
+            'updated_by': self.updated_by,
+            'lat': self.lat,
+            'lon': self.lon,
+        }
+
+        geojson.set_coordinates(
+            get_geojson_latlon(geojson['properties'])
+        )
+
+        return geojson
+
 
 class Attribute(Base):
     __tablename__ = 'attributes'
@@ -458,6 +505,21 @@ class Notification(Base):
     generated_timestamp = Column(Float)
     notification_file = Column(String(255))
     error = Column(String(255))
+
+    def get_json(self):
+      return {
+          'shakecastId': self.shakecast_id,
+          'shakemapId': self.shakemap_id,
+          'eventId': self.event_id,
+          'groupId': self.group_id,
+          'group': self.group.name,
+          'notificationType': self.notification_type,
+          'status': self.status,
+          'sentTimestamp': self.sent_timestamp,
+          'generatedTimestamp': self.generated_timestamp,
+          'notificationFile': self.notification_file,
+          'error': self.error
+      }
 
     def __repr__(self):
         return '''Notification(shakemap_id=%s,
@@ -786,6 +848,28 @@ class Group(Base):
         # Return email as default
         return 'email'
 
+    @hybrid_property
+    def geojson(self):
+        geojson = GeoJson()
+        geojson['properties'] = {
+            'shakecast_id': self.shakecast_id,
+            'name': self.name, 
+            'facility_type': self.facility_type,
+            'lon_min': self.lon_min,
+            'lon_max': self.lon_max,
+            'lat_min': self.lat_min,
+            'lat_max': self.lat_max,
+            'template': self.template,
+            'updated': self.updated,
+            'updated_by': self.updated_by,
+            'product_string': self.product_string
+        }
+
+        geojson.set_coordinates(
+            get_geojson_latlon(geojson['properties'])
+        )
+
+        return geojson
 
 class GroupSpecification(Base):
     __tablename__ = 'group_specification'
@@ -939,6 +1023,33 @@ class Event(Base):
         clock = Clock()
         return (clock.from_time(self.time)
                 .strftime('%Y-%m-%d %H:%M:%S'))
+    
+
+    @hybrid_property
+    def geojson(self):
+        geojson = GeoJson()
+        geojson['properties'] = {
+            'shakecast_id': self.shakecast_id,
+            'event_id': self.event_id,
+            'status': self.status,
+            'type': self.type,
+            'all_event_ids': self.all_event_ids,
+            'lat': self.lat,
+            'lon': self.lon,
+            'depth': self.depth,
+            'magnitude': self.magnitude,
+            'title': self.title,
+            'place': self.place,
+            'time': self.time,
+            'updated': self.updated,
+            'override_directory': self.override_directory
+        }
+
+        geojson.set_coordinates(
+            get_geojson_latlon(geojson['properties'])
+        )
+
+        return geojson
 
 
 class ShakeMap(Base):
@@ -963,11 +1074,6 @@ class ShakeMap(Base):
     begin_timestamp = Column(Float)
     end_timestamp = Column(Float)
     superceded_timestamp = Column(Float)
-    gray = Column(Integer)
-    green = Column(Integer)
-    yellow = Column(Integer)
-    orage = Column(Integer)
-    red = Column(Integer)
     override_directory = Column(String(255))
 
     products = relationship('Product',
@@ -1083,6 +1189,13 @@ class ShakeMap(Base):
                 return product
         
         return None
+    
+    def get_product(self, product_type):
+        for product in self.products:
+            if product.product_type == product_type:
+                return product
+        
+        return None
 
     def old_maps(self):
         """
@@ -1173,6 +1286,38 @@ class ShakeMap(Base):
         FacilityShaking.sort_by = sort_by
         self.facility_shaking = sorted(self.facility_shaking, reverse=reverse)
 
+    @hybrid_property
+    def geojson(self):
+        geojson = GeoJson()
+        geojson['properties'] = {
+            'shakecast_id': self.shakecast_id,
+            'shakemap_id': self.shakemap_id,
+            'event_id': self.event_id,
+            'shakemap_version': self.shakemap_version,
+            'status': self.status,
+            'type': self.type,
+            'map_status': self.map_status,
+            'event_version': self.event_version,
+            'generating_server': self.generating_server,
+            'region': self.region,
+            'lat_min': self.lat_min,
+            'lat_max': self.lat_max,
+            'lon_min': self.lon_min,
+            'lon_max': self.lon_max,
+            'generation_timestamp': self.generation_timestamp,
+            'recieve_timestamp': self.recieve_timestamp,
+            'begin_timestamp': self.begin_timestamp,
+            'end_timestamp': self.end_timestamp,
+            'superceded_timestamp': self.superceded_timestamp,
+            'override_directory': self.override_directory
+        }
+
+        geojson.set_coordinates(
+            get_geojson_latlon(geojson['properties'])
+        )
+
+        return geojson
+
 
 class Product(Base):
     __tablename__ = 'product'
@@ -1210,6 +1355,14 @@ class Product(Base):
                                                      self.source,
                                                      self.update_username,
                                                      self.update_timestamp)
+
+    @hybrid_property
+    def file_name(self):
+        if self.shakemap:
+            file_name = os.path.join(self.shakemap.directory_name, self.product_type)
+            return file_name
+        
+        return None
 
 
 class LocalProduct(Base):
