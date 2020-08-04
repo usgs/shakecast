@@ -144,14 +144,17 @@ export class MapComponent implements OnInit, OnDestroy {
 
     getBasemap() {
         return L.tileLayer(
-            'https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token=' + this.mapKey,
-            {
-                maxZoom: 18,
-                attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, ' +
-                '<a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ' +
-                'Imagery � <a href="http://mapbox.com">Mapbox</a>',
-                id: 'mapbox.streets'
-            }
+          'https://services.arcgisonline.com/' +
+              'arcgis/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}',
+          {
+            attribution:
+              'Esri, HERE, Garmin, Intermap, increment P Corp., ' +
+              'GEBCO, USGS, FAO, NPS, NRCAN, GeoBase, IGN, Kadaster NL, ' +
+              'Ordnance Survey, Esri Japan, METI, Esri China (Hong Kong), ' +
+              'swisstopo, © OpenStreetMap contributors, and the GIS User ' +
+              'Community',
+            maxZoom: 16
+          }
         );
     }
 
