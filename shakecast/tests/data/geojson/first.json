@@ -1,0 +1,61 @@
+{
+"type": "FeatureCollection",
+"metadata": {
+"generated": 1597256457000,
+"url": "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/4.5_day.geojson",
+"title": "USGS Magnitude 4.5+ Earthquakes, Past Day",
+"status": 200,
+"api": "1.10.3",
+"count": 12
+},
+"features": [
+{
+"type": "Feature",
+"properties": {
+"mag": 5,
+"place": "228 km SSW of Severo-Kuril’sk, Russia",
+"time": 1597253402214,
+"updated": 1597255017040,
+"tz": null,
+"url": "https://earthquake.usgs.gov/earthquakes/eventpage/us6000bdgz",
+"detail": "https://earthquake.usgs.gov/earthquakes/feed/v1.0/detail/us6000bdgz.geojson",
+"felt": null,
+"cdi": null,
+"mmi": null,
+"alert": null,
+"status": "reviewed",
+"tsunami": 0,
+"sig": 385,
+"net": "us",
+"code": "6000bdgz",
+"ids": ",us6000bdgz,",
+"sources": ",us,",
+"types": ",origin,phase-data,",
+"nst": null,
+"dmin": 4.675,
+"rms": 0.67,
+"gap": 97,
+"magType": "mb",
+"type": "earthquake",
+"title": "M 5.0 - 228 km SSW of Severo-Kuril’sk, Russia"
+},
+"geometry": {
+"type": "Point",
+"coordinates": [
+154.8063,
+48.81,
+45.86
+]
+},
+"id": "us6000bdgz"
+}
+],
+"bbox": [
+-175.5813,
+-55.3528,
+10,
+167.5404,
+48.81,
+254.4
+]
+}

@@ -62,5 +62,47 @@ class TestImportFromDirectory(unittest.TestCase):
         shakemap_from_db = session.query(ShakeMap).filter(ShakeMap.shakemap_id == event.event_id).first()
         self.assertIsNotNone(shakemap_from_db)
 
+
+class TestImportUpdatedEvent(unittest.TestCase):
+
+    @dbconnect
+    def test_importFirst(self, session=None):
+        json_file = os.path.join(get_test_dir(), 'data', 'geojson', 'first.json')
+
+        pg = ProductGrabber()
+        with open(json_file) as json_file_:
+            pg.json_feed = json.loads(json_file_.read())
+
+        pg.read_json_feed()
+        pg.get_new_events()
+
+        event = session.query(Event).filter(Event.event_id == 'us6000bdgz').first()
+        self.assertIsNotNone(event)
+
+    @dbconnect
+    def test_importUpdated(self, session=None):
+        json_file = os.path.join(get_test_dir(), 'data', 'geojson', 'first.json')
+
+        pg = ProductGrabber()
+        with open(json_file) as json_file_:
+            pg.json_feed = json.loads(json_file_.read())
+
+        pg.read_json_feed()
+        pg.get_new_events()
+
+        event = session.query(Event).filter(Event.event_id == 'us6000bdgz').first()
+        self.assertIsNotNone(event)
+
+        pg = ProductGrabber()
+        json_file = os.path.join(get_test_dir(), 'data', 'geojson', 'updated.json')
+        with open(json_file) as json_file_:
+          pg.json_feed = json.loads(json_file_.read())
+
+        pg.read_json_feed()
+        pg.get_new_events()
+
+        event = session.query(Event).filter(Event.event_id == 'NEW_ID').first()
+        self.assertIsNotNone(event)
+
 if __name__ == '__main__':
     unittest.main()
