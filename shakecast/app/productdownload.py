@@ -128,7 +128,7 @@ class ProductGrabber(object):
 
                 reprocess = True
                 for old_event in old_events:
-                    if old_event.updated and old_event.updated >= event.updated:
+                    if old_event and old_event.updated and old_event.updated >= eq['properties']['updated']:
                         reprocess = False
 
                 if reprocess is True:
@@ -157,6 +157,7 @@ class ProductGrabber(object):
             event.lat = event_coords[1]
             event.depth = event_coords[2]
             event.type = 'scenario' if scenario is True else 'event'
+            event.updated = eq['properties']['updated']
 
             # determine whether or not an event should be kept
             # based on group definitions. Should always be true for scenario runs
