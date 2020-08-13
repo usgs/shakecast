@@ -1,6 +1,7 @@
 import unittest
 
 from shakecast.app.orm import dbconnect, engine, metadata
+from shakecast.app.orm.data import load_data
 from shakecast.app.orm.util import check_testing
 
 class BaseTest(unittest.TestCase):
@@ -12,3 +13,6 @@ class BaseTest(unittest.TestCase):
     if check_testing() is True:
         metadata.drop_all(engine)
         metadata.create_all(engine)
+
+        load_data()
+
