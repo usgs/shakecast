@@ -38,10 +38,13 @@ class TestNewEvent(unittest.TestCase):
         new_event = session.query(Event).first()
         processed_events = process_events([new_event], session)
 
+        if new_event is None:
+            return None
+
         for event in processed_events:
             self.assertNotEqual(event.status, 'new')
         
-        self.assertIsNotNone(event.geojson)
+        self.assertIsNotNone(new_event.geojson)
 
     @dbconnect
     def test_heartbeat(self, session=None):

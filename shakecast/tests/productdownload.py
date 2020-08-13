@@ -5,6 +5,8 @@ from shakecast.app.productdownload import *
 from shakecast.app.orm import dbconnect, ShakeMap
 from shakecast.app.util import get_test_dir
 
+from basetest import BaseTest
+
 class TestProductGrabber(unittest.TestCase):
     '''
     Test functions for the ProductGrabber class
@@ -63,7 +65,7 @@ class TestImportFromDirectory(unittest.TestCase):
         self.assertIsNotNone(shakemap_from_db)
 
 
-class TestImportUpdatedEvent(unittest.TestCase):
+class TestImportUpdatedEvent(BaseTest):
 
     @dbconnect
     def test_importFirst(self, session=None):
@@ -102,6 +104,7 @@ class TestImportUpdatedEvent(unittest.TestCase):
         pg.get_new_events()
 
         event = session.query(Event).filter(Event.event_id == 'NEW_ID').first()
+
         self.assertIsNotNone(event)
 
 if __name__ == '__main__':

@@ -10,7 +10,7 @@ from shakecast.app.productdownload import geo_json, download_scenario
 from shakecast.app.servertestfunctions import system_test
 from shakecast.app.task import Task
 from shakecast.app.util import merge_dicts, Clock, SC
-from util import create_fac, create_group, create_user
+from .util import create_fac, create_group, create_user
 from .eventprocessing import *
 from .grid import *
 from .impact import *
