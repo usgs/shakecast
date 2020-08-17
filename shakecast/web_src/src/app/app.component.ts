@@ -9,7 +9,7 @@ import { UserService } from '@core/user.service';
   styleUrls: ['./app.component.css'],
   encapsulation: ViewEncapsulation.None,
 })
-export class AppComponent implements OnInit, OnDestroy {
+export class AppComponent {
     options = {
         timeOut: 4000,
         lastOnBottom: true,
@@ -19,29 +19,11 @@ export class AppComponent implements OnInit, OnDestroy {
         showProgressBar: false,
         pauseOnHover: true
     };
-    subscriptions: any[] = [];
 
     constructor(private userService: UserService,
                 public router: Router
-                ) {}
+                ) {
 
-    ngOnInit() {
-        // Skip to dashboard if user already logged in
-        this.subscriptions.push(this.userService.checkLoggedIn().subscribe((data: any) => {
-            if (data.loggedIn === true) {
-                this.userService.loggedIn = data.success;
-                this.userService.isAdmin = data.isAdmin;
-            }
-        }));
-    }
-
-    ngOnDestroy() {
-        this.endSubscriptions();
-    }
-
-    endSubscriptions() {
-        for (const sub of this.subscriptions) {
-            this.subscriptions[sub].unsubscribe();
-        }
+      this.userService.getUser();
     }
 }

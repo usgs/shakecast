@@ -1,9 +1,10 @@
 
-import {throwError as observableThrowError,  Observable } from 'rxjs';
+import {throwError as observableThrowError,  Observable, Subject } from 'rxjs';
 // user.service.ts
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
+import { BehaviorSubject } from 'rxjs';
 
 
 
@@ -17,6 +18,7 @@ export class User {
 
 @Injectable()
 export class UserService {
+  public user$ = new BehaviorSubject(null);
   public loggedIn = false;
   public isAdmin = false;
   public username = '';
@@ -27,7 +29,7 @@ export class UserService {
 
   login(username: string, password: string) {
     return this._http.post('api/login', {username: username,
-                                         password: password}, {});
+                                         password: password});
   }
 
    logout() {
@@ -38,8 +40,13 @@ export class UserService {
     });
   }
 
-  checkLoggedIn() {
-    return this._http.get('/api/logged_in');
+  getUser() {
+    this._http.get('api/current-user').subscribe((user) => {
+        if (!user) {
+          this.router.navigate(['/login']);
+        }
+        this.user$.next(user);
+    });
   }
 
   private handleError (error: any) {

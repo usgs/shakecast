@@ -13,7 +13,7 @@ export class AdminGuard implements CanActivate {
     canActivate(route: ActivatedRouteSnapshot,
                 state: RouterStateSnapshot): Observable<boolean>|boolean {
         console.log('AdminGuard#canActivate called');
-        if (this.user.isAdmin) {
+        if (this.user.user$.value.user_type === 'ADMIN') {
             return true;
         }
         // not logged in so redirect to login page

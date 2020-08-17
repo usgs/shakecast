@@ -7,11 +7,13 @@
             <div class="link" (click)="changeRoute('/shakecast/user-profile')">
                 <a routerLink="/shakecast/user-profile">User Profile</a>
             </div>
-            <div class="link" 
-                    *ngIf="userService.isAdmin"
-                    (click)="changeRoute('/shakecast-admin')">
-                <a routerLink="/shakecast-admin">Admin Panel</a>
-            </div>
+            <ng-container *ngIf="userService.user$ | async as user">
+              <div class="link" 
+                      *ngIf="user.user_type == 'ADMIN'"
+                      (click)="changeRoute('/shakecast-admin')">
+                  <a routerLink="/shakecast-admin">Admin Panel</a>
+              </div>
+            </ng-container>
             <div class="link" (click)="logout()">
                 <a (click)="logout()">Logout</a>
             </div>
