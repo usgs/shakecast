@@ -92,15 +92,14 @@ def login(session=None):
     user.pop('_sa_instance_state', None)
     return jsonify(user)
 
-@app.route('/api/logged_in')
+@app.route('/api/current-user')
 def logged_in():
-    try:
-        is_admin = current_user.is_admin()
-    except Exception:
-        is_admin = False
-    return jsonify(success=True,
-                   loggedIn=bool(current_user.is_authenticated),
-                   isAdmin=bool(is_admin))
+    if current_user:
+        user = current_user.__dict__.copy()
+        user.pop('_sa_instance_state', None)
+        return jsonify(user)
+    
+    return None
 
 @app.route('/api/logout')
 def logout():
@@ -200,7 +199,11 @@ def event_by_id(event_id, session=None):
                     .first())
 
     if event is None:
-      return jsonify(False)
+        event = (session.query(Event)
+                        .filter(Event.event_id == event_id)
+                        .first())
+        if event is None:
+            return jsonify(False)
 
     eq_geojson = GeoJsonFeatureCollection()
     eq_geojson.add_feature(event.geojson)

@@ -5,14 +5,14 @@ import { Observable } from "rxjs";
 
 @Injectable()
 export class LoginGuard implements CanActivate {
-    constructor(private user: UserService,
+    constructor(private userService: UserService,
                 private router: Router) {}
 
     canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot):Observable<boolean>|boolean {
-        console.log('LoginGuard#canActivate called');
-        if (this.user.loggedIn) {
-            return true
+        if (this.userService.user$.value) {
+          return true;
         }
+
         // not logged in so redirect to login page
         this.router.navigate(['/login']);
         return false;
