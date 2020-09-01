@@ -120,11 +120,66 @@ pip uninstall usgs-shakecast
 ~~~
 
 ## Admin Changes in V4
-Although V4 has an entirely new codebase, the administration process remains the same. One detail, which you can take advantage of, or simply ignore, is a user's ability to change their own password, email information, and group associations within the web interface. This is an effort to protect our users' passwords from being stored in plain text in the ShakeCast Inventory Workbook; instead, a default password can be used during configuration, then changed later through the web.
+Although V4 has an entirely new codebase, the administration process remains the same. One detail, which you can take advantage of, or simply ignore, is a user's ability to change their own password and email once logged into the user interface. This is an effort to protect our users' passwords from being stored in plain text in the ShakeCast Inventory Workbook; instead, a default password can be used during configuration, then changed later through the web.
 
-## Coming Soon...
 ### HAZUS AEBM
-Using the newly developed HAZUS Advanced Engineering Building Module, ShakeCast V4 will determine potential impact by analyzing multiple spectral accelerations. This provides a much clearer picture of the shaking and allows us to make more precise impact estimates than ever before. Checkout [AEBM Implementation](aebm.html) for a more detailed explanation of this new strategy.
+Using the newly developed HAZUS Advanced Engineering Building Module, ShakeCast V4 can determine potential impact by analyzing multiple spectral accelerations. This provides a much clearer picture of earthquake shaking and allows us to make more precise impact estimates than ever before. Checkout our [AEBM Implementation](aebm.html) for a more detailed explanation of this new strategy.
 
-### Connection to MySQL Database
-Although pyCast is distributed with a file-based SQLite database, some of our more demanding users may require a more robust system. Specifically, users with dense inventories that may  For these users, we will offer an extension of pyCast that will allow you to connect to a MySQL-like database. 
+
+### MySQL Database Connection
+MySQL connection is a built-in feature in ShakeCast V4 and organizations with many facilities (~45,000 or more) will find that this upgrade is actually necessary. There are many ways to run a MySQL database, but the simplest is to install the database on the same server on which ShakeCast is running. The following is an example of how to do this on a CentOS/Redhat Linux server.
+
+~~~
+sudo yum install python-devel
+sudo yum install mysql mysql-devel mysql-lib
+sudo yum install MySQL-python
+sudo pip install --trusted-host pypi.python.org  mysql-python
+~~~
+
+You can adjust this methodology for any flavor of Linux you might have installed ShakeCast on. Once these packages are installed, you can create a new MySQL user ():
+
+~~~
+mysql -u root -p
+GRANT ALL PRIVILEGES ON *.* TO 'sc'@'localhost' IDENTIFIED BY 'P@s$w0rd123!';
+\q
+~~~
+
+The username of your new user is "sc" and the password is "P@s$w0rd123!" if you simply copied and pasted the command above. However, you should customize your username and password. Next, log back into MySQL with the user you just created and create a new database:
+
+~~~
+mysql -u sc -p
+CREATE DATABASE pycast
+\q
+~~~
+
+Your database is not ready to go! Head to your ShakeCast web interface and go to the Settings page. Select "MySQL" from the dropdown database options and enter the username and password you input into MySQL. Save those configurations and restart ShakeCast. Confirm your new configurations work by heading back to the Settings page and clicking "Run System Test."
+
+
+### Implementing HTTPS for ShakeCast
+ShakeCast V4 utilizes an extremely lightweight web server that doesn't natively support SSL access. If you are running ShakeCast outside of your organizations network, it is probably important for you to use SSL to access ShakeCast. This is still acheivable by installing a full-featured web server in front of ShakeCast and port forwarding to ShakeCast's web port. Start by actually changing ShakeCast's web port from the web interface's Settings page. Now you can install a web server and allow it to listen on ports 80 and 443. The following is an example NGINX configuration file that redirects web access to SSL and forward those SSL requests to ShakeCast's web port:
+
+~~~
+server {
+    # Listen on port 80, but rewrite the url using https
+    listen 80 default_server;
+
+    server_name _;
+
+    return 301 https://$host$request_uri;
+}
+
+server {
+    listen       443 ssl;
+
+    # You will have to get and install your own SSL certificates
+    ssl_certificate /etc/nginx/certs/cert.pem;
+    ssl_certificate_key /etc/nginx/certs/privkey.pem;
+
+    location / {
+        proxy_pass http://localhost:SHAKECAST_WEB_PORT/;
+        proxy_redirect off;
+    }
+}
+~~~
+
+where SHAKECAST_WEB_PORT is the port you have re-assigned ShakeCast through the Settings page.
