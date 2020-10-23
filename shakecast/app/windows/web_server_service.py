@@ -9,7 +9,7 @@ import traceback
 import urllib2
 
 from ..util import get_logging_dir, SC
-from ...web_server import start as startweb
+from ...api import start as startweb
 
 log_file = os.path.join(get_logging_dir(), 'sc-web-server.log')
 logging.basicConfig(
