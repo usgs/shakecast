@@ -5,7 +5,7 @@ import traceback
 import urllib2
 
 from shakecast.app.util import SC, get_logging_dir
-from shakecast.web_server import start as start_web_server
+from shakecast.api import start as start_web_server
 
 
 class ShakecastWebServer(object):
