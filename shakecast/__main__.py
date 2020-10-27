@@ -101,9 +101,13 @@ def start():
             time.sleep(10)
 
 def restart_services():
-    controls.stop()
-    time.sleep(10)
+  try:
     controls.start()
+  except Exception as e:
+    print '''
+    Processes already running or unable to start.
+    '''
+    print str(e)
 
 def shutdown():
     write_status('stopped')
