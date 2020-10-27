@@ -107,7 +107,6 @@ def restart_services():
     print '''
     Processes already running or unable to start.
     '''
-    print str(e)
 
 def shutdown():
     write_status('stopped')
