@@ -95,6 +95,7 @@ def start():
         while status == 'running':
             status = read_status()
             if check_running() is False and status == 'running':
+                print 'Restarting services...'
                 restart_services()
 
             time.sleep(10)
