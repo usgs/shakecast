@@ -78,5 +78,11 @@ def load_data(session=None):
     if len(users) == 0:
         add_data.append(sc_admin)
     
-    session.bulk_save_objects(add_data)
+    for data in add_data:
+        try:
+          session.add(data)
+          session.commit
+        except Exception:
+          print 'Error adding {} to database'.format(data.name)
+      
     session.commit()
