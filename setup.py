@@ -19,13 +19,16 @@ with open(path.join(here, 'README.md'), encoding='utf-8') as f:
 with open(path.join(here, 'requirements.txt'), 'r') as f:
     req_list = f.read().splitlines()
 
+with open(path.join(here, 'shakecast/version'), 'r') as f:
+    release_version = f.read()
+
 setup(
     name='usgs-shakecast',
 
     # Versions should comply with PEP440.  For a discussion on single-sourcing
     # the version across setup.py and the project code, see
     # https://packaging.python.org/en/latest/single_source_version.html
-    version='4.1.1',
+    version=release_version,
 
     description='Real time facility monitoring and notifications for earthquake impacts',
     long_description=long_description,
