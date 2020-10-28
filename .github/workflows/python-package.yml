@@ -9,6 +9,12 @@ on:
   pull_request:
     branches: [ master ]
 
+env:
+  SC_CI: 1
+  SC_SMTP_FROM: shakecast.ci@github.com
+  SC_SMTP_PORT: 1025
+  SC_SMTP_SERVER: localhost  
+
 jobs:
   build:
     runs-on: ubuntu-latest
