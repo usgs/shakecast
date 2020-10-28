@@ -41,4 +41,5 @@ jobs:
     - name: Test install
       run: |
         python -m shakecast start &
+        sleep 10
         curl localhost:5000
