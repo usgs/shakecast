@@ -11,7 +11,7 @@ on:
 
 jobs:
   build:
-    runs-on: centos-latest
+    runs-on: ubuntu-latest
     strategy:
       matrix:
         python-version: [2.7]
