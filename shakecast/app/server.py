@@ -36,6 +36,7 @@ class Server(object):
         self.socket = socket.socket()
         self.sleep = 2
         self.connections = {}
+        self.connected = False
         self.queue = []
         self.print_out = ''
         self.silent = False
@@ -60,17 +61,15 @@ class Server(object):
         """
         Connects the server to a specific socket
         """
-        
-        connected = False
         attempts = 0
-        while connected is False and attempts < 60:
+        while self.connected is False and attempts < 20:
             try:
                 self.socket.bind(('', self.port))
                 self.socket.listen(5)
-                connected = True
+                self.connected = True
                 
             except:
-                logging.info('Failed to get port for server: {}'.format(self.port))
+                logging.info('Failed to get port {} for ShakeCast server. Shakecast is either already running or another application is using the port.'.format(self.port))
                 time.sleep(2)
                 
             attempts += 1
@@ -515,14 +514,13 @@ class Server(object):
 
 
 if __name__ == '__main__':
-    logging.info('start')
+    logging.info('Starting shakecast server.')
     startup()
     sc_server = Server()
-    # start shakecast
-    sc_server.start_shakecast()
-    
-    # catch crashes
-    while sc_server.stop_server is False:
-        sc_server.stop_loop = False
+    if sc_server.connected is True:
+        # start shakecast
+        sc_server.start_shakecast()
         sc_server.loop()
+    else:
+        logging.info('Unable to bind to port {}, shutting down...'.format(sc_server.port))
     

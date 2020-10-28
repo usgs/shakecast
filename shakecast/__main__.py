@@ -18,19 +18,28 @@ if on_windows():
 
 def check_running():
     ##### replace with actual server health checks #####
-    shakecast_process_count = get_shakecast_process_count()
-    if shakecast_process_count < 4:
-        return False
-    
-    return True
+    shakecast_processes = get_shakecast_processes()
 
-def get_shakecast_process_count():
+    api_check = False
+    server_check = False
+    for process in shakecast_processes:
+        if 'shakecast.api' in process:
+            api_check = True
+        if 'shakecast.app.server' in process:
+            server_check = True
+    
+    return api_check and server_check
+
+def get_shakecast_processes():
     processes = subprocess.check_output(['ps', 'axww']).split('\n')
-    shakecast_process_count = 0
+    shakecast_processes = []
     for process in processes:
-        if 'python -m shakecast start' in process:
-            shakecast_process_count += 1
-    return shakecast_process_count
+        if ('shakecast.api' in process
+              or 'shakecast.app.server' in process
+              and process not in shakecast_processes):
+            shakecast_processes += [process]
+  
+    return processes
 
 def invalid():
     print '''
@@ -91,19 +100,17 @@ def start():
     controls.start()
 
     if not on_windows():
-        # keep alive on linux to watch the services
-        while status == 'running':
-            status = read_status()
-            if check_running() is False and status == 'running':
-                print 'Restarting services...'
-                restart_services()
-
-            time.sleep(10)
+      while status == 'running':
+          status = read_status()
+          if check_running() is False and status == 'running':
+              print 'Restarting services...'
+              restart_services()
+          time.sleep(10)
 
 def restart_services():
   try:
     controls.start()
-  except Exception as e:
+  except Exception:
     print '''
     Processes already running or unable to start.
     '''

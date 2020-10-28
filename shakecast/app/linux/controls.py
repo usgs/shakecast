@@ -1,13 +1,11 @@
+import os
 
 from server_service import ShakecastServer
 from web_server_service import ShakecastWebServer
 
 def start():
-    server = ShakecastServer()
-    web_server = ShakecastWebServer()
-
-    server.start_daemon()
-    web_server.start_daemon()
+    os.system('python -m shakecast.api &')
+    os.system('python -m shakecast.app.server &')
 
 def stop():
     server = ShakecastServer()
