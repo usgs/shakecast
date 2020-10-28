@@ -61,7 +61,8 @@ login_manager.login_view = 'index'
 # send Angular 2 files
 @app.route('/<path:filename>')
 def client_app_angular2_folder(filename):
-    return send_from_directory(os.path.join(BASE_DIR), filename)
+    file_name = os.path.join(BASE_DIR, filename)
+    return send_from_directory(BASE_DIR, filename)
 
 @login_manager.user_loader
 @dbconnect
@@ -94,7 +95,7 @@ def login(session=None):
 
 @app.route('/api/current-user')
 def logged_in():
-    if current_user:
+    if current_user and current_user.is_authenticated:
         user = current_user.__dict__.copy()
         user.pop('_sa_instance_state', None)
         return jsonify(user)
@@ -440,12 +441,15 @@ def get_users(session=None):
 @app.route('/api/users/current', methods=['GET', 'POST'])
 @login_required
 def get_current_user():
-    user = current_user
-    user_dict = user.__dict__.copy()
-    user_dict.pop('_sa_instance_state', None)
-    user_dict['password'] = ''
+    if current_user and current_user.is_authenticated:
+        user = current_user
+        user_dict = user.__dict__.copy()
+        user_dict.pop('_sa_instance_state', None)
+        user_dict['password'] = ''
         
-    return jsonify(user_dict)
+        return jsonify(user_dict)
+    else:
+      return None
 
 @app.route('/api/shakemaps')
 @login_required
@@ -806,7 +810,8 @@ def start():
     
     # don't start the web server if we're letting an extension do it
     if 'web_server' not in sc.dict['extensions']:
-        app.run(host='0.0.0.0', port=int(sc.dict['web_port']), threaded=True)
+        print 'Running on web server on port: {}'.format(sc.dict['web_port'])
+        app.run(host='0.0.0.0', port=int(sc.dict['web_port']))
 
 if __name__ == '__main__':
     if len(sys.argv) > 1:

@@ -41,7 +41,7 @@ export class UserService {
   }
 
   getUser() {
-    this._http.get('api/current-user').subscribe((user) => {
+    this._http.get('api/users/current').subscribe((user) => {
         if (!user) {
           this.router.navigate(['/login']);
         }

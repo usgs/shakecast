@@ -47,6 +47,7 @@ def ci_init():
     sc.dict['SMTP']['from'] = os.environ.get('SC_SMTP_FROM', '')
     sc.dict['SMTP']['security'] = os.environ.get('SC_SMTP_SECURITY', '')
     sc.dict['SMTP']['port'] = int(os.environ.get('SC_SMTP_PORT', ''))
+    sc.dict['web_port'] = int(os.environ.get('SC_WEB_PORT', 5000))
 
     sc.save_dict()
 

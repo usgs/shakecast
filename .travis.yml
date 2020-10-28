@@ -27,7 +27,10 @@ install:
 script:
   - coverage run -m shakecast.tests.bundle
   - docker-compose up -d
-  
+  - python -m shakecast start &
+  - wait 10
+  - curl localhost
+
 after_success:
   - codecov
 

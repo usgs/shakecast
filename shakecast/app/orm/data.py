@@ -78,5 +78,10 @@ def load_data(session=None):
     if len(users) == 0:
         add_data.append(sc_admin)
     
-    session.bulk_save_objects(add_data)
+    try:
+        session.bulk_save_objects(add_data)
+    except Exception:
+        # might fail on some OS if the data is already present
+        pass
+
     session.commit()
