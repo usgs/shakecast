@@ -40,6 +40,6 @@ jobs:
         codecov
     - name: Test install
       run: |
-        sudo python -m shakecast start &
+        python -m shakecast start &
         curl localhost
         
