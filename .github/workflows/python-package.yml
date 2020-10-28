@@ -26,11 +26,11 @@ jobs:
       run: |
         pip install -r requirements.txt
         pip install codecov
-        python -m shakecast.app.startup
-        python -m shakecast.tests.smtpserver &
+        sudo python -m shakecast.app.startup
+        sudo python -m shakecast.tests.smtpserver &
     - name: Test
       run: |
-        coverage run -m shakecast.tests.bundle
+        sudo coverage run -m shakecast.tests.bundle
         codecov
     - name: Test install
       run: |
