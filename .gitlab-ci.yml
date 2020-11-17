@@ -18,10 +18,12 @@ stages:
 .build-compose:
   image: tiangolo/docker-with-compose:latest
   before_script:
+    - docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
     - docker-compose -f docker-compose.yml up -d
     - sleep 2
     - docker ps
   after_script:
+    - docker logout
     - docker-compose -f docker-compose.yml down
     - docker-compose -f docker-compose.yml rm
 
