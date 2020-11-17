@@ -29,6 +29,8 @@ stages:
 
 app-test:
   stage: test
+  tages:
+    - shakecast-dev
   only:
     - merge_requests
   extends: .build-compose
