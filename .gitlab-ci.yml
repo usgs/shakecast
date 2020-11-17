@@ -1,13 +1,13 @@
-include:
-  - project: 'ghsc/hazdev/pipeline-build-template'
-    ref: 'master'
-    file: 'templates/library.yml'
+image: docker:latest
 
-image: ${DEVOPS_REGISTRY}usgs/centos:latest
+services:
+  - docker:dind
   
 variables:
   IMAGE_NAME: "$CI_PROJECT_NAME:${CI_PIPELINE_ID}"
   REGISTRY_IMAGE_NAME: "shakecast/$CI_PROJECT_NAME"
+  DOCKER_DRIVER: overlay
+  
     
 stages:
   - build
@@ -18,18 +18,16 @@ stages:
 .build-compose:
   image: tiangolo/docker-with-compose:latest
   before_script:
-    - docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
     - docker-compose -f docker-compose.yml up -d
     - sleep 2
     - docker ps
   after_script:
-    - docker logout
     - docker-compose -f docker-compose.yml down
     - docker-compose -f docker-compose.yml rm
 
 app-test:
   stage: test
-  tages:
+  tags:
     - shakecast-dev
   only:
     - merge_requests
