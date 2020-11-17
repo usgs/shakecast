@@ -1,0 +1,52 @@
+include:
+  - project: 'ghsc/hazdev/pipeline-build-template'
+    ref: 'master'
+    file: 'templates/library.yml'
+
+image: ${DEVOPS_REGISTRY}usgs/centos:latest
+  
+variables:
+  IMAGE_NAME: "$CI_PROJECT_NAME:${CI_PIPELINE_ID}"
+  REGISTRY_IMAGE_NAME: "shakecast/$CI_PROJECT_NAME"
+    
+stages:
+  - build
+  - test
+  - release
+  - deploy
+
+.build-compose:
+  image: tiangolo/docker-with-compose:latest
+  before_script:
+    - docker-compose -f docker-compose.yml up -d
+    - sleep 2
+    - docker ps
+  after_script:
+    - docker-compose -f docker-compose.yml down
+    - docker-compose -f docker-compose.yml rm
+
+app-test:
+  stage: test
+  only:
+    - merge_requests
+  extends: .build-compose
+  script:
+    - docker exec -e SC_CI=1 -e SC_SMTP_FROM='shakecast.ci@github.com' -e SC_SMTP_PORT=1025 -e SC_SMTP_SERVER='localhost' shakecast-lite_web-server_1 python -m shakecast.app.startup
+    - docker exec shakecast-lite_web-server_1 python -m shakecast.tests.smtpserver &
+    - docker exec shakecast-lite_web-server_1 python -m pip install codecov
+    - docker exec -e TESTING_APP_ENV='testing' shakecast-lite_web-server_1 coverage run -m shakecast.tests.bundle
+  after_script:
+    - docker exec shakecast-lite_web-server_1 codecov
+
+release-staging:
+  stage: release
+  image: tiangolo/docker-with-compose:latest
+  tags:
+    - shakecast-dev
+  only:
+    - master
+  except:
+    - schedules
+  script:
+    - docker-compose down
+    - docker-compose up -d
