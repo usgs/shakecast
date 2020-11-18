@@ -1,14 +1,17 @@
-image: docker:latest
+image: docker:19.03.12
 
-services:
-  - docker:dind
-  
 variables:
   IMAGE_NAME: "$CI_PROJECT_NAME:${CI_PIPELINE_ID}"
   REGISTRY_IMAGE_NAME: "shakecast/$CI_PROJECT_NAME"
   DOCKER_DRIVER: overlay
-  
-    
+  DOCKER_TLS_CERTDIR: "/certs"
+
+services:
+  - docker:19.03.12-dind
+
+before_script:
+  - docker info
+
 stages:
   - build
   - test
@@ -16,8 +19,8 @@ stages:
   - deploy
 
 .build-compose:
-  image: tiangolo/docker-with-compose:latest
   before_script:
+    - apk add docker-compose
     - docker-compose -f docker-compose.yml up -d
     - sleep 2
     - docker ps
