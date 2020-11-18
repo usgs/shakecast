@@ -17,15 +17,9 @@ stages:
   - release
   - deploy
 
-.build-compose:
+.compose:
   before_script:
     - apk add docker-compose
-    - docker-compose -f docker-compose.yml up -d
-    - sleep 2
-    - docker ps
-  after_script:
-    - docker-compose -f docker-compose.yml down
-    - docker-compose -f docker-compose.yml rm
 
 app-test:
   stage: test
@@ -33,12 +27,22 @@ app-test:
     - shakecast-dev
   only:
     - merge_requests
+  extends: .compose
   script:
-    - docker info
+    - docker-compose up -d
+    - docker exec -e SC_CI=1 -e SC_SMTP_FROM='shakecast.ci@github.com' -e SC_SMTP_PORT=1025 -e SC_SMTP_SERVER='localhost' shakecast-lite_web-server_1 python -m shakecast.app.startup
+    - docker exec shakecast-lite_web-server_1 python -m shakecast.tests.smtpserver &
+    - docker exec shakecast-lite_web-server_1 python -m pip install codecov
+    - docker exec -e TESTING_APP_ENV='testing' shakecast-lite_web-server_1 coverage run -m shakecast.tests.bundle
+  after_script:
+    - docker exec shakecast-lite_web-server_1 codecov
+    - docker-compose down
+    - docker-compose rm
+    
 
 release-staging:
   stage: release
-  image: tiangolo/docker-with-compose:latest
+  extends: .compose
   tags:
     - shakecast-dev
   only:
@@ -46,5 +50,4 @@ release-staging:
   except:
     - schedules
   script:
-    - docker-compose down
-    - docker-compose up -d
+    - docker-compose up --build -d
