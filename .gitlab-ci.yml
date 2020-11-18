@@ -1,0 +1,50 @@
+image: docker:19.03.13
+
+variables:
+  IMAGE_NAME: "$CI_PROJECT_NAME:${CI_PIPELINE_ID}"
+  REGISTRY_IMAGE_NAME: "shakecast/$CI_PROJECT_NAME"
+  DOCKER_TLS_CERTDIR: "/certs"
+
+services:
+  - docker:19.03.13-dind
+
+before_script:
+  - docker info
+
+stages:
+  - build
+  - test
+  - release
+  - deploy
+
+.build-compose:
+  before_script:
+    - apk add docker-compose
+    - docker-compose -f docker-compose.yml up -d
+    - sleep 2
+    - docker ps
+  after_script:
+    - docker-compose -f docker-compose.yml down
+    - docker-compose -f docker-compose.yml rm
+
+app-test:
+  stage: test
+  tags:
+    - shakecast-dev
+  only:
+    - merge_requests
+  script:
+    - docker info
+
+release-staging:
+  stage: release
+  image: tiangolo/docker-with-compose:latest
+  tags:
+    - shakecast-dev
+  only:
+    - master
+  except:
+    - schedules
+  script:
+    - docker-compose down
+    - docker-compose up -d
