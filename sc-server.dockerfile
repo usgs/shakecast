@@ -1,4 +1,6 @@
-FROM shakecast/centos
+ARG FROM_IMAGE=usgs/centos:7
+
+FROM $FROM_IMAGE
 
 COPY . /usr/local/shakecast
 
@@ -11,8 +13,9 @@ RUN mkdir shakecast/backups; \
 
 ENV SC_DOCKER 1
 ENV SC_HOME /usr/local/shakecast/shakecast
+ENV APP_SERVER true
 
 EXPOSE 1981
 
-RUN chmod +x sc-server.entrypoint.sh
-ENTRYPOINT ["./sc-server.entrypoint.sh"]
+RUN chmod +x entrypoint.sh
+ENTRYPOINT ["./entrypoint.sh"]

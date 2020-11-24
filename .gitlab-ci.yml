@@ -3,7 +3,11 @@ image: docker:19.03.13
 variables:
   IMAGE_NAME: "$CI_PROJECT_NAME:${CI_PIPELINE_ID}"
   REGISTRY_IMAGE_NAME: "shakecast/$CI_PROJECT_NAME"
-  DOCKER_TLS_CERTDIR: "/certs"
+  DOCKER_HOST: tcp://docker:2375
+  DOCKER_DRIVER: overlay2
+  DOCKER_TLS_CERTDIR: ""
+  GIT_SSL_NO_VERIFY: "1"
+
 
 services:
   - docker:19.03.13-dind
@@ -17,9 +21,12 @@ stages:
   - release
   - deploy
 
-.compose:
+.build-server:
   before_script:
-    - apk add docker-compose
+    - docker build -f sc-server.dockerfile -t scserver:build .
+    - docker run -d -e TESTING_APP_ENV='testing' -e SC_CI=1 -e SC_SMTP_FROM='shakecast.ci@github.com' -e SC_SMTP_PORT=1025 -e SC_SMTP_SERVER='localhost' --entrypoint=/bin/sh scserver:build
+    - docker exec scserver:build python -m shakecast.tests.smtpserver &
+    - docker exec scserver:build python -m pip install codecov
 
 app-test:
   stage: test
@@ -27,27 +34,9 @@ app-test:
     - shakecast-dev
   only:
     - merge_requests
-  extends: .compose
+  extends: .build-server
   script:
-    - docker-compose up -d
-    - docker exec -e SC_CI=1 -e SC_SMTP_FROM='shakecast.ci@github.com' -e SC_SMTP_PORT=1025 -e SC_SMTP_SERVER='localhost' shakecast-lite_web-server_1 python -m shakecast.app.startup
-    - docker exec shakecast-lite_web-server_1 python -m shakecast.tests.smtpserver &
-    - docker exec shakecast-lite_web-server_1 python -m pip install codecov
-    - docker exec -e TESTING_APP_ENV='testing' shakecast-lite_web-server_1 coverage run -m shakecast.tests.bundle
+    - docker exec -e scserver:build coverage run -m shakecast.tests.bundle
   after_script:
-    - docker exec shakecast-lite_web-server_1 codecov
-    - docker-compose down
-    - docker-compose rm
-    
-
-release-staging:
-  stage: release
-  extends: .compose
-  tags:
-    - shakecast-dev
-  only:
-    - master
-  except:
-    - schedules
-  script:
-    - docker-compose up --build -d
+    - docker exec scserver:build codecov
+    - docker stop scserver:build

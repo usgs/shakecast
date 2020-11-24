@@ -11,8 +11,9 @@ RUN mkdir shakecast/backups; \
 
 ENV SC_DOCKER 1
 ENV SC_HOME /usr/local/shakecast/shakecast
+ENV APP_SERVER false
 
 EXPOSE 5000
 
-RUN chmod +x web-server.entrypoint.sh
-ENTRYPOINT ["./web-server.entrypoint.sh"]
+RUN chmod +x entrypoint.sh
+ENTRYPOINT ["./entrypoint.sh"]
