@@ -1,4 +1,4 @@
-image: docker:19.03.13
+image: docker:18.09.8
 
 variables:
   IMAGE_NAME: "$CI_PROJECT_NAME:${CI_PIPELINE_ID}"
@@ -10,7 +10,7 @@ variables:
 
 
 services:
-  - docker:19.03.13-dind
+  - docker:18.09.8-dind
 
 before_script:
   - docker info
