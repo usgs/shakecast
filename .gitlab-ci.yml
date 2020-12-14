@@ -23,7 +23,9 @@ stages:
     - docker build -f sc-server.dockerfile -t scserver:build .
     - docker run -d -e TESTING_APP_ENV='testing' -e SC_CI=1 -e SC_SMTP_FROM='shakecast.ci@github.com' -e SC_SMTP_PORT=1025 -e SC_SMTP_SERVER='localhost' --name=sc-server-build --entrypoint=tail scserver:build -f /dev/null
     - docker exec sc-server-build python -m shakecast.tests.smtpserver &
-    - docker exec sc-server-build python -m pip install codecov
+    - curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py
+    - docker exec sc-server-build python get-pip.py --trusted-host pypi.org --trusted-host files.pythonhosted.org
+    - docker exec sc-server-build pip install codecov
   after_script:
     - docker rm -f sc-server-build
 
