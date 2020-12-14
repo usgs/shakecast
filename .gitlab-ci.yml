@@ -21,9 +21,11 @@ stages:
 .build-server:
   before_script:
     - docker build -f sc-server.dockerfile -t scserver:build .
-    - docker run -d -e TESTING_APP_ENV='testing' -e SC_CI=1 -e SC_SMTP_FROM='shakecast.ci@github.com' -e SC_SMTP_PORT=1025 -e SC_SMTP_SERVER='localhost' --entrypoint=/bin/sh scserver:build
-    - docker exec scserver:build python -m shakecast.tests.smtpserver &
-    - docker exec scserver:build python -m pip install codecov
+    - docker run -d -e TESTING_APP_ENV='testing' -e SC_CI=1 -e SC_SMTP_FROM='shakecast.ci@github.com' -e SC_SMTP_PORT=1025 -e SC_SMTP_SERVER='localhost' --name=sc-server-build --entrypoint=tail scserver:build -f /dev/null
+    - docker exec sc-server-build python -m shakecast.tests.smtpserver &
+    - docker exec sc-server-build python -m pip install codecov
+  after_script:
+    - docker rm -f sc-server-build
 
 app-test:
   stage: test
