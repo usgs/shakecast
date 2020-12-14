@@ -3,12 +3,14 @@ image: docker:19.03.13
 variables:
   IMAGE_NAME: "$CI_PROJECT_NAME:${CI_PIPELINE_ID}"
   REGISTRY_IMAGE_NAME: "shakecast/$CI_PROJECT_NAME"
+  DOCKER_TLS_CERTDIR: "/certs"
+  DOCKER_DRIVER: overlay2
 
 services:
   - docker:19.03.13-dind
 
-before_script:
-  - docker info
+#before_script:
+#  - docker info
 
 stages:
   - build
@@ -29,9 +31,10 @@ app-test:
     - shakecast-dev
   only:
     - merge_requests
-  extends: .build-server
+  #extends: .build-server
   script:
-    - docker exec -e scserver:build coverage run -m shakecast.tests.bundle
+    - echo "SCRIPT IS HERE"
+    #- docker exec -e scserver:build coverage run -m shakecast.tests.bundle
   after_script:
-    - docker exec scserver:build codecov
-    - docker stop scserver:build
+    #- docker exec scserver:build codecov
+    #- docker stop scserver:build
