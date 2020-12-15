@@ -5,7 +5,6 @@ variables:
   REGISTRY_IMAGE_NAME: "shakecast/$CI_PROJECT_NAME"
   DOCKER_DRIVER: overlay2
 
-
 services:
   - docker:19.03.13-dind
 
@@ -21,23 +20,24 @@ stages:
 .build-server:
   before_script:
     - docker build -f sc-server.dockerfile -t scserver:build .
-    - docker run -d -e TESTING_APP_ENV='testing' -e SC_CI=1 -e SC_SMTP_FROM='shakecast.ci@github.com' -e SC_SMTP_PORT=1025 -e SC_SMTP_SERVER='localhost' --name=sc-server-build --entrypoint=tail scserver:build -f /dev/null
-    - docker exec sc-server-build python -m shakecast.tests.smtpserver &
-    - docker exec sc-server-build python get-pip.py --trusted-host pypi.org --trusted-host files.pythonhosted.org
-    - docker exec sc-server-build pip install codecov --trusted-host pypi.org --trusted-host files.pythonhosted.org
   after_script:
     - docker rm -f sc-server-build
 
+build-images:
+  stage: build
+  script:
+    - docker build -f sc-server.dockerfile -t scserver:build .
+
 app-test:
   stage: test
+  image: scserver:build
   tags:
     - shakecast-dev
   only:
     - merge_requests
   extends: .build-server
+  before_script:
+    - ./test_env.sh
   script:
-    - echo "SCRIPT IS HERE"
-    #- docker exec -e scserver:build coverage run -m shakecast.tests.bundle
-  after_script:
-    #- docker exec scserver:build codecov
-    #- docker stop scserver:build
+    - coverage run -m shakecast.tests.bundle
+    - codecov

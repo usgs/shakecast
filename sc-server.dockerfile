@@ -18,4 +18,6 @@ ENV APP_SERVER true
 EXPOSE 1981
 
 RUN chmod +x entrypoint.sh
+RUN chmod +x test_env.sh
+
 ENTRYPOINT ["./entrypoint.sh"]
