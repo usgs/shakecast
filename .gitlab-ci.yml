@@ -1,5 +1,10 @@
 image: docker:19.03.13
 
+include:
+  - project: 'ghsc/hazdev/pipeline-build-template'
+    ref: 'master'
+    file: 'templates/library.yml'
+
 variables:
   IMAGE_NAME: "$CI_PROJECT_NAME:${CI_PIPELINE_ID}"
   SERVER_REGISTRY_IMAGE_NAME: "shakecast/server"
@@ -18,17 +23,18 @@ stages:
   - release
   - deploy
 
-build-images:
+build-test-images:
   stage: build
+  tags:
+    - shakecast-dev
   only:
     - merge_requests
   script:
-    - docker build -f sc-server.dockerfile . -t ${CODE_REGISTRY_IMAGE}/${SERVER_REGISTRY_IMAGE_NAME}:${CI_PIPELINE_ID}
-    - docker push ${CODE_REGISTRY_IMAGE}/${SERVER_REGISTRY_IMAGE_NAME}:${CI_PIPELINE_ID}
+    - docker build -f sc-server.dockerfile . -t shakecast-server:test
 
 app-test:
   stage: test
-  image: ${CODE_REGISTRY_IMAGE}/${SERVER_REGISTRY_IMAGE_NAME}:${CI_PIPELINE_ID}
+  image: shakecast-server:test
   tags:
     - shakecast-dev
   only:
