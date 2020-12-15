@@ -2,8 +2,9 @@ image: docker:19.03.13
 
 variables:
   IMAGE_NAME: "$CI_PROJECT_NAME:${CI_PIPELINE_ID}"
-  REGISTRY_IMAGE_NAME: "shakecast/$CI_PROJECT_NAME"
+  SERVER_REGISTRY_IMAGE_NAME: "shakecast/server"
   DOCKER_DRIVER: overlay2
+  
 
 services:
   - docker:19.03.13-dind
@@ -17,25 +18,21 @@ stages:
   - release
   - deploy
 
-.build-server:
-  before_script:
-    - docker build -f sc-server.dockerfile -t scserver:build .
-  after_script:
-    - docker rm -f sc-server-build
-
 build-images:
   stage: build
+  only:
+    - merge_requests
   script:
-    - docker build -f sc-server.dockerfile -t scserver:build .
+    - docker build -f sc-server.dockerfile . -t ${CODE_REGISTRY_IMAGE}/${SERVER_REGISTRY_IMAGE_NAME}:${CI_PIPELINE_ID}
+    - docker push ${CODE_REGISTRY_IMAGE}/${SERVER_REGISTRY_IMAGE_NAME}:${CI_PIPELINE_ID}
 
 app-test:
   stage: test
-  image: scserver:build
+  image: ${CODE_REGISTRY_IMAGE}/${SERVER_REGISTRY_IMAGE_NAME}:${CI_PIPELINE_ID}
   tags:
     - shakecast-dev
   only:
     - merge_requests
-  extends: .build-server
   before_script:
     - ./test_env.sh
   script:
