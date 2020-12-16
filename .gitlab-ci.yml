@@ -8,14 +8,8 @@ include:
 variables:
   IMAGE_NAME: "$CI_PROJECT_NAME:${CI_PIPELINE_ID}"
   SERVER_REGISTRY_IMAGE_NAME: "shakecast/server"
+  API_REGISTRY_IMAGE_NAME: "shakecast/api-server"
   DOCKER_DRIVER: overlay2
-  
-
-services:
-  - docker:19.03.13-dind
-
-before_script:
-  - docker info
 
 stages:
   - build
@@ -23,18 +17,7 @@ stages:
   - release
   - deploy
 
-build-test-images:
-  stage: build
-  tags:
-    - shakecast-dev
-  only:
-    - merge_requests
-  script:
-    - docker build -f sc-server.dockerfile . -t shakecast-server:test
-
-app-test:
-  stage: test
-  image: shakecast/centos
+.python-test:
   tags:
     - shakecast-dev
   only:
@@ -43,5 +26,64 @@ app-test:
     - cd ${CI_PROJECT_DIR}
     - chmod +x test_env.sh
     - ./test_env.sh
+
+.shakecast-dev:
+  tags:
+    - shakecast-dev
+
+
+# BUILD STEPS
+build-test-images:
+  stage: build
+  extends: .shakecast-dev
+  services:
+    - docker:19.03.13-dind
+  only:
+    - merge_requests
   script:
-    - coverage run -m shakecast.tests.bundle
+    - docker build -f sc-server.dockerfile . -t shakecast-server:test
+    - docker build -f web-server.dockerfile . -t shakecast-web-server:test
+
+
+# TESTING THE PYTHON APP
+app-test:
+  stage: test
+  image: shakecast/centos
+  extends: 
+    - .shakecast-dev
+    - .python-test
+  script:
+    - python -m shakecast.tests.bundle
+
+api-test:
+  stage: test
+  image: shakecast/centos
+  extends: 
+    - .shakecast-dev
+    - .python-test
+  before_script:
+    - yum install -y curl
+  script:
+    - python -m shakecast.api &
+    - curl localhost:5000
+
+# RELEASE CONTAINERS
+release-dev:
+  stage: release
+  extends:
+    - .dind
+  tags:
+    - build
+  only:
+    - master
+  except:
+    - schedules
+  script:
+    - docker build -f sc-server.dockerfile . -t $CODE_REGISTRY_IMAGE/$SERVER_REGISTRY_IMAGE_NAME:dev
+    - docker build -f web-server.dockerfile . -t $CODE_REGISTRY_IMAGE/$API_REGISTRY_IMAGE_NAME:dev
+    - docker push $CODE_REGISTRY_IMAGE/$SERVER_REGISTRY_IMAGE_NAME:dev
+    - docker push $CODE_REGISTRY_IMAGE/$API_REGISTRY_IMAGE_NAME:dev
+  after_script:
+    - docker rmi $CODE_REGISTRY_IMAGE/$SERVER_REGISTRY_IMAGE_NAME:dev
+    - docker rmi $CODE_REGISTRY_IMAGE/$API_REGISTRY_IMAGE_NAME:dev
+
