@@ -1,6 +1,4 @@
-ARG FROM_IMAGE=usgs/centos:7
-
-FROM $FROM_IMAGE
+FROM shakecast/centos
 
 COPY . /usr/local/shakecast
 

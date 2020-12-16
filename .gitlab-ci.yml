@@ -34,13 +34,14 @@ build-test-images:
 
 app-test:
   stage: test
-  image: shakecast-server:test
+  image: shakecast/centos
   tags:
     - shakecast-dev
   only:
     - merge_requests
   before_script:
+    - cd ${CI_PROJECT_DIR}
+    - chmod +x test_env.sh
     - ./test_env.sh
   script:
     - coverage run -m shakecast.tests.bundle
-    - codecov
