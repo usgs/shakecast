@@ -1,1 +1,84 @@
 **/node_modules
+.git
+
+# From .gitignore
+data/
+build/
+!shakecast/tests/data
+tmp/
+logs/
+docs/
+update-feed/
+modules/
+docs/
+pypy/
+dist/
+inspection/
+new_event/
+pdf/
+!default.json
+!default.html
+.DS_Store
+*.pyc
+*.egg-info/
+*~
+*.db
+conf/sc_back.json
+*.DS_Store
+*-test.py
+server-messages.json
+.vscode/
+sc_back.json
+pycast_watcher.pid
+.status
+npm-debug.log
+impact.json
+
+# See http://help.github.com/ignore-files/ for more about ignoring files.
+
+# compiled output
+/dist
+/dist-server
+/tmp
+/out-tsc
+#sc/view
+
+# dependencies
+/node_modules
+node_modules
+
+# IDEs and editors
+/.idea
+.project
+.classpath
+.c9/
+*.launch
+.settings/
+*.sublime-workspace
+
+# IDE - VSCode
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+
+# misc
+/.sass-cache
+/connect.lock
+/coverage
+/libpeerconnection.log
+npm-debug.log
+testem.log
+/typings
+.coverage
+htmlcov/
+
+
+# e2e
+/e2e/*.js
+/e2e/*.map
+
+# System Files
+.DS_Store
+Thumbs.db

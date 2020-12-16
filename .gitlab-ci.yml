@@ -1,9 +1,15 @@
 image: docker:19.03.13
 
+include:
+  - project: 'ghsc/hazdev/pipeline-build-template'
+    ref: 'master'
+    file: 'templates/library.yml'
+
 variables:
   IMAGE_NAME: "$CI_PROJECT_NAME:${CI_PIPELINE_ID}"
-  REGISTRY_IMAGE_NAME: "shakecast/$CI_PROJECT_NAME"
-  DOCKER_TLS_CERTDIR: "/certs"
+  SERVER_REGISTRY_IMAGE_NAME: "shakecast/server"
+  DOCKER_DRIVER: overlay2
+  
 
 services:
   - docker:19.03.13-dind
@@ -17,34 +23,25 @@ stages:
   - release
   - deploy
 
-.build-compose:
-  before_script:
-    - apk add docker-compose
-    - docker-compose -f docker-compose.yml up -d
-    - sleep 2
-    - docker ps
-  after_script:
-    - docker-compose -f docker-compose.yml down
-    - docker-compose -f docker-compose.yml rm
-
-app-test:
-  stage: test
+build-test-images:
+  stage: build
   tags:
     - shakecast-dev
   only:
     - merge_requests
   script:
-    - docker info
+    - docker build -f sc-server.dockerfile . -t shakecast-server:test
 
-release-staging:
-  stage: release
-  image: tiangolo/docker-with-compose:latest
+app-test:
+  stage: test
+  image: shakecast/centos
   tags:
     - shakecast-dev
   only:
-    - master
-  except:
-    - schedules
+    - merge_requests
+  before_script:
+    - cd ${CI_PROJECT_DIR}
+    - chmod +x test_env.sh
+    - ./test_env.sh
   script:
-    - docker-compose down
-    - docker-compose up -d
+    - coverage run -m shakecast.tests.bundle
