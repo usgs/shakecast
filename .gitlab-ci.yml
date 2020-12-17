@@ -121,7 +121,7 @@ test-staging:
     - .shakecast-dev
     - .dind
   before_script:
-    - docker rm -f shakecast-dev || true
+    - docker rm -f shakecast-test || true
     - docker rmi $CODE_REGISTRY_IMAGE/$SERVER_REGISTRY_IMAGE_NAME:test || true
   script:
     - docker run -p 5000 --name=shakecast-test --entrypoint=tail $CODE_REGISTRY_IMAGE/$SERVER_REGISTRY_IMAGE_NAME:dev -f /dev/null
