@@ -15,6 +15,7 @@ stages:
   - build
   - test
   - release
+  - staging
   - deploy
 
 .python-test:
@@ -35,6 +36,11 @@ stages:
   before_script:
     - echo ${CI_COMMIT_REF_NAME} > shakecast/version
 
+.build:
+  tags:
+    - build
+  except:
+    - schedules
 
 # BUILD STEPS
 build-test-images:
@@ -76,12 +82,9 @@ release-dev:
   extends:
     - .dind
     - .release
-  tags:
-    - build
+    - .build
   only:
     - master
-  except:
-    - schedules
   script:
     - docker build -f sc-server.dockerfile . -t $CODE_REGISTRY_IMAGE/$SERVER_REGISTRY_IMAGE_NAME:dev
     - docker build -f web-server.dockerfile . -t $CODE_REGISTRY_IMAGE/$API_REGISTRY_IMAGE_NAME:dev
@@ -91,3 +94,44 @@ release-dev:
     - docker rmi $CODE_REGISTRY_IMAGE/$SERVER_REGISTRY_IMAGE_NAME:dev
     - docker rmi $CODE_REGISTRY_IMAGE/$API_REGISTRY_IMAGE_NAME:dev
 
+release-prod:
+  stage: release
+  extends:
+    - .dind
+    - .release
+    - .build
+  only:
+    - tags
+  script:
+    - docker build -f sc-server.dockerfile . -t $CODE_REGISTRY_IMAGE/$SERVER_REGISTRY_IMAGE_NAME:latest
+    - docker build -f web-server.dockerfile . -t $CODE_REGISTRY_IMAGE/$API_REGISTRY_IMAGE_NAME:latest
+    - docker push $CODE_REGISTRY_IMAGE/$SERVER_REGISTRY_IMAGE_NAME:latest
+    - docker push $CODE_REGISTRY_IMAGE/$API_REGISTRY_IMAGE_NAME:latest
+  after_script:
+    - docker rmi $CODE_REGISTRY_IMAGE/$SERVER_REGISTRY_IMAGE_NAME:latest
+    - docker rmi $CODE_REGISTRY_IMAGE/$API_REGISTRY_IMAGE_NAME:latest
+
+# STAGING
+test-staging:
+  stage: staging
+  only:
+    - master
+  when: manual
+  extends: 
+    - .shakecast-dev
+    - .dind
+  script:
+    - docker run -p 8080:5000 --name=shakecast-test --entrypoint=tail $CODE_REGISTRY_IMAGE/$SERVER_REGISTRY_IMAGE_NAME:dev -f /dev/null
+    - docker exec shakecast-test python -m shakecast start &
+
+prod-staging:
+  stage: staging
+  only:
+    - tags
+  when: manual
+  extends: 
+    - .shakecast-dev
+    - .dind
+  script:
+    - docker run -p 9090:5000 --name=shakecast-test --entrypoint=tail $CODE_REGISTRY_IMAGE/$SERVER_REGISTRY_IMAGE_NAME:latest -f /dev/null
+    - docker exec shakecast-test python -m shakecast start &
