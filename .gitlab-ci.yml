@@ -120,8 +120,11 @@ test-staging:
   extends: 
     - .shakecast-dev
     - .dind
+  before_script:
+    - docker rm -f shakecast-dev
+    - docker rmi $CODE_REGISTRY_IMAGE/$SERVER_REGISTRY_IMAGE_NAME:test
   script:
-    - docker run -p 8080:5000 --name=shakecast-test --entrypoint=tail $CODE_REGISTRY_IMAGE/$SERVER_REGISTRY_IMAGE_NAME:dev -f /dev/null
+    - docker run -p 5000 --name=shakecast-test --entrypoint=tail $CODE_REGISTRY_IMAGE/$SERVER_REGISTRY_IMAGE_NAME:dev -f /dev/null
     - docker exec shakecast-test python -m shakecast start &
 
 prod-staging:
@@ -132,6 +135,9 @@ prod-staging:
   extends: 
     - .shakecast-dev
     - .dind
+  before_script:
+    - docker rm -f shakecast-prod
+    - docker rmi $CODE_REGISTRY_IMAGE/$SERVER_REGISTRY_IMAGE_NAME:latest
   script:
-    - docker run -p 9090:5000 --name=shakecast-test --entrypoint=tail $CODE_REGISTRY_IMAGE/$SERVER_REGISTRY_IMAGE_NAME:latest -f /dev/null
-    - docker exec shakecast-test python -m shakecast start &
+    - docker run -p 5000 --name=shakecast-prod --entrypoint=tail $CODE_REGISTRY_IMAGE/$SERVER_REGISTRY_IMAGE_NAME:latest -f /dev/null
+    - docker exec shakecast-prod python -m shakecast start &
