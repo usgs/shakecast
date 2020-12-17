@@ -31,13 +31,17 @@ stages:
   tags:
     - shakecast-dev
 
+.release:
+  before_script:
+    - echo ${CI_COMMIT_REF_NAME} > shakecast/version
+
 
 # BUILD STEPS
 build-test-images:
   stage: build
-  extends: .shakecast-dev
-  services:
-    - docker:19.03.13-dind
+  extends: 
+    - .shakecast-dev
+    - .dind
   only:
     - merge_requests
   script:
@@ -62,9 +66,9 @@ api-test:
     - .shakecast-dev
     - .python-test
   before_script:
-    - yum install -y curl
   script:
     - python -m shakecast.api &
+    - sleep 5
     - curl localhost:5000
 
 # RELEASE CONTAINERS
@@ -72,6 +76,7 @@ release-dev:
   stage: release
   extends:
     - .dind
+    - .release
   tags:
     - build
   only:
