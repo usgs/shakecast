@@ -65,7 +65,6 @@ api-test:
   extends: 
     - .shakecast-dev
     - .python-test
-  before_script:
   script:
     - python -m shakecast.api &
     - sleep 5
