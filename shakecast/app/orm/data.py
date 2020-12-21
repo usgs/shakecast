@@ -59,29 +59,18 @@ sc_admin = User(
 
 @dbconnect
 def load_data(session=None):
-    add_data = []
-
     # add product types
     for product_type in local_product_types:
-        existing_type = session.query(LocalProductType).filter(
-            LocalProductType.name == product_type.name,
-            LocalProductType.generate_function == product_type.generate_function
-            ).first()
-
-        if existing_type:
-            continue
-        else:
-            add_data.append(product_type)
+        try:
+          session.add(product_type)
+          session.commit()
+        except Exception as e:
+          print e
+          session.rollback()
 
     # add scadmin
     users= session.query(User).filter(User.user_type.like('admin')).all()
     if len(users) == 0:
-        add_data.append(sc_admin)
-    
-    try:
-        session.bulk_save_objects(add_data)
-    except Exception:
-        # might fail on some OS if the data is already present
-        pass
+        session.add(sc_admin)
+        session.commit()
 
-    session.commit()
