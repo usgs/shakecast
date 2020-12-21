@@ -1,6 +1,9 @@
 import unittest
 
 from shakecast.app.orm import *
+from shakecast.app.orm.data import load_data
+
+load_data()
 
 class TestShakeMap(unittest.TestCase):
     def test100Red(self):
