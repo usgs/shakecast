@@ -6,10 +6,12 @@ include:
     file: 'templates/library.yml'
 
 variables:
+  DOCKER_DRIVER: overlay2
   IMAGE_NAME: "$CI_PROJECT_NAME:${CI_PIPELINE_ID}"
   SERVER_REGISTRY_IMAGE_NAME: "shakecast/server"
   API_REGISTRY_IMAGE_NAME: "shakecast/api-server"
-  DOCKER_DRIVER: overlay2
+  TWINE_USERNAME: ${PYPI_USERNAME}
+  TWINE_PASSWORD: ${PYPI_PASSWORD}
 
 stages:
   - build
@@ -17,6 +19,7 @@ stages:
   - release
   - staging
   - deploy
+  - publish
 
 .python-test:
   tags:
@@ -138,5 +141,19 @@ prod-staging:
     - docker rm -f shakecast-prod || true
     - docker rmi $CODE_REGISTRY_IMAGE/$SERVER_REGISTRY_IMAGE_NAME:latest || true
   script:
-    - docker run -d --name=shakecast-prod --entrypoint=tail $CODE_REGISTRY_IMAGE/$SERVER_REGISTRY_IMAGE_NAME:latest -f /dev/null
-    - docker exec shakecast-prod python -m shakecast start &
+    - docker run -d --name=shakecast-test --entrypoint=python $CODE_REGISTRY_IMAGE/$SERVER_REGISTRY_IMAGE_NAME:latest -m shakecast start
+
+publish-python:
+  stage: publish
+  image: shakecast/centos
+  extends: .release
+  only:
+    - tags
+  when: manual
+  script:
+    - python -m pip install --upgrade pip
+    - pip install setuptools wheel twine
+    - python setup.py bdist_wheel
+    - twine upload dist/*
+  
+

@@ -66,7 +66,6 @@ def load_data(session=None):
           session.add(local_product_type)
           session.commit()
         except Exception as e:
-          print e
           session.rollback()
 
     # add scadmin
