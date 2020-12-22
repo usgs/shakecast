@@ -138,5 +138,4 @@ prod-staging:
     - docker rm -f shakecast-prod || true
     - docker rmi $CODE_REGISTRY_IMAGE/$SERVER_REGISTRY_IMAGE_NAME:latest || true
   script:
-    - docker run -d --name=shakecast-prod --entrypoint=tail $CODE_REGISTRY_IMAGE/$SERVER_REGISTRY_IMAGE_NAME:latest -f /dev/null
-    - docker exec shakecast-prod python -m shakecast start &
+    - docker run -d --name=shakecast-test --entrypoint=python $CODE_REGISTRY_IMAGE/$SERVER_REGISTRY_IMAGE_NAME:latest -m shakecast start

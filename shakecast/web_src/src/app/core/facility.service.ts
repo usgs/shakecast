@@ -84,7 +84,7 @@ export class FacilityService {
 
             }, (error: any) => {
                 this.impactSummary.next(null);
-            })
+            });
     }
 
     getFacilityShaking(facility: any, event: any) {
