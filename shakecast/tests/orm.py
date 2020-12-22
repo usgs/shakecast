@@ -3,7 +3,6 @@ import unittest
 from shakecast.app.orm import *
 from shakecast.app.orm.data import load_data
 
-load_data()
 
 class TestShakeMap(unittest.TestCase):
     def test100Red(self):
@@ -24,6 +23,8 @@ class TestShakeMap(unittest.TestCase):
     
     @dbconnect
     def test_getProduct(self, session=None):
+        load_data(session)
+        
         sm = ShakeMap()
         lpt = session.query(LocalProductType).first()
         p = LocalProduct(
