@@ -141,8 +141,9 @@ prod-staging:
     - docker rm -f shakecast-prod || true
     - docker rmi $CODE_REGISTRY_IMAGE/$SERVER_REGISTRY_IMAGE_NAME:latest || true
   script:
-    - docker run -d --name=shakecast-test --entrypoint=python $CODE_REGISTRY_IMAGE/$SERVER_REGISTRY_IMAGE_NAME:latest -m shakecast start
+    - docker run -d --name=shakecast-prod --entrypoint=python $CODE_REGISTRY_IMAGE/$SERVER_REGISTRY_IMAGE_NAME:latest -m shakecast start
 
+# PUBLISH PACKAGES/CONTAINERS
 publish-python:
   stage: publish
   image: shakecast/centos
@@ -155,5 +156,3 @@ publish-python:
     - pip install setuptools wheel twine
     - python setup.py bdist_wheel
     - twine upload dist/*
-  
-
