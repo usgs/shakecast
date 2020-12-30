@@ -410,6 +410,17 @@ def get_test_dir():
     
     return test_dir
 
+def get_version():
+    '''
+    Open the version file generated on publish and return the value
+    '''
+    version_file = os.path.join(sc_dir(), 'version')
+    vesion = None
+    with open(version_file, 'r') as file_:
+        version = file_.read()
+    
+    return version
+
 def root_dir():
     """
     Returns the path of the root directory for the shakecast application
