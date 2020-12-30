@@ -415,9 +415,11 @@ def get_version():
     Open the version file generated on publish and return the value
     '''
     version_file = os.path.join(sc_dir(), 'version')
-    vesion = None
-    with open(version_file, 'r') as file_:
-        version = file_.read()
+    version = None
+
+    if os.path.exists(version_file):
+      with open(version_file, 'r') as file_:
+          version = file_.read()
     
     return version
 
