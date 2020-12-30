@@ -624,8 +624,10 @@ def get_settings():
             if sc.validate(json_str) is True:
                 sc.save(json_str)
     
-    sc.software_version = get_version()
-    return sc.json
+    configs = sc.dict
+    configs['Server']['update']['software_version'] = get_version()
+
+    return jsonify(configs)
 
 @app.route('/api/notification-html/<notification_type>/<name>', methods=['GET','POST'])
 @admin_only

@@ -5,8 +5,8 @@
         </h1>
         <div class="item">
             <label for="server-name">Rename your Server: </label>
-            <input id="server-name" 
-                            placeholder="ShakeCast" 
+            <input id="server-name"
+                            placeholder="ShakeCast"
                             [(ngModel)]="configs.Server.name">
         </div>
 
@@ -43,8 +43,8 @@
 
         <div class="item">
             <label for="proxy">Use a proxy: </label>
-            <input type="checkbox" 
-                        id="proxy" 
+            <input type="checkbox"
+                        id="proxy"
                         [(ngModel)]="configs.Proxy.use">
 
             <div *ngIf="configs.Proxy.use">
@@ -57,12 +57,6 @@
 
         <div class="item">
             <label for="version">Software Version: </label><p>{{ configs?.Server?.update?.software_version }}</p>
-            <div *ngIf="configs?.Server?.update?.software_version != configs?.Server?.update?.update_version">
-                <p>Please update ShakeCast</p><h3 class="button" (click)="updateService.updateShakecast()">Update</h3>
-            </div>
-            <div *ngIf="configs?.Server?.update?.software_version == configs?.Server?.update?.update_version">
-                <p>No software updates required</p>
-            </div>
         </div>
     </div>
 
@@ -94,9 +88,9 @@
                                             [side]="'left'"></info></th>
                     <td>{{ configs.Services.nighttime }}:00</td>
                     <table class="spin-table">
-                        <tr class="button spin" 
+                        <tr class="button spin"
                             (click)="nighttimeUp()"><th><i class="fa fa-chevron-up"></i></th></tr>
-                        <tr class="button spin" 
+                        <tr class="button spin"
                             (click)="nighttimeDown()"><th><i class="fa fa-chevron-down"></i></th></tr>
                     </table>
                 </tr>
@@ -112,9 +106,9 @@
                                             [side]="'left'"></info></th>
                     <td>{{ configs.Services.morning }}:00</td>
                     <table class="spin-table">
-                        <tr class="button spin" 
+                        <tr class="button spin"
                             (click)="morningUp()"><th><i class="fa fa-chevron-up"></i></th></tr>
-                        <tr class="button spin" 
+                        <tr class="button spin"
                             (click)="morningDown()"><th><i class="fa fa-chevron-down"></i></th></tr>
                     </table>
                 </tr>
@@ -122,20 +116,20 @@
                     <th>Nighttime Min Magnitude: <info [text]="'ShakeCast allows you to set a different minimum
                                                                     magnitude while you\'re not at work. This way,
                                                                     you won\'t be bothered by multiple small magnitude
-                                                                    earthquakes while you\'re at home. 
+                                                                    earthquakes while you\'re at home.
                                                                     You can set that minimum magnitude here. If you
                                                                     do not wish to utilize this setting, set the
                                                                     minimum magnitude to 0.'"
                                                             [side]="'left'"></info></th>
                     <td>{{ configs.Services.night_eq_mag_cutoff }}</td>
                     <table class="spin-table">
-                        <tr class="button spin" 
+                        <tr class="button spin"
                             (click)="configs.Services.night_eq_mag_cutoff = configs.Services.night_eq_mag_cutoff + 1"><th><i class="fa fa-chevron-up"></i></th></tr>
-                        <tr class="button spin" 
+                        <tr class="button spin"
                             (click)="configs.Services.night_eq_mag_cutoff = configs.Services.night_eq_mag_cutoff - 1"><th><i class="fa fa-chevron-down"></i></th></tr>
                     </table>
                 <tr>
-                
+
             </table>
         </div>
     </div>
