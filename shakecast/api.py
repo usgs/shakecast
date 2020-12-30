@@ -40,7 +40,7 @@ from app.notifications.builder import NotificationBuilder
 from app.notifications.templates import TemplateManager
 from app.orm import *
 # from app.sc_logging import web_logger as log
-from app.util import SC, Clock, get_tmp_dir
+from app.util import SC, Clock, get_tmp_dir, get_version
 from ui import UI
 
 BASE_DIR = os.path.join(sc_dir(),'view')
@@ -556,7 +556,6 @@ def shakemap_map(shakemap_id, session=None):
 
     return send_file(io.BytesIO(img), mimetype='image/png')
 
-
 @app.route('/api/shakemaps/<shakemap_id>/products')
 @login_required
 @dbconnect
@@ -624,6 +623,8 @@ def get_settings():
             json_str = json.dumps(configs, indent=4)
             if sc.validate(json_str) is True:
                 sc.save(json_str)
+    
+    sc.software_version = get_version()
     return sc.json
 
 @app.route('/api/notification-html/<notification_type>/<name>', methods=['GET','POST'])
