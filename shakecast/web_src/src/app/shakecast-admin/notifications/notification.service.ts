@@ -49,7 +49,7 @@ export class NotificationHTMLService {
     }
 
     newTemplate(name: string) {
-        this._http.get('admin/new-template/' + name)
+        this._http.get('api/new-template/' + name)
             .subscribe((result: any) => {
                 if (result === true) {
                     this.notService.success('Template Created', 'Created ' + name + ' template');
@@ -63,7 +63,7 @@ export class NotificationHTMLService {
 
     saveConfigs(name: string,
                 config: any) {
-        this._http.post('api/notification-config/' + config.type + '/' + name, 
+        this._http.post('api/notification-config/' + config.type + '/' + name,
                             {config: config}
         ).subscribe((result: any) => {
             this.notService.success('Success!', 'New Configurations Saved');

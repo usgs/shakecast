@@ -491,7 +491,7 @@ def get_shakemap(shakemap_id, session=None):
 @dbconnect
 def impact_summary(shakemap_id, session=None):
     shakemap = (session.query(ShakeMap)
-                .filter(ShakeMap.shakecast_id == shakemap_id)
+                .filter(ShakeMap.shakemap_id == shakemap_id)
                 .first())
 
     impact = None

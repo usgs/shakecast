@@ -2,13 +2,13 @@
   "name": "shakecast",
   "organization": "U.S. Geological Survey",
   "description": "Application for rapid ShakeMap distribution",
-  "status": "Beta",
-  "homepage": "https://github.com/usgs/shakecast",
+  "status": "Production",
+  "homepage": "https://code.usgs.gov/ghsc/esi/shakecast/shakecast-lite",
   "downloadURL": "https://github.com/usgs/shakecast/archive/master.zip",
   "openSourceProject": 1,
-  "license": "https://github.com/usgs/shakecast/blob/master/LICENSE",
+  "license": "https://code.usgs.gov/ghsc/esi/shakecast/shakecast-lite/-/blob/master/LICENSE.md",
   "vcs": "git",
-  "repository": "https://github.com/usgs/shakecast.git",
+  "repository": "https://code.usgs.gov/ghsc/esi/shakecast/shakecast-lite.git",
 
   "tags": [
     "earthquake",
@@ -32,6 +32,6 @@
     "email": "dslosky@usgs.gov"
   },
   "updated": {
-    "metadataLastUpdated": "2017-12-06"
+    "metadataLastUpdated": "2021-1-01"
   }
 }
