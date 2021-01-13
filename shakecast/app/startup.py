@@ -16,7 +16,7 @@ from util import (
 
 def startup():
     pip_init()
-    if os.environ.get('SC_DOCKER', False) is not False:
+    if int(os.environ.get('SC_DOCKER', False)):
         docker_init()
 
     if os.environ.get('SC_CI', False) is not False:
