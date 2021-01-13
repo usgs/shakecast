@@ -73,7 +73,7 @@ export class UsersService {
         this.loadingData.next(true);
         let params = new HttpParams().set('inventory', JSON.stringify(users));
         params = params.append('inventory_type', 'user');
-        this._http.delete('api/delete/inventory', {params: params})
+        this._http.delete('api/inventory/delete', {params: params})
             .subscribe((result: any) => {
                 this.getData();
                 this.loadingData.next(false);
