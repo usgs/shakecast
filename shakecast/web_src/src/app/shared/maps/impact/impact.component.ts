@@ -47,7 +47,7 @@ export class ImpactComponent implements OnInit {
       return;
     }
 
-    this.facService.getImpactSummary(eq.event_id);
+    this.facService.getImpactSummary(eq.properties.event_id);
   }
 
   ngOnDestroy() {
