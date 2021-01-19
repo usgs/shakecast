@@ -10,12 +10,23 @@ function generateGroupPoly(group) {
     return groupLayer_;
 }
 
+function translate(color: string) {
+  return {
+    gray: 'None',
+    grey: 'None',
+    green: 'Low',
+    yellow: 'Medium',
+    orange: 'Medium-High',
+    red: 'High'
+  }[color.toLowerCase()];
+}
+
 function generatePopup(group) {
     let popupStr = '';
     popupStr += `
             <table "colors-table" style="">
                 <tr>
-                    <th><h1 style="text-align:center"> ` + group['name'] + `</h1></th>
+                    <th><h1 style="text-align:center"> ` + group['properties']['name'] + `</h1></th>
                 </tr>
                 <tr>
                     <th>
@@ -25,13 +36,13 @@ function generatePopup(group) {
                 <tr>
                     <td>
                         <table>`;
-/*
-    for (const fac_type in group['info']['facilities']) {
-        if (group['info']['facilities'].hasOwnProperty(fac_type)) {
+
+    for (const fac_type in group['properties']['specs']['facilities']) {
+        if (group['properties']['specs']['facilities'].hasOwnProperty(fac_type)) {
             popupStr += `
                             <tr>
                                 <th>` + fac_type + `: </th>
-                                <td>` + group['info']['facilities'][fac_type] + `</td>
+                                <td>` + group['properties']['specs']['facilities'][fac_type] + `</td>
                             </tr>`;
         }
     }
@@ -43,20 +54,20 @@ function generatePopup(group) {
                 <th><h3 style="margin:0;border-bottom:2px #444444 solid">Notification Preferences: </h3></th>
             </tr>
         `;
-    if (group['info']['new_event'] > 0) {
+    if (group['properties']['specs']['new_event'] > 0) {
         popupStr += `
             <tr>
                 <td>
                     <table>
                         <th>New Events with Minimum Magnitude: </th>
-                        <td>` + group['info']['new_event'] + `</td>
+                        <td>` + group['properties']['specs']['new_event'] + `</td>
                     </table>
                 </td>
             </tr>
         `;
     }
 
-    if (group['info']['inspection'].length > 0) {
+    if (group['properties']['specs']['inspection'].length > 0) {
         popupStr += `
             <tr>
                 <th style="text-align:center">Facility Alert Levels</th>
@@ -66,22 +77,22 @@ function generatePopup(group) {
                     <table style="width:100%;text-align:center">
         `;
 
-        for (var i in group['info']['inspection']) {
+        for (const inspection of group['properties']['specs']['inspection']) {
 
-            var color = group['info']['inspection'][i]
-            if (color == 'yellow') {
-                color = 'gold';
+            let inspColor = inspection;
+            if (inspColor === 'yellow') {
+                inspColor = 'gold';
             }
 
-            popupStr += '<th style="color:white;padding:3px;border-radius:5px;background:' + 
-                            color + 
-                            '">' + group['info']['inspection'][i] + '</th>';
+            popupStr += '<th style="color:white;padding:3px;border-radius:5px;background:' +
+                            inspColor +
+                            '">' + translate(inspection) + '</th>';
         }
 
         popupStr += '</tr></td></table>';
     }
 
-    if (group['info']['scenario'].length > 0) {
+    if ( group['properties']['specs']['scenario'].length > 0) {
         popupStr += `
             <tr>
                 <th style="text-align:center">Scenario Alert Levels</th>
@@ -91,17 +102,17 @@ function generatePopup(group) {
                     <table style="width:100%;text-align:center">
         `;
 
-        for (var i in group['info']['scenario']) {
+        for (const inspection of group['properties']['specs']['scenario']) {
 
-            var color = group['info']['scenario'][i]
-            if (color == 'yellow') {
-                color = 'gold'
-            }
+          let inspColor = inspection;
+          if (inspColor === 'yellow') {
+              inspColor = 'gold';
+          }
 
-            popupStr += '<th style="color:white;padding:3px;border-radius:5px;background:' + 
-                            color + 
-                            '">' + group['info']['scenario'][i] + '</th>';
-        }
+          popupStr += '<th style="color:white;padding:3px;border-radius:5px;background:' +
+                          inspColor +
+                          '">' + translate(inspection) + '</th>';
+      }
 
         popupStr += '</tr></td></table>';
     }
@@ -109,11 +120,11 @@ function generatePopup(group) {
     popupStr += `<tr>
                     <table>
                         <th>Template: </th>
-                        <td>` + group['info']['template'] + `</td>
+                        <td>` + group['properties']['specs']['template'] + `</td>
                     </table>
                 </tr>
             </table>`;
-*/
+
     return popupStr;
 }
 

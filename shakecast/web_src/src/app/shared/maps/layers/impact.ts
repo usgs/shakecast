@@ -5,15 +5,8 @@ import { Layer } from './layer';
 
 import 'leaflet-makimarkers';
 import 'leaflet.markercluster';
+import { basicFacilityIcon } from './facility';
 
-const myStyle = {
-    'color': '#000000',
-    'weight': 2,
-    'opacity': 1,
-    'fillOpacity': 1,
-    'fillColor': '#ffffff',
-    'radius': 8
-};
 
 function generatePopup(fac) {
     const selectShakingTh = "border-top:2px dashed black;border-left:2px dashed black;border-right:2px dashed black;";
@@ -147,13 +140,19 @@ function createFacCluster(cluster: any) {
 }
 
 function layerGenerator(event, facData) {
-    var geoJsonLayer = L.geoJson(facData, {
+    const geoJsonLayer = L.geoJson(facData, {
         onEachFeature: onEachFeature,
         pointToLayer: function (feature, latlng) {
-            let style = myStyle;
-            style.fillColor = feature.properties.shaking.alert_level;
+          const fillColor = feature.properties.shaking.alert_level;
+          const icon_ = L.divIcon({
+            className: 'custom-div-icon',
+              html: `<i style="color:${fillColor}" class="fa fa-3x fa-lg fa-map-marker">`, // overwrite when assigned
+              iconSize:     [20, 20], // size of the icon
+              iconAnchor:   [11, 5], // point of the icon which will correspond to marker's location
+              popupAnchor:  [0, 0] // point from which the popup should open relative to the iconAnchor
+          });
 
-            return L.circleMarker(latlng, myStyle);
+         return L.marker(latlng, {icon: icon_});
         }
     });
 

@@ -6,25 +6,30 @@
         <label>Events with affected facilities</label>
     </div>
 
+    <div *ngIf="eqService.filter.shakemap">
+      <input type="checkbox" [(ngModel)]="eqService.filter.scenario">
+      <label>Scenario events</label>
+    </div>
+
     <br>
-    <input type="radio" 
-            name="timeframe" 
-            [(ngModel)]="eqService.filter.timeframe" 
+    <input type="radio"
+            name="timeframe"
+            [(ngModel)]="eqService.filter.timeframe"
             value="day">
     <label>Day</label>
-    <input type="radio" 
-            name="timeframe" 
-            [(ngModel)]="eqService.filter.timeframe" 
+    <input type="radio"
+            name="timeframe"
+            [(ngModel)]="eqService.filter.timeframe"
             value="week">
     <label>Week</label>
-    <input type="radio" 
-            name="timeframe" 
-            [(ngModel)]="eqService.filter.timeframe" 
+    <input type="radio"
+            name="timeframe"
+            [(ngModel)]="eqService.filter.timeframe"
             value="month">
     <label>Month</label>
-    <input type="radio" 
-            name="timeframe" 
-            [(ngModel)]="eqService.filter.timeframe" 
+    <input type="radio"
+            name="timeframe"
+            [(ngModel)]="eqService.filter.timeframe"
             value="all">
     <label>All time</label>
 

@@ -376,9 +376,32 @@ def get_groups(session=None):
 
     groups = query.all()
 
+    for group in groups:
+      if group:
+          users = [sql_to_obj(user.__dict__.copy()) for user in group.users]
+          inspection = group.get_alert_levels()
+          min_mag = group.get_min_mag()
+          heartbeat = group.gets_notification('heartbeat')
+          scenario = group.get_scenario_alert_levels()
+          facility_info = get_facility_info(group_name=group.name, session=session)
+          template = group.template
+
+          group.group_specs = {'inspection': inspection,
+                          'new_event': min_mag,
+                          'heartbeat': heartbeat,
+                          'scenario': scenario,
+                          'facilities': facility_info,
+                          'users': users,
+                          'template': template}
+
     group_json = GeoJsonFeatureCollection()
     for group in groups:
-        group_json.add_feature(group.geojson)
+        geojson = group.geojson
+
+        if group.group_specs:
+          geojson['properties']['specs'] = group.group_specs
+
+        group_json.add_feature(geojson)
 
     return jsonify(group_json)
 
