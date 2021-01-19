@@ -17,6 +17,7 @@ export interface Group {
 export class GroupService {
     public loadingData = new ReplaySubject(1);
     public groupData = new ReplaySubject(1);
+    public groupSummary = new ReplaySubject(1);
     public groupUsers = new ReplaySubject(1);
     public groupFacilities = new ReplaySubject(1);
     public selection = new ReplaySubject(1);
