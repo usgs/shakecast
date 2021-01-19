@@ -15,7 +15,7 @@ export class FacilityCountComponent implements OnInit {
 
   ngOnInit() {
     this.subs.add(this.facService.facilityCount.subscribe((count: any) => {
-      this.onCount(count)
+      this.onCount(count);
     }));
   }
 

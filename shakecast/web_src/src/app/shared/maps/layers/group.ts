@@ -15,7 +15,7 @@ function generatePopup(group) {
     popupStr += `
             <table "colors-table" style="">
                 <tr>
-                    <th><h1 style="text-align:center"> ` + group['name'] + `</h1></th>
+                    <th><h1 style="text-align:center"> ` + group['properties']['name'] + `</h1></th>
                 </tr>
                 <tr>
                     <th>
@@ -73,8 +73,8 @@ function generatePopup(group) {
                 color = 'gold';
             }
 
-            popupStr += '<th style="color:white;padding:3px;border-radius:5px;background:' + 
-                            color + 
+            popupStr += '<th style="color:white;padding:3px;border-radius:5px;background:' +
+                            color +
                             '">' + group['info']['inspection'][i] + '</th>';
         }
 
@@ -98,8 +98,8 @@ function generatePopup(group) {
                 color = 'gold'
             }
 
-            popupStr += '<th style="color:white;padding:3px;border-radius:5px;background:' + 
-                            color + 
+            popupStr += '<th style="color:white;padding:3px;border-radius:5px;background:' +
+                            color +
                             '">' + group['info']['scenario'][i] + '</th>';
         }
 

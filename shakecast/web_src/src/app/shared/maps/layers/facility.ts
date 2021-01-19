@@ -1,34 +1,23 @@
 import * as L from 'leaflet';
 import * as _ from 'underscore';
 
-import 'leaflet-makimarkers';
 import 'leaflet.markercluster';
 
 import { Layer } from './layer';
 
-function initIcons() {
-
-    L.MakiMarkers.accessToken = this.mapKey;
-
-    const greyIcon: any = L.MakiMarkers.icon({color: '#808080', size: 'm'});
-    const greenIcon: any = L.MakiMarkers.icon({color: '#008000', size: 'm'});
-    const yellowIcon: any = L.MakiMarkers.icon({color: '#FFD700', size: 'm'});
-    const orangeIcon: any = L.MakiMarkers.icon({color: '#FFA500', size: 'm'});
-    const redIcon: any = L.MakiMarkers.icon({color: '#FF0000', size: 'm'});
-
-    const impactIcons = {
-      gray: greyIcon,
-      green: greenIcon,
-      yellow: yellowIcon,
-      orange: orangeIcon,
-      red: redIcon
-    };
-
-    return impactIcons;
-}
+export const basicFacilityIcon = L.divIcon({
+  className: 'custom-div-icon',
+    html: '<i style="height:20px;" class="fa fa-3x fa-lg fa-map-marker">', // overwrite when assigned
+    iconSize:     [20, 20], // size of the icon
+    iconAnchor:   [9, 5], // point of the icon which will correspond to marker's location
+    popupAnchor:  [0, 0] // point from which the popup should open relative to the iconAnchor
+});
 
 function addFacMarker(fac: any,
                         silent: boolean = false) {
+    if (!this.map) {
+      return null;
+    }
 
     // create event marker and plot it
     const marker: any = this.createFacMarker(fac);
@@ -52,7 +41,7 @@ function addFacMarker(fac: any,
         this.data.facilityCluster.removeLayer(this.data.facMarker);
         this.data.facMarker.addTo(this.data.facilityLayer);
         this.data.facilityLayer.addTo(this.map);
-        marker.bindPopup(marker.popupContent)
+        marker.bindPopup(marker.popupContent);
 
     } else {
         if (this.data.facilityLayer.hasLayer(this.data.facMarker)) {
@@ -75,16 +64,15 @@ function addFacMarker(fac: any,
 }
 
 function createFacMarker(fac: any) {
-    if (!this.data.impactIcons) {
-        this.data.impactIcons = this.initIcons()
-    }
-
     let alert = 'gray';
     if ((fac['shaking']) && (fac['shaking']['alert_level'] !== 'gray')) {
-        alert = fac['shaking']['alert_level']
+        alert = fac['shaking']['alert_level'];
     }
 
-    const marker = L.marker([fac.lat, fac.lon], {icon: this.data.impactIcons[alert]});
+    const icon_ = basicFacilityIcon;
+    icon_.options.html = `<i style="color:${alert}" class="fa fa-3x fa-lg fa-map-marker">`;
+
+    const marker = L.marker([fac.lat, fac.lon], {icon: icon_});
     let desc = '';
     if (fac.html) {
         marker['popupContent'] = fac.html;
@@ -108,7 +96,7 @@ function createFacMarker(fac: any) {
 
         if (fac['green'] > 0) {
             colorTable += `<th style="background-color:green;padding:2px;color:white">
-                        ` + fac['metric']+ ': ' + fac['green'] + ` 
+                        ` + fac['metric']+ ': ' + fac['green'] + `
                     </th>`;
         }
 
@@ -254,7 +242,6 @@ class FacilityLayer extends Layer {
     addFacMarker: any = addFacMarker;
     removeFacMarker: any = removeFacMarker;
     createFacMarker: any = createFacMarker;
-    initIcons: any = initIcons;
     map: any = null;
     clear: any = clear;
 
