@@ -124,7 +124,8 @@
     }).setView([39.74739, -105], 13);
 
     L.tileLayer(
-            'https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={{ sc.map_key }}',
+      'https://services.arcgisonline.com/' +
+              'arcgis/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}',
             {
                 maxZoom: 18,
                 id: 'mapbox.light'
