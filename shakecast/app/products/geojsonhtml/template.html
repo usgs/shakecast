@@ -126,10 +126,15 @@
     L.tileLayer(
       'https://services.arcgisonline.com/' +
               'arcgis/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}',
-            {
-                maxZoom: 18,
-                id: 'mapbox.light'
-            }
+        {
+            attribution:
+            'Esri, HERE, Garmin, Intermap, increment P Corp., ' +
+            'GEBCO, USGS, FAO, NPS, NRCAN, GeoBase, IGN, Kadaster NL, ' +
+            'Ordnance Survey, Esri Japan, METI, Esri China (Hong Kong), ' +
+            'swisstopo, © OpenStreetMap contributors, and the GIS User ' +
+            'Community',
+            maxZoom: 16
+        }
     ).addTo(map);
 
     var markers = L.markerClusterGroup({
