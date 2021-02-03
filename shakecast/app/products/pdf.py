@@ -85,7 +85,7 @@ def add_impact_image_to_pdf(pdf, shakemap):
     sc = SC()
 
     impact_image = os.path.join(shakemap.local_products_dir, 'geojson_capture.html')
-    image = url_opener.open(sc.dict.get('image_server', '').format(impact_image, 'map'))
+    image = url_opener.open(sc.dict.get('image_server', '').format(impact_image, 'map_pane'))
     image_location = shakemap.save_local_product('impact.png', image, write_method='wb')
 
     pdf.image(image_location, x=left, y=top, w=width)
