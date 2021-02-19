@@ -7,6 +7,8 @@
 	<meta charset="utf-8" />
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.6.0/dist/leaflet.css" integrity="sha512-xwE/Az9zrjBIphAcBb3F6JVqxf46+CDLwfLMHloNu6KEQCAWi6HcDUbeOfBIptF7tcCzusKFjFw2yuvEpDL9wQ==" crossorigin=""/>
     <script src="https://unpkg.com/leaflet@1.6.0/dist/leaflet.js" integrity="sha512-gZwIG9x3wUXg2hdXF6+rVkLF/0Vi9U8D2Ntg4Ga5I5BZpVkVxlJWbSQtXPSiUTtC0TjtGOmxa1AJPuV0CPthew==" crossorigin=""></script>
 
@@ -23,6 +25,10 @@
 		#map {
 			width: 600px;
 			height: 400px;
+        }
+
+		#map_pane, #caption {
+			width: 600px;
         }
 
         .marker-cluster-gray {
@@ -69,14 +75,45 @@
             color: white;
             font-weight: bold;
         }
+
+        .progress .progress-bar-yellow {
+            background-color: #dd514c;
+            background-image: -moz-linear-gradient(top, #eeee5b, #c4c435);
+            background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#ffef5b), to(#ffef35));
+            background-image: -webkit-linear-gradient(top, #ffef5b, #ffef35);
+            background-image: -o-linear-gradient(top, #ffef5b, #ffef35);
+            background-image: linear-gradient(to bottom, #ffef5b, #ffef35);
+            background-repeat: repeat-x;
+            filter: progid:dximagetransform.microsoft.gradient(startColorstr='#ffee5f5b', endColorstr='#ffc43c35', GradientType=0);
+        }
+
+        .progress .progress-bar-gray {
+            background-color: #888888;
+            background-image: -moz-linear-gradient(top, #888888, #666666);
+            background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#888888), to(#666666));
+            background-image: -webkit-linear-gradient(top, #888888, #666666);
+            background-image: -o-linear-gradient(top, #888888, #666666);
+            background-image: linear-gradient(to bottom, #888888, #666666);
+            background-repeat: repeat-x;
+            filter: progid:dximagetransform.microsoft.gradient(startColorstr='#ffee5f5b', endColorstr='#ffc43c35', GradientType=0);
+        }	
 	</style>
 
 
 </head>
 <body>
 
-<div id='map'></div>
-
+    <div id="map_pane">
+        <div id='map'></div>
+        <div id="caption"><div class="progress">
+            <div id="gray" class="progress-bar progress-bar-gray" style="width:20%"></div>
+            <div id="green" class="progress-bar progress-bar-success" style="width:20%"></div>
+            <div id="yellow" class="progress-bar progress-bar-yellow" style="width:20%"></div>
+            <div id="orange" class="progress-bar progress-bar-warning" style="width:20%"></div>
+            <div id="red" class="progress-bar progress-bar-danger" style="width:20%"></div>
+        </div></div>
+        </div>
+    
 <script>
     function createFacCluster(cluster) {
         var childCount = cluster.getChildCount();
@@ -131,7 +168,7 @@
             'Esri, HERE, Garmin, Intermap, increment P Corp., ' +
             'GEBCO, USGS, FAO, NPS, NRCAN, GeoBase, IGN, Kadaster NL, ' +
             'Ordnance Survey, Esri Japan, METI, Esri China (Hong Kong), ' +
-            'swisstopo, © OpenStreetMap contributors, and the GIS User ' +
+            'swisstopo, ? OpenStreetMap contributors, and the GIS User ' +
             'Community',
             maxZoom: 16
         }
@@ -159,7 +196,9 @@
 
 		pointToLayer: function (feature, latlng) {
             let style = defaultStyle;
-            style.fillColor = feature.properties.shaking.alert_level;
+            let alert_level = feature.properties.shaking.alert_level;
+            style.fillColor = alert_level;
+            document.getElementById(alert_level).innerHTML++;
 
             return L.circleMarker(latlng, defaultStyle);
         }
