@@ -20,7 +20,7 @@ def db_test(session=None):
 
 def smtp_test():
     m = Mailer()
-    you = 'test@gmail.com'
+    you = m.me
     msg = MIMEText('This email is a test of your ShakeCast SMTP server')
     msg['Subject'] = 'ShakeCast SMTP TEST'
     msg['From'] = m.me
