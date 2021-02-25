@@ -446,7 +446,7 @@ def merge_dicts(dct, merge_dct):
 
 def lower_case_keys(input_dict):
     output_dict = {}
-    for key in input_dict.keys():
+    for key in list(input_dict.keys()):
         if isinstance(key, str):
             output_dict[key.lower()] = input_dict[key]
 
@@ -454,7 +454,7 @@ def lower_case_keys(input_dict):
 
 def non_null(input_dict):
     output_dict = {}
-    for key in input_dict.keys():
+    for key in list(input_dict.keys()):
         if input_dict[key] is not None:
             output_dict[key] = input_dict[key]
 

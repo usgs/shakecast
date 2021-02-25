@@ -41,7 +41,7 @@ def login(client, username, password):
 def is_json(json_str):
     try:
         json.loads(json_str)
-    except ValueError, e:
+    except ValueError as e:
         return False
     
     return True

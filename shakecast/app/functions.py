@@ -1,5 +1,5 @@
-from eventprocessing import check_new, run_scenario
-from inventory import (
+from .eventprocessing import check_new, run_scenario
+from .inventory import (
     delete_inventory_by_id,
     determine_xml,
     delete_scenario,
@@ -12,7 +12,7 @@ from inventory import (
     import_user_dicts,
     import_user_xml
 )
-from productdownload import geo_json, download_scenario
-from productgeneration import create_products
-from notifications.notifications import inspection_notification_service
-from servertestfunctions import system_test
+from .productdownload import geo_json, download_scenario
+from .productgeneration import create_products
+from .notifications.notifications import inspection_notification_service
+from .servertestfunctions import system_test

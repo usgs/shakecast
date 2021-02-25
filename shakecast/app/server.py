@@ -5,12 +5,12 @@ import os
 import sys
 import json
 
-from newthread import NewThread
-from task import Task
-import functions as f
-from util import *
-from startup import startup
-from sc_logging import server_logger as logging
+from .newthread import NewThread
+from .task import Task
+from . import functions as f
+from .util import *
+from .startup import startup
+import shakecast.app.env as env
 
 class Server(object):
     
@@ -52,9 +52,8 @@ class Server(object):
             'send_notifications',
             'create_products'
         ]
-        
-        sc = SC()
-        self.port = sc.dict['port']
+
+        self.port = env.SERVER_PORT
         self.socket_setup()
         
     def socket_setup(self):
@@ -69,7 +68,7 @@ class Server(object):
                 self.connected = True
                 
             except:
-                logging.info('Failed to get port {} for ShakeCast server. Shakecast is either already running or another application is using the port.'.format(self.port))
+                print('Failed to get port {} for ShakeCast server. Shakecast is either already running or another application is using the port.'.format(self.port))
                 time.sleep(2)
                 
             attempts += 1
@@ -100,6 +99,7 @@ class Server(object):
         conns = select_.select([self.socket], [], [], 0)[0]
         if len(conns) > 0:
             conn, addr = self.socket.accept()
+            print(f'New connection: ${addr}')
             conn.setblocking(0)
             
             client_thread = NewThread(func=self.handle_client,
@@ -117,18 +117,18 @@ class Server(object):
             data = ''
             part = None
             while part != "" and mess_check != []:
-                part = conn.recv(4096)
-                data += part
+                part = conn.recv(4096).decode()
+                data += str(part)
                 
                 mess_check = select_.select([conn], [], [], 0)[0]
             
-            #print 'Got Data: %s' % data
             self.user_in(data, conn)
     
     def user_in(self, data=None, conn=None):
         """
         Interpret the message that is received by the server
         """
+        print('User In: {}'.format(data))
         try:
             new_task_dict = eval(data)
             good_data = True
@@ -137,10 +137,10 @@ class Server(object):
             conn.send('Bad Command: %s' % data)
             good_data = False
 
-            logging.info('Bad Command: {}'.format(data))
+            print('Bad Command: {}'.format(data))
             
         if good_data is True:
-            for key, value in new_task_dict.iteritems():
+            for key, value in new_task_dict.items():
                 task_id = int(time.time() * 1000000)
                 try:
                     db_use = value.pop('db_use')
@@ -149,7 +149,7 @@ class Server(object):
                     
                 new_task = Task(name=key, task_id=task_id, db_use=db_use, from_user=True, **value)
                 
-                logging.info('Task added to Queue: {}'.format(str(new_task)))
+                print('Task added to Queue: {}'.format(str(new_task)))
                 if new_task.loop is True:
                     conn.send('Received looping task. Closing connection...')
                     conn.close()
@@ -164,7 +164,6 @@ class Server(object):
         that can be removed
         """
         timestamp = time.time()
-        sc = SC()
         for i,task in enumerate(self.queue):
             # run tasks if it's their time and they aren't already running
             # and the db is available
@@ -172,7 +171,7 @@ class Server(object):
                     task.status == 'stopped') and
                         (task.db_use is False or 
                             self.db_open is True or 
-                            (sc.dict['DBConnection']['type'] != 'sqlite' and 
+                            (env.DB_CONNECTION_TYPE != 'sqlite' and 
                                 task.from_user is True))):
                     
                     if task.db_use is True:
@@ -181,9 +180,9 @@ class Server(object):
                     self.last_task = time.time()
                     
                     if ((task.name not in self.debug_only)):
-                        logging.info('Running task: {}'.format(task.name))
-                    else:
-                        logging.debug('Running task: {}'.format(task.name))
+                        print('Running task: {}'.format(task.name))
+                    elif env.DEBUG_LEVEL > 0:
+                        print('Running task: {}'.format(task.name))
 
                     task_thread = NewThread(func=task.run)
                     task_thread.start()
@@ -224,9 +223,9 @@ class Server(object):
 
             int_time = int(time.time())
             self.messages[int_time] = out_str
-            if task.id in self.connections.keys():
+            if task.id in list(self.connections.keys()):
                 conn = self.connections[task.id]
-                conn.send(str(self.messages))
+                conn.send(str(self.messages).encode())
                 conn.close()
 
             task.status = 'complete'
@@ -237,12 +236,12 @@ class Server(object):
         # only log results from failed normal tasks or abnormal tasks
         if ((task.name not in self.debug_only) or
                     task.error or (task.output and task.output.get('error'))):
-            logging.info('{}: \n\tSTATUS: {} \n\tOUTPUT: {}'.format(task.name,
+            print('{}: \n\tSTATUS: {} \n\tOUTPUT: {}'.format(task.name,
                                                                     task.status,
                                                                     task.output))
-        else:
+        elif env.DEBUG_LEVEL > 0:
             # if we're debugging, log everything
-            logging.debug('{}: \n\tSTATUS: {} \n\tOUTPUT: {}'.format(task.name,
+            print('{}: \n\tSTATUS: {} \n\tOUTPUT: {}'.format(task.name,
                                                                     task.status,
                                                                     task.output))
             
@@ -271,7 +270,7 @@ class Server(object):
 
         int_time = int(time.time())
         # remove messages after 5 minutes
-        for mes_time in self.messages.keys():
+        for mes_time in list(self.messages.keys()):
             if int_time - mes_time > 300:
                 del self.messages[mes_time]
 
@@ -320,7 +319,7 @@ class Server(object):
                 'message': msg}
     
     def start_shakecast(self):
-        logging.info('Starting ShakeCast Server... ')
+        print('Starting ShakeCast Server... ')
         try:
             status = ''
             message = ''
@@ -453,7 +452,7 @@ class Server(object):
         """
         self.stop_server = True
         self.stop()
-        logging.info('ShakeCast Server Stopped...')
+        print('ShakeCast Server Stopped...')
         return {'status': 'finished',
                 'message': 'Stopping server...'}
 
@@ -500,12 +499,12 @@ class Server(object):
             current_messages = json.loads(current_messages_str)
 
             # figure out which current messages we should keep
-            for key in current_messages.keys():
+            for key in list(current_messages.keys()):
                 if int(key) > time.time() - 300:
                     keep_messages[key] = current_messages[key]
 
         # add current messages
-        for key in self.messages.keys():
+        for key in list(self.messages.keys()):
             keep_messages[key] = self.messages[key]
 
         keep_messages_str = json.dumps(keep_messages, indent=4)
@@ -514,7 +513,7 @@ class Server(object):
 
 
 if __name__ == '__main__':
-    logging.info('Starting shakecast server.')
+    print('Starting shakecast server.')
     startup()
     sc_server = Server()
     if sc_server.connected is True:
@@ -522,5 +521,5 @@ if __name__ == '__main__':
         sc_server.start_shakecast()
         sc_server.loop()
     else:
-        logging.info('Unable to bind to port {}, shutting down...'.format(sc_server.port))
+        print('Unable to bind to port {}, shutting down...'.format(sc_server.port))
     

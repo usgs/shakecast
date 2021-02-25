@@ -48,7 +48,7 @@ def generate_impact_pdf(group, shakemap, save=False, pdf_name='', template_name=
 
     facility_shaking = sorted(
         shakemap.facility_shaking, key=lambda x: x.weight, reverse=True)
-    facility_shaking = filter(lambda x: group in x.facility.groups, facility_shaking)
+    facility_shaking = [x for x in facility_shaking if group in x.facility.groups]
     add_pdf_table(pdf, configs['table']['table_head'],
                   facility_shaking)
 

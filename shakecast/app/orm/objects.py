@@ -604,7 +604,7 @@ class User(Base):
         return False
 
     def get_id(self):
-        return unicode(self.shakecast_id)
+        return str(self.shakecast_id)
 
     def is_admin(self):
         return self.user_type.lower() == 'admin'
@@ -1257,7 +1257,7 @@ class ShakeMap(Base):
         alert_level = None
         if len(self.facility_shaking) > 0:
             if group is not None:
-                facility_shaking = filter(lambda x: group in x.facility.groups, self.facility_shaking)
+                facility_shaking = [x for x in self.facility_shaking if group in x.facility.groups]
             else:
                 facility_shaking = self.facility_shaking
 
@@ -1268,7 +1268,7 @@ class ShakeMap(Base):
 
     def get_impact_summary(self, group=None):
         if group is not None:
-            facility_shaking = filter(lambda x: group in x.facility.groups, self.facility_shaking)
+            facility_shaking = [x for x in self.facility_shaking if group in x.facility.groups]
         else:
             facility_shaking = self.facility_shaking
 
@@ -1470,7 +1470,7 @@ def sql_to_obj(sql):
         obj = {}
 
         sql_class = type(sql)
-        class_keys = inspect(sql_class).all_orm_descriptors.keys()
+        class_keys = list(inspect(sql_class).all_orm_descriptors.keys())
 
         filtered_keys = [key for key in class_keys if '__' not in key and key[0] != '_']
         for attribute in filtered_keys:
@@ -1506,7 +1506,7 @@ def sql_to_obj(sql):
         if sql.get('_sa_instance_state', False):
             sql.pop('_sa_instance_state')
 
-        for key in sql.keys():
+        for key in list(sql.keys()):
             item = sql[key]
             if isinstance(item, Base) or isinstance(item, dict):
                 item = sql_to_obj(item)

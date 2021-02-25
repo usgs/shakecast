@@ -7,10 +7,13 @@ import time
 from .app.startup import pip_init
 pip_init()
 
-import app.admin as admin
-from .app.util import SC, sc_dir, on_windows
-import app.windows as winControls
-import app.linux as controls
+import pdb
+pdb.set_trace()
+
+import shakecast3.app.admin as admin
+from shakecast3.app.util import SC, sc_dir, on_windows
+import shakecast3.app.windows as winControls
+import shakecast3.app.linux as controls
 
 if on_windows():
     # use windows controls if we're in that OS
@@ -42,11 +45,11 @@ def get_shakecast_processes():
     return processes
 
 def invalid():
-    print '''
+    print('''
     Usage:
         start - Starts the ShakeCast servers
         stop - Stops the ShakeCast servers
-    '''
+    ''')
 
 def main(command = None):
     sc = SC()
@@ -89,10 +92,10 @@ def read_status():
 
 def sudo_required():
     sc = SC()
-    print '''
+    print('''
             Web port {} requires sudo:
             sudo python -m shakecast [start][stop]
-        '''.format(sc.dict['web_port'])
+        '''.format(sc.dict['web_port']))
 
 def start():
     status = 'running'
@@ -103,7 +106,7 @@ def start():
       while status == 'running':
           status = read_status()
           if check_running() is False and status == 'running':
-              print 'Restarting services...'
+              print('Restarting services...')
               restart_services()
           time.sleep(10)
 
@@ -111,9 +114,9 @@ def restart_services():
   try:
     controls.start()
   except Exception:
-    print '''
+    print('''
     Processes already running or unable to start.
-    '''
+    ''')
 
 def shutdown():
     write_status('stopped')

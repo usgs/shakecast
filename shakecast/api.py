@@ -33,15 +33,15 @@ from sqlalchemy import literal, func, desc
 from werkzeug.security import generate_password_hash, check_password_hash
 
 
-from app.impact import get_event_impact
-from app.inventory import determine_xml, get_facility_info
-from app.jsonencoders import AlchemyEncoder, GeoJsonFeatureCollection
-from app.notifications.builder import NotificationBuilder
-from app.notifications.templates import TemplateManager
-from app.orm import *
+from .app.impact import get_event_impact
+from .app.inventory import determine_xml, get_facility_info
+from .app.jsonencoders import AlchemyEncoder, GeoJsonFeatureCollection
+from .app.notifications.builder import NotificationBuilder
+from .app.notifications.templates import TemplateManager
+from .app.orm import *
 # from app.sc_logging import web_logger as log
-from app.util import SC, Clock, get_tmp_dir, get_version
-from ui import UI
+from .app.util import SC, Clock, get_tmp_dir, get_version
+from .ui import UI
 
 BASE_DIR = os.path.join(sc_dir(),'view')
 STATIC_DIR = os.path.join(sc_dir(),'view','assets')
@@ -136,7 +136,7 @@ def get_eq_data(session=None):
     DAY = 24*60*60
     query = session.query(Event)
 
-    if len(args.keys()) != 0:
+    if len(list(args.keys())) != 0:
         if args.get('group'):
             query = query.filter(Event.groups.any(Group.name.like(args['group'])))
         if args.get('latMax'):
@@ -826,7 +826,7 @@ def get_file_type(file_name):
 
 def parse_args(args_in):
     args = {}
-    for key in args_in.keys():
+    for key in list(args_in.keys()):
       args[key] = json.loads(args_in[key])
 
     return args
@@ -836,7 +836,7 @@ def start():
     
     # don't start the web server if we're letting an extension do it
     if 'web_server' not in sc.dict['extensions']:
-        print 'Running on web server on port: {}'.format(sc.dict['web_port'])
+        print('Running on web server on port: {}'.format(sc.dict['web_port']))
         app.run(host='0.0.0.0', port=int(sc.dict['web_port']))
 
 if __name__ == '__main__':

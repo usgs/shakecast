@@ -6,7 +6,7 @@ import socket
 import logging
 import os, sys
 import traceback
-import urllib2
+import urllib.request, urllib.error, urllib.parse
 
 from ..util import get_logging_dir, SC
 from ...api import start as startweb
@@ -38,7 +38,7 @@ class ShakecastWebServer (win32serviceutil.ServiceFramework):
 
         # Send the http request to shutdown the server
         try:
-            urllib2.urlopen('http://localhost:{}/shutdown'.format(web_port))
+            urllib.request.urlopen('http://localhost:{}/shutdown'.format(web_port))
         except Exception:
             logging.error('Web server not running on {}'.format(web_port))
 

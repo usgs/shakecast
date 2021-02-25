@@ -3,10 +3,10 @@ import json
 import os
 import time
 
-from urlopener import URLOpener
-from grid import ShakeMapGrid
-from orm import Event, Group, Product, ShakeMap, dbconnect
-from util import SC
+from .urlopener import URLOpener
+from .grid import ShakeMapGrid
+from .orm import Event, Group, Product, ShakeMap, dbconnect
+from .util import SC
 
 
 class ProductGrabber(object):
@@ -84,7 +84,7 @@ class ProductGrabber(object):
                 # skip earthquakes without dictionaries... why does this
                 # happen??
                 try:
-                    if eq['id'] not in self.earthquakes.keys():
+                    if eq['id'] not in list(self.earthquakes.keys()):
                         self.earthquakes[eq['id']] = eq
                 except Exception:
                     continue
@@ -99,7 +99,7 @@ class ProductGrabber(object):
 
         event_str = ''
         new_events = []
-        for eq_id in self.earthquakes.keys():
+        for eq_id in list(self.earthquakes.keys()):
             eq = self.earthquakes[eq_id]
 
             # ignore info from unfavorable networks and low mag eqs
@@ -220,7 +220,7 @@ class ProductGrabber(object):
 
         shakemap_str = ''
         new_shakemaps = []
-        for eq_id in self.earthquakes.keys():
+        for eq_id in list(self.earthquakes.keys()):
             eq = self.earthquakes[eq_id]
 
             if scenario is False:
@@ -241,8 +241,8 @@ class ProductGrabber(object):
                 eq_info = eq
 
             # check if the event has a shakemap
-            if ('shakemap' not in eq_info['properties']['products'].keys() and
-                    'shakemap-scenario' not in eq_info['properties']['products'].keys()):
+            if ('shakemap' not in list(eq_info['properties']['products'].keys()) and
+                    'shakemap-scenario' not in list(eq_info['properties']['products'].keys())):
                 continue
 
             # check for downloaded event whose id or one of its old ids
@@ -259,7 +259,7 @@ class ProductGrabber(object):
             if event is None:
                 continue
 
-            if 'shakemap-scenario' in eq_info['properties']['products'].keys():
+            if 'shakemap-scenario' in list(eq_info['properties']['products'].keys()):
                 sm_str = 'shakemap-scenario'
             else:
                 sm_str = 'shakemap'

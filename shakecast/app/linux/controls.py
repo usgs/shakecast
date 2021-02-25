@@ -1,8 +1,8 @@
 import os
 import sys
 
-from server_service import ShakecastServer
-from web_server_service import ShakecastWebServer
+from .server_service import ShakecastServer
+from .web_server_service import ShakecastWebServer
 
 def start():
     os.system('{} -m shakecast.api &'.format(sys.executable))

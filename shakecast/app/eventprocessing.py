@@ -179,9 +179,8 @@ def get_new_event_notifications(group, scenario=False, session=None):
                      .all())
 
     last_day = time.time() - 60 * 60 * 5
-    filter_nots = filter(
-        lambda x: x.event is not None and
-        (x.event.time > last_day or scenario is True), notifications)
+    filter_nots = [x for x in notifications if x.event is not None and
+        (x.event.time > last_day or scenario is True)]
 
     return filter_nots
 

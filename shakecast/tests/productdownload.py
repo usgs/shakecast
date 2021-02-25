@@ -5,7 +5,7 @@ from shakecast.app.productdownload import *
 from shakecast.app.orm import dbconnect, ShakeMap
 from shakecast.app.util import get_test_dir
 
-from basetest import BaseTest
+from .basetest import BaseTest
 
 class TestProductGrabber(unittest.TestCase):
     '''

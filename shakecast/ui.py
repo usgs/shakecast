@@ -2,9 +2,9 @@ import socket
 import time
 import select as select_
 import sys
-from app.server import Server
-from app.newthread import NewThread
-from app.util import SC
+from .app.server import Server
+from .app.newthread import NewThread
+from .app.util import SC
 
 class UI(object):
     """
@@ -45,7 +45,7 @@ class UI(object):
         message_thread = NewThread(self.get_message_loop)
         message_thread.start()
         
-        print "ShakeCast> ",
+        print("ShakeCast> ", end=' ')
         sys.stdout.flush()
         user_in = None
         while self.stop_ui is not True:
@@ -55,7 +55,7 @@ class UI(object):
             user_in = self.get_input()
             if user_in is not None:
                 sent = self.send(user_in)
-                print "\nShakeCast> ",
+                print("\nShakeCast> ", end=' ')
                 sys.stdout.flush()
             time.sleep(.1)
         
@@ -113,7 +113,7 @@ class UI(object):
                 to_server = msg
                 
             self.connect_to_server()    
-            self.conn.send(to_server)
+            self.conn.send(to_server.encode())
             
             self.conns += [self.conn]
             
@@ -152,7 +152,7 @@ class UI(object):
                 conn.close()
                 closed_conns += [conn]
                 messages += [self.parse_message(message)]
-                print message
+                print(message)
         
         # close finished connections
         self.conns = [conn for conn in self.conns
@@ -188,12 +188,12 @@ class UI(object):
                         part = conn.recv(4096)
                         data += part
                     
-                    print '\n%s' % data
+                    print('\n%s' % data)
                         
                     if self._get_message is not True:
                         self._get_message = False
                     else:
-                        print 'ShakeCast> ',
+                        print('ShakeCast> ', end=' ')
                         sys.stdout.flush()
                     
                     conn.close()

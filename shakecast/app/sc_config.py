@@ -11,19 +11,19 @@ Usage: python sc_config.py -[flag] -value
 '''
 
 import argparse
-from util import SC
+from .util import SC
 import json
 
 def sc_config(new_configs={}):
     sc = SC()
     sc_config = json.loads(sc.json)
 
-    for key, value in new_configs.iteritems():
+    for key, value in new_configs.items():
         if key in sc_config:
             if not isinstance(new_configs[key], dict):
                 sc_config[key] = value
             else:
-                for i_key, i_value in new_configs[key].iteritems():
+                for i_key, i_value in new_configs[key].items():
                     sc_config[key][i_key] = i_value
                     
     sc.json = json.dumps(sc_config)
@@ -57,11 +57,11 @@ if args.dict is None:
         new_configs.update({'host': args.host})
     
     # get rid of options that weren't specified
-    new_configs = {k:v for k,v in new_configs.iteritems()
+    new_configs = {k:v for k,v in new_configs.items()
                                         if v is not None}
-    for key, conf in new_configs.iteritems():
+    for key, conf in new_configs.items():
         if isinstance(conf, dict):
-            new_configs[key] = {k:v for k,v in new_configs[key].iteritems()
+            new_configs[key] = {k:v for k,v in new_configs[key].items()
                                     if v is not None}
             
 else:

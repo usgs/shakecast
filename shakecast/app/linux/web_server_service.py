@@ -2,7 +2,7 @@ import socket
 from multiprocessing import Process
 import os, sys
 import traceback
-import urllib2
+import urllib.request, urllib.error, urllib.parse
 
 from shakecast.app.util import SC, get_logging_dir
 from shakecast.api import start as start_web_server
@@ -20,7 +20,7 @@ class ShakecastWebServer(object):
         # Send the http request to shutdown the server
         sc = SC()
         try:
-            urllib2.urlopen('http://localhost:{}/shutdown'.format(sc.dict['web_port']))
+            urllib.request.urlopen('http://localhost:{}/shutdown'.format(sc.dict['web_port']))
         except Exception:
             # web server is not running
             pass
@@ -39,11 +39,11 @@ class ShakecastWebServer(object):
         start_web_server()
 
 def invalid():
-    print '''
+    print('''
     Invalid Command:
         start - Starts the ShakeCast Web Server
         stop - Stops the ShakeCast Web Server
-    '''
+    ''')
 
 if __name__ == '__main__':
     if len(sys.argv) > 1:

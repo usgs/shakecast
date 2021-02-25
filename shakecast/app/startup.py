@@ -1,7 +1,7 @@
 import os
 import shutil
 
-from util import (
+from .util import (
         SC,
         sc_dir,
         get_user_dir,

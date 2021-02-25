@@ -146,7 +146,7 @@ class TestDBConnet(unittest.TestCase):
 
         @dbconnect
         def db_failure(session=None):
-            raise(Exception('Testing Error'))
+            raise Exception
         
         try:
             db_failure()
@@ -223,7 +223,7 @@ class TestTask(unittest.TestCase):
     
     def test_FuncNoArgs(self):
         def func():
-            for i in xrange(1000):
+            for i in range(1000):
                 pass
             
         t = Task()
@@ -232,7 +232,7 @@ class TestTask(unittest.TestCase):
         
     def test_FuncArgs(self):
         def func(some_arg=0):
-            for i in xrange(some_arg):
+            for i in range(some_arg):
                 pass
         
         t = Task()
@@ -242,7 +242,7 @@ class TestTask(unittest.TestCase):
 
     def test_LoopSets(self):
         def func():
-            for i in xrange(1000):
+            for i in range(1000):
                 pass
             
         t = Task()

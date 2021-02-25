@@ -8,7 +8,7 @@ from werkzeug.security import generate_password_hash
 import xml.etree.ElementTree as ET
 import xmltodict
 
-from orm import (
+from .orm import (
     Aebm,
     Attribute,
     dbconnect,
@@ -241,7 +241,7 @@ def import_facility_dicts(facs=None, _user=None, session=None):
         session.commit()
 
     message = ''
-    for key, val in count_dict.iteritems():
+    for key, val in count_dict.items():
         message += '{}: {}\n'.format(key, val)
 
     log_message = ''
@@ -308,7 +308,7 @@ def import_group_dicts(groups=None, _user=None, session=None):
             if poly is not None:
                 # split up the monitoring region
                 split_poly = re.split('\s|;|,', poly)
-                split_poly = filter(None, split_poly)
+                split_poly = [_f for _f in split_poly if _f]
 
             # try to get the group if it exists
             gs = session.query(Group).filter(Group.name == name).all()
@@ -706,7 +706,7 @@ def parse_attributes_from_xml(attributes):
         return []
 
     attribute_lst= []
-    for key in attributes.keys():
+    for key in list(attributes.keys()):
         attribute = Attribute(
             name=key,
             value=attributes[key]
