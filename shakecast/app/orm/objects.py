@@ -481,13 +481,21 @@ class FacilityShaking(Base):
                                                    self.psa10,
                                                    self.psa30)
 
-    def __cmp__(self, other):
-        if int(getattr(self, self.sort_by.lower()) * 10000) > int(getattr(other, self.sort_by.lower()) * 10000):
-            return 1
-        elif int(getattr(self, self.sort_by.lower()) * 10000) < int(getattr(other, self.sort_by.lower()) * 10000):
-            return -1
-        else:
-            return 0
+    def __eq__(self, other):
+        return int(self[self.sort_by] * 10000) == int(other[self.sort_by] * 10000)
+
+    def __lt__(self, other):
+        return int(self[self.sort_by] * 10000) < int(other[self.sort_by] * 10000)
+
+    def __le__(self, other):
+        return int(self[self.sort_by] * 10000) <= int(other[self.sort_by] * 10000)
+
+    def __gt__(self, other):
+        return int(self[self.sort_by] * 10000) > int(other[self.sort_by] * 10000)
+
+    def __ge__(self, other):
+        return int(self[self.sort_by] * 10000) >= int(other[self.sort_by] * 10000)
+
 
 
 #######################################################################
