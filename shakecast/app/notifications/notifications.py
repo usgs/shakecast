@@ -14,7 +14,6 @@ from .mailer import Mailer
 from ..orm import dbconnect, ShakeMap, Notification
 from .templates import TemplateManager
 from ..util import sc_dir, SC, get_template_dir, split_string_on_spaces
-from ..sc_logging import server_logger as logging
 
 jinja_env = Environment(extensions=['jinja2.ext.do'])
 

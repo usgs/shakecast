@@ -2,7 +2,6 @@ import time
 
 from .orm import dbconnect, LocalProduct, LocalProductType, Notification
 from .products.geojson import generate_impact_geojson
-from .sc_logging import server_logger as logging
 
 REQUIRED_PRODUCTS = ['geojson']
 
