@@ -1,9 +1,9 @@
-import socket
-import select as select_
-import time
+import json
 import os
 import sys
-import json
+import time
+import select as select_
+import socket
 
 from .newthread import NewThread
 from .task import Task
@@ -66,9 +66,9 @@ class Server(object):
                 self.socket.bind(('', self.port))
                 self.socket.listen(5)
                 self.connected = True
-                
+
             except:
-                print('Failed to get port {} for ShakeCast server. Shakecast is either already running or another application is using the port.'.format(self.port))
+                print(f'Failed to get port {self.port} for ShakeCast server. Shakecast is either already running or another application is using the port.')
                 time.sleep(2)
                 
             attempts += 1

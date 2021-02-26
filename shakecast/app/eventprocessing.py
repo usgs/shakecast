@@ -17,7 +17,6 @@ from .orm import (
 )
 from .util import Clock, SC, DAY
 from .notifications.notifications import new_event_notification, inspection_notification
-from .sc_logging import server_logger as logging
 
 def can_process_event(event, scenario=False):
     # check if we should wait until daytime to process
@@ -210,24 +209,24 @@ def process_events(events=None, session=None, scenario=False):
                 if time.time() - DAY > event.time:
                     # timeout this event, it's been over a day
                     event.status = 'Not processed - Timeout'
-                    logging.info('Event ({}) was not processed due to timeout'
+                    print('Event ({}) was not processed due to timeout'
                             .format(event.event_id))
                 continue
 
             
-            logging.info('Processing event: {}'.format(event))
+            print('Processing event: {}'.format(event))
 
             groups_affected = get_new_event_groups(event, scenario, session)
             # if there aren't any groups, just skip to the next event
             if not groups_affected:
                 event.status = 'processed - no groups'
                 session.commit()
-                logging.info('Event ({}) did not affect any groups'
+                print('Event ({}) did not affect any groups'
                         .format(event.event_id))
                 continue
 
             event.status = 'processing_started'
-            logging.info('Processing event...')
+            print('Processing event...')
             new_notifications = create_new_event_notifications(
                 groups_affected,
                 event,
@@ -235,7 +234,7 @@ def process_events(events=None, session=None, scenario=False):
             session.add_all(new_notifications)
             session.commit()
 
-            logging.info('Generating {} new notifications.'
+            print('Generating {} new notifications.'
                     .format(len(new_notifications)))
             all_groups_affected.update(groups_affected)
 
@@ -243,7 +242,7 @@ def process_events(events=None, session=None, scenario=False):
         for group in all_groups_affected:
             notifications = get_new_event_notifications(group, scenario, session)
             
-            logging.info('Attempting to send {} notifications total.'
+            print('Attempting to send {} notifications total.'
                     .format(len(notifications)))
             if len(notifications) > 0:
                 new_event_notification(notifications=notifications,
@@ -254,7 +253,7 @@ def process_events(events=None, session=None, scenario=False):
         for e in processed_events:
             e.status = 'processed' if scenario is False else 'scenario'
 
-        logging.info('Finished processing events.')
+        print('Finished processing events.')
         return processed_events
     return []
 
@@ -294,10 +293,10 @@ def process_shakemaps(shakemaps=None, session=None, scenario=False):
                            and should contain info on error}
     '''
     for shakemap in shakemaps:
-        logging.info('Processing {}, version: {}'
+        print('Processing {}, version: {}'
                 .format(shakemap.shakemap_id, shakemap.shakemap_version))
         if can_process_event(shakemap.event, scenario) is False:
-            logging.info('Unable to process event due to configurations.')
+            print('Unable to process event due to configurations.')
             continue
         shakemap.mark_processing_start()
 
@@ -306,7 +305,7 @@ def process_shakemaps(shakemaps=None, session=None, scenario=False):
         groups_affected = get_inspection_groups(grid, scenario, session)
 
         if not groups_affected:
-            logging.info('No groups are affected.')
+            print('No groups are affected.')
             shakemap.mark_processing_finished()
             session.commit()
             continue
@@ -317,21 +316,21 @@ def process_shakemaps(shakemaps=None, session=None, scenario=False):
                                .all())
 
         if affected_facilities:
-            logging.info('Computing facility impacts...')
+            print('Computing facility impacts...')
             facility_shaking = compute_event_impact(
                 affected_facilities, shakemap, grid)
-            logging.info('Done.')
+            print('Done.')
 
             # Remove all old shaking and add all fac_shaking_lst
             shakemap.facility_shaking = []
             session.commit()
 
-            logging.info('Saving facility shaking info...')
+            print('Saving facility shaking info...')
             session.bulk_save_objects(facility_shaking)
             session.commit()
-            logging.info('Done.')
+            print('Done.')
         else:
-            logging.info('No facilities affected.')
+            print('No facilities affected.')
             shakemap.mark_processing_finished()
             shakemap.status = 'processed - no facs'
 
@@ -345,13 +344,13 @@ def process_shakemaps(shakemaps=None, session=None, scenario=False):
         session.add_all(new_notifications)
         session.commit()
 
-        logging.info('Creating {} new inspection notifications'.format(len(new_notifications)))
+        print('Creating {} new inspection notifications'.format(len(new_notifications)))
 
         shakemap.mark_processing_finished()
         session.commit()
 
 
-        logging.info('Shakemap processing finished.')
+        print('Shakemap processing finished.')
     return shakemaps
 
 

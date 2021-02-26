@@ -4,16 +4,11 @@ from multiprocessing import Process
 import subprocess
 import time
 
-from .app.startup import pip_init
-pip_init()
-
-import pdb
-pdb.set_trace()
-
-import shakecast3.app.admin as admin
-from shakecast3.app.util import SC, sc_dir, on_windows
-import shakecast3.app.windows as winControls
-import shakecast3.app.linux as controls
+import shakecast.app.admin as admin
+from shakecast.app.util import on_windows
+import shakecast.app.windows as winControls
+import shakecast.app.linux as controls
+import shakecast.app.env as env
 
 if on_windows():
     # use windows controls if we're in that OS
@@ -34,7 +29,7 @@ def check_running():
     return api_check and server_check
 
 def get_shakecast_processes():
-    processes = subprocess.check_output(['ps', 'axww']).split('\n')
+    processes = subprocess.check_output(['ps', 'axww']).decode('utf-8').split('\n')
     shakecast_processes = []
     for process in processes:
         if ('shakecast.api' in process
@@ -52,9 +47,8 @@ def invalid():
     ''')
 
 def main(command = None):
-    sc = SC()
     uid = 0
-    if sc.dict['web_port'] < 1024:
+    if env.WEB_PORT < 1024:
         try:
             uid = os.getuid()
         except Exception as e:
@@ -84,18 +78,17 @@ def main(command = None):
         sudo_required()
 
 def read_status():
-    file_name = os.path.join(sc_dir(), '.status')
+    file_name = os.path.join(env.SHAKECAST_DIRECTORY, '.status')
     with open(file_name, 'r') as file_:
         status = file_.read()
     
     return status
 
 def sudo_required():
-    sc = SC()
     print('''
             Web port {} requires sudo:
             sudo python -m shakecast [start][stop]
-        '''.format(sc.dict['web_port']))
+        '''.format(env.WEB_PORT))
 
 def start():
     status = 'running'
@@ -123,7 +116,7 @@ def shutdown():
     controls.stop()
 
 def write_status(status):
-    file_name = os.path.join(sc_dir(), '.status')
+    file_name = os.path.join(env.SHAKECAST_DIRECTORY, '.status')
     with open(file_name, 'w') as file_:
         file_.write(status)
 
