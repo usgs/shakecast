@@ -67,8 +67,8 @@ def new_event_notification(notifications=None,
     
     # attach html
     message_type = 'html' if '<html>' in message else 'plain'
-    encoded_message = MIMEText(message.encode('utf-8'), message_type, 'utf-8')
-    msg.attach(encoded_message)
+    mime_message = MIMEText(message, message_type)
+    msg.attach(mime_message)
 
     # get and attach map
     for count,event in enumerate(events):
@@ -128,7 +128,7 @@ def new_event_notification(notifications=None,
     
     if len(you) > 0:
         if len(events) == 1:
-            subject = event.title.encode('utf-8')
+            subject = event.title
         else:
             mags = []
             for e in events:
@@ -197,8 +197,8 @@ def inspection_notification(notification=None,
             print('Done.')
             # attach html
             message_type = 'html' if '<html>' in message else 'plain'
-            encoded_message = MIMEText(message.encode('utf-8'), message_type, 'utf-8')
-            msg.attach(encoded_message)
+            mime_message = MIMEText(message, message_type)
+            msg.attach(mime_message)
 
             # check for and attach local products
             for product in shakemap.local_products:

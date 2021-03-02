@@ -348,6 +348,7 @@ class ProductGrabber(object):
                             mode = 'wb'
                         else:
                             mode = 'wt'
+                            product_download = product_download.decode()
 
                         with open(product_file_name, mode) as file_:
                             file_.write(product_download)

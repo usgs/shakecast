@@ -312,7 +312,7 @@ def get_cell_height(cell):
 def save_pdf(pdf_string, file_name, directory):
     file_name_ = os.path.join(directory, file_name)
     with open(file_name_, 'wb') as file_:
-        file_.write(pdf_string.encode())
+        file_.write(pdf_string.encode('latin-1'))
 
 def main(group, shakemap, name):
     return generate_impact_pdf(group, shakemap, save=True, pdf_name=name, template_name=group.template)
