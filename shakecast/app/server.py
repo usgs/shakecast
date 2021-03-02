@@ -513,7 +513,6 @@ class Server(object):
 
 
 if __name__ == '__main__':
-    print('Starting shakecast server.')
     startup()
     sc_server = Server()
     if sc_server.connected is True:
