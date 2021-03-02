@@ -496,7 +496,11 @@ class FacilityShaking(Base):
     def __ge__(self, other):
         return int(self[self.sort_by] * 10000) >= int(other[self.sort_by] * 10000)
 
+    def __hash__(self):
+        return hash(self.shakecast_id)
 
+    def __getitem__(self, field):
+        return self.__dict__[field]
 
 #######################################################################
 ######################## Notification Tables ##########################
