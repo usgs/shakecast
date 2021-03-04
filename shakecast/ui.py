@@ -2,9 +2,12 @@ import socket
 import time
 import select as select_
 import sys
+
 from .app.server import Server
 from .app.newthread import NewThread
 from .app.util import SC
+
+import shakecast.env
 
 class UI(object):
     """
@@ -35,7 +38,8 @@ class UI(object):
         
         sc = SC()
         self.port = sc.dict['port']
-        self.host = sc.dict['host']
+        self.host = env.SERVER_HOST_NAME
+
     def start(self):
         """
         Starts the CLI loop
