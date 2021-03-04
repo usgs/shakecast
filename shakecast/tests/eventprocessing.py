@@ -3,6 +3,7 @@ from sqlalchemy import MetaData
 import unittest
 
 from shakecast.app.eventprocessing import *
+from shakecast.app.functions import download_scenario
 from shakecast.app.grid import create_grid
 from shakecast.app.orm import (
     dbconnect,
@@ -29,6 +30,12 @@ class TestScenarioRun(unittest.TestCase):
         result = run_scenario(shakemap.shakemap_id)
         self.assertTrue(result['message']['success'])
 
+
+class TestUtf8(unittest.TestCase):
+    def test_Utf8Download(self):
+      download_scenario('us7000df40')
+      result = run_scenario('us7000df40')
+      self.assertTrue(result['message']['success'])
 
 
 class TestNewEvent(unittest.TestCase):
