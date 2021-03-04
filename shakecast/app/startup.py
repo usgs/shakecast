@@ -16,11 +16,6 @@ from .util import (
 
 def startup():
     pip_init()
-    if int(os.environ.get('SC_DOCKER', False)):
-        docker_init()
-
-    if os.environ.get('SC_CI', False) is not False:
-        ci_init()
 
 def copy_backups():
     dir_ = sc_dir()
@@ -38,18 +33,6 @@ def copy_backups():
         os.system('cp -r {}/* {}'.format(docker_conf, conf))
 
     os.system('cp -r {}/* {}'.format(docker_assets, assets))
-
-def ci_init():
-    sc = SC()
-    sc.dict['SMTP']['username'] = os.environ.get('SC_SMTP_USERNAME', '')
-    sc.dict['SMTP']['password'] = os.environ.get('SC_SMTP_PASSWORD', '')
-    sc.dict['SMTP']['server'] = os.environ.get('SC_SMTP_SERVER', '')
-    sc.dict['SMTP']['from'] = os.environ.get('SC_SMTP_FROM', '')
-    sc.dict['SMTP']['security'] = os.environ.get('SC_SMTP_SECURITY', '')
-    sc.dict['SMTP']['port'] = int(os.environ.get('SC_SMTP_PORT', ''))
-    sc.dict['web_port'] = int(os.environ.get('SC_WEB_PORT', 5000))
-
-    sc.save_dict()
 
 def pip_init():
     '''
@@ -83,15 +66,6 @@ def pip_init():
     if not os.path.isdir(logs_dir):
         os.mkdir(logs_dir)
 
-
-
-def docker_init():
-    copy_backups()
-
-    sc = SC()
-    sc.dict['host'] = 'sc-server'
-    sc.dict['web_port'] = 5000
-    sc.save_dict()
 
 if __name__ == '__main__':
     startup()
