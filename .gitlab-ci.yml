@@ -28,8 +28,7 @@ stages:
     - merge_requests
   before_script:
     - cd ${CI_PROJECT_DIR}
-    - chmod +x test_env.sh
-    - ./test_env.sh
+    - ./scripts/test_env.sh
 
 .shakecast-dev:
   tags:
@@ -120,6 +119,8 @@ test-staging:
   only:
     - master
   when: manual
+  env:
+    - SC_DOCKER: 0
   extends: 
     - .shakecast-dev
     - .dind
@@ -127,13 +128,15 @@ test-staging:
     - docker rm -f shakecast-test || true
     - docker rmi $CODE_REGISTRY_IMAGE/$SERVER_REGISTRY_IMAGE_NAME:dev || true
   script:
-    - docker run -d -e SC_DOCKER=0 --name=shakecast-test --network=app-network --entrypoint=python $CODE_REGISTRY_IMAGE/$SERVER_REGISTRY_IMAGE_NAME:dev -m shakecast start
+    - docker run -d --name=shakecast-test --network=app-network --entrypoint=python $CODE_REGISTRY_IMAGE/$SERVER_REGISTRY_IMAGE_NAME:dev -m shakecast start
 
 prod-staging:
   stage: staging
   only:
     - tags
   when: manual
+  env:
+    - SC_DOCKER: 0
   extends: 
     - .shakecast-dev
     - .dind
@@ -141,7 +144,7 @@ prod-staging:
     - docker rm -f shakecast-prod || true
     - docker rmi $CODE_REGISTRY_IMAGE/$SERVER_REGISTRY_IMAGE_NAME:latest || true
   script:
-    - docker run -d -e SC_DOCKER=0 --name=shakecast-prod --network=app-network --entrypoint=python $CODE_REGISTRY_IMAGE/$SERVER_REGISTRY_IMAGE_NAME:latest -m shakecast start
+    - docker run -d --name=shakecast-prod --network=app-network --entrypoint=python $CODE_REGISTRY_IMAGE/$SERVER_REGISTRY_IMAGE_NAME:latest -m shakecast start
 
 # PUBLISH PACKAGES/CONTAINERS
 publish-python:
