@@ -4,9 +4,8 @@ import sys
 from .server_service import ShakecastServer
 from .web_server_service import ShakecastWebServer
 
-from shakecast.app.env import SHAKECAST_DIRECTORY
+from shakecast.app.env import LOG_DIRECTORY
 
-LOG_DIRECTORY = os.path.join(SHAKECAST_DIRECTORY, 'logs')
 
 def start():
     os.system(f'{sys.executable} -m shakecast.app.server &> {os.path.join(LOG_DIRECTORY, "sc-server.log")} &')
