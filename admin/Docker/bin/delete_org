@@ -1,0 +1,54 @@
+#!/bin/bash
+
+
+if [ "$#" -ne 1 ]; then
+	echo "Wrong number of arguments provided! Exiting!"
+	exit -1
+fi
+
+if [ ! -e "/data/$1" ]; then
+	echo "Directory $1 doesn't exists. Exiting!"
+	exit -1
+fi
+
+destdir="/data"
+filelock="var/delete_org.lock"
+
+if [ -e "$filelock" ]; then
+	echo "Lock detected! Some other process is running a setup. Exiting!"
+	exit -1
+fi
+
+timestamp=`date`
+echo "pid:$$ date:$timestamp" > $filelock
+
+### sqlite> create table dispd_port_seq(id integer, org_id text, ctime text, port integer);
+### sqlite> insert into dispd_port_seq(id,org_id,ctime,port) values(1,"shakecast", "Tue Jun 29 10:57:38 MDT 2010", 53458);
+### sqlite> select max(id) from dispd_port_seq;
+### sqlite> select max(port) from dispd_port_seq;
+
+sqlitedb="etc/shakecast.sqlite3"
+
+if [ -f "$sqlitedb" ]; then
+	sqlite3 $sqlitedb "delete from dispd_port_seq where org_id = '$1';"
+	rm $filelock
+	echo "Delete $1 record from sqlite3 database: $sqlitedb."
+else
+	echo "No sqlite3 database: $sqlitedb. Exiting!"
+	exit -1
+fi
+
+
+/usr/local/bin/docker-compose -f ${destdir}/$1/docker-compose.yml down 
+
+rm -rf ${destdir}/${1}
+
+echo "========================================================================="
+echo
+echo "       ShakeCast V4 for $1 Removed"
+echo
+echo "========================================================================="
+echo 
+
+
+

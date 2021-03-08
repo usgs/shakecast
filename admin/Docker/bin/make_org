@@ -1,0 +1,91 @@
+#!/bin/bash
+
+
+if [ "$#" -ne 1 ]; then
+	echo "Wrong number of arguments provided! Exiting!"
+	exit -1
+fi
+
+destdir="/data"
+filelock="var/make_org.lock"
+
+if [ -e "$filelock" ]; then
+	echo "Lock detected! Some other process is running a setup. Exiting!"
+	exit -1
+fi
+
+timestamp=`date`
+echo "pid:$$ date:$timestamp" > $filelock
+
+# Create sqlite db
+### sqlite> create table dispd_port_seq(id integer, org_id text, ctime text, port integer);
+### sqlite> insert into dispd_port_seq(id,org_id,ctime,port) values(1,"shakecast", "Tue Feb 16 17:02:34 MST 2021", 8000);
+### sqlite> select max(id) from dispd_port_seq;
+### sqlite> select max(port) from dispd_port_seq;
+
+sqlitedb="etc/shakecast.sqlite3"
+
+if [ -f "$sqlitedb" ]; then
+
+	current_port_number=`sqlite3 etc/shakecast.sqlite3 "select port from dispd_port_seq where org_id = '$1';"`
+
+	if [ "$current_port_number" == "" ]; then	
+
+		last_port_number=`sqlite3 $sqlitedb 'select max(port) from dispd_port_seq;'`
+		rc1=$?
+		last_org_id=`sqlite3 $sqlitedb 'select max(id) from dispd_port_seq;'`
+		rc2=$?
+
+		if [ "$rc1" -ne 0 -o "$rc2" -ne 0 ]; then
+			echo "${sqlitedb}: selects failed to retreive values from required table! Exiting!"
+			rm $filelock
+			exit -1
+		fi
+	
+		new_port_number=`echo $last_port_number + 1 | bc`
+		new_org_id=`echo $last_org_id + 1 | bc`
+		timestamp=`date`
+
+		sqlite3 $sqlitedb "insert into dispd_port_seq(id,org_id,ctime,port) values($new_org_id,'$1', '$timestamp', $new_port_number);"
+	else
+		echo "$1 Instance exists in sqlite3 database: $sqlitedb. Exiting!"
+		exit -1
+	fi
+
+	rm $filelock
+else
+	echo "No sqlite3 database: $sqlitedb. Exiting!"
+	exit -1
+fi
+
+mkdir -p ${destdir}/${1}/local_products ${destdir}/${1}/logs ${destdir}/${1}/tmp
+cp docker-compose.yml ${destdir}/${1}/
+rsync -a --exclude=.git ../../shakecast/web_src/src/assets ${destdir}/${1}/assets
+rsync -a --exclude=.git ../../shakecast/conf ${destdir}/${1}/conf
+rsync -a --exclude=.git ../../shakecast/db ${destdir}/${1}/db
+rsync -a --exclude=.git ../../shakecast/templates ${destdir}/${1}/templates
+
+# usgs-user
+chown -R 999:998 ${destdir}/${1}
+
+sed -i -e "s/XXXXXXXXXX/$1/g" ${destdir}/$1/docker-compose.yml
+
+sed -i -e "s/8000/$new_port_number/g" ${destdir}/$1/docker-compose.yml
+
+
+/usr/local/bin/docker-compose -f ${destdir}/$1/docker-compose.yml up -d 
+
+echo "========================================================================="
+echo
+echo "       ShakeCast V4 Initiated for $1"
+echo
+echo "========================================================================="
+echo 
+echo "To load inventory from command line, copy inventory xmls to '${destdir}/$1/tmp': "
+echo "========================================================================="
+echo "Facility inventory: "
+echo "docker exec -it ${1}_sc-server_1 python -c \"import shakecast.app.inventory ; shakecast.app.inventory.import_facility_xml('/usr/local/shakecast/shakecast/tmp/FacilityXML.xml', 1)\""
+echo "Group inventory: "
+echo "docker exec -it ${1}_sc-server_1 python -c \"import shakecast.app.inventory ; shakecast.app.inventory.import_group_xml('/usr/local/shakecast/shakecast/tmp/GroupXML.xml', 1)\""
+echo "User inventory: "
+echo "docker exec -it ${1}_sc-server_1 python -c \"import shakecast.app.inventory ; shakecast.app.inventory.import_user_xml('/usr/local/shakecast/shakecast/tmp/UserXML.xml', 1)\""

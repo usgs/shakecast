@@ -1,0 +1,54 @@
+version: '3'
+
+services:
+  sc-server:
+    image: shakecast/sc-server
+    expose:
+      - "1981"
+    networks:
+      - XXXXXXXXXX-network
+    volumes:
+      - "/data/XXXXXXXXXX/db:/usr/local/shakecast/shakecast/db"
+      - "/data/XXXXXXXXXX/eq_data:/usr/local/shakecast/shakecast/data"
+      - "/data/XXXXXXXXXX/tmp:/usr/local/shakecast/shakecast/tmp"
+      - "/data/XXXXXXXXXX/conf:/usr/local/shakecast/shakecast/conf"
+      - "/data/XXXXXXXXXX/templates:/usr/local/shakecast/shakecast/templates"
+      - "/data/XXXXXXXXXX/logs:/usr/local/shakecast/shakecast/logs"
+      - "/data/XXXXXXXXXX/local_products:/usr/local/shakecast/shakecast/local_products"
+      - "/data/XXXXXXXXXX/assets:/usr/local/shakecast/shakecast/view/assets"
+    user: usgs-user:usgs-user
+    restart: unless-stopped
+  
+  web-server:
+    image: shakecast/web-server
+    ports:
+      - "8000:5000"
+    networks:
+      - XXXXXXXXXX-network
+    volumes:
+      - "/data/XXXXXXXXXX/db:/usr/local/shakecast/shakecast/db"
+      - "/data/XXXXXXXXXX/eq_data:/usr/local/shakecast/shakecast/data"
+      - "/data/XXXXXXXXXX/tmp:/usr/local/shakecast/shakecast/tmp"
+      - "/data/XXXXXXXXXX/conf:/usr/local/shakecast/shakecast/conf"
+      - "/data/XXXXXXXXXX/templates:/usr/local/shakecast/shakecast/templates"
+      - "/data/XXXXXXXXXX/logs:/usr/local/shakecast/shakecast/logs"
+      - "/data/XXXXXXXXXX/local_products:/usr/local/shakecast/shakecast/local_products"
+      - "/data/XXXXXXXXXX/assets:/usr/local/shakecast/shakecast/view/assets"
+    user: usgs-user:usgs-user
+    restart: unless-stopped
+
+  image-server:
+    image: shakecast/imaging
+    networks:
+      - XXXXXXXXXX-network
+    volumes:
+      - "/data/XXXXXXXXXX/local_products:/usr/local/shakecast/shakecast/local_products"
+    expose:
+      - "5000"
+    user: usgs-user:usgs-user
+    restart: unless-stopped
+
+
+networks:
+  XXXXXXXXXX-network:
+    driver: bridge
