@@ -15,4 +15,3 @@ class BaseTest(unittest.TestCase):
         metadata.create_all(engine)
 
         load_data()
-

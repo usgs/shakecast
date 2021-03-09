@@ -18,11 +18,12 @@ class TestProductGeneration(unittest.TestCase):
         preload_data()
         shakemap = session.query(ShakeMap).first()
 
-        process_shakemaps([shakemap], session)
+        shakemap = process_shakemaps([shakemap], session)[0]
         notification = create_products(session=session)
 
-        self.assertIsNone(notification.error)
         self.assertEqual(notification.status, 'ready')
+        for product in shakemap.local_products:
+          self.assertIsNone(product.error)
 
 
 if __name__ == '__main__':
