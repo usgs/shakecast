@@ -7,7 +7,7 @@ from .app.server import Server
 from .app.newthread import NewThread
 from .app.util import SC
 
-import shakecast.env
+import shakecast.app.env as env
 
 class UI(object):
     """
