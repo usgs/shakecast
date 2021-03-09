@@ -1246,6 +1246,7 @@ class ShakeMap(Base):
 
     def get_overlay_base64(self):
         overlay_names = ['intensity_overlay.png', 'ii_overlay.png']
+        file_name = None
         for name in overlay_names:
             full_name = os.path.join(self.directory_name, name)
             if os.path.isfile(full_name):
@@ -1274,7 +1275,7 @@ class ShakeMap(Base):
                 facility_shaking = self.facility_shaking
 
             if len(facility_shaking) > 0:
-                facility_shaking = sorted(facility_shaking, key=lambda x: x.weight)
+                facility_shaking = sorted(facility_shaking, key=lambda x: x.weight if x.weight else 0)
                 alert_level = facility_shaking[-1].alert_level
         return alert_level
 
