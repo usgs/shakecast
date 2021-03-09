@@ -19,8 +19,7 @@ def generate_geojson_html(shakemap, group=None, save=False, name='geojson_captur
         template = jinja_env.from_string(file_.read())
 
     html = template.render(impact_geojson=geojson_string,
-            shakemap=shakemap,
-            sc=SC())
+            shakemap=shakemap)
     
     if save == True:
         if '.html' not in name:
