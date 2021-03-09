@@ -1,12 +1,9 @@
-import time
 import os
 
 from sqlalchemy import create_engine
 from sqlalchemy_utils import database_exists, create_database
 
 from .migrations import migrate
-from .util import check_testing
-from ..util import SC, get_db_dir
 
 import shakecast.app.env as env
 
