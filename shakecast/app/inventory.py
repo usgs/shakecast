@@ -65,7 +65,7 @@ def import_master_xml(xml_file='', _user=None):
     group_list = []
     user_list = []
     with open(xml_file, 'r') as xml_str:
-        xml_dict = json.loads(json.dumps(xmltodict.parse(xml_str)))
+        xml_dict = json.loads(json.dumps(xmltodict.parse(xml_str.read())))
         fac_list = xml_dict['Inventory']['FacilityTable']['FacilityRow']
         group_list = xml_dict['Inventory']['GroupTable']['GroupRow']
         user_list = xml_dict['Inventory']['UserTable']['UserRow']
