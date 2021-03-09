@@ -1,8 +1,6 @@
-#! /usr/bin/python
-
 import smtplib
 
-import shakecast.app.env
+import shakecast.app.env as env
 
 class Mailer(object):
     """
@@ -13,17 +11,13 @@ class Mailer(object):
     """
     
     def __init__(self):
-        # get info from the config
-        sc = SC()
-        
-        self.me = sc.dict['SMTP']['from'] or sc.dict['SMTP']['username']
+        self.me = env.SMTP_FROM or env.SMTP_USERNAME
         self.username = env.SMTP_USERNAME
         self.password = env.SMTP_PASSWORD
         self.server_name = env.SMTP_SERVER
         self.server_port = env.SMTP_PORT
-        self.security = sc.dict['SMTP']['security']
-        self.log = ''
-        self.notify = sc.dict['Notification']['notify']
+        self.security = env.SMTP_SECURITY
+        self.notify = env.SMTP_SEND_NOTIFICATIONS
         
     def send(self, msg=None, you=None, debug=False):
         """
