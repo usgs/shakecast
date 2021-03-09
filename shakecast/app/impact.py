@@ -240,17 +240,17 @@ def get_event_impact(facility_shaking):
         impact_sum['all'] += 1
 
         # record max shaking values
-        if s.pga > impact_sum['max_pga']:
+        if s.pga and s.pga > impact_sum['max_pga']:
             impact_sum['max_pga'] = s.pga
-        if s.pgv > impact_sum['max_pgv']:
+        if s.pgv and s.pgv > impact_sum['max_pgv']:
             impact_sum['max_pgv'] = s.pgv
-        if s.psa03 > impact_sum['max_psa03']:
+        if s.psa03 and s.psa03 > impact_sum['max_psa03']:
             impact_sum['max_psa03'] = s.psa03
-        if s.psa10 > impact_sum['max_psa10']:
+        if s.psa10 and s.psa10 > impact_sum['max_psa10']:
             impact_sum['max_psa10'] = s.psa10
-        if s.psa30 > impact_sum['max_psa30']:
+        if s.psa30 and s.psa30 > impact_sum['max_psa30']:
             impact_sum['max_psa30'] = s.psa30
-        if s.mmi > impact_sum['max_mmi']:
+        if s.mmi and s.mmi > impact_sum['max_mmi']:
             impact_sum['max_mmi'] = s.mmi
 
     return impact_sum
