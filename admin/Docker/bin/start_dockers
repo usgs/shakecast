@@ -1,0 +1,40 @@
+#!/bin/bash
+
+
+#if [ "$#" -ne 1 ]; then
+##	echo "Wrong number of arguments provided! Exiting!"
+#	exit -1
+#fi
+
+
+filelock=var/start_docker.lock
+
+if [ -e "$filelock" ]; then
+	echo "Lock detected! Some other process is running a setup. Exiting!"
+	exit -1
+fi
+
+timestamp=`date`
+echo "pid:$$ date:$timestamp" > $filelock
+
+### sqlite> create table dispd_port_seq(id integer, org_id text, ctime text, port integer);
+### sqlite> insert into dispd_port_seq(id,org_id,ctime,port) values(1,"shakecast", "Tue Jun 29 10:57:38 MDT 2010", 53458);
+### sqlite> select max(id) from dispd_port_seq;
+### sqlite> select max(port) from dispd_port_seq;
+
+sqlitedb="etc/shakecast.sqlite3"
+
+if [ -f "$sqlitedb" ]; then
+
+	org_ids=`sqlite3 etc/shakecast.sqlite3 "select org_id from dispd_port_seq;"`
+
+	for org_id in $org_ids; do
+		echo "Instance $org_id: docker-compose -f /data/$org_id/docker-compose.yml up -d"
+		docker-compose -f /data/$org_id/docker-compose.yml up -d --build
+		echo "----------"
+	done
+	rm $filelock
+else
+	echo "No sqlite3 database: $sqlitedb. Exiting!"
+	exit -1
+fi

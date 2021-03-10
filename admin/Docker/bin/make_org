@@ -58,17 +58,18 @@ else
 	exit -1
 fi
 
-mkdir -p ${destdir}/${1}/local_products ${destdir}/${1}/logs ${destdir}/${1}/tmp
+mkdir -p ${destdir}/${1}/local_products ${destdir}/${1}/eq_data ${destdir}/${1}/logs ${destdir}/${1}/tmp
 cp docker-compose.yml ${destdir}/${1}/
-rsync -a --exclude=.git ../../shakecast/web_src/src/assets ${destdir}/${1}/assets
-rsync -a --exclude=.git ../../shakecast/conf ${destdir}/${1}/conf
-rsync -a --exclude=.git ../../shakecast/db ${destdir}/${1}/db
-rsync -a --exclude=.git ../../shakecast/templates ${destdir}/${1}/templates
+rsync -a --exclude=.git ../../shakecast/web_src/src/assets ${destdir}/${1}
+rsync -a --exclude=.git ../../shakecast/conf ${destdir}/${1}
+rsync -a --exclude=.git ../../shakecast/db ${destdir}/${1}
+rsync -a --exclude=.git ../../shakecast/templates ${destdir}/${1}
 
 # usgs-user
 chown -R 999:998 ${destdir}/${1}
 
 sed -i -e "s/XXXXXXXXXX/$1/g" ${destdir}/$1/docker-compose.yml
+sed -i -e "s/XXXXXXXXXX/$1/g" ${destdir}/$1/conf/sc.json
 
 sed -i -e "s/8000/$new_port_number/g" ${destdir}/$1/docker-compose.yml
 
