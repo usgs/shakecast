@@ -50,35 +50,11 @@ def invalid():
 
 def main(command = None):
     sc = SC()
-    uid = 0
-    if sc.dict['web_port'] < 1024:
-        try:
-            uid = os.getuid()
-        except Exception as e:
-            # this will error in Windows, but that doesn't mean the
-            # user isn't an admin... just try to install and let it
-            # error if the user doesn't have privileges
-            pass
+    if hasattr(admin, command):
+        getattr(admin, command)()
 
-    if uid == 0:
-        if len(sys.argv) >= 2:
-            command = command or sys.argv[1]
-
-        if command == 'start':
-            start()
-
-        elif command == 'stop':
-            shutdown()
-        
-        # pass command through to admin module
-        elif hasattr(admin, command):
-            getattr(admin, command)()
-
-        else:
-            invalid()
-    
     else:
-        sudo_required()
+        invalid()
 
 def read_status():
     file_name = os.path.join(sc_dir(), '.status')
@@ -86,13 +62,6 @@ def read_status():
         status = file_.read()
     
     return status
-
-def sudo_required():
-    sc = SC()
-    print '''
-            Web port {} requires sudo:
-            sudo python -m shakecast [start][stop]
-        '''.format(sc.dict['web_port'])
 
 def start():
     status = 'running'
