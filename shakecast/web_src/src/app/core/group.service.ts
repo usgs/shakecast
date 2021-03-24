@@ -68,7 +68,7 @@ export class GroupService {
         let params = new HttpParams();
         params = params.append('inventory', JSON.stringify(group));
         params = params.append('inventory_type', 'group');
-        this.http.delete('api/inventory/delete', { params })
+        this.http.delete('api/groups', { params })
             .subscribe((result: any) => {
                 this.getData();
                 this.loadingData.next(false);

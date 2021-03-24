@@ -114,7 +114,7 @@ export class FacilityService {
         this.notService.success('Deleting Facilities', 'Deleting ' + this.selectedFacs.length + ' facilities');
         let params = new HttpParams().set('inventory', JSON.stringify(this.selectedFacs));
         params = params.append('inventory_type', 'facility');
-        this._http.delete('api/inventory/delete', {params: params})
+        this._http.delete('api/facilities', {params: params})
             .subscribe((result: any) => {
                 this.getData();
             });
