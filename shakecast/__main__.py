@@ -50,7 +50,19 @@ def invalid():
 
 def main(command = None):
     sc = SC()
-    if hasattr(admin, command):
+    uid = 0
+
+    if len(sys.argv) >= 2:
+        command = command or sys.argv[1]
+
+    if command == 'start':
+        start()
+
+    elif command == 'stop':
+        shutdown()
+
+    # pass command through to admin module
+    elif hasattr(admin, command):
         getattr(admin, command)()
 
     else:
