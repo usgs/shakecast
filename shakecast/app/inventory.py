@@ -217,7 +217,7 @@ def import_facility_dicts(facs=None, _user=None, session=None):
                     facility.lat_max = lat + .01
                     
                 elif facility.geom_type == 'POLYGON':
-                    points = [p.split(',') for p in facility.geom.split(';')]
+                    points = [p.split(',') for p in facility.geom.split(' ')]
                     lons = [pnt[0] for pnt in points]
                     lats = [pnt[1] for pnt in points]
                     
