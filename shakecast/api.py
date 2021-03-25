@@ -228,7 +228,7 @@ def event_image(event_id, session=None):
 
     return send_file(img, mimetype='image/gif')
 
-@app.route('/api/facilities')
+@app.route('/api/facilities', methods=['GET', 'POST'])
 @login_required
 @dbconnect
 def get_fac_data(session=None):
@@ -302,6 +302,26 @@ def get_fac_data(session=None):
 
     return jsonify(fac_geojson)
 
+
+
+@app.route('/api/facilities', methods=['DELETE'])
+@login_required
+def delete_faclities():
+    inventory = json.loads(request.args.get('inventory', None))
+
+    if inventory is None:
+      return jsonify(success=True)
+
+    inv_ids = [inv['properties']['shakecast_id'] for inv in inventory]
+    inv_type = 'facility'
+    if len(inv_ids) > 0 and inv_type is not None:
+        ui.send("{'delete_inventory: %s': {'func': f.delete_inventory_by_id, \
+                        'args_in': {'ids': %s, 'inventory_type': '%s'}, \
+                        'db_use': True, \
+                        'loop': False}}" % (inv_type, inv_ids, inv_type))
+
+    return jsonify(success=True)
+
 @app.route('/api/facilities/<facility_id>')
 @login_required
 @dbconnect
@@ -354,7 +374,10 @@ def get_shaking_data_by_id(facility_id, session=None):
 @app.route('/api/inventory/delete', methods=['DELETE'])
 @login_required
 def delete_inventory():
-    inventory = json.loads(request.args.get('inventory', '[]'))
+    inventory = json.loads(request.args.get('inventory', None))
+
+    if inventory is None:
+      return jsonify(success=True)
     inv_ids = [inv['shakecast_id'] for inv in inventory if inv['shakecast_id']]
     inv_type = request.args.get('inventory_type', None)
     if len(inv_ids) > 0 and inv_type is not None:
@@ -404,6 +427,25 @@ def get_groups(session=None):
         group_json.add_feature(geojson)
 
     return jsonify(group_json)
+
+
+@app.route('/api/groups', methods=['DELETE'])
+@login_required
+def delete_groups():
+    inventory = json.loads(request.args.get('inventory', None))
+
+    if inventory is None:
+      return jsonify(success=True)
+
+    inv_ids = [inv['properties']['shakecast_id'] for inv in inventory]
+    inv_type = 'group'
+    if len(inv_ids) > 0 and inv_type is not None:
+        ui.send("{'delete_inventory: %s': {'func': f.delete_inventory_by_id, \
+                        'args_in': {'ids': %s, 'inventory_type': '%s'}, \
+                        'db_use': True, \
+                        'loop': False}}" % (inv_type, inv_ids, inv_type))
+
+    return jsonify(success=True)
 
 @app.route('/api/groups/<group_id>/summary')
 @login_required
@@ -709,7 +751,7 @@ def scenario_download(event_id):
     scenario = json.loads(request.args.get('scenario', 'false'))
     if event_id:
         ui.send("{'scenario_download: %s': {'func': f.download_scenario, 'args_in': {'shakemap_id': r'%s', 'scenario': %s}, 'db_use': True, 'loop': False}}" % (event_id, event_id, scenario))
-    
+
     return json.dumps({'success': True})
 
 @app.route('/api/scenario-delete/<event_id>', methods=['DELETE'])

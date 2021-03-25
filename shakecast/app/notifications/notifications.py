@@ -125,7 +125,7 @@ def new_event_notification(notifications=None,
     # get notification destination based on notification format
     you = [user.__dict__[not_format] for user in group.users
             if user.__dict__.get(not_format, False)]
-    
+
     if len(you) > 0:
         if len(events) == 1:
             subject = event.title.encode('utf-8')
@@ -136,17 +136,17 @@ def new_event_notification(notifications=None,
                     mags += ['None']
                 else:
                     mags += [e.magnitude]
-                    
+
             subject = '{0} New Events -- Magnitudes: {1}'.format(len(events),
                                                                         str(mags).replace("'", ''))
-        
+
         if scenario is True:
             subject = 'SCENARIO: ' + subject
 
         msg['Subject'] = subject
         msg['To'] = ', '.join(you)
         msg['From'] = me
-        
+
         logging.info('Sending notification...')
         mailer.send(msg=msg, you=you)
         logging.info('Done.')
