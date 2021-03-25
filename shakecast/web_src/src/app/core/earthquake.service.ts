@@ -24,6 +24,7 @@ export interface Earthquake {
     lon: number;
     description: string;
     shakemaps: number;
+    properties?: any;
 }
 
 export interface filter  {
@@ -162,25 +163,25 @@ export class EarthquakeService {
             });
     }
 
-    downloadScenario(scenario_id: string, scenario:boolean = false) {
-        const params = new HttpParams().set('scenario', JSON.stringify(scenario))
+    downloadScenario(scenario_id: string, scenario = false) {
+        const params = new HttpParams().set('scenario', JSON.stringify(scenario));
         this._http.get('api/scenario-download/' + scenario_id, {params: params})
             .subscribe((result: any) => {
-                this.toastService.success('Scenario: ' + scenario_id, 'Download starting...')
+                this.toastService.success('Scenario: ' + scenario_id, 'Download starting...');
             });
     }
 
     deleteScenario(scenario_id: string) {
         this._http.delete('api/scenario-delete/' + scenario_id)
             .subscribe((result: any) => {
-                this.toastService.success('Delete Scenario: ' + scenario_id, 'Deleting... This may take a moment')
+                this.toastService.success('Delete Scenario: ' + scenario_id, 'Deleting... This may take a moment');
             });
     }
 
     runScenario(scenario_id: string) {
         this._http.post('api/scenario-run/' + scenario_id, {})
             .subscribe((result: any) => {
-                this.toastService.success('Run Scenario: ' + scenario_id, 'Running Scenario... This may take a moment')
+                this.toastService.success('Run Scenario: ' + scenario_id, 'Running Scenario... This may take a moment');
             });
     }
 
