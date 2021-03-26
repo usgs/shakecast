@@ -56,7 +56,7 @@ export class ScenariosComponent implements OnInit, OnDestroy {
     }
 
     deleteScenario() {
-        this.eqService.deleteScenario(this.eqService.selected.event_id);
+        this.eqService.deleteScenario(this.eqService.selected.properties.event_id);
     }
 
     ngOnDestroy() {
