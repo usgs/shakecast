@@ -196,7 +196,7 @@ def import_facility_dicts(facs=None, _user=None, session=None):
                     facility.red_metric = fac['FRAGILITY']['RED'].get('METRIC', None)
                     facility.metric = fac['FRAGILITY']['RED'].get('METRIC', None)
 
-            facility.aebm = parse_aebm_from_xml_dict(fac.get('AEBM', None))
+            facility.aebm = parse_aebm_from_xml_dict(fac.get('AEBM', None), fac.get('FACILITY_MODEL', None))
             facility.attributes = parse_attributes_from_xml(fac.get('ATTRIBUTE', None))
                 
 
@@ -670,19 +670,20 @@ def delete_scenario(shakemap_id=None, session=None):
             'log': 'Deleted scenario: ' + shakemap_id}
 
 
-def parse_aebm_from_xml_dict(aebm_xml_dict):
+def parse_aebm_from_xml_dict(aebm_xml_dict, facility_model):
     '''
     If available, create an AEBM orm object for facility
     '''
+    hazus_mbt_dict = lookup_mbt_aebm_default(facility_model)
     aebm = None
     if aebm_xml_dict:
         aebm = Aebm(
-            mbt = aebm_xml_dict.get('MBT', None),
-            sdl = aebm_xml_dict.get('SDL', None),
-            bid = aebm_xml_dict.get('BID', None),
-            height = aebm_xml_dict.get('HEIGHT', None),
-            stories = aebm_xml_dict.get('STORIES', None),
-            year = aebm_xml_dict.get('YEAR', None),
+            mbt = aebm_xml_dict.get('MBT', hazus_mbt_dict.get('MBT', None)),
+            sdl = aebm_xml_dict.get('SDL', hazus_mbt_dict.get('SDL', None)),
+            bid = aebm_xml_dict.get('BID', hazus_mbt_dict.get('BID', None)),
+            height = aebm_xml_dict.get('HEIGHT', hazus_mbt_dict.get('HEIGHT', None)),
+            stories = aebm_xml_dict.get('STORIES', hazus_mbt_dict.get('STORIES', None)),
+            year = aebm_xml_dict.get('YEAR', hazus_mbt_dict.get('YEAR', None)),
             performance_rating = aebm_xml_dict.get('PERFORMANCE_RATING', None),
             quality_rating = aebm_xml_dict.get('QUALITY_RATING', None),
             elastic_period = aebm_xml_dict.get('ELASTIC_PERIOD', None),
@@ -698,6 +699,15 @@ def parse_aebm_from_xml_dict(aebm_xml_dict):
             max_strength = aebm_xml_dict.get('MAX_STRENGTH', None),
             ductility = aebm_xml_dict.get('DUCTILITY', None),
             default_damage_state_beta = aebm_xml_dict.get('DAMAGE_STATE_BETA', None)
+        )
+    elif hazus_mbt_dict:
+        aebm = Aebm(
+            mbt = hazus_mbt_dict.get('MBT', None),
+            sdl = hazus_mbt_dict.get('SDL', None),
+            bid = hazus_mbt_dict.get('BID', None),
+            height = hazus_mbt_dict.get('HEIGHT', None),
+            stories = hazus_mbt_dict.get('STORIES', None),
+            year = hazus_mbt_dict.get('YEAR', None)
         )
     return aebm
 
@@ -730,3 +740,161 @@ def remove_dir(directory_name):
         success = False
     
     return success
+
+def lookup_mbt_aebm_default(facility_model):
+    '''
+    If available, create an AEBM orm object for facility
+    '''
+    hazus_mbt_dict = {
+        'W1H': {'MBT': 'W1', 'SDL': 'high', 'BID': 1, 'YEAR': 1980, 'STORIES': 1, 'HEIGHT': 14},
+        'W1AH': {'MBT': 'W1A', 'SDL': 'high', 'BID': 1, 'YEAR': 1980, 'STORIES': 1, 'HEIGHT': 14},
+        'W2H': {'MBT': 'W2', 'SDL': 'high', 'BID': 1, 'YEAR': 1980, 'STORIES': 2, 'HEIGHT': 24},
+        'S1LH': {'MBT': 'S1', 'SDL': 'high', 'BID': 1, 'YEAR': 1980, 'STORIES': 2, 'HEIGHT': 24},
+        'S1MH': {'MBT': 'S1', 'SDL': 'high', 'BID': 1, 'YEAR': 1980, 'STORIES': 5, 'HEIGHT': 60},
+        'S1HH': {'MBT': 'S1', 'SDL': 'high', 'BID': 1, 'YEAR': 1980, 'STORIES': 13, 'HEIGHT': 156},
+        'S2LH': {'MBT': 'S2', 'SDL': 'high', 'BID': 1, 'YEAR': 1980, 'STORIES': 2, 'HEIGHT': 24},
+        'S2MH': {'MBT': 'S2', 'SDL': 'high', 'BID': 1, 'YEAR': 1980, 'STORIES': 5, 'HEIGHT': 60},
+        'S2HH': {'MBT': 'S2', 'SDL': 'high', 'BID': 1, 'YEAR': 1980, 'STORIES': 13, 'HEIGHT': 156},
+        'S3H': {'MBT': 'S3', 'SDL': 'high', 'BID': 1, 'YEAR': 1980, 'STORIES': 1, 'HEIGHT': 15},
+        'S4LH': {'MBT': 'S4', 'SDL': 'high', 'BID': 1, 'YEAR': 1980, 'STORIES': 2, 'HEIGHT': 24},
+        'S4MH': {'MBT': 'S4', 'SDL': 'high', 'BID': 1, 'YEAR': 1980, 'STORIES': 5, 'HEIGHT': 60},
+        'S4HH': {'MBT': 'S4', 'SDL': 'high', 'BID': 1, 'YEAR': 1980, 'STORIES': 13, 'HEIGHT': 156},
+        'S5LH': {'MBT': 'S5', 'SDL': 'high', 'BID': 1, 'YEAR': 1980, 'STORIES': 2, 'HEIGHT': 24},
+        'S5MH': {'MBT': 'S5', 'SDL': 'high', 'BID': 1, 'YEAR': 1980, 'STORIES': 5, 'HEIGHT': 60},
+        'S5HH': {'MBT': 'S5', 'SDL': 'high', 'BID': 1, 'YEAR': 1980, 'STORIES': 13, 'HEIGHT': 156},
+        'C1LH': {'MBT': 'C1', 'SDL': 'high', 'BID': 1, 'YEAR': 1980, 'STORIES': 2, 'HEIGHT': 20},
+        'C1MH': {'MBT': 'C1', 'SDL': 'high', 'BID': 1, 'YEAR': 1980, 'STORIES': 5, 'HEIGHT': 50},
+        'C1HH': {'MBT': 'C1', 'SDL': 'high', 'BID': 1, 'YEAR': 1980, 'STORIES': 12, 'HEIGHT': 120},
+        'C2LH': {'MBT': 'C2', 'SDL': 'high', 'BID': 1, 'YEAR': 1980, 'STORIES': 2, 'HEIGHT': 20},
+        'C2MH': {'MBT': 'C2', 'SDL': 'high', 'BID': 1, 'YEAR': 1980, 'STORIES': 5, 'HEIGHT': 50},
+        'C2HH': {'MBT': 'C2', 'SDL': 'high', 'BID': 1, 'YEAR': 1980, 'STORIES': 12, 'HEIGHT': 120},
+        'C3LH': {'MBT': 'C3', 'SDL': 'high', 'BID': 1, 'YEAR': 1980, 'STORIES': 2, 'HEIGHT': 20},
+        'C3MH': {'MBT': 'C3', 'SDL': 'high', 'BID': 1, 'YEAR': 1980, 'STORIES': 5, 'HEIGHT': 50},
+        'C3HH': {'MBT': 'C3', 'SDL': 'high', 'BID': 1, 'YEAR': 1980, 'STORIES': 12, 'HEIGHT': 120},
+        'PC1H': {'MBT': 'PC1', 'SDL': 'high', 'BID': 1, 'YEAR': 1980, 'STORIES': 1, 'HEIGHT': 15},
+        'PC2LH': {'MBT': 'PC2', 'SDL': 'high', 'BID': 1, 'YEAR': 1980, 'STORIES': 2, 'HEIGHT': 20},
+        'PC2MH': {'MBT': 'PC2', 'SDL': 'high', 'BID': 1, 'YEAR': 1980, 'STORIES': 5, 'HEIGHT': 50},
+        'PC2HH': {'MBT': 'PC2', 'SDL': 'high', 'BID': 1, 'YEAR': 1980, 'STORIES': 12, 'HEIGHT': 120},
+        'RM1LH': {'MBT': 'RM1', 'SDL': 'high', 'BID': 1, 'YEAR': 1980, 'STORIES': 2, 'HEIGHT': 20},
+        'RM1MH': {'MBT': 'RM1', 'SDL': 'high', 'BID': 1, 'YEAR': 1980, 'STORIES': 5, 'HEIGHT': 50},
+        'RM2LH': {'MBT': 'RM2', 'SDL': 'high', 'BID': 1, 'YEAR': 1980, 'STORIES': 2, 'HEIGHT': 20},
+        'RM2MH': {'MBT': 'RM2', 'SDL': 'high', 'BID': 1, 'YEAR': 1980, 'STORIES': 5, 'HEIGHT': 50},
+        'RM2HH': {'MBT': 'RM2', 'SDL': 'high', 'BID': 1, 'YEAR': 1980, 'STORIES': 12, 'HEIGHT': 120},
+        'URMLH': {'MBT': 'URM', 'SDL': 'high', 'BID': 1, 'YEAR': 1980, 'STORIES': 1, 'HEIGHT': 15},
+        'URMMH': {'MBT': 'URM', 'SDL': 'high', 'BID': 1, 'YEAR': 1980, 'STORIES': 3, 'HEIGHT': 35},
+        'MHH': {'MBT': 'MH', 'SDL': 'high', 'BID': 1, 'YEAR': 1980, 'STORIES': 1, 'HEIGHT': 10},
+        'W1M': {'MBT': 'W1', 'SDL': 'moderate', 'BID': 1, 'YEAR': 1970, 'STORIES': 1, 'HEIGHT': 14},
+        'W1AM': {'MBT': 'W1A', 'SDL': 'moderate', 'BID': 1, 'YEAR': 1970, 'STORIES': 1, 'HEIGHT': 14},
+        'W2M': {'MBT': 'W2', 'SDL': 'moderate', 'BID': 1, 'YEAR': 1970, 'STORIES': 2, 'HEIGHT': 24},
+        'S1LM': {'MBT': 'S1', 'SDL': 'moderate', 'BID': 1, 'YEAR': 1970, 'STORIES': 2, 'HEIGHT': 24},
+        'S1MM': {'MBT': 'S1', 'SDL': 'moderate', 'BID': 1, 'YEAR': 1970, 'STORIES': 5, 'HEIGHT': 60},
+        'S1HM': {'MBT': 'S1', 'SDL': 'moderate', 'BID': 1, 'YEAR': 1970, 'STORIES': 13, 'HEIGHT': 156},
+        'S2LM': {'MBT': 'S2', 'SDL': 'moderate', 'BID': 1, 'YEAR': 1970, 'STORIES': 2, 'HEIGHT': 24},
+        'S2MM': {'MBT': 'S2', 'SDL': 'moderate', 'BID': 1, 'YEAR': 1970, 'STORIES': 5, 'HEIGHT': 60},
+        'S2HM': {'MBT': 'S2', 'SDL': 'moderate', 'BID': 1, 'YEAR': 1970, 'STORIES': 13, 'HEIGHT': 156},
+        'S3M': {'MBT': 'S3', 'SDL': 'moderate', 'BID': 1, 'YEAR': 1970, 'STORIES': 1, 'HEIGHT': 15},
+        'S4LM': {'MBT': 'S4', 'SDL': 'moderate', 'BID': 1, 'YEAR': 1970, 'STORIES': 2, 'HEIGHT': 24},
+        'S4MM': {'MBT': 'S4', 'SDL': 'moderate', 'BID': 1, 'YEAR': 1970, 'STORIES': 5, 'HEIGHT': 60},
+        'S4HM': {'MBT': 'S4', 'SDL': 'moderate', 'BID': 1, 'YEAR': 1970, 'STORIES': 13, 'HEIGHT': 156},
+        'S5LM': {'MBT': 'S5', 'SDL': 'moderate', 'BID': 1, 'YEAR': 1970, 'STORIES': 2, 'HEIGHT': 24},
+        'S5MM': {'MBT': 'S5', 'SDL': 'moderate', 'BID': 1, 'YEAR': 1970, 'STORIES': 5, 'HEIGHT': 60},
+        'S5HM': {'MBT': 'S5', 'SDL': 'moderate', 'BID': 1, 'YEAR': 1970, 'STORIES': 13, 'HEIGHT': 156},
+        'C1LM': {'MBT': 'C1', 'SDL': 'moderate', 'BID': 1, 'YEAR': 1970, 'STORIES': 2, 'HEIGHT': 20},
+        'C1MM': {'MBT': 'C1', 'SDL': 'moderate', 'BID': 1, 'YEAR': 1970, 'STORIES': 5, 'HEIGHT': 50},
+        'C1HM': {'MBT': 'C1', 'SDL': 'moderate', 'BID': 1, 'YEAR': 1970, 'STORIES': 12, 'HEIGHT': 120},
+        'C2LM': {'MBT': 'C2', 'SDL': 'moderate', 'BID': 1, 'YEAR': 1970, 'STORIES': 2, 'HEIGHT': 20},
+        'C2MM': {'MBT': 'C2', 'SDL': 'moderate', 'BID': 1, 'YEAR': 1970, 'STORIES': 5, 'HEIGHT': 50},
+        'C2HM': {'MBT': 'C2', 'SDL': 'moderate', 'BID': 1, 'YEAR': 1970, 'STORIES': 12, 'HEIGHT': 120},
+        'C3LM': {'MBT': 'C3', 'SDL': 'moderate', 'BID': 1, 'YEAR': 1970, 'STORIES': 2, 'HEIGHT': 20},
+        'C3MM': {'MBT': 'C3', 'SDL': 'moderate', 'BID': 1, 'YEAR': 1970, 'STORIES': 5, 'HEIGHT': 50},
+        'C3HM': {'MBT': 'C3', 'SDL': 'moderate', 'BID': 1, 'YEAR': 1970, 'STORIES': 12, 'HEIGHT': 120},
+        'PC1M': {'MBT': 'PC1', 'SDL': 'moderate', 'BID': 1, 'YEAR': 1970, 'STORIES': 1, 'HEIGHT': 15},
+        'PC2LM': {'MBT': 'PC2', 'SDL': 'moderate', 'BID': 1, 'YEAR': 1970, 'STORIES': 2, 'HEIGHT': 20},
+        'PC2MM': {'MBT': 'PC2', 'SDL': 'moderate', 'BID': 1, 'YEAR': 1970, 'STORIES': 5, 'HEIGHT': 50},
+        'PC2HM': {'MBT': 'PC2', 'SDL': 'moderate', 'BID': 1, 'YEAR': 1970, 'STORIES': 12, 'HEIGHT': 120},
+        'RM1LM': {'MBT': 'RM1', 'SDL': 'moderate', 'BID': 1, 'YEAR': 1970, 'STORIES': 2, 'HEIGHT': 20},
+        'RM1MM': {'MBT': 'RM1', 'SDL': 'moderate', 'BID': 1, 'YEAR': 1970, 'STORIES': 5, 'HEIGHT': 50},
+        'RM2LM': {'MBT': 'RM2', 'SDL': 'moderate', 'BID': 1, 'YEAR': 1970, 'STORIES': 2, 'HEIGHT': 20},
+        'RM2MM': {'MBT': 'RM2', 'SDL': 'moderate', 'BID': 1, 'YEAR': 1970, 'STORIES': 5, 'HEIGHT': 50},
+        'RM2HM': {'MBT': 'RM2', 'SDL': 'moderate', 'BID': 1, 'YEAR': 1970, 'STORIES': 12, 'HEIGHT': 120},
+        'URMLM': {'MBT': 'URM', 'SDL': 'moderate', 'BID': 1, 'YEAR': 1970, 'STORIES': 1, 'HEIGHT': 15},
+        'URMMM': {'MBT': 'URM', 'SDL': 'moderate', 'BID': 1, 'YEAR': 1970, 'STORIES': 3, 'HEIGHT': 35},
+        'MHM': {'MBT': 'MH', 'SDL': 'moderate', 'BID': 1, 'YEAR': 1970, 'STORIES': 1, 'HEIGHT': 10},
+        'W1L': {'MBT': 'W1', 'SDL': 'low', 'BID': 1, 'YEAR': 1950, 'STORIES': 1, 'HEIGHT': 14},
+        'W1AL': {'MBT': 'W1A', 'SDL': 'low', 'BID': 1, 'YEAR': 1950, 'STORIES': 1, 'HEIGHT': 14},
+        'W2L': {'MBT': 'W2', 'SDL': 'low', 'BID': 1, 'YEAR': 1950, 'STORIES': 2, 'HEIGHT': 24},
+        'S1LL': {'MBT': 'S1', 'SDL': 'low', 'BID': 1, 'YEAR': 1950, 'STORIES': 2, 'HEIGHT': 24},
+        'S1ML': {'MBT': 'S1', 'SDL': 'low', 'BID': 1, 'YEAR': 1950, 'STORIES': 5, 'HEIGHT': 60},
+        'S1HL': {'MBT': 'S1', 'SDL': 'low', 'BID': 1, 'YEAR': 1950, 'STORIES': 13, 'HEIGHT': 156},
+        'S2LL': {'MBT': 'S2', 'SDL': 'low', 'BID': 1, 'YEAR': 1950, 'STORIES': 2, 'HEIGHT': 24},
+        'S2ML': {'MBT': 'S2', 'SDL': 'low', 'BID': 1, 'YEAR': 1950, 'STORIES': 5, 'HEIGHT': 60},
+        'S2HL': {'MBT': 'S2', 'SDL': 'low', 'BID': 1, 'YEAR': 1950, 'STORIES': 13, 'HEIGHT': 156},
+        'S3L': {'MBT': 'S3', 'SDL': 'low', 'BID': 1, 'YEAR': 1950, 'STORIES': 1, 'HEIGHT': 15},
+        'S4LL': {'MBT': 'S4', 'SDL': 'low', 'BID': 1, 'YEAR': 1950, 'STORIES': 2, 'HEIGHT': 24},
+        'S4ML': {'MBT': 'S4', 'SDL': 'low', 'BID': 1, 'YEAR': 1950, 'STORIES': 5, 'HEIGHT': 60},
+        'S4HL': {'MBT': 'S4', 'SDL': 'low', 'BID': 1, 'YEAR': 1950, 'STORIES': 13, 'HEIGHT': 156},
+        'S5LL': {'MBT': 'S5', 'SDL': 'low', 'BID': 1, 'YEAR': 1950, 'STORIES': 2, 'HEIGHT': 24},
+        'S5ML': {'MBT': 'S5', 'SDL': 'low', 'BID': 1, 'YEAR': 1950, 'STORIES': 5, 'HEIGHT': 60},
+        'S5HL': {'MBT': 'S5', 'SDL': 'low', 'BID': 1, 'YEAR': 1950, 'STORIES': 13, 'HEIGHT': 156},
+        'C1LL': {'MBT': 'C1', 'SDL': 'low', 'BID': 1, 'YEAR': 1950, 'STORIES': 2, 'HEIGHT': 20},
+        'C1ML': {'MBT': 'C1', 'SDL': 'low', 'BID': 1, 'YEAR': 1950, 'STORIES': 5, 'HEIGHT': 50},
+        'C1HL': {'MBT': 'C1', 'SDL': 'low', 'BID': 1, 'YEAR': 1950, 'STORIES': 12, 'HEIGHT': 120},
+        'C2LL': {'MBT': 'C2', 'SDL': 'low', 'BID': 1, 'YEAR': 1950, 'STORIES': 2, 'HEIGHT': 20},
+        'C2ML': {'MBT': 'C2', 'SDL': 'low', 'BID': 1, 'YEAR': 1950, 'STORIES': 5, 'HEIGHT': 50},
+        'C2HL': {'MBT': 'C2', 'SDL': 'low', 'BID': 1, 'YEAR': 1950, 'STORIES': 12, 'HEIGHT': 120},
+        'C3LL': {'MBT': 'C3', 'SDL': 'low', 'BID': 1, 'YEAR': 1950, 'STORIES': 2, 'HEIGHT': 20},
+        'C3ML': {'MBT': 'C3', 'SDL': 'low', 'BID': 1, 'YEAR': 1950, 'STORIES': 5, 'HEIGHT': 50},
+        'C3HL': {'MBT': 'C3', 'SDL': 'low', 'BID': 1, 'YEAR': 1950, 'STORIES': 12, 'HEIGHT': 120},
+        'PC1L': {'MBT': 'PC1', 'SDL': 'low', 'BID': 1, 'YEAR': 1950, 'STORIES': 1, 'HEIGHT': 15},
+        'PC2LL': {'MBT': 'PC2', 'SDL': 'low', 'BID': 1, 'YEAR': 1950, 'STORIES': 2, 'HEIGHT': 20},
+        'PC2ML': {'MBT': 'PC2', 'SDL': 'low', 'BID': 1, 'YEAR': 1950, 'STORIES': 5, 'HEIGHT': 50},
+        'PC2HL': {'MBT': 'PC2', 'SDL': 'low', 'BID': 1, 'YEAR': 1950, 'STORIES': 12, 'HEIGHT': 120},
+        'RM1LL': {'MBT': 'RM1', 'SDL': 'low', 'BID': 1, 'YEAR': 1950, 'STORIES': 2, 'HEIGHT': 20},
+        'RM1ML': {'MBT': 'RM1', 'SDL': 'low', 'BID': 1, 'YEAR': 1950, 'STORIES': 5, 'HEIGHT': 50},
+        'RM2LL': {'MBT': 'RM2', 'SDL': 'low', 'BID': 1, 'YEAR': 1950, 'STORIES': 2, 'HEIGHT': 20},
+        'RM2ML': {'MBT': 'RM2', 'SDL': 'low', 'BID': 1, 'YEAR': 1950, 'STORIES': 5, 'HEIGHT': 50},
+        'RM2HL': {'MBT': 'RM2', 'SDL': 'low', 'BID': 1, 'YEAR': 1950, 'STORIES': 12, 'HEIGHT': 120},
+        'URMLL': {'MBT': 'URM', 'SDL': 'low', 'BID': 1, 'YEAR': 1950, 'STORIES': 1, 'HEIGHT': 15},
+        'URMML': {'MBT': 'URM', 'SDL': 'low', 'BID': 1, 'YEAR': 1950, 'STORIES': 3, 'HEIGHT': 35},
+        'MHL': {'MBT': 'MH', 'SDL': 'low', 'BID': 1, 'YEAR': 1950, 'STORIES': 1, 'HEIGHT': 10},
+        'W1P': {'MBT': 'W1', 'SDL': 'pre', 'BID': 1, 'YEAR': 1940, 'STORIES': 1, 'HEIGHT': 14},
+        'W1AP': {'MBT': 'W1A', 'SDL': 'pre', 'BID': 1, 'YEAR': 1940, 'STORIES': 1, 'HEIGHT': 14},
+        'W2P': {'MBT': 'W2', 'SDL': 'pre', 'BID': 1, 'YEAR': 1940, 'STORIES': 2, 'HEIGHT': 24},
+        'S1LP': {'MBT': 'S1', 'SDL': 'pre', 'BID': 1, 'YEAR': 1940, 'STORIES': 2, 'HEIGHT': 24},
+        'S1MP': {'MBT': 'S1', 'SDL': 'pre', 'BID': 1, 'YEAR': 1940, 'STORIES': 5, 'HEIGHT': 60},
+        'S1HP': {'MBT': 'S1', 'SDL': 'pre', 'BID': 1, 'YEAR': 1940, 'STORIES': 13, 'HEIGHT': 156},
+        'S2LP': {'MBT': 'S2', 'SDL': 'pre', 'BID': 1, 'YEAR': 1940, 'STORIES': 2, 'HEIGHT': 24},
+        'S2MP': {'MBT': 'S2', 'SDL': 'pre', 'BID': 1, 'YEAR': 1940, 'STORIES': 5, 'HEIGHT': 60},
+        'S2HP': {'MBT': 'S2', 'SDL': 'pre', 'BID': 1, 'YEAR': 1940, 'STORIES': 13, 'HEIGHT': 156},
+        'S3P': {'MBT': 'S3', 'SDL': 'pre', 'BID': 1, 'YEAR': 1940, 'STORIES': 1, 'HEIGHT': 15},
+        'S4LP': {'MBT': 'S4', 'SDL': 'pre', 'BID': 1, 'YEAR': 1940, 'STORIES': 2, 'HEIGHT': 24},
+        'S4MP': {'MBT': 'S4', 'SDL': 'pre', 'BID': 1, 'YEAR': 1940, 'STORIES': 5, 'HEIGHT': 60},
+        'S4HP': {'MBT': 'S4', 'SDL': 'pre', 'BID': 1, 'YEAR': 1940, 'STORIES': 13, 'HEIGHT': 156},
+        'S5LP': {'MBT': 'S5', 'SDL': 'pre', 'BID': 1, 'YEAR': 1940, 'STORIES': 2, 'HEIGHT': 24},
+        'S5MP': {'MBT': 'S5', 'SDL': 'pre', 'BID': 1, 'YEAR': 1940, 'STORIES': 5, 'HEIGHT': 60},
+        'S5HP': {'MBT': 'S5', 'SDL': 'pre', 'BID': 1, 'YEAR': 1940, 'STORIES': 13, 'HEIGHT': 156},
+        'C1LP': {'MBT': 'C1', 'SDL': 'pre', 'BID': 1, 'YEAR': 1940, 'STORIES': 2, 'HEIGHT': 20},
+        'C1MP': {'MBT': 'C1', 'SDL': 'pre', 'BID': 1, 'YEAR': 1940, 'STORIES': 5, 'HEIGHT': 50},
+        'C1HP': {'MBT': 'C1', 'SDL': 'pre', 'BID': 1, 'YEAR': 1940, 'STORIES': 12, 'HEIGHT': 120},
+        'C2LP': {'MBT': 'C2', 'SDL': 'pre', 'BID': 1, 'YEAR': 1940, 'STORIES': 2, 'HEIGHT': 20},
+        'C2MP': {'MBT': 'C2', 'SDL': 'pre', 'BID': 1, 'YEAR': 1940, 'STORIES': 5, 'HEIGHT': 50},
+        'C2HP': {'MBT': 'C2', 'SDL': 'pre', 'BID': 1, 'YEAR': 1940, 'STORIES': 12, 'HEIGHT': 120},
+        'C3LP': {'MBT': 'C3', 'SDL': 'pre', 'BID': 1, 'YEAR': 1940, 'STORIES': 2, 'HEIGHT': 20},
+        'C3MP': {'MBT': 'C3', 'SDL': 'pre', 'BID': 1, 'YEAR': 1940, 'STORIES': 5, 'HEIGHT': 50},
+        'C3HP': {'MBT': 'C3', 'SDL': 'pre', 'BID': 1, 'YEAR': 1940, 'STORIES': 12, 'HEIGHT': 120},
+        'PC1P': {'MBT': 'PC1', 'SDL': 'pre', 'BID': 1, 'YEAR': 1940, 'STORIES': 1, 'HEIGHT': 15},
+        'PC2LP': {'MBT': 'PC2', 'SDL': 'pre', 'BID': 1, 'YEAR': 1940, 'STORIES': 2, 'HEIGHT': 20},
+        'PC2MP': {'MBT': 'PC2', 'SDL': 'pre', 'BID': 1, 'YEAR': 1940, 'STORIES': 5, 'HEIGHT': 50},
+        'PC2HP': {'MBT': 'PC2', 'SDL': 'pre', 'BID': 1, 'YEAR': 1940, 'STORIES': 12, 'HEIGHT': 120},
+        'RM1LP': {'MBT': 'RM1', 'SDL': 'pre', 'BID': 1, 'YEAR': 1940, 'STORIES': 2, 'HEIGHT': 20},
+        'RM1MP': {'MBT': 'RM1', 'SDL': 'pre', 'BID': 1, 'YEAR': 1940, 'STORIES': 5, 'HEIGHT': 50},
+        'RM2LP': {'MBT': 'RM2', 'SDL': 'pre', 'BID': 1, 'YEAR': 1940, 'STORIES': 2, 'HEIGHT': 20},
+        'RM2MP': {'MBT': 'RM2', 'SDL': 'pre', 'BID': 1, 'YEAR': 1940, 'STORIES': 5, 'HEIGHT': 50},
+        'RM2HP': {'MBT': 'RM2', 'SDL': 'pre', 'BID': 1, 'YEAR': 1940, 'STORIES': 12, 'HEIGHT': 120},
+        'URMLP': {'MBT': 'URM', 'SDL': 'pre', 'BID': 1, 'YEAR': 1940, 'STORIES': 1, 'HEIGHT': 15},
+        'URMMP': {'MBT': 'URM', 'SDL': 'pre', 'BID': 1, 'YEAR': 1940, 'STORIES': 3, 'HEIGHT': 35},
+        'MHP': {'MBT': 'MH', 'SDL': 'pre', 'BID': 1, 'YEAR': 1940, 'STORIES': 1, 'HEIGHT': 10}
+    }
+    hazus_mbt = hazus_mbt_dict.get(facility_model, {})
+    return hazus_mbt
+
