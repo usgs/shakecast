@@ -119,8 +119,8 @@ test-staging:
   only:
     - master
   when: manual
-  env:
-    - SC_DOCKER: 0
+  variables:
+    SC_DOCKER: "0"
   extends: 
     - .shakecast-dev
     - .dind
@@ -135,8 +135,8 @@ prod-staging:
   only:
     - tags
   when: manual
-  env:
-    - SC_DOCKER: 0
+  variables:
+    SC_DOCKER: "0"
   extends: 
     - .shakecast-dev
     - .dind
