@@ -142,17 +142,6 @@ class TestDBConnet(unittest.TestCase):
         self.assertTrue(isinstance(result, list))
         Session.remove()
 
-    def test_catchesError(self):
-
-        @dbconnect
-        def db_failure(session=None):
-            raise Exception
-        
-        try:
-            db_failure()
-        except Exception as e:
-            self.assertEqual(str(e), 'Testing Error')
-
     def test_returnsSqlAlchemyObj(self):
 
         @dbconnect
@@ -252,102 +241,6 @@ class TestTask(unittest.TestCase):
         t.run()
 
         self.assertTrue(t.next_run > time.time())
-
-class TestSCConfig(unittest.TestCase):
-    '''
-    Tests for the sc configuration script that runs during CI
-    '''
-    def step1_setupConfigTest(self):
-        '''
-        Make a copy of the sc.json file to save user configs
-        '''
-        sc = SC()
-        # store smtp information for later testing
-        self.username = sc.smtp_username
-        self.password = sc.smtp_password
-        sc.make_backup()
-    
-    def step2_SCConfigClear(self):
-        '''
-        Clear the smtp username and password
-        '''
-        sc_conf_path = os.path.join(sc_dir(), 'app', 'sc_config.py')
-        test_user = 'clear'
-        test_pass = 'clear'
-        os.system('python {} --smtpu {} --smtpp {}'.format(sc_conf_path,
-                                                           test_user,
-                                                           test_pass))
-        sc = SC()
-        self.assertEqual(sc.smtp_username, test_user)
-        self.assertEqual(sc.smtp_password, test_pass)
-    
-    def step3_SCConfigSet(self):
-        '''
-        Set the smtp username and password
-        '''
-        sc_conf_path = os.path.join(sc_dir(), 'app', 'sc_config.py')
-        test_user = 'testemail@gmail.com'
-        test_pass = 'testpass'
-        os.system('python {} --smtpu {} --smtpp {}'.format(sc_conf_path,
-                                                           test_user,
-                                                           test_pass))
-        sc = SC()
-        self.assertEqual(sc.smtp_username, test_user)
-        self.assertEqual(sc.smtp_password, test_pass)
-        
-    def step4_SCSave(self):
-        sc = SC()
-        if sc.validate(sc.json) is True:
-            sc.save(sc.json)
-
-    def step5_SCRevert(self):
-        sc = SC()
-        sc.revert()
-        
-        self.assertEqual(sc.smtp_username, self.username)
-        self.assertEqual(sc.smtp_password, self.password)
-        
-    def steps(self):
-        '''
-        Generates the step methods from their parent object
-        '''
-        for name in sorted(dir(self)):
-            if name.startswith('step'):
-                yield name, getattr(self, name)
-    
-    def test_steps(self):
-        '''
-        Run the individual steps associated with this test
-        '''
-        # Create a flag that determines whether to raise an error at
-        # the end of the test
-        failed = False
-        
-        # An empty string that the will accumulate error messages for 
-        # each failing step
-        fail_message = ''
-        for name, step in self.steps():
-            try:
-                step()
-            except Exception as e:
-                # A step has failed, the test should continue through
-                # the remaining steps, but eventually fail
-                failed = True
-                
-                # get the name of the method -- so the fail message is
-                # nicer to read :)
-                name = name.split('_')[1]
-                # append this step's exception to the fail message
-                fail_message += "\n\nFAIL: {}\n {} failed ({}: {})".format(name,
-                                                                           step,
-                                                                           type(e),
-                                                                           e)
-        
-        # check if any of the steps failed
-        if failed is True:
-            # fail the test with the accumulated exception message
-            self.fail(fail_message)
-
 
 def fail_test():
     '''

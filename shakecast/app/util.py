@@ -5,7 +5,7 @@ import datetime
 import time
 from shutil import copyfile
 import shutil
-import collections
+from collections import Mapping
 
 class SC(object):
     """
@@ -439,7 +439,7 @@ def merge_dicts(dct, merge_dct):
     """
     for k in merge_dct:
         if (k in dct and isinstance(dct[k], dict)
-                and isinstance(merge_dct[k], collections.Mapping)):
+                and isinstance(merge_dct[k], Mapping)):
             merge_dicts(dct[k], merge_dct[k])
         else:
             dct[k] = merge_dct[k]

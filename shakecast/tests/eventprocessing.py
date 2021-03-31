@@ -34,7 +34,8 @@ class TestScenarioRun(unittest.TestCase):
 class TestUtf8(unittest.TestCase):
     def test_Utf8Download(self):
       download_scenario('us7000df40')
-      result = run_scenario('us7000df40')
+      result = run_scenario('us7000df40_scenario')
+
       self.assertTrue(result['message']['success'])
 
 

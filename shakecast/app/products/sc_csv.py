@@ -52,7 +52,7 @@ def generate_impact_csv(shakemap, group=None, save=False, file_name='', template
 
 def save_csv(csv_rows, file_name, directory):
     file_name = os.path.join(directory, file_name)
-    with open(file_name, 'wb') as csv_file:
+    with open(file_name, 'w') as csv_file:
         csv_writer = csv.writer(csv_file)
         for row in csv_rows:
             csv_writer.writerow(row)
