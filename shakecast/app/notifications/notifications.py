@@ -236,7 +236,7 @@ def inspection_notification(notification=None,
             msg.attach(msg_image)
             
             # attach a header if it's needed
-            if configs['header']:
+            if configs.get('header', False):
                 header_str = os.path.join(sc_dir(),'view','assets',configs['header'])
                 if os.path.isfile(header_str):
                     header_file = get_image(header_str)
@@ -372,7 +372,7 @@ def send_inspection_notification(notification, session=None):
         notification.error = str(e)
         session.commit()
 
-        logging.info('Error generation inspection notification. \n{}'.format(str(e)))
+        logging.info('Error generating inspection notification. \n{}'.format(str(e)))
         raise
 
     logging.info(str(notification))
