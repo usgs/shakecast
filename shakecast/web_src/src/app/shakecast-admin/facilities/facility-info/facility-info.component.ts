@@ -29,8 +29,6 @@ export class FacilityInfoComponent implements OnInit, OnDestroy{
     ngOnInit() {
       this.subscriptions.add(this.facService.select.subscribe((facility: Facility) => {
         this.onFacility(facility);
-
-        console.log(facility);
       }));
 
       this.subscriptions.add(this.facService.facilityShaking.subscribe((shaking: any) => {

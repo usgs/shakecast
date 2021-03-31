@@ -35,7 +35,6 @@ export class FacilityCountComponent implements OnInit, OnDestroy {
     });
 
     this.types = facTypes;
-    console.log(facTypes);
   }
 
   ngOnDestroy() {
