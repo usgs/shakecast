@@ -1,5 +1,5 @@
-<div class="container" *ngIf="count.length > 0">
-  <div class="fac" *ngFor="let fac of count">
-    {{ fac.name }}: {{ fac.count }}
+<ng-container *ngIf="types">
+  <div class="fac" *ngFor="let item of types | keyvalue">
+    {{ item.key }}: {{ item.value }}
   </div>
-</div>
+</ng-container>

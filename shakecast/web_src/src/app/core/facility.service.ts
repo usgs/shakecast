@@ -62,7 +62,6 @@ export class FacilityService {
             .subscribe((result: any) => {
                 this.selectedFacs = [];
                 this.facilityData.next(result);
-                this.facilityCount.next(result.features.count);
                 this.loadingService.finish('Facilities');
             }, (error: any) => {
                 this.loadingService.finish('Facilities');

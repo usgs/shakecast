@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 
 import { trigger,
          state,
@@ -29,8 +29,11 @@ import { filter } from '@core/earthquake.service';
       ])
     ]
 })
-export class EarthquakeListComponent {
+export class EarthquakeListComponent implements OnInit {
     public selected: Earthquake = null;
+
+    @Input()
+    facility = null;
 
     public filter: filter = {
         shakemap: false,
@@ -38,6 +41,12 @@ export class EarthquakeListComponent {
     };
 
     constructor(public eqService: EarthquakeService) {}
+
+    ngOnInit() {
+      if (this.facility) {
+        this.eqService.getData({facility: this.facility});
+      }
+    }
 
     plotEq(eq: Earthquake) {
         this.selected = eq;
