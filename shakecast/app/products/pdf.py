@@ -263,7 +263,10 @@ def get_impact_line_values(headers, data):
             header_name = header['name']
 
             if header_name == 'shaking_value':
-                header_name = facility_shaking.facility.metric.lower()
+                if facility_shaking.facility.metric is None:
+                    header_name = 'pga'
+                else:
+                    header_name = facility_shaking.facility.metric.lower()
 
             value = facility_shaking.__dict__.get(
                 header_name, facility_shaking.facility.__dict__.get(header_name,
