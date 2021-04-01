@@ -105,7 +105,7 @@ def new_event_notification(notifications=None,
     msg.attach(msg_image)
     
     # attach a header if it's needed
-    if configs['header']:
+    if configs.get('header'):
         header_str = os.path.join(sc_dir(),'view','assets',configs['header'])
         if os.path.isfile(header_str):
             header_file = get_image(header_str)
