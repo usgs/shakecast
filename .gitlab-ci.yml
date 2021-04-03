@@ -50,31 +50,34 @@ build-test-images:
   extends: 
     - .shakecast-dev
     - .dind
+    - .build
   only:
     - merge_requests
   script:
-    - docker build -f sc-server.dockerfile . -t shakecast-server:test
-    - docker build -f web-server.dockerfile . -t shakecast-web-server:test
+    - docker build . -t $CODE_REGISTRY_IMAGE/shakecast:test
+    - docker push $CODE_REGISTRY_IMAGE/shakecast:test
+  after_script:
+    - docker rmi $CODE_REGISTRY_IMAGE/shakecast:test
 
 
 # TESTING THE PYTHON APP
 app-test:
   stage: test
-  image: shakecast/centos
+  image: $CODE_REGISTRY_IMAGE/shakecast:test
   extends: 
     - .shakecast-dev
     - .python-test
   script:
-    - python -m shakecast.tests.bundle
+    - python3 -m shakecast.tests.bundle
 
 api-test:
   stage: test
-  image: shakecast/centos
+  image: $CODE_REGISTRY_IMAGE/shakecast:test
   extends: 
     - .shakecast-dev
     - .python-test
   script:
-    - python -m shakecast.api &
+    - python3 -m shakecast.api &
     - sleep 5
     - curl localhost:5000
 
@@ -88,13 +91,10 @@ release-dev:
   only:
     - master
   script:
-    - docker build -f sc-server.dockerfile . -t $CODE_REGISTRY_IMAGE/$SERVER_REGISTRY_IMAGE_NAME:dev
-    - docker build -f web-server.dockerfile . -t $CODE_REGISTRY_IMAGE/$API_REGISTRY_IMAGE_NAME:dev
-    - docker push $CODE_REGISTRY_IMAGE/$SERVER_REGISTRY_IMAGE_NAME:dev
-    - docker push $CODE_REGISTRY_IMAGE/$API_REGISTRY_IMAGE_NAME:dev
+    - docker build . -t $CODE_REGISTRY_IMAGE/shakecast:dev
+    - docker push $CODE_REGISTRY_IMAGE/shakecast:dev
   after_script:
-    - docker rmi $CODE_REGISTRY_IMAGE/$SERVER_REGISTRY_IMAGE_NAME:dev
-    - docker rmi $CODE_REGISTRY_IMAGE/$API_REGISTRY_IMAGE_NAME:dev
+    - docker rmi $CODE_REGISTRY_IMAGE/shakecast:dev
 
 release-prod:
   stage: release
@@ -105,13 +105,10 @@ release-prod:
   only:
     - tags
   script:
-    - docker build -f sc-server.dockerfile . -t $CODE_REGISTRY_IMAGE/$SERVER_REGISTRY_IMAGE_NAME:latest
-    - docker build -f web-server.dockerfile . -t $CODE_REGISTRY_IMAGE/$API_REGISTRY_IMAGE_NAME:latest
-    - docker push $CODE_REGISTRY_IMAGE/$SERVER_REGISTRY_IMAGE_NAME:latest
-    - docker push $CODE_REGISTRY_IMAGE/$API_REGISTRY_IMAGE_NAME:latest
+    - docker build . -t $CODE_REGISTRY_IMAGE/shakecast:latest
+    - docker push $CODE_REGISTRY_IMAGE/shakecast:latest
   after_script:
-    - docker rmi $CODE_REGISTRY_IMAGE/$SERVER_REGISTRY_IMAGE_NAME:latest
-    - docker rmi $CODE_REGISTRY_IMAGE/$API_REGISTRY_IMAGE_NAME:latest
+    - docker rmi $CODE_REGISTRY_IMAGE/shakecast:latest
 
 # STAGING
 test-staging:
@@ -119,43 +116,39 @@ test-staging:
   only:
     - master
   when: manual
-  variables:
-    SC_DOCKER: "0"
   extends: 
     - .shakecast-dev
     - .dind
   before_script:
     - docker rm -f shakecast-test || true
-    - docker rmi $CODE_REGISTRY_IMAGE/$SERVER_REGISTRY_IMAGE_NAME:dev || true
+    - docker rmi $CODE_REGISTRY_IMAGE/shakecast:dev || true
   script:
-    - docker run -d --name=shakecast-test --network=app-network --entrypoint=python $CODE_REGISTRY_IMAGE/$SERVER_REGISTRY_IMAGE_NAME:dev -m shakecast start
+    - docker run -d --name=shakecast-test --network=app-network --entrypoint=python $CODE_REGISTRY_IMAGE/shakecast:dev -m shakecast start
 
 prod-staging:
   stage: staging
   only:
     - tags
   when: manual
-  variables:
-    SC_DOCKER: "0"
   extends: 
     - .shakecast-dev
     - .dind
   before_script:
     - docker rm -f shakecast-prod || true
-    - docker rmi $CODE_REGISTRY_IMAGE/$SERVER_REGISTRY_IMAGE_NAME:latest || true
+    - docker rmi $CODE_REGISTRY_IMAGE/shakecast:latest || true
   script:
-    - docker run -d --name=shakecast-prod --network=app-network --entrypoint=python $CODE_REGISTRY_IMAGE/$SERVER_REGISTRY_IMAGE_NAME:latest -m shakecast start
+    - docker run -d --name=shakecast-prod --network=app-network --entrypoint=python $CODE_REGISTRY_IMAGE/shakecast:latest -m shakecast start
 
 # PUBLISH PACKAGES/CONTAINERS
 publish-python:
   stage: publish
-  image: shakecast/centos
+  image: $CODE_REGISTRY_IMAGE/shakecast:test
   extends: .release
   only:
     - tags
   when: manual
   script:
-    - python -m pip install --upgrade pip
+    - python3 -m pip install --upgrade pip
     - pip install setuptools wheel twine
     - python setup.py bdist_wheel
     - twine upload dist/*
