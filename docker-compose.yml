@@ -2,9 +2,7 @@ version: '3'
 
 services:
   sc-server:
-    build:
-      context: .
-      dockerfile: sc-server.dockerfile
+    image: shakecast:latest
     expose:
       - "1981"
     networks:
@@ -18,18 +16,16 @@ services:
       - "~/pycast/logs:/usr/local/shakecast/shakecast/logs"
       - "~/pycast/local_products:/usr/local/shakecast/shakecast/local_products"
       - "~/pycast/assets:/usr/local/shakecast/shakecast/view/assets"
-    user: "${DOCKER_UID}:${DOCKER_GID}"
     restart: unless-stopped
   
   web-server:
-    build:
-      context: .
-      dockerfile: web-server.dockerfile
+    image: shakecast:latest
     ports:
       - "80:5000"
-    env:
-      - SHAKECAST_SERVER_HOST_NAME: 'sc-server'
-      - SHAKECAST_WEB_PORT: 5000
+    environment:
+      APP_SERVER: 'false'
+      SHAKECAST_SERVER_HOST_NAME: 'sc-server'
+      SHAKECAST_WEB_PORT: 5000
     networks:
       - sc-network
     volumes:
@@ -41,7 +37,6 @@ services:
       - "~/pycast/logs:/usr/local/shakecast/shakecast/logs"
       - "~/pycast/local_products:/usr/local/shakecast/shakecast/local_products"
       - "~/pycast/assets:/usr/local/shakecast/shakecast/view/assets"
-    user: "${DOCKER_UID}:${DOCKER_GID}"
     restart: unless-stopped
 
   image-server:
@@ -52,7 +47,6 @@ services:
       - "~/pycast/local_products:/usr/local/shakecast/shakecast/local_products"
     expose:
       - "5000"
-    user: "${DOCKER_UID}:${DOCKER_GID}"
     restart: unless-stopped
 
 

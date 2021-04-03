@@ -3,11 +3,11 @@
 
 APP_SERVER=${APP_SERVER:-true}
 
-python -m shakecast.app.startup
+python3 -m shakecast.app.startup
 
 if [ "${APP_SERVER}" = "true" ];
 then
-  exec python -m shakecast.app.server start;
+  exec python3 -m shakecast.app.server start;
 else
-  exec python -m shakecast.api;
+  exec python3 -m shakecast.api;
 fi
