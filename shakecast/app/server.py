@@ -343,7 +343,7 @@ class Server(object):
                 task.id = int(time.time() * 1000000)
                 task.func = f.geo_json
                 task.loop = True
-                task.interval = 60
+                task.interval = 3600
                 task.db_use = True
                 task.name = 'day_geo_json'
                 task.args_in = {'query_period': 'day'}

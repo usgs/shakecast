@@ -15,8 +15,14 @@ def create_products(notification=None, session=None):
             .filter(Notification.status == 'created')
             .filter(Notification.notification_type.like('damage'))
             .first())
-    
-    if not notification or not notification.shakemap:
+
+    if not notification:
+        return None
+    elif not notification.shakemap:
+        notification.status = 'no shakemap'
+        session.commit()
+
+        print(f'No shakemap for notification: {notification}')
         return None
 
     notification.status = 'generating-products'
