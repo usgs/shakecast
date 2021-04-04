@@ -7,7 +7,7 @@ include:
 
 variables:
   DOCKER_DRIVER: overlay2
-  IMAGE_NAME: "$CI_PROJECT_NAME:${CI_PIPELINE_ID}"
+  IMAGE_NAME: "${CI_PROJECT_NAME}:${CI_PIPELINE_ID}"
   SERVER_REGISTRY_IMAGE_NAME: "shakecast/server"
   API_REGISTRY_IMAGE_NAME: "shakecast/api-server"
   TWINE_USERNAME: ${PYPI_USERNAME}
@@ -22,6 +22,9 @@ stages:
   - publish
 
 .python-test:
+  image:
+    name: ${CODE_REGISTRY_IMAGE}/shakecast:${CI_PIPELINE_ID}
+    entrypoint: [""]
   tags:
     - shakecast-dev
   only:
@@ -54,16 +57,15 @@ build-test-images:
   only:
     - merge_requests
   script:
-    - docker build . -t $CODE_REGISTRY_IMAGE/shakecast:test
-    - docker push $CODE_REGISTRY_IMAGE/shakecast:test
+    - docker build . -t ${CODE_REGISTRY_IMAGE}/shakecast:${CI_PIPELINE_ID}
+    - docker push ${CODE_REGISTRY_IMAGE}/shakecast:${CI_PIPELINE_ID}
   after_script:
-    - docker rmi $CODE_REGISTRY_IMAGE/shakecast:test
+    - docker rmi ${CODE_REGISTRY_IMAGE}/shakecast:${CI_PIPELINE_ID}
 
 
 # TESTING THE PYTHON APP
 app-test:
   stage: test
-  image: $CODE_REGISTRY_IMAGE/shakecast:test
   extends: 
     - .shakecast-dev
     - .python-test
@@ -72,7 +74,6 @@ app-test:
 
 api-test:
   stage: test
-  image: $CODE_REGISTRY_IMAGE/shakecast:test
   extends: 
     - .shakecast-dev
     - .python-test
@@ -91,10 +92,10 @@ release-dev:
   only:
     - master
   script:
-    - docker build . -t $CODE_REGISTRY_IMAGE/shakecast:dev
-    - docker push $CODE_REGISTRY_IMAGE/shakecast:dev
+    - docker build . -t ${CODE_REGISTRY_IMAGE}/shakecast:dev
+    - docker push ${CODE_REGISTRY_IMAGE}/shakecast:dev
   after_script:
-    - docker rmi $CODE_REGISTRY_IMAGE/shakecast:dev
+    - docker rmi ${CODE_REGISTRY_IMAGE}/shakecast:dev
 
 release-prod:
   stage: release
@@ -105,10 +106,10 @@ release-prod:
   only:
     - tags
   script:
-    - docker build . -t $CODE_REGISTRY_IMAGE/shakecast:latest
-    - docker push $CODE_REGISTRY_IMAGE/shakecast:latest
+    - docker build . -t ${CODE_REGISTRY_IMAGE}/shakecast:latest
+    - docker push ${CODE_REGISTRY_IMAGE}/shakecast:latest
   after_script:
-    - docker rmi $CODE_REGISTRY_IMAGE/shakecast:latest
+    - docker rmi ${CODE_REGISTRY_IMAGE}/shakecast:latest
 
 # STAGING
 test-staging:
@@ -121,9 +122,9 @@ test-staging:
     - .dind
   before_script:
     - docker rm -f shakecast-test || true
-    - docker rmi $CODE_REGISTRY_IMAGE/shakecast:dev || true
+    - docker rmi ${CODE_REGISTRY_IMAGE}/shakecast:dev || true
   script:
-    - docker run -d --name=shakecast-test --network=app-network --entrypoint=python $CODE_REGISTRY_IMAGE/shakecast:dev -m shakecast start
+    - docker run -d --name=shakecast-test --network=app-network --entrypoint=python ${CODE_REGISTRY_IMAGE}/shakecast:dev -m shakecast start
 
 prod-staging:
   stage: staging
@@ -135,14 +136,14 @@ prod-staging:
     - .dind
   before_script:
     - docker rm -f shakecast-prod || true
-    - docker rmi $CODE_REGISTRY_IMAGE/shakecast:latest || true
+    - docker rmi ${CODE_REGISTRY_IMAGE}/shakecast:latest || true
   script:
-    - docker run -d --name=shakecast-prod --network=app-network --entrypoint=python $CODE_REGISTRY_IMAGE/shakecast:latest -m shakecast start
+    - docker run -d --name=shakecast-prod --network=app-network --entrypoint=python ${CODE_REGISTRY_IMAGE}/shakecast:latest -m shakecast start
 
 # PUBLISH PACKAGES/CONTAINERS
 publish-python:
   stage: publish
-  image: $CODE_REGISTRY_IMAGE/shakecast:test
+  image: ${CODE_REGISTRY_IMAGE}/shakecast:${CI_PIPELINE_ID}
   extends: .release
   only:
     - tags
