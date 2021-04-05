@@ -737,7 +737,7 @@ def upload():
         return render_template('admin/upload.html')
 
     file_type = get_file_type(request.files['file'].filename)
-    if file_type is 'xml':
+    if file_type == 'xml':
         file_name = str(int(time.time())) + request.files['file'].filename
         xml_files.save(request.files['file'], name=file_name)
         xml_file = os.path.join(app.config['UPLOADED_XMLFILES_DEST'],

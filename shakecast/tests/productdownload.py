@@ -72,7 +72,7 @@ class TestImportUpdatedEvent(BaseTest):
         json_file = os.path.join(get_test_dir(), 'data', 'geojson', 'first.json')
 
         pg = ProductGrabber()
-        with open(json_file) as json_file_:
+        with open(json_file, 'r') as json_file_:
             pg.json_feed = json.loads(json_file_.read())
 
         pg.read_json_feed()
@@ -86,7 +86,7 @@ class TestImportUpdatedEvent(BaseTest):
         json_file = os.path.join(get_test_dir(), 'data', 'geojson', 'first.json')
 
         pg = ProductGrabber()
-        with open(json_file) as json_file_:
+        with open(json_file, 'r') as json_file_:
             pg.json_feed = json.loads(json_file_.read())
 
         pg.read_json_feed()
@@ -97,7 +97,7 @@ class TestImportUpdatedEvent(BaseTest):
 
         pg = ProductGrabber()
         json_file = os.path.join(get_test_dir(), 'data', 'geojson', 'updated.json')
-        with open(json_file) as json_file_:
+        with open(json_file, 'r') as json_file_:
           pg.json_feed = json.loads(json_file_.read())
 
         pg.read_json_feed()

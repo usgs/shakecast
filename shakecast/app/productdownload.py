@@ -29,6 +29,7 @@ class ProductGrabber(object):
         self.ignore_nets = sc.ignore_nets.split(',')
         self.json_feed = ''
         self.earthquakes = {}
+        self.shakemaps = {}
         self.data_dir = ''
         self.delim = ''
         self.log = ''
@@ -123,14 +124,13 @@ class ProductGrabber(object):
                 event.status = 'processed'
                 ids = event.all_event_ids.strip(',').split(',')
                 old_events = [(session.query(Event)
-                               .filter(Event.event_id == each_id)
-                               .first())
-                              for each_id in ids]
+                    .filter(Event.event_id == each_id).first())
+                    for each_id in ids]
 
-                reprocess = True
+                reprocess = False
                 for old_event in old_events:
                     if old_event and old_event.updated and eq['properties']['updated'] >= old_event.updated:
-                        reprocess = False
+                        reprocess = True
 
                 if reprocess is True:
                     for old_event in old_events:
@@ -143,10 +143,16 @@ class ProductGrabber(object):
                             if old_event.status == 'new':
                                 event.status = 'new'
                             session.delete(old_event)
+
+                            if eq['properties'].get('mmi'):
+                              self.shakemaps[eq_id] = eq
                 else:
                     continue
             else:
                 event.status = 'new'
+
+                if eq['properties'].get('mmi'):
+                  self.shakemaps[eq_id] = eq
 
             # Fill the rest of the event info
             event.title = eq['properties']['title']
@@ -221,8 +227,8 @@ class ProductGrabber(object):
 
         shakemap_str = ''
         new_shakemaps = []
-        for eq_id in list(self.earthquakes.keys()):
-            eq = self.earthquakes[eq_id]
+        for eq_id in list(self.shakemaps.keys()):
+            eq = self.shakemaps[eq_id]
 
             if scenario is False:
                 eq_url = eq['properties']['detail']
