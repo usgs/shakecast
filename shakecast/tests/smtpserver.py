@@ -14,7 +14,7 @@ def main():
     port = int(SMTP_PORT)
     print(f'Starting mock SMTP server on port {SMTP_PORT}')
 
-    server = TestSmtpServer(('', port), None)
+    server = TestSmtpServer(('127.0.0.0', port), None)
     asyncore.loop()
 
 if __name__ == '__main__':
