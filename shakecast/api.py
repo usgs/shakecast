@@ -32,7 +32,7 @@ from flask_uploads import UploadSet, configure_uploads, IMAGES
 from sqlalchemy import literal, func, desc
 from werkzeug.security import generate_password_hash, check_password_hash
 
-
+from .app.env import WEB_PORT
 from .app.impact import get_event_impact
 from .app.inventory import determine_xml, get_facility_info
 from .app.jsonencoders import AlchemyEncoder, GeoJsonFeatureCollection
@@ -835,13 +835,13 @@ def start():
     
     # don't start the web server if we're letting an extension do it
     if 'web_server' not in sc.dict['extensions']:
-        print('Running on web server on port: {}'.format(sc.dict['web_port']))
-        app.run(host='0.0.0.0', port=int(sc.dict['web_port']))
+        print('Running on web server on port: {}'.format(WEB_PORT))
+        app.run(host='0.0.0.0', port=int(WEB_PORT))
 
 if __name__ == '__main__':
     if len(sys.argv) > 1:
         if sys.argv[1] == '-d':
             # run in debug mode
-            app.run(host='0.0.0.0', port=80, debug=True)
+            app.run(host='0.0.0.0', port=int(WEB_PORT), debug=True)
     else:
         start()

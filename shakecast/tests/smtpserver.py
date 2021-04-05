@@ -2,6 +2,7 @@ import asyncore
 import smtpd
 
 from shakecast.app.util import SC
+from shakecast.app.env import SMTP_PORT
 
 class TestSmtpServer(smtpd.SMTPServer):
     @staticmethod
@@ -10,7 +11,9 @@ class TestSmtpServer(smtpd.SMTPServer):
 
 def main():
     sc = SC()
-    port = sc.dict['SMTP']['port']
+    port = int(SMTP_PORT)
+    print(f'Starting mock SMTP server on port {SMTP_PORT}')
+
     server = TestSmtpServer(('', port), None)
     asyncore.loop()
 
