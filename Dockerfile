@@ -1,4 +1,4 @@
-ARG FROM_IMAGE=usgs/obspy:3.8
+ARG FROM_IMAGE=usgs/obspy:3.7
 ARG APP_SERVER=true
 
 FROM ${FROM_IMAGE}
