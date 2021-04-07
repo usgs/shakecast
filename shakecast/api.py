@@ -167,10 +167,11 @@ def get_eq_data(session=None):
             query = query.filter(Event.shakemaps)
 
         if args.get('facility'):
-            query = (query.filter(ShakeMap
-                                    .facility_shaking
-                                    .any(FacilityShaking
-                                            .facility_id == args['facility'])))
+            query = (query.filter(
+                      Event.shakemaps.any(
+                        ShakeMap.facility_shaking
+                          .any(FacilityShaking
+                                  .facility_id == args.get('facility')))))
 
     # get the time of the last earthquake in UI,
     # should be 0 for a new request
@@ -308,6 +309,24 @@ def get_fac_data_by_id(facility_id, session=None):
     facility = session.query(Facility).filter(Facility.shakecast_id == facility_id).first()
     return jsonify(facility.geojson)
 
+@app.route('/api/facilities', methods=['DELETE'])
+@login_required
+def delete_faclities():
+    inventory = json.loads(request.args.get('inventory', None))
+
+    if inventory is None:
+      return jsonify(success=True)
+
+    inv_ids = [inv['properties']['shakecast_id'] for inv in inventory]
+    inv_type = 'facility'
+    if len(inv_ids) > 0 and inv_type is not None:
+        ui.send("{'delete_inventory: %s': {'func': f.delete_inventory_by_id, \
+                        'args_in': {'ids': %s, 'inventory_type': '%s'}, \
+                        'db_use': True, \
+                        'loop': False}}" % (inv_type, inv_ids, inv_type))
+
+    return jsonify(success=True)
+
 @app.route('/api/facility-shaking')
 @login_required
 @dbconnect
@@ -353,7 +372,11 @@ def get_shaking_data_by_id(facility_id, session=None):
 @app.route('/api/inventory/delete', methods=['DELETE'])
 @login_required
 def delete_inventory():
-    inventory = json.loads(request.args.get('inventory', '[]'))
+    inventory = json.loads(request.args.get('inventory', None))
+
+    if inventory is None:
+      return jsonify(success=True)
+
     inv_ids = [inv['shakecast_id'] for inv in inventory if inv['shakecast_id']]
     inv_type = request.args.get('inventory_type', None)
     if len(inv_ids) > 0 and inv_type is not None:
@@ -403,6 +426,24 @@ def get_groups(session=None):
         group_json.add_feature(geojson)
 
     return jsonify(group_json)
+
+@app.route('/api/groups', methods=['DELETE'])
+@login_required
+def delete_groups():
+    inventory = json.loads(request.args.get('inventory', None))
+
+    if inventory is None:
+      return jsonify(success=True)
+
+    inv_ids = [inv['properties']['shakecast_id'] for inv in inventory]
+    inv_type = 'group'
+    if len(inv_ids) > 0 and inv_type is not None:
+        ui.send("{'delete_inventory: %s': {'func': f.delete_inventory_by_id, \
+                        'args_in': {'ids': %s, 'inventory_type': '%s'}, \
+                        'db_use': True, \
+                        'loop': False}}" % (inv_type, inv_ids, inv_type))
+
+    return jsonify(success=True)
 
 @app.route('/api/groups/<group_id>/summary')
 @login_required

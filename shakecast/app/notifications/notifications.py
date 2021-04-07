@@ -78,16 +78,16 @@ def new_event_notification(notifications=None,
         msg_gmap = MIMEImage(map_image.read(), _subtype='png')
         map_image.close()
         
-        msg_gmap.add_header('Content-ID', '<gmap{0}_{1}>'.format(count, notification.shakecast_id))
-        msg_gmap.add_header('Content-Disposition', 'inline')
+        msg_gmap.add_header('Content-ID', 'gmap{0}_{1}'.format(count, notification.shakecast_id))
+        msg_gmap.add_header('Content-Disposition', 'attachment', filename='gmap_{0}.png'.format(notification.shakecast_id))
         msg.attach(msg_gmap)
 
         # get and attach shakemap
         if len(event.shakemaps) > 0:
             shakemap = event.shakemaps[-1]
             msg_shakemap = MIMEImage(shakemap.get_map(), _subtype='jpeg')
-            msg_shakemap.add_header('Content-ID', '<shakemap{0}>'.format(shakemap.shakecast_id))
-            msg_shakemap.add_header('Content-Disposition', 'inline')
+            msg_shakemap.add_header('Content-ID', 'shakemap{0}'.format(shakemap.shakecast_id))
+            msg_shakemap.add_header('Content-Disposition', 'attachment', filename='intensity_{0}.jpg'.format(shakemap.shakecast_id))
             msg.attach(msg_shakemap)
 
     # find the ShakeCast logo
@@ -100,21 +100,20 @@ def new_event_notification(notifications=None,
     logo_file = get_image(logo_str)
     msg_image = MIMEImage(logo_file.read(), _subtype='png')
     logo_file.close()
-    msg_image.add_header('Content-ID', '<sc_logo_{0}>'.format(notification.shakecast_id))
-    msg_image.add_header('Content-Disposition', 'inline')
+    msg_image.add_header('Content-ID', 'sc_logo_{0}'.format(notification.shakecast_id))
+    msg_image.add_header('Content-Disposition', 'attachment', filename='sc_logo.png')
     msg.attach(msg_image)
     
     # attach a header if it's needed
-    if configs['header']:
+    if configs.get('header'):
         header_str = os.path.join(sc_dir(),'view','assets',configs['header'])
         if os.path.isfile(header_str):
             header_file = get_image(header_str)
-            msg_image = MIMEImage(header_file.read(), _subtype='jpg')
+            msg_image = MIMEImage(header_file.read(), _subtype='jpeg')
             header_file.close()
-            msg_image.add_header('Content-ID', '<header>')
-            msg_image.add_header('Content-Disposition', 'inline')
+            msg_image.add_header('Content-ID', 'header')
+            msg_image.add_header('Content-Disposition', 'attachment', filename='header.jpg')
             msg.attach(msg_image)
-
 
     mailer = Mailer()
     me = mailer.me
@@ -217,8 +216,8 @@ def inspection_notification(notification=None,
 
             # get and attach shakemap
             msg_shakemap = MIMEImage(shakemap.get_map(), _subtype='jpeg')
-            msg_shakemap.add_header('Content-ID', '<shakemap{0}>'.format(shakemap.shakecast_id))
-            msg_shakemap.add_header('Content-Disposition', 'inline')
+            msg_shakemap.add_header('Content-ID', 'shakemap{0}'.format(shakemap.shakecast_id))
+            msg_shakemap.add_header('Content-Disposition', 'attachment', filename='intensity_{0}.jpg'.format(shakemap.shakecast_id))
             msg.attach(msg_shakemap)
             
             # find the ShakeCast logo
@@ -229,10 +228,10 @@ def inspection_notification(notification=None,
             
             # open logo and attach it to the message
             logo_file = open(logo_str, 'rb')
-            msg_image = MIMEImage(logo_file.read())
+            msg_image = MIMEImage(logo_file.read(), _subtype='png')
             logo_file.close()
-            msg_image.add_header('Content-ID', '<sc_logo{0}>'.format(shakemap.shakecast_id))
-            msg_image.add_header('Content-Disposition', 'inline')
+            msg_image.add_header('Content-ID', 'sc_logo_{0}'.format(shakemap.shakecast_id))
+            msg_image.add_header('Content-Disposition', 'attachment', filename='sc_logo.png')
             msg.attach(msg_image)
             
             # attach a header if it's needed
@@ -240,10 +239,10 @@ def inspection_notification(notification=None,
                 header_str = os.path.join(sc_dir(),'view','assets',configs['header'])
                 if os.path.isfile(header_str):
                     header_file = get_image(header_str)
-                    msg_image = MIMEImage(header_file.read(), _subtype='jpg')
+                    msg_image = MIMEImage(header_file.read(), _subtype='jpeg')
                     header_file.close()
-                    msg_image.add_header('Content-ID', '<header>')
-                    msg_image.add_header('Content-Disposition', 'inline')
+                    msg_image.add_header('Content-ID', 'header')
+                    msg_image.add_header('Content-Disposition', 'attachment', filename='header.jpg')
                     msg.attach(msg_image)
 
             mailer = Mailer()
@@ -257,7 +256,7 @@ def inspection_notification(notification=None,
                     if user.__dict__.get(not_format, False)]
             
             if len(you) > 0:
-                subject = '{0} {1}'.format('Inspection - ', shakemap.event.title)
+                subject = f'Inspection -  {shakemap.event.title}'
 
                 if scenario is True:
                     subject = 'SCENARIO: ' + subject
@@ -372,7 +371,7 @@ def send_inspection_notification(notification, session=None):
         notification.error = str(e)
         session.commit()
 
-        print('Error generation inspection notification. \n{}'.format(str(e)))
+        print('Error generating inspection notification. \n{}'.format(str(e)))
         raise
 
     print(str(notification))

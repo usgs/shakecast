@@ -1,20 +1,20 @@
 {
-    "section_head": {
-        "font_color": "white", 
-        "back_color": "black"
-    },
-    "intro": {
-        "font_color": "black", 
-        "back_color": "#fff", 
-        "text": "This report supersedes any earlier reports about this event. This is a computer-generated message and has not yet been reviewed by an Engineer or Seismologist. Epicenter and magnitude are published by the <a href=\"http://earthquake.usgs.gov/earthquakes/\">USGS</a>. Reported magnitude may be revised and will not be reported through ShakeCast. The <a href=\"http://earthquake.usgs.gov/earthquakes/\">USGS</a> website should be referenced for the most up-to-date information. Inspection prioritization emails will be sent shortly if ShakeCast determines significant shaking occurred at user's infrastructure."
-    },
-    "table": {
-        "border_color": "gray"
-    }, 
-    "logo": "sc_logo.png", 
-    "admin_email": "sc.admin@localhost", 
-    "type": "new_event", 
-    "body_color": "white", 
-    "head_text": "ShakeCast Alert",
-    "header": "usgs_banner.jpg"
+  "section_head": {
+      "font_color": "white", 
+      "back_color": "black"
+  },
+  "intro": {
+      "font_color": "black", 
+      "back_color": "#fff", 
+      "text": "This report supersedes any earlier reports about this event. This is a computer-generated message and has not yet been reviewed by an Engineer or Seismologist. Epicenter and magnitude are published by the <a href=\"http://earthquake.usgs.gov/earthquakes/\">USGS</a>. Reported magnitude may be revised and will not be reported through ShakeCast. The <a href=\"http://earthquake.usgs.gov/earthquakes/\">USGS</a> website should be referenced for the most up-to-date information. Inspection prioritization emails will be sent shortly if ShakeCast determines significant shaking occurred at user's infrastructure."
+  },
+  "table": {
+      "border_color": "gray"
+  }, 
+  "logo": "sc_logo.png", 
+  "admin_email": "sc.admin@localhost", 
+  "type": "new_event", 
+  "body_color": "white", 
+  "head_text": "ShakeCast Alert",
+  "header": "usgs_banner.jpg"
 }

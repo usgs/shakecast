@@ -31,8 +31,8 @@ def copy_backups():
     
     if not os.path.isfile(os.path.join(conf, 'sc.json')):
         os.system('cp -r {}/* {}'.format(docker_conf, conf))
-
-    os.system('cp -r {}/* {}'.format(docker_assets, assets))
+    if not os.path.isdir(assets):
+        os.system('cp -r {}/* {}'.format(docker_assets, assets))
 
 def pip_init():
     '''
