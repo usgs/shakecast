@@ -124,7 +124,7 @@ def new_event_notification(notifications=None,
     # get notification destination based on notification format
     you = [user.__dict__[not_format] for user in group.users
             if user.__dict__.get(not_format, False)]
-    
+
     if len(you) > 0:
         if len(events) == 1:
             subject = event.title
@@ -135,10 +135,10 @@ def new_event_notification(notifications=None,
                     mags += ['None']
                 else:
                     mags += [e.magnitude]
-                    
+
             subject = '{0} New Events -- Magnitudes: {1}'.format(len(events),
                                                                         str(mags).replace("'", ''))
-        
+
         if scenario is True:
             subject = 'SCENARIO: ' + subject
 
@@ -152,7 +152,7 @@ def new_event_notification(notifications=None,
         
         notification.status = 'sent'
         notification.sent_timestamp = time.time()
-        
+
     else:
         print('Notification not sent due to lack of users')
         notification.status = 'not sent - no users'

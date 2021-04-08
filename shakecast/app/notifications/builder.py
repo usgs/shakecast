@@ -42,7 +42,6 @@ class NotificationBuilder(object):
         else:
           shakemap.sort_facility_shaking('weight')
 
-
         if notification:
             group = notification.group
             scenario = True if shakemap.type == 'scenario' else False

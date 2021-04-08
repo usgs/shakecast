@@ -63,7 +63,6 @@ def main(command = None):
     else:
         invalid()
 
-
 def read_status():
     file_name = os.path.join(env.SHAKECAST_DIRECTORY, '.status')
     with open(file_name, 'r') as file_:
