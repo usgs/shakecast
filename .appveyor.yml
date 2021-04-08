@@ -1,20 +1,17 @@
 environment:
   matrix:
-    - PYTHON: "C:\Python27"
+    - PYTHON: "C:\Python38"
       PYTHON_ARCH: "32"
 
-    - PYTHON: "C:\Python27"
-      PYTHON_ARCH: "64"
-
 install:
-  - "python -m pip install -r requirements.txt"
-  - "python -m shakecast.app.startup"
-  - ps: $SmtpServer = Start-Process "python" -ArgumentList "-m shakecast.tests.smtpserver" -PassThru
+  - "python3 -m pip install -r requirements.txt"
+  - "python3 -m shakecast.app.startup"
+  - ps: $SmtpServer = Start-Process "python3" -ArgumentList "-m shakecast.tests.smtpserver" -PassThru
 
 build: off
 
 test_script:
-  - "python -m shakecast.tests.bundle"
+  - "python3 -m shakecast.tests.bundle"
   
 on_finish:
   - ps: Stop-Process -Id $SmtpServer.Id
