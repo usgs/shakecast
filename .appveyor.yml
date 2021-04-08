@@ -3,6 +3,9 @@ environment:
     - PYTHON: "C:\Python38"
       PYTHON_ARCH: "32"
 
+    - PYTHON: "C:\Python38"
+      PYTHON_ARCH: "64"
+
 install:
   - "python3 -m pip install -r requirements.txt"
   - "python3 -m shakecast.app.startup"
