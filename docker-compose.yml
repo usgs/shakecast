@@ -3,6 +3,8 @@ version: '3'
 services:
   sc-server:
     image: shakecast:latest
+    environment:
+      SC_DOCKER: 1
     expose:
       - "1981"
     networks:
@@ -20,6 +22,8 @@ services:
   
   web-server:
     image: shakecast:latest
+    depends_on:
+      - sc-server
     ports:
       - "80:5000"
     environment:
