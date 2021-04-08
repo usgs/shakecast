@@ -26,4 +26,15 @@ SMTP_USERNAME = os.environ.get('SHAKECAST_SMTP_USERNAME', sc.dict['SMTP']['usern
 SMTP_SEND_NOTIFICATIONS = os.environ.get('SHAKECAST_SMTP_SEND_NOTIFICATIONS', 1) 
 
 USER_DIRECTORY = os.environ.get('SHAKECAST_USER_DIRECTORY', get_user_dir())
+USER_TEMPLATE_DIR = os.environ.get(
+    'SHAKECAST_USER_TEMPLATE_DIRECTORY',
+    os.path.join(USER_DIRECTORY, 'templates'))
+USER_CONF_DIR = os.environ.get(
+    'SHAKECAST_USER_CONF_DIRECTORY',
+    os.path.join(USER_DIRECTORY, 'conf'))
+USER_ASSETS_DIR = os.environ.get(
+    'SHAKECAST_USER_ASSETS_DIRECTORY',
+    os.path.join(USER_DIRECTORY, 'assets'))
+
+
 WEB_PORT = int(os.environ.get('SHAKECAST_WEB_PORT', sc.dict['web_port']))

@@ -16,6 +16,8 @@ from .util import (
 
 def startup():
     pip_init()
+    if int(os.environ.get('SC_DOCKER', False)):
+        copy_backups()
 
 def copy_backups():
     dir_ = sc_dir()
@@ -65,7 +67,6 @@ def pip_init():
     logs_dir = get_logging_dir()
     if not os.path.isdir(logs_dir):
         os.mkdir(logs_dir)
-
 
 if __name__ == '__main__':
     startup()

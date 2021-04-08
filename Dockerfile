@@ -17,7 +17,7 @@ RUN install -o usgs-user -g usgs-user -d shakecast/backups; \
     cp -r shakecast/conf shakecast/backups/; \
     cp -r shakecast/view/assets shakecast/backups/
 
-ENV SC_HOME /usr/local/shakecast/shakecast
+ENV SHAKECAST_USER_DIRECTORY /usr/local/shakecast/shakecast
 ENV SHAKECAST_WEB_PORT 5000
 ENV PYTHONUNBUFFERED 1
 

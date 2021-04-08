@@ -337,7 +337,7 @@ def get_user_dir():
     default is ~/.shakecast
     '''
 
-    user_set_dir = os.environ.get('SC_HOME')
+    user_set_dir = os.environ.get('SHAKECAST_USER_DIRECTORY')
     home_dir = os.path.expanduser('~')
     default_home_dir = os.path.join(home_dir, '.shakecast')
 
