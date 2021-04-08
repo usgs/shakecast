@@ -37,16 +37,10 @@ export class FacilityInfoComponent implements OnInit, OnDestroy{
     }
 
     onFacility(facility) {
-        if (facility === null) {
+        if (!facility) {
           this.facility = null;
           return;
         }
-        this.setFacility(facility);
-    }
-
-    setFacility(facility: Facility) {
-        this.facility = facility;
-        this.eqService.getFacilityData(facility);
     }
 
     ngOnDestroy() {

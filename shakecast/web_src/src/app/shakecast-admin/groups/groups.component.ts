@@ -16,8 +16,4 @@ export class GroupsComponent implements OnInit {
     ngOnInit() {
         this.titleService.title.next('Groups');
     }
-
-    deleteCurrentGroup() {
-        this.groupService.deleteGroups([this.groupService.current_group]);
-    }
 }

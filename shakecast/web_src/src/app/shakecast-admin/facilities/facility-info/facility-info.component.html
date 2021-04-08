@@ -32,7 +32,8 @@
       <h2 class="info-header">Shaking History</h2>
 
       <div class="eq-list">
-          <earthquake-list></earthquake-list>
+          <earthquake-list
+            [facility]="props.shakecast_id"></earthquake-list>
       </div>
     </ng-container>
   </div>

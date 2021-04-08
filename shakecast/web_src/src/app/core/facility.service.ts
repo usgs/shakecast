@@ -62,7 +62,6 @@ export class FacilityService {
             .subscribe((result: any) => {
                 this.selectedFacs = [];
                 this.facilityData.next(result);
-                this.facilityCount.next(result.features.count);
                 this.loadingService.finish('Facilities');
             }, (error: any) => {
                 this.loadingService.finish('Facilities');
@@ -114,7 +113,7 @@ export class FacilityService {
         this.notService.success('Deleting Facilities', 'Deleting ' + this.selectedFacs.length + ' facilities');
         let params = new HttpParams().set('inventory', JSON.stringify(this.selectedFacs));
         params = params.append('inventory_type', 'facility');
-        this._http.delete('api/inventory/delete', {params: params})
+        this._http.delete('api/facilities', {params: params})
             .subscribe((result: any) => {
                 this.getData();
             });

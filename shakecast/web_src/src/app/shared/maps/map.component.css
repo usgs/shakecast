@@ -2,7 +2,7 @@
   height: 100%;
 }
 
-.impact {    
+.impact {
     position: fixed;
     bottom: 50px;
     z-index: 1000;
@@ -19,7 +19,7 @@
 
 .facility-types {
   position: absolute;
-  bottom: 0;
+  bottom: 20px;
   padding: 10px;
   z-index: 500;
   opacity: .5;
