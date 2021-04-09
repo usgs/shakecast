@@ -94,8 +94,10 @@ release-dev:
   script:
     - docker build . -t ${CODE_REGISTRY_IMAGE}/shakecast:dev
     - docker push ${CODE_REGISTRY_IMAGE}/shakecast:dev
+    - docker tag ${CODE_REGISTRY_IMAGE}/shakecast:dev usgs/shakecast:dev
+    - docker push usgs/shakecast:dev
   after_script:
-    - docker rmi ${CODE_REGISTRY_IMAGE}/shakecast:dev
+    - docker rmi usgs/shakecast:dev
 
 release-prod:
   stage: release
@@ -108,8 +110,10 @@ release-prod:
   script:
     - docker build . -t ${CODE_REGISTRY_IMAGE}/shakecast:latest
     - docker push ${CODE_REGISTRY_IMAGE}/shakecast:latest
+    - docker tag ${CODE_REGISTRY_IMAGE}/shakecast:latest usgs/shakecast:latest
+    - docker push usgs/shakecast:latest
   after_script:
-    - docker rmi ${CODE_REGISTRY_IMAGE}/shakecast:latest
+    - docker rmi usgs/shakecast:latest
 
 # STAGING
 test-staging:
