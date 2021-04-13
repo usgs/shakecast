@@ -4,13 +4,11 @@ from multiprocessing import Process
 import subprocess
 import time
 
-from .app.startup import pip_init
-pip_init()
-
-import app.admin as admin
-from .app.util import SC, sc_dir, on_windows
-import app.windows as winControls
-import app.linux as controls
+import shakecast.app.admin as admin
+from shakecast.app.util import on_windows
+import shakecast.app.windows as winControls
+import shakecast.app.linux as controls
+import shakecast.app.env as env
 
 if on_windows():
     # use windows controls if we're in that OS
@@ -31,7 +29,7 @@ def check_running():
     return api_check and server_check
 
 def get_shakecast_processes():
-    processes = subprocess.check_output(['ps', 'axww']).split('\n')
+    processes = subprocess.check_output(['ps', 'axww']).decode('utf-8').split('\n')
     shakecast_processes = []
     for process in processes:
         if ('shakecast.api' in process
@@ -42,16 +40,13 @@ def get_shakecast_processes():
     return processes
 
 def invalid():
-    print '''
+    print('''
     Usage:
         start - Starts the ShakeCast servers
         stop - Stops the ShakeCast servers
-    '''
+    ''')
 
 def main(command = None):
-    sc = SC()
-    uid = 0
-
     if len(sys.argv) >= 2:
         command = command or sys.argv[1]
 
@@ -69,7 +64,7 @@ def main(command = None):
         invalid()
 
 def read_status():
-    file_name = os.path.join(sc_dir(), '.status')
+    file_name = os.path.join(env.SHAKECAST_DIRECTORY, '.status')
     with open(file_name, 'r') as file_:
         status = file_.read()
     
@@ -84,7 +79,7 @@ def start():
       while status == 'running':
           status = read_status()
           if check_running() is False and status == 'running':
-              print 'Restarting services...'
+              print('Restarting services...')
               restart_services()
           time.sleep(10)
 
@@ -92,16 +87,16 @@ def restart_services():
   try:
     controls.start()
   except Exception:
-    print '''
+    print('''
     Processes already running or unable to start.
-    '''
+    ''')
 
 def shutdown():
     write_status('stopped')
     controls.stop()
 
 def write_status(status):
-    file_name = os.path.join(sc_dir(), '.status')
+    file_name = os.path.join(env.SHAKECAST_DIRECTORY, '.status')
     with open(file_name, 'w') as file_:
         file_.write(status)
 

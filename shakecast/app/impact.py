@@ -1,7 +1,7 @@
 import math
 
 import shakecastaebm as aebm
-from util import get_gps_distance, lower_case_keys, non_null
+from .util import get_gps_distance, lower_case_keys, non_null
 
 class ImpactInterface(dict):
     '''
@@ -77,7 +77,7 @@ def get_impact(facility, shaking_point, shakemap):
         impact = compute_hazus_impact(facility, shaking_point, shakemap)
 
     impact['grid_point'] = dict((k.lower(), v)
-            for k,v in shaking_point.iteritems())
+            for k,v in shaking_point.items())
     return lower_case_keys(impact)
 
 def compute_aebm_impact(facility, shaking_point, shakemap):
@@ -211,7 +211,7 @@ def get_psa_spectrum(shaking):
     Create a sorted PSA spectrum from the values in the shakemap grid
     '''
     spectrum = []
-    for key in shaking.keys():
+    for key in list(shaking.keys()):
         if 'PSA' in key:
             psa = float('.' + key.split('A')[1])
             spectrum.append({'x': psa, 'y': shaking[key]})
@@ -240,17 +240,17 @@ def get_event_impact(facility_shaking):
         impact_sum['all'] += 1
 
         # record max shaking values
-        if s.pga > impact_sum['max_pga']:
+        if s.pga and s.pga > impact_sum['max_pga']:
             impact_sum['max_pga'] = s.pga
-        if s.pgv > impact_sum['max_pgv']:
+        if s.pgv and s.pgv > impact_sum['max_pgv']:
             impact_sum['max_pgv'] = s.pgv
-        if s.psa03 > impact_sum['max_psa03']:
+        if s.psa03 and s.psa03 > impact_sum['max_psa03']:
             impact_sum['max_psa03'] = s.psa03
-        if s.psa10 > impact_sum['max_psa10']:
+        if s.psa10 and s.psa10 > impact_sum['max_psa10']:
             impact_sum['max_psa10'] = s.psa10
-        if s.psa30 > impact_sum['max_psa30']:
+        if s.psa30 and s.psa30 > impact_sum['max_psa30']:
             impact_sum['max_psa30'] = s.psa30
-        if s.mmi > impact_sum['max_mmi']:
+        if s.mmi and s.mmi > impact_sum['max_mmi']:
             impact_sum['max_mmi'] = s.mmi
 
     return impact_sum

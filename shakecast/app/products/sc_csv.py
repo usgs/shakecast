@@ -11,15 +11,14 @@ def generate_impact_csv(shakemap, group=None, save=False, file_name='', template
     '''
 
     if group:
-        facility_shaking = filter(
-            lambda x: group in x.facility.groups, shakemap.facility_shaking)
+        facility_shaking = [x for x in shakemap.facility_shaking if group in x.facility.groups]
     else:
         facility_shaking = shakemap.facility_shaking
 
     tm = TemplateManager()
     configs = tm.get_configs('csv', template_name or 'default.json')
 
-    headers = filter(lambda x: x['use'] is True, configs['headers'])
+    headers = [x for x in configs['headers'] if x['use'] is True]
     csv_rows = [[header['name'] for header in headers]]
 
     facility_shaking_lst = sorted(facility_shaking,
@@ -53,7 +52,7 @@ def generate_impact_csv(shakemap, group=None, save=False, file_name='', template
 
 def save_csv(csv_rows, file_name, directory):
     file_name = os.path.join(directory, file_name)
-    with open(file_name, 'wb') as csv_file:
+    with open(file_name, 'w') as csv_file:
         csv_writer = csv.writer(csv_file)
         for row in csv_rows:
             csv_writer.writerow(row)

@@ -82,7 +82,7 @@ class Server_Test(object):
         self.analyze()
         
     def analyze(self):
-        failed = [job for job in self.results.keys()
+        failed = [job for job in list(self.results.keys())
                       if self.results[job] =='Failed']
     
         if failed:
@@ -126,7 +126,7 @@ if __name__ == '__main__':
     st = Server_Test()
     st.run()
     
-    print str(st)
+    print(str(st))
     
         
     

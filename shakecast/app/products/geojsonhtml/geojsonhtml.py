@@ -16,11 +16,10 @@ def generate_geojson_html(shakemap, group=None, save=False, name='geojson_captur
     
     template_name = os.path.join(__location__, 'template.html')
     with open(template_name, 'r') as file_:
-        template = jinja_env.from_string(file_.read().decode('utf-8'))
+        template = jinja_env.from_string(file_.read())
 
     html = template.render(impact_geojson=geojson_string,
-            shakemap=shakemap,
-            sc=SC())
+            shakemap=shakemap)
     
     if save == True:
         if '.html' not in name:
@@ -28,7 +27,7 @@ def generate_geojson_html(shakemap, group=None, save=False, name='geojson_captur
 
         file_name = os.path.join(shakemap.local_products_dir, name)
         with open(file_name, 'w') as file_:
-            file_.write(html.encode('utf-8'))
+            file_.write(html)
     
     return html
 

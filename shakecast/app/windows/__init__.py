@@ -14,7 +14,7 @@ def uninstall():
 # overwrite with real functions only if we're on windows. Allows Linux
 # functions to import and run without windows libraries
 if on_windows():
-    import controls
+    from . import controls
     start = controls.start
     stop = controls.stop
     install = controls.install

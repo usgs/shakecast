@@ -44,11 +44,11 @@ class ShakecastServer(object):
 
 
 def invalid():
-    print '''
+    print('''
     Invalid Command:
         start - Starts the ShakeCast Server
         stop - Stops the ShakeCast Server
-    '''
+    ''')
 
 if __name__ == '__main__':
     if len(sys.argv) > 1:

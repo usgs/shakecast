@@ -48,7 +48,7 @@ def generate_impact_pdf(group, shakemap, save=False, pdf_name='', template_name=
 
     facility_shaking = sorted(
         shakemap.facility_shaking, key=lambda x: x.weight, reverse=True)
-    facility_shaking = filter(lambda x: group in x.facility.groups, facility_shaking)
+    facility_shaking = [x for x in facility_shaking if group in x.facility.groups]
     add_pdf_table(pdf, configs['table']['table_head'],
                   facility_shaking)
 
@@ -312,7 +312,7 @@ def get_cell_height(cell):
 def save_pdf(pdf_string, file_name, directory):
     file_name_ = os.path.join(directory, file_name)
     with open(file_name_, 'wb') as file_:
-        file_.write(pdf_string)
+        file_.write(pdf_string.encode('latin-1'))
 
 def main(group, shakemap, name):
     return generate_impact_pdf(group, shakemap, save=True, pdf_name=name, template_name=group.template)

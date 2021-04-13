@@ -8,7 +8,7 @@ from werkzeug.security import generate_password_hash
 import xml.etree.ElementTree as ET
 import xmltodict
 
-from orm import (
+from .orm import (
     Aebm,
     Attribute,
     dbconnect,
@@ -65,7 +65,7 @@ def import_master_xml(xml_file='', _user=None):
     group_list = []
     user_list = []
     with open(xml_file, 'r') as xml_str:
-        xml_dict = json.loads(json.dumps(xmltodict.parse(xml_str)))
+        xml_dict = json.loads(json.dumps(xmltodict.parse(xml_str.read())))
         fac_list = xml_dict['Inventory']['FacilityTable']['FacilityRow']
         group_list = xml_dict['Inventory']['GroupTable']['GroupRow']
         user_list = xml_dict['Inventory']['UserTable']['UserRow']
@@ -241,7 +241,7 @@ def import_facility_dicts(facs=None, _user=None, session=None):
         session.commit()
 
     message = ''
-    for key, val in count_dict.iteritems():
+    for key, val in count_dict.items():
         message += '{}: {}\n'.format(key, val)
 
     log_message = ''
@@ -308,7 +308,7 @@ def import_group_dicts(groups=None, _user=None, session=None):
             if poly is not None:
                 # split up the monitoring region
                 split_poly = re.split('\s|;|,', poly)
-                split_poly = filter(None, split_poly)
+                split_poly = [_f for _f in split_poly if _f]
 
             # try to get the group if it exists
             gs = session.query(Group).filter(Group.name == name).all()
@@ -669,7 +669,6 @@ def delete_scenario(shakemap_id=None, session=None):
                         'success': True},
             'log': 'Deleted scenario: ' + shakemap_id}
 
-
 def parse_aebm_from_xml_dict(aebm_xml_dict, facility_model):
     '''
     If available, create an AEBM orm object for facility
@@ -716,7 +715,7 @@ def parse_attributes_from_xml(attributes):
         return []
 
     attribute_lst= []
-    for key in attributes.keys():
+    for key in list(attributes.keys()):
         attribute = Attribute(
             name=key,
             value=attributes[key]
@@ -725,7 +724,6 @@ def parse_attributes_from_xml(attributes):
         attribute_lst += [attribute]
     
     return attribute_lst
-
 
 def remove_dir(directory_name):
     '''
@@ -895,6 +893,6 @@ def lookup_mbt_aebm_default(facility_model):
         'URMMP': {'MBT': 'URM', 'SDL': 'pre', 'BID': 1, 'YEAR': 1940, 'STORIES': 3, 'HEIGHT': 35},
         'MHP': {'MBT': 'MH', 'SDL': 'pre', 'BID': 1, 'YEAR': 1940, 'STORIES': 1, 'HEIGHT': 10}
     }
+
     hazus_mbt = hazus_mbt_dict.get(facility_model, {})
     return hazus_mbt
-

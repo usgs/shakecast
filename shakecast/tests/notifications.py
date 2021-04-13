@@ -7,7 +7,7 @@ from shakecast.app.notifications.notifications import *
 from shakecast.app.orm import dbconnect, Facility, FacilityShaking, Group, Notification
 from shakecast.app.productgeneration import create_products
 
-from util import create_group, preload_data
+from .util import create_group, preload_data
 
 class TestMailer(unittest.TestCase):
     '''

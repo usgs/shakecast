@@ -3,10 +3,10 @@ import json
 import os
 import time
 
-from urlopener import URLOpener
-from grid import ShakeMapGrid
-from orm import Event, Group, Product, ShakeMap, dbconnect
-from util import SC
+from .urlopener import URLOpener
+from .grid import ShakeMapGrid
+from .orm import Event, Group, Product, ShakeMap, dbconnect
+from .util import SC
 
 
 class ProductGrabber(object):
@@ -29,6 +29,7 @@ class ProductGrabber(object):
         self.ignore_nets = sc.ignore_nets.split(',')
         self.json_feed = ''
         self.earthquakes = {}
+        self.shakemaps = {}
         self.data_dir = ''
         self.delim = ''
         self.log = ''
@@ -84,7 +85,7 @@ class ProductGrabber(object):
                 # skip earthquakes without dictionaries... why does this
                 # happen??
                 try:
-                    if eq['id'] not in self.earthquakes.keys():
+                    if eq['id'] not in list(self.earthquakes.keys()):
                         self.earthquakes[eq['id']] = eq
                 except Exception:
                     continue
@@ -99,7 +100,7 @@ class ProductGrabber(object):
 
         event_str = ''
         new_events = []
-        for eq_id in self.earthquakes.keys():
+        for eq_id in list(self.earthquakes.keys()):
             eq = self.earthquakes[eq_id]
 
             # ignore info from unfavorable networks and low mag eqs
@@ -110,6 +111,7 @@ class ProductGrabber(object):
             # get event id and all ids
             event_id = eq_id if not scenario else eq_id + '_scenario'
             event = Event(event_id=event_id, save=True)
+
 
             event.updated = eq['properties']['updated']
             event.all_event_ids = eq['properties']['ids'] if not scenario else event.event_id
@@ -122,14 +124,13 @@ class ProductGrabber(object):
                 event.status = 'processed'
                 ids = event.all_event_ids.strip(',').split(',')
                 old_events = [(session.query(Event)
-                               .filter(Event.event_id == each_id)
-                               .first())
-                              for each_id in ids]
+                    .filter(Event.event_id == each_id).first())
+                    for each_id in ids]
 
-                reprocess = True
+                reprocess = False
                 for old_event in old_events:
-                    if old_event and old_event.updated and old_event.updated >= eq['properties']['updated']:
-                        reprocess = False
+                    if old_event and old_event.updated and eq['properties']['updated'] >= old_event.updated:
+                        reprocess = True
 
                 if reprocess is True:
                     for old_event in old_events:
@@ -142,10 +143,16 @@ class ProductGrabber(object):
                             if old_event.status == 'new':
                                 event.status = 'new'
                             session.delete(old_event)
+
+                            if eq['properties'].get('mmi'):
+                              self.shakemaps[eq_id] = eq
                 else:
                     continue
             else:
                 event.status = 'new'
+
+                if eq['properties'].get('mmi'):
+                  self.shakemaps[eq_id] = eq
 
             # Fill the rest of the event info
             event.title = eq['properties']['title']
@@ -220,8 +227,8 @@ class ProductGrabber(object):
 
         shakemap_str = ''
         new_shakemaps = []
-        for eq_id in self.earthquakes.keys():
-            eq = self.earthquakes[eq_id]
+        for eq_id in list(self.shakemaps.keys()):
+            eq = self.shakemaps[eq_id]
 
             if scenario is False:
                 eq_url = eq['properties']['detail']
@@ -241,8 +248,8 @@ class ProductGrabber(object):
                 eq_info = eq
 
             # check if the event has a shakemap
-            if ('shakemap' not in eq_info['properties']['products'].keys() and
-                    'shakemap-scenario' not in eq_info['properties']['products'].keys()):
+            if ('shakemap' not in list(eq_info['properties']['products'].keys()) and
+                    'shakemap-scenario' not in list(eq_info['properties']['products'].keys())):
                 continue
 
             # check for downloaded event whose id or one of its old ids
@@ -259,7 +266,7 @@ class ProductGrabber(object):
             if event is None:
                 continue
 
-            if 'shakemap-scenario' in eq_info['properties']['products'].keys():
+            if 'shakemap-scenario' in list(eq_info['properties']['products'].keys()):
                 sm_str = 'shakemap-scenario'
             else:
                 sm_str = 'shakemap'
@@ -348,6 +355,7 @@ class ProductGrabber(object):
                             mode = 'wb'
                         else:
                             mode = 'wt'
+                            product_download = product_download.decode()
 
                         with open(product_file_name, mode) as file_:
                             file_.write(product_download)

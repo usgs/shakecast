@@ -10,7 +10,7 @@ class TestImpactInterface(unittest.TestCase):
         ii = ImpactInterface()
         ii['test'] = 'test'
 
-        self.assertEquals(ii['test'], 'test')
+        self.assertEqual(ii['test'], 'test')
 
 class TestComputeAebmImpact(unittest.TestCase):
     def test_computesAebm(self):

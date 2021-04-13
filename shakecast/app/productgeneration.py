@@ -2,7 +2,6 @@ import time
 
 from .orm import dbconnect, LocalProduct, LocalProductType, Notification
 from .products.geojson import generate_impact_geojson
-from .sc_logging import server_logger as logging
 
 REQUIRED_PRODUCTS = ['geojson']
 
@@ -16,8 +15,14 @@ def create_products(notification=None, session=None):
             .filter(Notification.status == 'created')
             .filter(Notification.notification_type.like('damage'))
             .first())
-    
-    if not notification or not notification.shakemap:
+
+    if not notification:
+        return None
+    elif not notification.shakemap:
+        notification.status = 'no shakemap'
+        session.commit()
+
+        print(f'No shakemap for notification: {notification}')
         return None
 
     notification.status = 'generating-products'
@@ -26,15 +31,15 @@ def create_products(notification=None, session=None):
     group = notification.group
     shakemap = notification.shakemap
 
-    logging.info('Removing existing products...')
+    print('Removing existing products...')
     for product in shakemap.local_products:
         if product.group == group or product.group is None:
             session.delete(product)
     session.commit()
-    logging.info('Done.')
+    print('Done.')
 
     try:
-        logging.info('Generating local products...')
+        print('Generating local products...')
 
         unfinished_products = get_products(group, shakemap, session=session)
         while len(unfinished_products) > 0:
@@ -44,11 +49,11 @@ def create_products(notification=None, session=None):
 
             if len(unfinished_products) > 0:
                 # keep trying to process but take a little break
-                logging.info('{} unfinished product(s). Sleeping for 5 seconds and trying again.'.format(len(unfinished_products)))
+                print('{} unfinished product(s). Sleeping for 5 seconds and trying again.'.format(len(unfinished_products)))
                 time.sleep(5)
 
     except Exception as e:
-        logging.info('Error generating shakemap products for {}-{}: {}'
+        print('Error generating shakemap products for {}-{}: {}'
                 .format(shakemap.shakemap_id,
                 shakemap.shakemap_version,
                 str(e)))
@@ -58,7 +63,7 @@ def create_products(notification=None, session=None):
         session.commit()
         raise
 
-    logging.info('Done generating local products.')
+    print('Done generating local products.')
     notification.status = 'ready'
     return notification
     
@@ -75,19 +80,19 @@ def generate_local_products(products, session=None):
                 continue
         
             if product.check_dependencies() is False and product.tries < 10:
-                logging.info('Skipping product, lacking dependencies: {}'
+                print('Skipping product, lacking dependencies: {}'
                         .format(str(product)))
 
                 product.tries += 1
                 continue
             
-            logging.info('Generating product: {}'
+            print('Generating product: {}'
                     .format(str(product)))
             product.generate()
-            logging.info('Done.')
+            print('Done.')
             product.error = None
         except Exception as e:
-            logging.info('Product generation error: {}'.format(str(e)))
+            print('Product generation error: {}'.format(str(e)))
             product.error = str(e)
 
         product.finish_timestamp = time.time()

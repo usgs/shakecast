@@ -6,14 +6,14 @@ from functools import wraps
 
 from sqlalchemy.orm.session import Session as SessionClass
 
-from objects import MetaData, Base
+from .objects import MetaData, Base
 from .engine import engine
 from .session import Session
 
 def clear_data(session, engine):
     meta = MetaData(engine)
     for table in reversed(meta.sorted_tables):
-        print 'Clear table %s' % table
+        print('Clear table %s' % table)
         session.execute(table.delete())
     session.commit()
 

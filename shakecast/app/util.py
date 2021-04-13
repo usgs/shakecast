@@ -5,7 +5,7 @@ import datetime
 import time
 from shutil import copyfile
 import shutil
-import collections
+from collections import Mapping
 
 class SC(object):
     """
@@ -337,7 +337,7 @@ def get_user_dir():
     default is ~/.shakecast
     '''
 
-    user_set_dir = os.environ.get('SC_HOME')
+    user_set_dir = os.environ.get('SHAKECAST_USER_DIRECTORY')
     home_dir = os.path.expanduser('~')
     default_home_dir = os.path.join(home_dir, '.shakecast')
 
@@ -439,14 +439,14 @@ def merge_dicts(dct, merge_dct):
     """
     for k in merge_dct:
         if (k in dct and isinstance(dct[k], dict)
-                and isinstance(merge_dct[k], collections.Mapping)):
+                and isinstance(merge_dct[k], Mapping)):
             merge_dicts(dct[k], merge_dct[k])
         else:
             dct[k] = merge_dct[k]
 
 def lower_case_keys(input_dict):
     output_dict = {}
-    for key in input_dict.keys():
+    for key in list(input_dict.keys()):
         if isinstance(key, str):
             output_dict[key.lower()] = input_dict[key]
 
@@ -454,7 +454,7 @@ def lower_case_keys(input_dict):
 
 def non_null(input_dict):
     output_dict = {}
-    for key in input_dict.keys():
+    for key in list(input_dict.keys()):
         if input_dict[key] is not None:
             output_dict[key] = input_dict[key]
 

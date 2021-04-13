@@ -46,10 +46,7 @@ class NotificationBuilder(object):
             group = notification.group
             scenario = True if shakemap.type == 'scenario' else False
             alert_levels = group.get_alert_levels(scenario)
-            facility_shaking = filter(
-                lambda x: group in x.facility.groups and x.alert_level in alert_levels,
-                shakemap.facility_shaking
-            )
+            facility_shaking = [x for x in shakemap.facility_shaking if group in x.facility.groups and x.alert_level in alert_levels]
             fac_details = shakemap.get_impact_summary(group)
         else:
             facility_shaking = shakemap.facility_shaking

@@ -31,7 +31,7 @@ class ImpactGeoJson(object):
 
 def generate_impact_geojson(shakemap, group=None, save=False, name='impact.json'):
     if group:
-        facility_shaking = filter(lambda x: group in x.facility.groups, shakemap.facility_shaking)
+        facility_shaking = [x for x in shakemap.facility_shaking if group in x.facility.groups]
     else:
         facility_shaking = shakemap.facility_shaking
     

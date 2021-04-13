@@ -32,16 +32,15 @@ from flask_uploads import UploadSet, configure_uploads, IMAGES
 from sqlalchemy import literal, func, desc
 from werkzeug.security import generate_password_hash, check_password_hash
 
-
-from app.impact import get_event_impact
-from app.inventory import determine_xml, get_facility_info
-from app.jsonencoders import AlchemyEncoder, GeoJsonFeatureCollection
-from app.notifications.builder import NotificationBuilder
-from app.notifications.templates import TemplateManager
-from app.orm import *
-# from app.sc_logging import web_logger as log
-from app.util import SC, Clock, get_tmp_dir, get_version
-from ui import UI
+from .app.env import WEB_PORT
+from .app.impact import get_event_impact
+from .app.inventory import determine_xml, get_facility_info
+from .app.jsonencoders import AlchemyEncoder, GeoJsonFeatureCollection
+from .app.notifications.builder import NotificationBuilder
+from .app.notifications.templates import TemplateManager
+from .app.orm import *
+from .app.util import SC, Clock, get_tmp_dir, get_version
+from .ui import UI
 
 BASE_DIR = os.path.join(sc_dir(),'view')
 STATIC_DIR = os.path.join(sc_dir(),'view','assets')
@@ -136,7 +135,7 @@ def get_eq_data(session=None):
     DAY = 24*60*60
     query = session.query(Event)
 
-    if len(args.keys()) != 0:
+    if len(list(args.keys())) != 0:
         if args.get('group'):
             query = query.filter(Event.groups.any(Group.name.like(args['group'])))
         if args.get('latMax'):
@@ -173,7 +172,6 @@ def get_eq_data(session=None):
                         ShakeMap.facility_shaking
                           .any(FacilityShaking
                                   .facility_id == args.get('facility')))))
-
 
     # get the time of the last earthquake in UI,
     # should be 0 for a new request
@@ -304,7 +302,12 @@ def get_fac_data(session=None):
 
     return jsonify(fac_geojson)
 
-
+@app.route('/api/facilities/<facility_id>')
+@login_required
+@dbconnect
+def get_fac_data_by_id(facility_id, session=None):
+    facility = session.query(Facility).filter(Facility.shakecast_id == facility_id).first()
+    return jsonify(facility.geojson)
 
 @app.route('/api/facilities', methods=['DELETE'])
 @login_required
@@ -323,13 +326,6 @@ def delete_faclities():
                         'loop': False}}" % (inv_type, inv_ids, inv_type))
 
     return jsonify(success=True)
-
-@app.route('/api/facilities/<facility_id>')
-@login_required
-@dbconnect
-def get_fac_data_by_id(facility_id, session=None):
-    facility = session.query(Facility).filter(Facility.shakecast_id == facility_id).first()
-    return jsonify(facility.geojson)
 
 @app.route('/api/facility-shaking')
 @login_required
@@ -380,6 +376,7 @@ def delete_inventory():
 
     if inventory is None:
       return jsonify(success=True)
+
     inv_ids = [inv['shakecast_id'] for inv in inventory if inv['shakecast_id']]
     inv_type = request.args.get('inventory_type', None)
     if len(inv_ids) > 0 and inv_type is not None:
@@ -429,7 +426,6 @@ def get_groups(session=None):
         group_json.add_feature(geojson)
 
     return jsonify(group_json)
-
 
 @app.route('/api/groups', methods=['DELETE'])
 @login_required
@@ -782,7 +778,7 @@ def upload():
         return render_template('admin/upload.html')
 
     file_type = get_file_type(request.files['file'].filename)
-    if file_type is 'xml':
+    if file_type == 'xml':
         file_name = str(int(time.time())) + request.files['file'].filename
         xml_files.save(request.files['file'], name=file_name)
         xml_file = os.path.join(app.config['UPLOADED_XMLFILES_DEST'],
@@ -870,7 +866,7 @@ def get_file_type(file_name):
 
 def parse_args(args_in):
     args = {}
-    for key in args_in.keys():
+    for key in list(args_in.keys()):
       args[key] = json.loads(args_in[key])
 
     return args
@@ -880,13 +876,13 @@ def start():
     
     # don't start the web server if we're letting an extension do it
     if 'web_server' not in sc.dict['extensions']:
-        print 'Running on web server on port: {}'.format(sc.dict['web_port'])
-        app.run(host='0.0.0.0', port=int(sc.dict['web_port']))
+        print('Running on web server on port: {}'.format(WEB_PORT))
+        app.run(host='0.0.0.0', port=int(WEB_PORT))
 
 if __name__ == '__main__':
     if len(sys.argv) > 1:
         if sys.argv[1] == '-d':
             # run in debug mode
-            app.run(host='0.0.0.0', port=80, debug=True)
+            app.run(host='0.0.0.0', port=int(WEB_PORT), debug=True)
     else:
         start()

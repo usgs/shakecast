@@ -481,14 +481,26 @@ class FacilityShaking(Base):
                                                    self.psa10,
                                                    self.psa30)
 
-    def __cmp__(self, other):
-        if int(getattr(self, self.sort_by.lower()) * 10000) > int(getattr(other, self.sort_by.lower()) * 10000):
-            return 1
-        elif int(getattr(self, self.sort_by.lower()) * 10000) < int(getattr(other, self.sort_by.lower()) * 10000):
-            return -1
-        else:
-            return 0
+    def __eq__(self, other):
+        return int(self[self.sort_by] * 10000) == int(other[self.sort_by] * 10000)
 
+    def __lt__(self, other):
+        return int(self[self.sort_by] * 10000) < int(other[self.sort_by] * 10000)
+
+    def __le__(self, other):
+        return int(self[self.sort_by] * 10000) <= int(other[self.sort_by] * 10000)
+
+    def __gt__(self, other):
+        return int(self[self.sort_by] * 10000) > int(other[self.sort_by] * 10000)
+
+    def __ge__(self, other):
+        return int(self[self.sort_by] * 10000) >= int(other[self.sort_by] * 10000)
+
+    def __hash__(self):
+        return hash(self.shakecast_id)
+
+    def __getitem__(self, field):
+        return self.__dict__[field]
 
 #######################################################################
 ######################## Notification Tables ##########################
@@ -604,7 +616,7 @@ class User(Base):
         return False
 
     def get_id(self):
-        return unicode(self.shakecast_id)
+        return str(self.shakecast_id)
 
     def is_admin(self):
         return self.user_type.lower() == 'admin'
@@ -1234,6 +1246,7 @@ class ShakeMap(Base):
 
     def get_overlay_base64(self):
         overlay_names = ['intensity_overlay.png', 'ii_overlay.png']
+        file_name = None
         for name in overlay_names:
             full_name = os.path.join(self.directory_name, name)
             if os.path.isfile(full_name):
@@ -1257,18 +1270,18 @@ class ShakeMap(Base):
         alert_level = None
         if len(self.facility_shaking) > 0:
             if group is not None:
-                facility_shaking = filter(lambda x: group in x.facility.groups, self.facility_shaking)
+                facility_shaking = [x for x in self.facility_shaking if group in x.facility.groups]
             else:
                 facility_shaking = self.facility_shaking
 
             if len(facility_shaking) > 0:
-                facility_shaking = sorted(facility_shaking, key=lambda x: x.weight)
+                facility_shaking = sorted(facility_shaking, key=lambda x: x.weight if x.weight else 0)
                 alert_level = facility_shaking[-1].alert_level
         return alert_level
 
     def get_impact_summary(self, group=None):
         if group is not None:
-            facility_shaking = filter(lambda x: group in x.facility.groups, self.facility_shaking)
+            facility_shaking = [x for x in self.facility_shaking if group in x.facility.groups]
         else:
             facility_shaking = self.facility_shaking
 
@@ -1470,7 +1483,7 @@ def sql_to_obj(sql):
         obj = {}
 
         sql_class = type(sql)
-        class_keys = inspect(sql_class).all_orm_descriptors.keys()
+        class_keys = list(inspect(sql_class).all_orm_descriptors.keys())
 
         filtered_keys = [key for key in class_keys if '__' not in key and key[0] != '_']
         for attribute in filtered_keys:
@@ -1506,7 +1519,7 @@ def sql_to_obj(sql):
         if sql.get('_sa_instance_state', False):
             sql.pop('_sa_instance_state')
 
-        for key in sql.keys():
+        for key in list(sql.keys()):
             item = sql[key]
             if isinstance(item, Base) or isinstance(item, dict):
                 item = sql_to_obj(item)

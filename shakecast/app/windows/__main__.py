@@ -1,9 +1,9 @@
 import sys
 
-from controls import install, start, stop, uninstall
+from .controls import install, start, stop, uninstall
 
 def invalid():
-    print '''
+    print('''
     Windows specific start/stop/install command line interface
 
     Usage:
@@ -11,7 +11,7 @@ def invalid():
         stop - Stops the ShakeCast servers
         install - Installs ShakeCast services
         uninstall - Removes ShakeCast services
-    '''
+    ''')
 
 def main(command = None):
     if len(sys.argv) == 2:

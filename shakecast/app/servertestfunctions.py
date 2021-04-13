@@ -1,8 +1,8 @@
 from email.mime.text import MIMEText
 
-from productdownload import ProductGrabber
+from .productdownload import ProductGrabber
 from .notifications.notifications import Mailer
-from orm import dbconnect, User
+from .orm import dbconnect, User
 
 def url_test():
     pg = ProductGrabber()

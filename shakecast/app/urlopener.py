@@ -1,5 +1,5 @@
 try:
-    import urllib2
+    import urllib.request, urllib.error, urllib.parse
 except:
     import urllib.request as urllib2
 import ssl
@@ -30,9 +30,9 @@ class URLOpener(object):
 
         try:
             if ctx is not None:
-                url_obj = urllib2.urlopen(url, timeout=60, context=ctx)
+                url_obj = urllib.request.urlopen(url, timeout=60, context=ctx)
             else:
-                url_obj = urllib2.urlopen(url, timeout=60)
+                url_obj = urllib.request.urlopen(url, timeout=60)
                     
             url_read = url_obj.read()
             url_obj.close()
