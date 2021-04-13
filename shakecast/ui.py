@@ -5,7 +5,6 @@ import sys
 
 from .app.server import Server
 from .app.newthread import NewThread
-from .app.util import SC
 
 import shakecast.app.env as env
 
@@ -35,9 +34,8 @@ class UI(object):
         self.conns = []
         self._get_message = True
         self.print_queue = []
-        
-        sc = SC()
-        self.port = sc.dict['port']
+
+        self.port = env.SERVER_PORT
         self.host = env.SERVER_HOST_NAME
 
     def start(self):
