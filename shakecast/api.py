@@ -302,26 +302,6 @@ def get_fac_data(session=None):
 
     return jsonify(fac_geojson)
 
-
-
-@app.route('/api/facilities', methods=['DELETE'])
-@login_required
-def delete_faclities():
-    inventory = json.loads(request.args.get('inventory', None))
-
-    if inventory is None:
-      return jsonify(success=True)
-
-    inv_ids = [inv['properties']['shakecast_id'] for inv in inventory]
-    inv_type = 'facility'
-    if len(inv_ids) > 0 and inv_type is not None:
-        ui.send("{'delete_inventory: %s': {'func': f.delete_inventory_by_id, \
-                        'args_in': {'ids': %s, 'inventory_type': '%s'}, \
-                        'db_use': True, \
-                        'loop': False}}" % (inv_type, inv_ids, inv_type))
-
-    return jsonify(success=True)
-
 @app.route('/api/facilities/<facility_id>')
 @login_required
 @dbconnect
