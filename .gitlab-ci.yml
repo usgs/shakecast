@@ -25,13 +25,21 @@ stages:
   image:
     name: ${CODE_REGISTRY_IMAGE}/shakecast:${CI_PIPELINE_ID}
     entrypoint: [""]
-  tags:
-    - shakecast-dev
   only:
     - merge_requests
   before_script:
-    - cd ${CI_PROJECT_DIR}
     - ./scripts/test_env.sh
+
+.compose-test:
+  image:
+    name: ${CODE_REGISTRY_IMAGE}/shakecast:${CI_PIPELINE_ID}
+    entrypoint: [""]
+  environment:
+    SHAKECAST_USER_ID: ${UID}
+  only:
+    - merge_requests
+  before_script:
+    - pip3 install docker-compose
 
 .shakecast-dev:
   tags:
@@ -81,6 +89,16 @@ api-test:
     - python3 -m shakecast.api &
     - sleep 5
     - curl localhost:5000
+
+compose-test:
+  stage: test
+  extends:
+    - .shakecast-dev
+    - .compose-test
+  script:
+    - docker-compose up -d
+    - curl localhost:80
+    - docker-compose down
 
 # RELEASE CONTAINERS
 release-dev:
