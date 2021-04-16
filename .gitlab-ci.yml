@@ -33,23 +33,14 @@ stages:
     - ./scripts/python-test-setup.sh
 
 .compose:
-<<<<<<< HEAD
   extends:
     - .dind
-=======
-  image:
-    name: ${CODE_REGISTRY_IMAGE}/shakecast:${CI_PIPELINE_ID}
-    entrypoint: [""]
->>>>>>> Fix name collision
   variables:
     SHAKECAST_USER_ID: ${UID}
   only:
     - merge_requests
   before_script:
-    - apk update
-    - apk add py-pip python3-dev libffi-dev openssl-dev gcc libc-dev make
-    - pip install --upgrade --trusted-host pypi.org --trusted-host files.pythonhosted.org pip
-    - pip install --trusted-host pypi.org --trusted-host files.pythonhosted.org docker-compose
+    - pip3 install docker-compose
     - docker build . -t usgs/shakecast:latest
 
 .shakecast-dev:
