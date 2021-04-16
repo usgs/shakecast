@@ -25,14 +25,26 @@ stages:
   image:
     name: ${CODE_REGISTRY_IMAGE}/shakecast:${CI_PIPELINE_ID}
     entrypoint: [""]
-  tags:
-    - shakecast-dev
   only:
     - merge_requests
   before_script:
     - cd ${CI_PROJECT_DIR}
     - source ./environments/python-test.sh
     - ./scripts/python-test-setup.sh
+
+.compose:
+  extends:
+    - .dind
+  variables:
+    SHAKECAST_USER_ID: ${UID}
+  only:
+    - merge_requests
+  before_script:
+    - apk update
+    - apk add py-pip python3-dev libffi-dev openssl-dev gcc libc-dev make
+    - pip install --upgrade --trusted-host pypi.org --trusted-host files.pythonhosted.org pip
+    - pip install --trusted-host pypi.org --trusted-host files.pythonhosted.org docker-compose
+    - docker build . -t usgs/shakecast:latest
 
 .shakecast-dev:
   tags:
@@ -82,6 +94,16 @@ api-test:
     - python3 -m shakecast.api &
     - sleep 5
     - curl localhost:5000
+
+compose-test:
+  stage: test
+  extends:
+    - .shakecast-dev
+    - .compose-test
+  script:
+    - docker-compose up -d
+    - curl localhost:80
+    - docker-compose down
 
 # RELEASE CONTAINERS
 release-dev:
