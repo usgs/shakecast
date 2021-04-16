@@ -40,7 +40,9 @@ stages:
   only:
     - merge_requests
   before_script:
-    - pip3 install docker-compose
+    - apk update
+    - apk add py-pip python3-dev libffi-dev openssl-dev gcc libc-dev make
+    - pip install --trusted-host pypi.org --trusted-host files.pythonhosted.org docker-compose
     - docker build . -t usgs/shakecast:latest
 
 .shakecast-dev:
