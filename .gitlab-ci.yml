@@ -99,8 +99,10 @@ compose-test:
     - .shakecast-dev
     - .compose
   script:
+    - sed -i 's/80:5000/5000/g' docker-compose.yml
     - docker-compose up -d
-    - curl localhost:80
+    - curl shakecast-lite_web-server_1:5000
+  after_script:
     - docker-compose down
 
 # RELEASE CONTAINERS
