@@ -21,11 +21,14 @@ ENV SHAKECAST_USER_DIRECTORY /usr/local/shakecast/shakecast
 ENV SHAKECAST_WEB_PORT 5000
 ENV PYTHONUNBUFFERED 1
 
-COPY --chown=usgs-user:usgs-user scripts/test_env.sh .
+COPY --chown=usgs-user:usgs-user scripts .
+COPY --chown=usgs-user:usgs-user environment .
+
 COPY --chown=usgs-user:usgs-user entrypoint.sh .
 COPY --chown=usgs-user:usgs-user admin ./admin
 
 RUN chmod +x entrypoint.sh
-RUN chmod +x test_env.sh
+RUN find scripts -type f -iname "*.sh" -exec chmod +x {} \;
+
 USER usgs-user
 ENTRYPOINT ["./entrypoint.sh"]
