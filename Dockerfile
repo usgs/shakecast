@@ -22,7 +22,7 @@ ENV SHAKECAST_WEB_PORT 5000
 ENV PYTHONUNBUFFERED 1
 
 COPY --chown=usgs-user:usgs-user scripts .
-COPY --chown=usgs-user:usgs-user environment .
+COPY --chown=usgs-user:usgs-user environments .
 
 COPY --chown=usgs-user:usgs-user entrypoint.sh .
 COPY --chown=usgs-user:usgs-user admin ./admin
