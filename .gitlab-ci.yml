@@ -33,8 +33,14 @@ stages:
     - ./scripts/python-test-setup.sh
 
 .compose:
+<<<<<<< HEAD
   extends:
     - .dind
+=======
+  image:
+    name: ${CODE_REGISTRY_IMAGE}/shakecast:${CI_PIPELINE_ID}
+    entrypoint: [""]
+>>>>>>> Fix name collision
   variables:
     SHAKECAST_USER_ID: ${UID}
   only:
@@ -99,7 +105,7 @@ compose-test:
   stage: test
   extends:
     - .shakecast-dev
-    - .compose-test
+    - .compose
   script:
     - docker-compose up -d
     - curl localhost:80
