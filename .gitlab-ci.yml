@@ -101,7 +101,7 @@ compose-test:
   script:
     - sed -i 's/80:5000/5000/g' docker-compose.yml
     - docker-compose up -d
-    - curl shakecast-lite_web-server_1:5000
+    - docker exec shakecast-lite_web-server_1 curl localhost:5000
   after_script:
     - docker-compose down
 
