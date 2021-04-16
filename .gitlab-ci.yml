@@ -21,6 +21,26 @@ stages:
   - deploy
   - publish
 
+.shakecast-dev:
+  tags:
+    - shakecast-dev
+
+.compose:
+  image: docker/compose:latest
+  extends:
+    - .dind
+    - .shakecast-dev
+  variables:
+    SHAKECAST_USER_ID: ${UID}
+  only:
+    - merge_requests
+  before_script:
+    - docker build . -t usgs/shakecast:latest
+
+.release:
+  before_script:
+    - echo ${CI_COMMIT_REF_NAME} > shakecast/version
+
 .python-test:
   image:
     name: ${CODE_REGISTRY_IMAGE}/shakecast:${CI_PIPELINE_ID}
@@ -31,28 +51,6 @@ stages:
     - cd ${CI_PROJECT_DIR}
     - source ./environments/python-test.sh
     - ./scripts/python-test-setup.sh
-
-.compose:
-  extends:
-    - .dind
-  variables:
-    SHAKECAST_USER_ID: ${UID}
-  only:
-    - merge_requests
-  before_script:
-    - apk update
-    - apk add py-pip python3-dev libffi-dev openssl-dev gcc libc-dev make
-    - pip install --upgrade --trusted-host pypi.org --trusted-host files.pythonhosted.org pip
-    - pip install --trusted-host pypi.org --trusted-host files.pythonhosted.org docker-compose
-    - docker build . -t usgs/shakecast:latest
-
-.shakecast-dev:
-  tags:
-    - shakecast-dev
-
-.release:
-  before_script:
-    - echo ${CI_COMMIT_REF_NAME} > shakecast/version
 
 .build:
   tags:
