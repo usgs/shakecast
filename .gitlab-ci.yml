@@ -42,6 +42,7 @@ stages:
   before_script:
     - apk update
     - apk add py-pip python3-dev libffi-dev openssl-dev gcc libc-dev make
+    - pip install --upgrade --trusted-host pypi.org --trusted-host files.pythonhosted.org pip
     - pip install --trusted-host pypi.org --trusted-host files.pythonhosted.org docker-compose
     - docker build . -t usgs/shakecast:latest
 
