@@ -2,8 +2,9 @@ version: '3'
 
 services:
   sc-server:
-    image: shakecast:latest
+    image: usgs/shakecast:latest
     environment:
+      LOCAL_USER_ID: ${SHAKECAST_USER_ID}
       SC_DOCKER: 1
     expose:
       - "1981"
@@ -19,9 +20,9 @@ services:
       - "~/pycast/local_products:/usr/local/shakecast/shakecast/local_products"
       - "~/pycast/assets:/usr/local/shakecast/shakecast/view/assets"
     restart: unless-stopped
-  
+
   web-server:
-    image: shakecast:latest
+    image: usgs/shakecast:latest
     depends_on:
       - sc-server
     ports:
@@ -30,6 +31,7 @@ services:
       APP_SERVER: 'false'
       SHAKECAST_SERVER_HOST_NAME: 'sc-server'
       SHAKECAST_WEB_PORT: 5000
+      LOCAL_USER_ID: ${SHAKECAST_USER_ID}
     networks:
       - sc-network
     volumes:
@@ -52,7 +54,6 @@ services:
     expose:
       - "5000"
     restart: unless-stopped
-
 
 networks:
   sc-network:

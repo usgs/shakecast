@@ -21,26 +21,36 @@ stages:
   - deploy
   - publish
 
+.shakecast-dev:
+  tags:
+    - shakecast-dev
+
+.compose:
+  image: docker/compose:latest
+  extends:
+    - .dind
+    - .shakecast-dev
+  variables:
+    SHAKECAST_USER_ID: ${UID}
+  only:
+    - merge_requests
+  before_script:
+    - docker build . -t usgs/shakecast:latest
+
+.release:
+  before_script:
+    - echo ${CI_COMMIT_REF_NAME} > shakecast/version
+
 .python-test:
   image:
     name: ${CODE_REGISTRY_IMAGE}/shakecast:${CI_PIPELINE_ID}
     entrypoint: [""]
-  tags:
-    - shakecast-dev
   only:
     - merge_requests
   before_script:
     - cd ${CI_PROJECT_DIR}
     - source ./environments/python-test.sh
     - ./scripts/python-test-setup.sh
-
-.shakecast-dev:
-  tags:
-    - shakecast-dev
-
-.release:
-  before_script:
-    - echo ${CI_COMMIT_REF_NAME} > shakecast/version
 
 .build:
   tags:
@@ -82,6 +92,20 @@ api-test:
     - python3 -m shakecast.api &
     - sleep 5
     - curl localhost:5000
+
+compose-test:
+  stage: test
+  extends:
+    - .shakecast-dev
+    - .compose
+  script:
+    - sed -i 's/80:5000/5000/g' docker-compose.yml
+    - echo Running with user ID ${SHAKECAST_USER_ID}
+    - docker-compose up -d
+    - sleep 5
+    - docker exec shakecast-lite_web-server_1 curl localhost:5000
+  after_script:
+    - docker-compose down
 
 # RELEASE CONTAINERS
 release-dev:
