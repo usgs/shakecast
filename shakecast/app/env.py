@@ -20,7 +20,7 @@ SMTP_PORT = int(os.environ.get('SHAKECAST_SMTP_PORT', sc.dict['SMTP']['port']))
 SMTP_SECURITY = os.environ.get('SHAKECAST_SMTP_SECURITY', sc.dict['SMTP']['security'])
 SMTP_SERVER = os.environ.get('SHAKECAST_SMTP_SERVER', sc.dict['SMTP']['server'])
 SMTP_USERNAME = os.environ.get('SHAKECAST_SMTP_USERNAME', sc.dict['SMTP']['username'])
-SMTP_SEND_NOTIFICATIONS = os.environ.get('SHAKECAST_SMTP_SEND_NOTIFICATIONS', 1) 
+SMTP_SEND_NOTIFICATIONS = int(os.environ.get('SHAKECAST_SMTP_SEND_NOTIFICATIONS', 1))
 
 from pathlib import Path
 home = str(Path.home())
