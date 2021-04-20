@@ -2,12 +2,12 @@
 # Docker entrypoint for the shakecast server
 
 APP_SERVER=${APP_SERVER:-true}
-USER_ID=${LOCAL_USER_ID:-0}
+USER_ID=${SHAKECAST_USER_ID:-0}
 
 python3 -m shakecast.app.startup
 
 # Run any arguments directly
-if [ $@ ];
+if [ $# -gt 0 ];
 then
   exec "$@"
 

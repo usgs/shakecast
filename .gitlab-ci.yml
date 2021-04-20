@@ -8,8 +8,6 @@ include:
 variables:
   DOCKER_DRIVER: overlay2
   IMAGE_NAME: "${CI_PROJECT_NAME}:${CI_PIPELINE_ID}"
-  SERVER_REGISTRY_IMAGE_NAME: "shakecast/server"
-  API_REGISTRY_IMAGE_NAME: "shakecast/api-server"
   TWINE_USERNAME: ${PYPI_USERNAME}
   TWINE_PASSWORD: ${PYPI_PASSWORD}
 
@@ -107,7 +105,7 @@ compose-test:
   after_script:
     - docker-compose down
 
-# RELEASE CONTAINERS
+# RELEASE IMAGES
 release-dev:
   stage: release
   extends:
@@ -179,6 +177,6 @@ publish-python:
   when: manual
   script:
     - python3 -m pip install --upgrade pip
-    - pip install setuptools wheel twine
-    - python setup.py bdist_wheel
+    - python3 -m pip install setuptools wheel twine
+    - python3 setup.py bdist_wheel
     - twine upload dist/*
