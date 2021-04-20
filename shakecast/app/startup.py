@@ -16,7 +16,7 @@ from .util import (
 
 def startup():
     pip_init()
-    if int(os.environ.get('SC_DOCKER', False)):
+    if int(os.environ.get('SC_DOCKER', 0)):
         copy_backups()
 
 def copy_backups():
@@ -33,8 +33,8 @@ def copy_backups():
     
     if not os.path.isfile(os.path.join(conf, 'sc.json')):
         os.system('cp -r {}/* {}'.format(docker_conf, conf))
-    if not os.path.isdir(assets):
-        os.system('cp -r {}/* {}'.format(docker_assets, assets))
+
+    os.system('cp -r {}/* {}'.format(docker_assets, assets))
 
 def pip_init():
     '''
