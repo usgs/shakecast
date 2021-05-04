@@ -197,7 +197,7 @@ def import_facility_dicts(facs=None, _user=None, session=None):
                     facility.metric = fac['FRAGILITY']['RED'].get('METRIC', None)
 
             if fac.get('AEBM', None) is not None:
-              facility.aebm = parse_aebm_from_xml_dict(fac.get('AEBM'), fac.get('FACILITY_MODEL', None))
+               facility.aebm = parse_aebm_from_xml_dict(fac.get('AEBM'), fac.get('FACILITY_MODEL', None))
             facility.attributes = parse_attributes_from_xml(fac.get('ATTRIBUTE', None))
                 
 
