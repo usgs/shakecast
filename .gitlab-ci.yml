@@ -24,7 +24,7 @@ stages:
 
 .python-test:
   tags:
-    - shakecast-dev
+    - shakecast-backup
   only:
     - merge_requests
   before_script:
@@ -34,7 +34,7 @@ stages:
 
 .shakecast-dev:
   tags:
-    - shakecast-dev
+    - shakecast-backup
 
 .release:
   before_script:
