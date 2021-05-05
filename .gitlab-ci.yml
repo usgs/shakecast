@@ -7,6 +7,7 @@ include:
 
 variables:
   DOCKER_DRIVER: overlay2
+  GIT_STRATEGY: clone
   IMAGE_NAME: "$CI_PROJECT_NAME:${CI_PIPELINE_ID}"
   SERVER_REGISTRY_IMAGE_NAME: "shakecast/server"
   API_REGISTRY_IMAGE_NAME: "shakecast/api-server"
@@ -23,7 +24,7 @@ stages:
 
 .python-test:
   tags:
-    - shakecast-dev
+    - shakecast-backup
   only:
     - merge_requests
   before_script:
@@ -33,7 +34,7 @@ stages:
 
 .shakecast-dev:
   tags:
-    - shakecast-dev
+    - shakecast-backup
 
 .release:
   before_script:
