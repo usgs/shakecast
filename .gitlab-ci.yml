@@ -7,6 +7,7 @@ include:
 
 variables:
   DOCKER_DRIVER: overlay2
+  GIT_STRATEGY: clone
   IMAGE_NAME: "${CI_PROJECT_NAME}:${CI_PIPELINE_ID}"
   TWINE_USERNAME: ${PYPI_USERNAME}
   TWINE_PASSWORD: ${PYPI_PASSWORD}
@@ -101,7 +102,7 @@ compose-test:
     - echo Running with user ID ${SHAKECAST_USER_ID}
     - docker-compose up -d
     - sleep 5
-    - docker exec shakecast-lite_web-server_1 curl localhost:5000
+    - docker exec shakecast_web-server_1 curl localhost:5000
   after_script:
     - docker-compose down
 
