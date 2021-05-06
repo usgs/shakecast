@@ -148,7 +148,9 @@ prod-staging:
 publish-python:
   stage: publish
   image: shakecast/centos
-  extends: .release
+  extends: 
+    - .release
+    - .shakecast-dev
   only:
     - tags
   when: manual
