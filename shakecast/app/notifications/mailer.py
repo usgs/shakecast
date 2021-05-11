@@ -1,3 +1,4 @@
+import importlib
 import smtplib
 
 import shakecast.app.env as env
@@ -11,6 +12,8 @@ class Mailer(object):
     """
     
     def __init__(self):
+        importlib.reload(env)
+
         self.me = env.SMTP_FROM or env.SMTP_USERNAME
         self.username = env.SMTP_USERNAME
         self.password = env.SMTP_PASSWORD
