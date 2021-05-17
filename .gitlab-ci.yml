@@ -40,10 +40,14 @@ stages:
   before_script:
     - echo ${CI_COMMIT_REF_NAME} > shakecast/version
 
-.python-test:
+.python:
   image:
     name: ${CODE_REGISTRY_IMAGE}/shakecast:${CI_PIPELINE_ID}
     entrypoint: [""]
+
+.python-test:
+  extends:
+    - .python
   only:
     - merge_requests
   before_script:
@@ -171,8 +175,9 @@ prod-staging:
 # PUBLISH PACKAGES/CONTAINERS
 publish-python:
   stage: publish
-  image: ${CODE_REGISTRY_IMAGE}/shakecast:${CI_PIPELINE_ID}
-  extends: .release
+  extends:
+    - .python
+    - .release
   only:
     - tags
   when: manual
