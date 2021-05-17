@@ -175,8 +175,10 @@ prod-staging:
 # PUBLISH PACKAGES/CONTAINERS
 publish-python:
   stage: publish
+  image:
+    name: ${CODE_REGISTRY_IMAGE}/shakecast:latest
+    entrypoint: [""]
   extends:
-    - .python
     - .release
   only:
     - tags
