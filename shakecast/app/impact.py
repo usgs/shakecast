@@ -213,8 +213,12 @@ def get_psa_spectrum(shaking):
     spectrum = []
     for key in list(shaking.keys()):
         if 'PSA' in key:
-            psa = float('.' + key.split('A')[1])
-            spectrum.append({'x': psa, 'y': shaking[key]})
+            psa = float('.' + key.split('A')[1])*10
+            spectrum.append({'x': psa, 'y': shaking[key]/100})
+            
+        if 'PGA' in key:
+            psa = 0.01
+            spectrum.append({'x': psa, 'y': shaking[key]/100})
 
     # return a sorted spectrum
     return sorted(spectrum, key=lambda x: x['x'])
