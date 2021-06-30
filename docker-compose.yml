@@ -57,6 +57,26 @@ services:
       - "5000"
     restart: unless-stopped
 
+  pdl:
+    image: usgs/pdl-rabbitmq:latest
+    depends_on: 
+      - rabbitmq
+    environment:
+      SHAKECAST_USER_ID: ${SHAKECAST_USER_ID}
+    volumes:
+      - ~/pycast/eq_data:/data/pdl
+  
+  rabbitmq:
+    image: rabbitmq:3-management
+    hostname: rabbitmq
+    ports:
+      - 5672:5672
+      - 15672:15672
+    volumes:
+      - ./rabbitmq/etc/definitions.json:/etc/rabbitmq/definitions.json
+      - ./rabbitmq/data:/var/lib/rabbitmq/mnesia/rabbit@my-rabbit
+      - ./rabbitmq/logs:/var/log/rabbitmq/log
+
 networks:
   sc-network:
     driver: bridge
