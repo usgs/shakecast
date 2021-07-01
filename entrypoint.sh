@@ -21,10 +21,14 @@ then
   id -u shakecast &>/dev/null || useradd -u $USER_ID -o shakecast;
   chown -R shakecast:shakecast .;
 
-  if [ "${APP_SERVER}" = "true" ];
+  if [ "${SERVER_TYPE}" = "APP_SERVER" ];
   then
     exec /usr/local/bin/gosu shakecast python3 -m shakecast.app.server start;
-  else
+  elif [ "${SERVER_TYPE}" = "GROUND_FAIURE" ];
+  then
+    exec /usr/local/bin/gosu shakecast python3 -m shakecast.app.groundfailure.listener;
+  elif [ "${SERVER_TYPE}" = "WEB_SERVER" ];
+  then
     exec /usr/local/bin/gosu shakecast python3 -m shakecast.api;
   fi
 
@@ -42,9 +46,14 @@ export SHAKECAST_USER_ID=\${UID}
 **************************************************************************
 ";
 
-if [ "${APP_SERVER}" = "true" ];
+echo "SERVER TYPE IS: ${SERVER_TYPE}"
+if [ "${SERVER_TYPE}" = "APP_SERVER" ];
 then
   exec python3 -m shakecast.app.server start;
-else
+elif [ "${SERVER_TYPE}" = "GROUND_FAILURE" ];
+then
+  exec python3 -m shakecast.app.groundfailure.listener;
+elif [ "${SERVER_TYPE}" = "WEB_SERVER" ];
+then
   exec python3 -m shakecast.api;
 fi

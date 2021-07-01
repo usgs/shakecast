@@ -4,6 +4,7 @@ services:
   sc-server:
     image: usgs/shakecast:latest
     environment:
+      SERVER_TYPE: "APP_SERVER"
       SHAKECAST_USER_ID: ${SHAKECAST_USER_ID}
       SC_DOCKER: 1
     expose:
@@ -28,7 +29,7 @@ services:
     ports:
       - "80:5000"
     environment:
-      APP_SERVER: 'false'
+      SERVER_TYPE: 'WEB_SERVER'
       SHAKECAST_SERVER_HOST_NAME: 'sc-server'
       SHAKECAST_WEB_PORT: 5000
       SHAKECAST_USER_ID: ${SHAKECAST_USER_ID}
@@ -63,6 +64,8 @@ services:
       - rabbitmq
     environment:
       SHAKECAST_USER_ID: ${SHAKECAST_USER_ID}
+    networks:
+      - sc-network
     volumes:
       - ~/pycast/eq_data:/data/pdl
   
@@ -72,10 +75,26 @@ services:
     ports:
       - 5672:5672
       - 15672:15672
+    networks:
+      - sc-network
     volumes:
       - ./rabbitmq/etc/definitions.json:/etc/rabbitmq/definitions.json
       - ./rabbitmq/data:/var/lib/rabbitmq/mnesia/rabbit@my-rabbit
       - ./rabbitmq/logs:/var/log/rabbitmq/log
+
+  ground-failure:
+    image: usgs/shakecast:latest
+    depends_on:
+      - rabbitmq
+    environment:
+      SERVER_TYPE: 'GROUND_FAILURE'
+      SHAKECAST_USER_ID: ${SHAKECAST_USER_ID}
+    networks:
+      - sc-network
+    volumes:
+      - "~/pycast/eq_data:/usr/local/shakecast/shakecast/data"
+      - "~/pycast/local_products:/usr/local/shakecast/shakecast/local_products"
+    restart: unless-stopped
 
 networks:
   sc-network:
