@@ -10,8 +10,6 @@ from .orm import (
     Facility,
     FacilityShaking,
     Group,
-    LocalProductType,
-    LocalProduct,
     Notification,
     ShakeMap
 )
