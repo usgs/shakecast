@@ -27,9 +27,12 @@ def read_origin_xml(origin_xml_path):
     return xml_dict
 
 @dbconnect
-def main(product_path, session=None):
+def main(message, session=None):
+    product_path = message['directory']
     origin_xml_path = os.path.join(product_path, 'product.xml')
+
     event = transform_origin_to_event(origin_xml_path)
+    event.event_id = message.get('eventId')
 
     if assess_event(event):
         print(f'Adding new event: {event.event_id}')
@@ -50,6 +53,7 @@ def transform_origin_to_event(origin_xml_path):
     origin = read_origin_xml(origin_xml_path)['properties']
 
     event = Event(
+      event_id = origin.get('eventId'),
       title = origin.get('title'),
       place = origin.get('place'),
       time = origin.get('time'),
