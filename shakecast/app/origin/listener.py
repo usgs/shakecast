@@ -14,8 +14,8 @@ class OriginConsumer(Consumer):
       print('ORIGIN RECEIVED: # %s from %s: %s',
                   basic_deliver.delivery_tag, properties.app_id, body)
 
-      directory = json.loads(body)['directory']
-      ingest(directory)
+      message = json.loads(body)
+      ingest(message)
 
       self._channel.basic_ack(basic_deliver.delivery_tag)
 
