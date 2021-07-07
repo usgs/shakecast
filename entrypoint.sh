@@ -26,10 +26,13 @@ then
     exec /usr/local/bin/gosu shakecast python3 -m shakecast.app.server start;
   elif [ "${SERVER_TYPE}" = "GROUND_FAIURE" ];
   then
-    exec /usr/local/bin/gosu shakecast python3 -m shakecast.app.groundfailure.listener;
+    exec /usr/local/bin/gosu shakecast python3 -m shakecast.app.groundfailure;
   elif [ "${SERVER_TYPE}" = "WEB_SERVER" ];
   then
     exec /usr/local/bin/gosu shakecast python3 -m shakecast.api;
+  elif [ "${SERVER_TYPE}" = "ORIGIN" ];
+  then
+    exec /usr/local/bin/gosu shakecast python3 -m shakecast.app.origin;
   fi
 
   exit 0;
@@ -52,8 +55,11 @@ then
   exec python3 -m shakecast.app.server start;
 elif [ "${SERVER_TYPE}" = "GROUND_FAILURE" ];
 then
-  exec python3 -m shakecast.app.groundfailure.listener;
+  exec python3 -m shakecast.app.groundfailure;
 elif [ "${SERVER_TYPE}" = "WEB_SERVER" ];
 then
   exec python3 -m shakecast.api;
+elif [ "${SERVER_TYPE}" = "ORIGIN" ];
+then
+  exec python3 -m shakecast.app.origin;
 fi
