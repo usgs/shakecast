@@ -52,7 +52,7 @@ def transform_origin_to_event(origin_xml_path):
     event = Event(
       title = origin.get('title'),
       place = origin.get('place'),
-      time = origin.get('time'/1000.0),
+      time = origin.get('time'),
       magnitude = origin.get('magnitude'),
       lon = origin.get('longitude'),
       lat = origin.get('latitude'),
@@ -60,5 +60,7 @@ def transform_origin_to_event(origin_xml_path):
       type = 'event',
       updated = time.time()
     )
+
+    event.time = event.time / 1000.0 if event.time else time.time()
 
     return event
