@@ -1,31 +1,29 @@
 version: '3'
 
 services:
-  sc-server:
+  origin:
     image: usgs/shakecast:latest
     environment:
-      SERVER_TYPE: "APP_SERVER"
+      SERVER_TYPE: "ORIGIN"
       SHAKECAST_USER_ID: ${SHAKECAST_USER_ID}
       SC_DOCKER: 1
+      SHAKECAST_DATA_DIR: '/data/pdl'
     expose:
       - "1981"
     networks:
       - sc-network
     volumes:
       - "~/pycast/db:/usr/local/shakecast/shakecast/db"
-      - "~/pycast/eq_data:/usr/local/shakecast/shakecast/data"
+      - "~/pycast/pdl:/data/pdl"
       - "~/pycast/tmp:/usr/local/shakecast/shakecast/tmp"
       - "~/pycast/conf:/usr/local/shakecast/shakecast/conf"
       - "~/pycast/templates:/usr/local/shakecast/shakecast/templates"
-      - "~/pycast/logs:/usr/local/shakecast/shakecast/logs"
       - "~/pycast/local_products:/usr/local/shakecast/shakecast/local_products"
       - "~/pycast/assets:/usr/local/shakecast/shakecast/view/assets"
     restart: unless-stopped
 
   web-server:
     image: usgs/shakecast:latest
-    depends_on:
-      - sc-server
     ports:
       - "80:5000"
     environment:
@@ -33,11 +31,12 @@ services:
       SHAKECAST_SERVER_HOST_NAME: 'sc-server'
       SHAKECAST_WEB_PORT: 5000
       SHAKECAST_USER_ID: ${SHAKECAST_USER_ID}
+      SHAKECAST_DATA_DIR: '/data/pdl'
     networks:
       - sc-network
     volumes:
       - "~/pycast/db:/usr/local/shakecast/shakecast/db"
-      - "~/pycast/eq_data:/usr/local/shakecast/shakecast/data"
+      - "~/pycast/pdl:/data/pdl"
       - "~/pycast/tmp:/usr/local/shakecast/shakecast/tmp"
       - "~/pycast/conf:/usr/local/shakecast/shakecast/conf"
       - "~/pycast/templates:/usr/local/shakecast/shakecast/templates"
@@ -67,7 +66,7 @@ services:
     networks:
       - sc-network
     volumes:
-      - ~/pycast/eq_data:/data/pdl
+      - ~/pycast/pdl:/data/pdl
   
   rabbitmq:
     image: rabbitmq:3-management
@@ -89,10 +88,11 @@ services:
     environment:
       SERVER_TYPE: 'GROUND_FAILURE'
       SHAKECAST_USER_ID: ${SHAKECAST_USER_ID}
+      SHAKECAST_DATA_DIR: '/data/pdl'
     networks:
       - sc-network
     volumes:
-      - "~/pycast/eq_data:/usr/local/shakecast/shakecast/data"
+      - "~/pycast/pdl:/data/pdl"
       - "~/pycast/local_products:/usr/local/shakecast/shakecast/local_products"
     restart: unless-stopped
 
