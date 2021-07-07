@@ -1,0 +1,6 @@
+<?xml version="1.0"?>
+<contents xmlns="http://earthquake.usgs.gov/earthquakes/event/contents">
+<file title="Earthquake XML (Quakeml)">
+<format type="xml" href="quakeml.xml"/>
+</file>
+</contents>

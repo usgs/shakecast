@@ -1,0 +1,40 @@
+<?xml version="1.0"?>
+<product xmlns="http://earthquake.usgs.gov/distribution/product" id="urn:usgs-product:nc:origin:nc73583996:1625617284790" updateTime="2021-07-07T00:21:24.790Z" status="UPDATE" trackerURL="http://ehppdl1.cr.usgs.gov/tracker">
+	<property name="azimuthal-gap" value="204"/>
+	<property name="depth" value="17.82"/>
+	<property name="depth-type" value="from location"/>
+	<property name="error-ellipse-azimuth" value="276"/>
+	<property name="error-ellipse-intermediate" value="2016"/>
+	<property name="error-ellipse-major" value="2544"/>
+	<property name="error-ellipse-minor" value="1104"/>
+	<property name="error-ellipse-plunge" value="42"/>
+	<property name="error-ellipse-rotation" value="22"/>
+	<property name="evaluation-status" value="preliminary"/>
+	<property name="event-type" value="earthquake"/>
+	<property name="eventParametersPublicID" value="quakeml:nc.anss.org/Event/NC/73583996#162561728479"/>
+	<property name="eventsource" value="nc"/>
+	<property name="eventsourcecode" value="73583996"/>
+	<property name="eventtime" value="2021-07-07T00:19:51.650Z"/>
+	<property name="horizontal-error" value="0.79"/>
+	<property name="latitude" value="40.4901657"/>
+	<property name="longitude" value="-124.3073349"/>
+	<property name="magnitude" value="1.66"/>
+	<property name="magnitude-error" value="0.05"/>
+	<property name="magnitude-num-stations-used" value="4"/>
+	<property name="magnitude-source" value="NC"/>
+	<property name="magnitude-type" value="md"/>
+	<property name="minimum-distance" value="0.1599"/>
+	<property name="num-phases-used" value="9"/>
+	<property name="num-stations-used" value="9"/>
+	<property name="origin-source" value="NC"/>
+	<property name="pdl-client-version" value="Version 2.3.1 2020-04-13"/>
+	<property name="quakeml-magnitude-publicid" value="quakeml:nc.anss.org/Netmag/NC/1761616"/>
+	<property name="quakeml-origin-publicid" value="quakeml:nc.anss.org/Origin/NC/3132681"/>
+	<property name="quakeml-publicid" value="quakeml:nc.anss.org/Event/NC/73583996"/>
+	<property name="review-status" value="automatic"/>
+	<property name="standard-error" value="0.07"/>
+	<property name="title" value="10km SSW of Ferndale, CA"/>
+	<property name="version" value="0"/>
+	<property name="vertical-error" value="0.71"/>
+	<content path="contents.xml" type="application/xml" length="195" modified="2021-07-07T00:21:25.000Z" href="file:/data/pdl/origin/nc73583996/nc/1625617284790/contents.xml"/>	<content path="quakeml.xml" type="application/xml" length="3063" modified="2021-07-07T00:21:24.000Z" href="file:/data/pdl/origin/nc73583996/nc/1625617284790/quakeml.xml"/>	<signature version="v1">MCwCFH6FU56M/M5TYSeFzfp7A3Ce1ckAAhQlRjKUJfpy5x/a9DBUoVqxL8yD+g==</signature>
+</product>
