@@ -8,6 +8,8 @@ sc = SC()
 DB_CONNECTION_TYPE = os.environ.get('SHAKECAST_DB_CONNECTION_TYPE', sc.dict['DBConnection']['type'])
 DB_CONNECTION_STRING = os.environ.get('SHAKECAST_DB_CONNECTION_STRING', f'sqlite:///{os.path.join(get_db_dir(), "shakecast.db")}')
 
+MINIMUM_MAGNITUDE = int(os.environ.get('SHAKECAST_MINIMUM_MAGNITUDE', sc.dict['Services']['new_eq_mag_cutoff']))
+
 SERVER_PORT = int(os.environ.get('SHAKECAST_SERVER_PORT', sc.dict['port']))
 SERVER_HOST_NAME = os.environ.get('SHAKECAST_SERVER_HOST_NAME', 'localhost')
 
@@ -30,6 +32,10 @@ USER_TEMPLATE_DIR = os.environ.get(
     'SHAKECAST_USER_TEMPLATE_DIRECTORY',
     os.path.join(USER_DIRECTORY, 'templates'))
 
+DATA_DIR = os.environ.get(
+    'SHAKECAST_DATA_DIRECTORY',
+    os.path.join(USER_DIRECTORY, 'data'))
+
 USER_CONF_DIR = os.environ.get(
     'SHAKECAST_USER_CONF_DIRECTORY',
     os.path.join(USER_DIRECTORY, 'conf'))
@@ -42,3 +48,6 @@ LOG_DIRECTORY = os.environ.get('SHAKECAST_LOG_DIRECTORY', os.path.join(USER_DIRE
 DEBUG_LEVEL = int(os.environ.get('SHAKECAST_DEBUG_LEVEL', 0))
 
 WEB_PORT = int(os.environ.get('SHAKECAST_WEB_PORT', sc.dict['web_port']))
+
+RABBITMQ_HOST = os.environ.get('SHAKECAST_RABBITMQ_HOST', 'rabbitmq')
+RABBITMQ_URL= os.environ.get('SHAKECAST_RABBITMQ_URL', 'amqp://guest:guest@rabbitmq:5672/%2F')
