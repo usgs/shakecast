@@ -11,7 +11,7 @@ class OriginConsumer(Consumer):
   QUEUE='pdl-origin'
 
   def on_message(self, _unused_channel, basic_deliver, properties, body):
-      print(f'ORIGIN RECEIVED: # {basic_deliver.delivery_tag} from {properties.app_id}: {body}')
+      print(f'ORIGIN RECEIVED: # {basic_deliver.delivery_tag}: {body}')
 
       message = json.loads(body)
       ingest(message)
