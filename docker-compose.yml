@@ -8,19 +8,38 @@ services:
       SHAKECAST_USER_ID: ${SHAKECAST_USER_ID}
       SC_DOCKER: 1
       SHAKECAST_DATA_DIR: '/data/pdl'
+      SHAKECAST_DB_CONNECTION_TYPE: mysql
+      SHAKECAST_DB_CONNECTION_STRING: mysql+pymysql://root:sc@mariadb:3306/pycast
     expose:
       - "1981"
     networks:
       - sc-network
     volumes:
-      - "~/pycast/db:/usr/local/shakecast/shakecast/db"
       - "~/pycast/pdl:/data/pdl"
-      - "~/pycast/tmp:/usr/local/shakecast/shakecast/tmp"
-      - "~/pycast/conf:/usr/local/shakecast/shakecast/conf"
       - "~/pycast/templates:/usr/local/shakecast/shakecast/templates"
       - "~/pycast/local_products:/usr/local/shakecast/shakecast/local_products"
       - "~/pycast/assets:/usr/local/shakecast/shakecast/view/assets"
-    restart: unless-stopped
+    restart: always
+
+  shakemap:
+    image: usgs/shakecast:latest
+    environment:
+      SERVER_TYPE: "SHAKEMAP"
+      SHAKECAST_USER_ID: ${SHAKECAST_USER_ID}
+      SC_DOCKER: 1
+      SHAKECAST_DATA_DIR: '/data/pdl'
+      SHAKECAST_DB_CONNECTION_TYPE: mysql
+      SHAKECAST_DB_CONNECTION_STRING: mysql+pymysql://root:sc@mariadb:3306/pycast
+    expose:
+      - "1981"
+    networks:
+      - sc-network
+    volumes:
+      - "~/pycast/pdl:/data/pdl"
+      - "~/pycast/templates:/usr/local/shakecast/shakecast/templates"
+      - "~/pycast/local_products:/usr/local/shakecast/shakecast/local_products"
+      - "~/pycast/assets:/usr/local/shakecast/shakecast/view/assets"
+    restart: always
 
   web-server:
     image: usgs/shakecast:latest
@@ -32,18 +51,16 @@ services:
       SHAKECAST_WEB_PORT: 5000
       SHAKECAST_USER_ID: ${SHAKECAST_USER_ID}
       SHAKECAST_DATA_DIR: '/data/pdl'
+      SHAKECAST_DB_CONNECTION_TYPE: mysql
+      SHAKECAST_DB_CONNECTION_STRING: mysql+pymysql://root:sc@mariadb:3306/pycast
     networks:
       - sc-network
     volumes:
-      - "~/pycast/db:/usr/local/shakecast/shakecast/db"
       - "~/pycast/pdl:/data/pdl"
-      - "~/pycast/tmp:/usr/local/shakecast/shakecast/tmp"
-      - "~/pycast/conf:/usr/local/shakecast/shakecast/conf"
       - "~/pycast/templates:/usr/local/shakecast/shakecast/templates"
-      - "~/pycast/logs:/usr/local/shakecast/shakecast/logs"
       - "~/pycast/local_products:/usr/local/shakecast/shakecast/local_products"
       - "~/pycast/assets:/usr/local/shakecast/shakecast/view/assets"
-    restart: unless-stopped
+    restart: always
 
   image-server:
     image: usgs/shakecast-imaging:latest
@@ -55,7 +72,7 @@ services:
       SHAKECAST_USER_ID: ${SHAKECAST_USER_ID}
     expose:
       - "5000"
-    restart: unless-stopped
+    restart: always
 
   pdl:
     image: usgs/pdl-rabbitmq:latest
@@ -80,6 +97,7 @@ services:
       - ./rabbitmq/etc/definitions.json:/etc/rabbitmq/definitions.json
       - ./rabbitmq/data:/var/lib/rabbitmq/mnesia/rabbit@my-rabbit
       - ./rabbitmq/logs:/var/log/rabbitmq/log
+    restart: always
 
   ground-failure:
     image: usgs/shakecast:latest
@@ -89,13 +107,26 @@ services:
       SERVER_TYPE: 'GROUND_FAILURE'
       SHAKECAST_USER_ID: ${SHAKECAST_USER_ID}
       SHAKECAST_DATA_DIR: '/data/pdl'
+      SHAKECAST_DB_CONNECTION_TYPE: mysql
+      SHAKECAST_DB_CONNECTION_STRING: mysql+pymysql://root:sc@mariadb:3306/pycast
     networks:
       - sc-network
     volumes:
       - "~/pycast/pdl:/data/pdl"
       - "~/pycast/local_products:/usr/local/shakecast/shakecast/local_products"
-    restart: unless-stopped
+    restart: always
 
+  mariadb:
+    image: "mariadb"
+    user: ${SHAKECAST_USER_ID}:${SHAKECAST_USER_ID}
+    environment:
+      MYSQL_ROOT_PASSWORD: sc
+    networks:
+      - sc-network
+    ports:
+      - "3306"
+    restart: always
+    
 networks:
   sc-network:
     driver: bridge

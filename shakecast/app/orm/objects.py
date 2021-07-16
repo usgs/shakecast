@@ -59,7 +59,7 @@ class Facility(Base):
     orange_metric = Column(String(20))
     red_metric = Column(String(20))
     metric = Column(String(20))
-    updated = Column(Integer)
+    updated = Column(String(32))
     updated_by = Column(String(32))
 
     shaking_history = relationship('FacilityShaking',
@@ -282,8 +282,8 @@ class Attribute(Base):
     __tablename__ = 'attributes'
     shakecast_id = Column(Integer, primary_key=True)
     facility_id = Column(Integer, ForeignKey('facility.shakecast_id'))
-    name = Column(String)
-    value = Column(String)
+    name = Column(String(255))
+    value = Column(String(10000))
 
     def __repr__(self):
         return '''Attribute(shakecast_id={},
@@ -581,7 +581,7 @@ class User(Base):
     full_name = Column(String(32))
     user_type = Column(String(10))
     group_string = Column(String(1000))
-    updated = Column(Integer)
+    updated = Column(String(32))
     updated_by = Column(String(1000))
 
     groups = relationship('Group',
@@ -632,7 +632,7 @@ class Group(Base):
     lat_min = Column(Float)
     lat_max = Column(Float)
     template = Column(String(255))
-    updated = Column(Integer)
+    updated = Column(String(32))
     updated_by = Column(String(32))
     product_string = Column(String(255), default='pdf')
 
@@ -951,8 +951,8 @@ class Event(Base):
     magnitude = Column(Float)
     title = Column(String(100))
     place = Column(String(255))
-    time = Column(Integer)
-    updated = Column(Integer)
+    time = Column(String(32))
+    updated = Column(String(32))
     override_directory = Column(String(255))
 
     shakemaps = relationship('ShakeMap',
@@ -1381,7 +1381,7 @@ class Product(Base):
 class LocalProduct(Base):
     __tablename__ = 'local_products'
     id = Column(Integer, primary_key=True)
-    type = Column(String,
+    type = Column(String(32),
                      ForeignKey('local_product_types.name'))
     shakemap_id = Column(Integer,
                          ForeignKey('shakemap.shakecast_id'))

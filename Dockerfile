@@ -12,6 +12,7 @@ WORKDIR /usr/local/shakecast
 
 COPY requirements.txt .
 
+RUN python3 -m pip install pymysql
 RUN python3 -m pip install -r requirements.txt
 
 COPY shakecast ./shakecast

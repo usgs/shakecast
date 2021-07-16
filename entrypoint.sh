@@ -33,6 +33,9 @@ then
   elif [ "${SERVER_TYPE}" = "ORIGIN" ];
   then
     exec /usr/local/bin/gosu shakecast python3 -m shakecast.app.origin;
+  elif [ "${SERVER_TYPE}" = "SHAKEMAP" ];
+  then
+    exec /usr/local/bin/gosu shakecast python3 -m shakecast.app.shakemap;
   fi
 
   exit 0;
@@ -62,4 +65,7 @@ then
 elif [ "${SERVER_TYPE}" = "ORIGIN" ];
 then
   exec python3 -m shakecast.app.origin;
+elif [ "${SERVER_TYPE}" = "SHAKEMAP" ];
+then
+  exec python3 -m shakecast.app.shakemap;
 fi

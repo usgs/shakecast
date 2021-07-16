@@ -1,7 +1,4 @@
-from ast import literal_eval
 from csv import reader
-import datetime
-from functools import wraps
 import io
 import json
 import os
@@ -11,14 +8,10 @@ import time
 from flask import (
     Flask,
     render_template,
-    url_for,
     request,
-    session,
     flash,
-    redirect,
     send_file,
     send_from_directory,
-    Response,
     jsonify
 )
 from flask_login import (
@@ -32,15 +25,19 @@ from flask_uploads import UploadSet, configure_uploads, IMAGES
 from sqlalchemy import literal, func, desc
 from werkzeug.security import generate_password_hash, check_password_hash
 
-from .app.env import WEB_PORT
-from .app.impact import get_event_impact
-from .app.inventory import determine_xml, get_facility_info
-from .app.jsonencoders import AlchemyEncoder, GeoJsonFeatureCollection
-from .app.notifications.builder import NotificationBuilder
-from .app.notifications.templates import TemplateManager
-from .app.orm import *
-from .app.util import SC, Clock, get_tmp_dir, get_version
-from .ui import UI
+from shakecast.app.env import WEB_PORT, USER_TMP_DIR
+from shakecast.app.impact import get_event_impact
+from shakecast.app.inventory import get_facility_info
+from shakecast.app.jsonencoders import AlchemyEncoder, GeoJsonFeatureCollection
+from shakecast.app.notifications.builder import NotificationBuilder
+from shakecast.app.notifications.templates import TemplateManager
+from shakecast.app.orm import *
+from shakecast.app.util import SC, get_version
+
+from .adminonly import admin_only
+from .blueprint import routes
+from .uploadsets import image_files, xml_files
+from .util import parse_args
 
 BASE_DIR = os.path.join(sc_dir(),'view')
 STATIC_DIR = os.path.join(sc_dir(),'view','assets')
@@ -58,7 +55,7 @@ login_manager.init_app(app)
 login_manager.login_view = 'index'
 
 # send Angular 2 files
-@app.route('/<path:filename>')
+@routes.route('/<path:filename>')
 def client_app_angular2_folder(filename):
     file_name = os.path.join(BASE_DIR, filename)
     return send_from_directory(BASE_DIR, filename)
@@ -72,7 +69,7 @@ def load_user(user_id, session=None):
     #session.expunge(user)
     return user
 
-@app.route('/api/login', methods=['POST'])
+@routes.route('/api/login', methods=['POST'])
 @dbconnect
 def login(session=None):
     username = request.json.get('username', '')
@@ -92,7 +89,7 @@ def login(session=None):
     user.pop('_sa_instance_state', None)
     return jsonify(user)
 
-@app.route('/api/current-user')
+@routes.route('/api/current-user')
 def logged_in():
     if current_user and current_user.is_authenticated:
         user = current_user.__dict__.copy()
@@ -101,21 +98,21 @@ def logged_in():
     
     return None
 
-@app.route('/api/logout')
+@routes.route('/api/logout')
 def logout():
     logout_user()
     return jsonify(success=True)
 
 ############################# User Domain #############################
 
-@app.route('/')
+@routes.route('/')
 def index():
     return render_template('index.html')
 
-@app.route('/api/messages')
+@routes.route('/api/messages')
 @login_required
 def get_messages():
-    fname = os.path.join(get_tmp_dir(), 'server-messages.json')
+    fname = os.path.join(USER_TMP_DIR, 'server-messages.json')
     
     # ignore if file doesn't exist
     if os.path.isfile(fname):
@@ -126,7 +123,7 @@ def get_messages():
 
     return messages
 
-@app.route('/api/events')
+@routes.route('/api/events')
 @login_required
 @dbconnect
 def get_eq_data(session=None):
@@ -191,7 +188,7 @@ def get_eq_data(session=None):
 
     return jsonify(eq_geojson)
 
-@app.route('/api/events/<event_id>')
+@routes.route('/api/events/<event_id>')
 @login_required
 @dbconnect
 def event_by_id(event_id, session=None):
@@ -211,7 +208,7 @@ def event_by_id(event_id, session=None):
 
     return jsonify(eq_geojson)
 
-@app.route('/api/events/<event_id>/image')
+@routes.route('/api/events/<event_id>/image')
 @login_required
 @dbconnect
 def event_image(event_id, session=None):
@@ -228,7 +225,7 @@ def event_image(event_id, session=None):
 
     return send_file(img, mimetype='image/gif')
 
-@app.route('/api/facilities', methods=['GET', 'POST'])
+@routes.route('/api/facilities', methods=['GET', 'POST'])
 @login_required
 @dbconnect
 def get_fac_data(session=None):
@@ -302,32 +299,14 @@ def get_fac_data(session=None):
 
     return jsonify(fac_geojson)
 
-@app.route('/api/facilities/<facility_id>')
+@routes.route('/api/facilities/<facility_id>')
 @login_required
 @dbconnect
 def get_fac_data_by_id(facility_id, session=None):
     facility = session.query(Facility).filter(Facility.shakecast_id == facility_id).first()
     return jsonify(facility.geojson)
 
-@app.route('/api/facilities', methods=['DELETE'])
-@login_required
-def delete_faclities():
-    inventory = json.loads(request.args.get('inventory', None))
-
-    if inventory is None:
-      return jsonify(success=True)
-
-    inv_ids = [inv['properties']['shakecast_id'] for inv in inventory]
-    inv_type = 'facility'
-    if len(inv_ids) > 0 and inv_type is not None:
-        ui.send("{'delete_inventory: %s': {'func': f.delete_inventory_by_id, \
-                        'args_in': {'ids': %s, 'inventory_type': '%s'}, \
-                        'db_use': True, \
-                        'loop': False}}" % (inv_type, inv_ids, inv_type))
-
-    return jsonify(success=True)
-
-@app.route('/api/facility-shaking')
+@routes.route('/api/facility-shaking')
 @login_required
 @dbconnect
 def get_shaking_data(session=None):
@@ -350,7 +329,7 @@ def get_shaking_data(session=None):
         
     return jsonify(shaking_json)
 
-@app.route('/api/facility-shaking/<facility_id>')
+@routes.route('/api/facility-shaking/<facility_id>')
 @login_required
 @dbconnect
 def get_shaking_data_by_id(facility_id, session=None):
@@ -369,25 +348,7 @@ def get_shaking_data_by_id(facility_id, session=None):
 
     return jsonify(shaking_json)
 
-@app.route('/api/inventory/delete', methods=['DELETE'])
-@login_required
-def delete_inventory():
-    inventory = json.loads(request.args.get('inventory', None))
-
-    if inventory is None:
-      return jsonify(success=True)
-
-    inv_ids = [inv['shakecast_id'] for inv in inventory if inv['shakecast_id']]
-    inv_type = request.args.get('inventory_type', None)
-    if len(inv_ids) > 0 and inv_type is not None:
-        ui.send("{'delete_inventory: %s': {'func': f.delete_inventory_by_id, \
-                        'args_in': {'ids': %s, 'inventory_type': '%s'}, \
-                        'db_use': True, \
-                        'loop': False}}" % (inv_type, inv_ids, inv_type))
-
-    return jsonify(success=True)
-
-@app.route('/api/groups')
+@routes.route('/api/groups')
 @login_required
 @dbconnect
 def get_groups(session=None):
@@ -427,25 +388,7 @@ def get_groups(session=None):
 
     return jsonify(group_json)
 
-@app.route('/api/groups', methods=['DELETE'])
-@login_required
-def delete_groups():
-    inventory = json.loads(request.args.get('inventory', None))
-
-    if inventory is None:
-      return jsonify(success=True)
-
-    inv_ids = [inv['properties']['shakecast_id'] for inv in inventory]
-    inv_type = 'group'
-    if len(inv_ids) > 0 and inv_type is not None:
-        ui.send("{'delete_inventory: %s': {'func': f.delete_inventory_by_id, \
-                        'args_in': {'ids': %s, 'inventory_type': '%s'}, \
-                        'db_use': True, \
-                        'loop': False}}" % (inv_type, inv_ids, inv_type))
-
-    return jsonify(success=True)
-
-@app.route('/api/groups/<group_id>/summary')
+@routes.route('/api/groups/<group_id>/summary')
 @login_required
 @dbconnect
 def get_group_info(group_id, session=None):
@@ -475,33 +418,20 @@ def get_group_info(group_id, session=None):
     
     return jsonify(group_specs)
 
-@app.route('/api/users', methods=['GET', 'POST'])
+@routes.route('/api/users', methods=['GET'])
 @login_required
 @dbconnect
 def get_users(session=None):
-    if request.method == 'GET':
-        args = parse_args(request.args)
-        query = session.query(User)
+    args = parse_args(request.args)
+    query = session.query(User)
 
-        if args.get('group', None):
-            query = query.filter(User.groups.any(Group.name.like(args['group'])))
-            
-        users = query.all()
+    if args.get('group', None):
+        query = query.filter(User.groups.any(Group.name.like(args['group'])))
         
-    else:
-        users = request.json.get('users')
-        if not users:
-            return jsonify(False)
-
-        if users is not None:
-            ui.send("{'import_user_dicts': {'func': f.import_user_dicts, \
-                                           'args_in': {'users': %s, '_user': %s}, \
-                                           'db_use': True, 'loop': False}}" % (users, 
-                                                                                current_user.shakecast_id))
-
+    users = query.all()
     return jsonify(users)
 
-@app.route('/api/users/current', methods=['GET', 'POST'])
+@routes.route('/api/users/current', methods=['GET', 'POST'])
 @login_required
 def get_current_user():
     if current_user and current_user.is_authenticated:
@@ -514,7 +444,7 @@ def get_current_user():
     else:
       return None
 
-@app.route('/api/shakemaps')
+@routes.route('/api/shakemaps')
 @login_required
 @dbconnect
 def get_shakemaps(session=None):
@@ -528,7 +458,7 @@ def get_shakemaps(session=None):
 
     return jsonify(sm_json)
 
-@app.route('/api/shakemaps/<shakemap_id>')
+@routes.route('/api/shakemaps/<shakemap_id>')
 @login_required
 @dbconnect
 def get_shakemap(shakemap_id, session=None):
@@ -549,7 +479,7 @@ def get_shakemap(shakemap_id, session=None):
 
     return jsonify(shakemap_json)
 
-@app.route('/api/shakemaps/<shakemap_id>/impact-summary')
+@routes.route('/api/shakemaps/<shakemap_id>/impact-summary')
 @login_required
 @dbconnect
 def impact_summary(shakemap_id, session=None):
@@ -563,7 +493,7 @@ def impact_summary(shakemap_id, session=None):
 
     return jsonify(impact)
 
-@app.route('/api/shakemaps/<shakemap_id>/impact')
+@routes.route('/api/shakemaps/<shakemap_id>/impact')
 @login_required
 @dbconnect
 def shakemap_impact(shakemap_id, session=None):
@@ -588,7 +518,7 @@ def shakemap_impact(shakemap_id, session=None):
 
     return geoJSON
 
-@app.route('/api/shakemaps/<shakemap_id>/overlay')
+@routes.route('/api/shakemaps/<shakemap_id>/overlay')
 @login_required
 @dbconnect
 def shakemap_overlay(shakemap_id, session=None):
@@ -606,7 +536,7 @@ def shakemap_overlay(shakemap_id, session=None):
 
     return send_file(img, mimetype='image/gif')
 
-@app.route('/api/shakemaps/<shakemap_id>/shakemap')
+@routes.route('/api/shakemaps/<shakemap_id>/shakemap')
 @login_required
 @dbconnect
 def shakemap_map(shakemap_id, session=None):
@@ -619,7 +549,7 @@ def shakemap_map(shakemap_id, session=None):
 
     return send_file(io.BytesIO(img), mimetype='image/png')
 
-@app.route('/api/shakemaps/<shakemap_id>/products')
+@routes.route('/api/shakemaps/<shakemap_id>/products')
 @login_required
 @dbconnect
 def shakemap_products(shakemap_id, session=None):
@@ -627,7 +557,7 @@ def shakemap_products(shakemap_id, session=None):
 
     return jsonify(shakemap.products)
 
-@app.route('/api/shakemaps/<shakemap_id>/products/<product_name>')
+@routes.route('/api/shakemaps/<shakemap_id>/products/<product_name>')
 @login_required
 @dbconnect
 def shakemap_product_by_name(shakemap_id, product_name, session=None):
@@ -636,7 +566,7 @@ def shakemap_product_by_name(shakemap_id, product_name, session=None):
     product = shakemap.get_product(product_name)
     return jsonify(product)
 
-@app.route('/api/notifications')
+@routes.route('/api/notifications')
 @login_required
 @dbconnect
 def get_notifications(session=None):
@@ -651,7 +581,7 @@ def get_notifications(session=None):
   json_notifications = [n.get_json() for n in notifications]
   return jsonify(json_notifications)
 
-@app.route('/api/images/')
+@routes.route('/api/images/')
 @login_required
 def get_image_list():
     dir_list = os.listdir(STATIC_DIR)
@@ -660,22 +590,7 @@ def get_image_list():
 
 ############################ Admin Pages ##############################
 
-# wrapper for admin only URLs
-def admin_only(func):
-    @wraps(func)
-    def func_wrapper(*args, **kwargs):
-        if current_user and current_user.is_authenticated:
-            if current_user.user_type.lower() == 'admin':
-                return func(*args, **kwargs)
-            else:
-                flash('Only administrators can access this page')
-                return redirect(url_for('index'))
-        else:
-            flash('Login as an administrator to access this page')
-            return redirect(url_for('login'))
-    return func_wrapper
-
-@app.route('/api/configs', methods=['GET','POST'])
+@routes.route('/api/configs', methods=['GET','POST'])
 @admin_only
 @login_required
 def get_settings():
@@ -692,7 +607,7 @@ def get_settings():
 
     return jsonify(configs)
 
-@app.route('/api/notification-html/<notification_type>/<name>', methods=['GET','POST'])
+@routes.route('/api/notification-html/<notification_type>/<name>', methods=['GET','POST'])
 @admin_only
 @login_required
 @dbconnect
@@ -719,7 +634,7 @@ def notification_html(notification_type, name, session=None):
 
     return html or no_preview
 
-@app.route('/api/notification-config/<notification_type>/<name>', methods=['GET','POST'])
+@routes.route('/api/notification-config/<notification_type>/<name>', methods=['GET','POST'])
 @admin_only
 @login_required
 def notification_config(notification_type, name):
@@ -735,74 +650,14 @@ def notification_config(notification_type, name):
     
     return json.dumps(config)
 
-@app.route('/api/template-names', methods=['GET','POST'])
+@routes.route('/api/template-names', methods=['GET','POST'])
 @admin_only
 @login_required
 def template_names():
     temp_manager = TemplateManager()
     return json.dumps(temp_manager.get_template_names())
 
-@app.route('/api/scenario-download/<event_id>', methods=['GET'])
-@admin_only
-@login_required
-def scenario_download(event_id):
-    scenario = json.loads(request.args.get('scenario', 'false'))
-    if event_id:
-        ui.send("{'scenario_download: %s': {'func': f.download_scenario, 'args_in': {'shakemap_id': r'%s', 'scenario': %s}, 'db_use': True, 'loop': False}}" % (event_id, event_id, scenario))
-
-    return json.dumps({'success': True})
-
-@app.route('/api/scenario-delete/<event_id>', methods=['DELETE'])
-@admin_only
-@login_required
-def scenario_delete(event_id):
-    if event_id:
-        ui.send("{'scenario_delete: %s': {'func': f.delete_scenario, 'args_in': {'shakemap_id': r'%s'}, 'db_use': True, 'loop': False}}" % (event_id, event_id))
-    
-    return json.dumps({'success': True})
-
-@app.route('/api/scenario-run/<event_id>', methods=['POST'])
-@admin_only
-@login_required
-def scenario_run(event_id):
-    if event_id:
-        ui.send("{'scenario_run: %s': {'func': f.run_scenario, 'args_in': {'shakemap_id': r'%s'}, 'db_use': True, 'loop': False}}" % (event_id, event_id))
-    
-    return json.dumps({'success': True})
-
-@app.route('/api/upload/', methods=['GET','POST'])
-@admin_only
-@login_required
-def upload():
-    if request.method == 'GET':
-        return render_template('admin/upload.html')
-
-    file_type = get_file_type(request.files['file'].filename)
-    if file_type == 'xml':
-        file_name = str(int(time.time())) + request.files['file'].filename
-        xml_files.save(request.files['file'], name=file_name)
-        xml_file = os.path.join(app.config['UPLOADED_XMLFILES_DEST'],
-                                file_name)
-        # validate XML and determine which import function should be used
-        xml_file_type = determine_xml(xml_file)
-        
-        # these import functions need to be submitted to the server instead
-        # of run directly
-        func_name = ''
-
-        func_name = 'import_' + xml_file_type + '_xml'
-        if xml_file_type is not None:
-            ui.send("{'%s': {'func': f.%s, 'args_in': {'xml_file': r'%s', '_user': %s}, 'db_use': True, 'loop': False}}" % (func_name, 
-                                                                                                                func_name, 
-                                                                                                                xml_file,
-                                                                                                                current_user.shakecast_id))
-        
-    elif file_type == 'image':
-        image_files.save(request.files['file'])
-
-    return 'file uploaded'
-
-@app.route('/api/new-template/<name>')
+@routes.route('/api/new-template/<name>')
 @admin_only
 @login_required
 def new_not_template(name):
@@ -811,65 +666,34 @@ def new_not_template(name):
 
     return json.dumps(True)
 
-@app.route('/api/system-test')
-@admin_only
-@login_required
-def system_test():
-    ui = UI()
-    result = ui.send("{'System Test': {'func': f.system_test, 'args_in': {}, 'db_use': True, 'loop': False}}")
-
-    return json.dumps(result)
-
 def shutdown_server():
     func = request.environ.get('werkzeug.server.shutdown')
     if func is None:
         raise RuntimeError('Not running with the Werkzeug Server')
     func()
 
-@app.route('/shutdown')
+@routes.route('/shutdown')
 def shutdown():
     shutdown_server()
     return 'Server shutting down...'
 
-@app.route('/api/restart')
-def restart():
-    result = ui.send("{'Restart': {'func': self.restart, 'args_in': {}, 'db_use': True, 'loop': False}}")
-    return json.dumps(result)
-
-@app.route('/api/map-key')
+@routes.route('/api/map-key')
 @login_required
 def map_key():
     sc = SC()
     return json.dumps(sc.map_key)
 
-@app.errorhandler(404)
+@routes.errorhandler(404)
 def page_not_found(error):
     return render_template('index.html')
 
 
 ############################# Upload Setup ############################
-app.config['UPLOADED_XMLFILES_DEST'] = get_tmp_dir()
+app.config['UPLOADED_XMLFILES_DEST'] = USER_TMP_DIR
 app.config['UPLOADED_IMAGEFILES_DEST'] = os.path.join(sc_dir(), STATIC_DIR)
 app.config['EARTHQUAKES'] = get_data_dir()
 app.config['MESSAGES'] = {}
-xml_files = UploadSet('xmlfiles', ('xml',))
-image_files = UploadSet('imagefiles', IMAGES, default_dest=app.config['UPLOADED_IMAGEFILES_DEST'])
 configure_uploads(app, (xml_files,image_files))
-ui = UI()
-
-def get_file_type(file_name):
-    ext = file_name.split('.')[-1]
-    if ext in ['jpg', 'jpeg', 'png', 'bmp']:
-        return 'image'
-    elif ext in ['xml']:
-        return 'xml'
-
-def parse_args(args_in):
-    args = {}
-    for key in list(args_in.keys()):
-      args[key] = json.loads(args_in[key])
-
-    return args
 
 def start():
     sc = SC()

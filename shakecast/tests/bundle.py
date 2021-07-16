@@ -21,6 +21,7 @@ from .orm import *
 from .productdownload import *
 from .products import *
 from .urlopener import *
+from .origin import *
 
 class SystemTest(unittest.TestCase):
     '''

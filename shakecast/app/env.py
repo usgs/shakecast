@@ -1,7 +1,7 @@
 # Pulls environment variables in order ot configure shakecast
 
 import os
-from .util import SC, sc_dir, get_user_dir, get_db_dir
+from .util import SC, sc_dir, get_user_dir, get_db_dir, get_tmp_dir
 
 sc = SC()
 
@@ -43,6 +43,10 @@ USER_CONF_DIR = os.environ.get(
 USER_ASSETS_DIR = os.environ.get(
     'SHAKECAST_USER_ASSETS_DIRECTORY',
     os.path.join(USER_DIRECTORY, 'assets'))
+
+USER_TMP_DIR = os.environ.get(
+    'SHAKECAST_USER_TMP_DIRECTORY',
+    os.path.join(USER_DIRECTORY, 'tmp'))
 
 LOG_DIRECTORY = os.environ.get('SHAKECAST_LOG_DIRECTORY', os.path.join(USER_DIRECTORY, 'logs'))
 DEBUG_LEVEL = int(os.environ.get('SHAKECAST_DEBUG_LEVEL', 0))
