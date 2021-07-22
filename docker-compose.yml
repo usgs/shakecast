@@ -41,6 +41,48 @@ services:
       - "~/pycast/assets:/usr/local/shakecast/shakecast/view/assets"
     restart: always
 
+  product-generator:
+    image: usgs/shakecast:latest
+    environment:
+      SERVER_TYPE: "PRODUCT_GENERATOR"
+      SHAKECAST_USER_ID: ${SHAKECAST_USER_ID}
+      SC_DOCKER: 1
+      SHAKECAST_DATA_DIR: '/data/pdl'
+      SHAKECAST_DB_CONNECTION_TYPE: mysql
+      SHAKECAST_DB_CONNECTION_STRING: mysql+pymysql://root:sc@mariadb:3306/pycast
+    expose:
+      - "1981"
+    networks:
+      - sc-network
+    volumes:
+      - "~/pycast/pdl:/data/pdl"
+      - "~/pycast/scenario-data:/usr/local/shakecast/shakecast/data"
+      - "~/pycast/templates:/usr/local/shakecast/shakecast/templates"
+      - "~/pycast/local_products:/usr/local/shakecast/shakecast/local_products"
+      - "~/pycast/assets:/usr/local/shakecast/shakecast/view/assets"
+    restart: always
+
+  notify:
+    image: usgs/shakecast:latest
+    environment:
+      SERVER_TYPE: "NOTIFY"
+      SHAKECAST_USER_ID: ${SHAKECAST_USER_ID}
+      SC_DOCKER: 1
+      SHAKECAST_DATA_DIR: '/data/pdl'
+      SHAKECAST_DB_CONNECTION_TYPE: mysql
+      SHAKECAST_DB_CONNECTION_STRING: mysql+pymysql://root:sc@mariadb:3306/pycast
+    expose:
+      - "1981"
+    networks:
+      - sc-network
+    volumes:
+      - "~/pycast/pdl:/data/pdl"
+      - "~/pycast/scenario-data:/usr/local/shakecast/shakecast/data"
+      - "~/pycast/templates:/usr/local/shakecast/shakecast/templates"
+      - "~/pycast/local_products:/usr/local/shakecast/shakecast/local_products"
+      - "~/pycast/assets:/usr/local/shakecast/shakecast/view/assets"
+    restart: always
+
   web-server:
     image: usgs/shakecast:latest
     ports:
@@ -57,6 +99,7 @@ services:
       - sc-network
     volumes:
       - "~/pycast/pdl:/data/pdl"
+      - "~/pycast/scenario-data:/usr/local/shakecast/shakecast/data"
       - "~/pycast/templates:/usr/local/shakecast/shakecast/templates"
       - "~/pycast/local_products:/usr/local/shakecast/shakecast/local_products"
       - "~/pycast/assets:/usr/local/shakecast/shakecast/view/assets"
@@ -117,7 +160,7 @@ services:
     restart: always
 
   mariadb:
-    image: "mariadb"
+    image: mariadb
     user: ${SHAKECAST_USER_ID}:${SHAKECAST_USER_ID}
     environment:
       MYSQL_ROOT_PASSWORD: sc
@@ -125,6 +168,19 @@ services:
       - sc-network
     ports:
       - "3306"
+    restart: always
+    volumes:
+      - ~/pycast/mariadb:/var/lib/mysql
+  
+  dbadmin:
+    image: phpmyadmin
+    environment:
+      MYSQL_ROOT_PASSWORD: sc
+      PMA_HOST: mariadb
+    networks:
+      - sc-network
+    ports:
+      - 8080:80
     restart: always
     
 networks:
