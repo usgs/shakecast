@@ -113,7 +113,7 @@ class ProductGrabber(object):
             event = Event(event_id=event_id, save=True)
 
 
-            event.updated = eq['properties']['updated']
+            event.updated = str(eq['properties']['updated'])
             event.all_event_ids = eq['properties']['ids'] if not scenario else event.event_id
 
             # use id and all ids to determine if the event is new and
@@ -129,7 +129,7 @@ class ProductGrabber(object):
 
                 reprocess = False
                 for old_event in old_events:
-                    if old_event and old_event.updated and eq['properties']['updated'] >= old_event.updated:
+                    if old_event and old_event.updated and float(eq['properties']['updated']) >= float(old_event.updated):
                         reprocess = True
 
                 if reprocess is True:
@@ -157,14 +157,14 @@ class ProductGrabber(object):
             # Fill the rest of the event info
             event.title = eq['properties']['title']
             event.place = eq['properties']['place']
-            event.time = eq['properties']['time']/1000.0
+            event.time = str(eq['properties']['time']/1000.0)
             event.magnitude = eq['properties']['mag']
             event_coords = eq['geometry']['coordinates']
             event.lon = event_coords[0]
             event.lat = event_coords[1]
             event.depth = event_coords[2]
             event.type = 'scenario' if scenario is True else 'event'
-            event.updated = eq['properties']['updated']
+            event.updated = str(eq['properties']['updated'])
 
             # determine whether or not an event should be kept
             # based on group definitions. Should always be true for scenario runs

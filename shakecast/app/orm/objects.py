@@ -1033,7 +1033,7 @@ class Event(Base):
         timezone
         """
         clock = Clock()
-        return (clock.from_time(self.time)
+        return (clock.from_time(float(self.time))
                 .strftime('%Y-%m-%d %H:%M:%S'))
     
 

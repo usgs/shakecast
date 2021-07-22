@@ -3,7 +3,6 @@ import os
 import time
 
 from ..impact import get_event_impact
-from ..notifications.builder import NotificationBuilder
 from ..notifications.templates import TemplateManager
 from ..urlopener import URLOpener
 from ..util import Clock, SC
@@ -109,7 +108,7 @@ def add_shakemap_details_to_pdf(pdf, shakemap):
                    'Version: {}'.format(shakemap.shakemap_version))
 
     clock = Clock()
-    event_time = clock.from_time(shakemap.event.time)
+    event_time = clock.from_time(float(shakemap.event.time))
     event_time_str = event_time.strftime('%H:%M %d-%b-%Y')
     pdf.multi_cell(pdf.w, details_height,
                    'Event Time: {}'.format(event_time_str))
