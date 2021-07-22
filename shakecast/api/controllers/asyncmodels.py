@@ -71,7 +71,7 @@ def async_delete_faclities():
     inv_ids = [inv['properties']['shakecast_id'] for inv in inventory]
     inv_type = 'facility'
     if len(inv_ids) > 0 and inv_type is not None:
-        result = delete_inventory_by_id(inv_ids, inv_type)
+        result = delete_inventory_by_id(inv_type, inv_ids)
 
     record_messages(result['message'])
     return jsonify(success=True)
@@ -87,7 +87,7 @@ def delete_inventory():
     inv_ids = [inv['shakecast_id'] for inv in inventory if inv['shakecast_id']]
     inv_type = request.args.get('inventory_type', None)
     if len(inv_ids) > 0 and inv_type is not None:
-        result = delete_inventory_by_id(inv_ids, inv_type)
+        result = delete_inventory_by_id(inv_type, inv_ids)
 
     record_messages(result['message'])
     return jsonify(success=True)
@@ -103,7 +103,7 @@ def delete_groups():
     inv_ids = [inv['properties']['shakecast_id'] for inv in inventory]
     inv_type = 'group'
     if len(inv_ids) > 0 and inv_type is not None:
-        result = delete_inventory_by_id(inv_ids, inv_type)
+        result = delete_inventory_by_id(inv_type, inv_ids)
 
     record_messages(result['message'])
     return jsonify(success=True)
