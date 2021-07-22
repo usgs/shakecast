@@ -587,6 +587,7 @@ def delete_inventory_by_id(inventory_type=None, ids=None, session=None):
     inventory types: facility, group, user, earthquake
     '''
     deleted = []
+    inventory_type = inventory_type.lower()
     if inventory_type is not None and ids is not None:
         if inventory_type == 'facility':
             plural = 'facilities'
