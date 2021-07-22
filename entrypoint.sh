@@ -68,4 +68,10 @@ then
 elif [ "${SERVER_TYPE}" = "SHAKEMAP" ];
 then
   exec python3 -m shakecast.app.shakemap;
+elif [ "${SERVER_TYPE}" = "PRODUCT_GENERATOR" ];
+then
+  exec python3 -m shakecast.app.productgeneration
+elif [ "${SERVER_TYPE}" = "NOTIFY" ];
+then
+  exec python3 -m shakecast.app.notifications
 fi

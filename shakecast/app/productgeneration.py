@@ -162,3 +162,12 @@ def get_all_required_products(product_types, session=None):
                     all_required_products += get_all_required_products([product_type], session)
 
     return list(set(all_required_products))
+
+if __name__ == '__main__':
+    # server style product creation
+    while True:
+      try:
+          create_products()
+      except Exception as e:
+          print(str(f'Product creation error: {str(e)}'))
+      time.sleep(5)
