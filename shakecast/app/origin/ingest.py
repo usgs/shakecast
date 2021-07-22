@@ -29,9 +29,8 @@ def read_origin_xml(origin_xml_path):
 @dbconnect
 def main(message, session=None):
     product_path = message['directory']
-    origin_xml_path = os.path.join(product_path, 'product.xml')
-
-    event = transform_origin_to_event(origin_xml_path)
+    origin = get_origin_from_directory(product_path)
+    event = transform_origin_to_event(origin)
     event.event_id = message.get('eventId')
 
     if assess_event(event):
@@ -49,20 +48,25 @@ def main(message, session=None):
 def ingest_update(origin_xml_path, session=None):
     origin = read_origin_xml(origin_xml_path)
 
-def transform_origin_to_event(origin_xml_path):
+def get_origin_from_directory(directory):
+    origin_xml_path = os.path.join(directory, 'product.xml')
     origin = read_origin_xml(origin_xml_path)['properties']
+
+    return origin
+
+def transform_origin_to_event(origin):
 
     event = Event(
       event_id = origin.get('eventId'),
       title = origin.get('title'),
       place = origin.get('place'),
       time = origin.get('time'),
-      magnitude = origin.get('magnitude'),
-      lon = origin.get('longitude'),
-      lat = origin.get('latitude'),
-      depth = origin.get('depth'),
+      magnitude = float(origin.get('magnitude')),
+      lon = float(origin.get('longitude')),
+      lat = float(origin.get('latitude')),
+      depth = float(origin.get('depth')),
       type = 'event',
-      updated = time.time()
+      updated = str(time.time())
     )
 
     event.time = event.time / 1000.0 if event.time else time.time()
