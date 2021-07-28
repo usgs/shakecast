@@ -3,41 +3,52 @@ import os
 import time
 
 from ..eventprocessing import process_shakemaps
-from ..orm import dbconnect, Event, Group
+from ..orm import dbconnect, ShakeMap
+
+
+def read_shakemap_info(info_path):
+    with open(info_path, 'r') as file_:
+      json_str = file_.read()
+      shakemap_dict = json.loads(json_str)
+
+    return shakemap_dict
 
 @dbconnect
-def assess_shakemap(event=Event(), session=None):
-    groups_affected = session.query(Group).filter(Group.point_inside(event)).first()
-    if groups_affected:
-        return True
-    
-    return False
+def main(message, session=None):
+    product_path = message['directory']
+    info = get_info_from_directory(product_path)
+    shakemap = transform_info_to_shakemap(info)
 
-def read_shakemap_json(shakemap_json_path):
-    with open(shakemap_json_path, 'r') as file_:
-      json_ = file_.read()
-    
-    return json.loads(json_)
+    shakemap.override_directory = os.path.join(product_path, 'download')
+    print(f'Adding new event: {shakemap.shakemap_id}')
 
+    session.add(shakemap)
+    session.commit()
+
+    process_shakemaps([shakemap], session=session)
 
 @dbconnect
-def main(product, session=None):
-    # info_json_path = os.path.join(product_path, 'download','info.json')
-    # shakemap = transform_shakemap(info_json_path)
+def ingest_update(origin_xml_path, session=None):
+    pass
 
-    print(product)
-    # if assess_shakemap(shakemap):
-    #     print(f'Adding new shakemap: {shakemap.shakemap_id}')
-    #     event.status = 'new'
+def get_info_from_directory(directory):
+    shakemap_info_path = os.path.join(directory, 'download', 'info.json')
+    info = read_shakemap_info(shakemap_info_path)
+    return info
 
-    #     session.add(event)
-    #     session.commit()
-
-    #     process_shakemaps([event], session=session)
-    # else:
-    #     print(f'New event {event.event_id} does not meet import criteria')
-
-def transform_shakemap(shakemap_json_path):
-    shakemap = read_shakemap_json(shakemap_json_path)['properties']
+def transform_info_to_shakemap(info):
+    shakemap = ShakeMap(
+      shakemap_id = info['input']['event_information']['event_id'],
+      shakemap_version = info['processing']['shakemap_versions']['map_version'],
+      status = 'new',
+      type = 'actual',
+      region = info['input']['event_information']['netid'],
+      lat_min = info['output']['map_information']['min']['latitude'],
+      lat_max = info['output']['map_information']['max']['latitude'],
+      lon_min = info['output']['map_information']['min']['longitude'],
+      lon_max = info['output']['map_information']['max']['longitude'],
+      generation_timestamp = info['processing']['shakemap_versions']['process_time'],
+      recieve_timestamp = str(time.time())
+    )
 
     return shakemap
