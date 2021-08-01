@@ -1,10 +1,20 @@
 import json
 import os
+from shakecast.app.env import MINIMUM_MAGNITUDE
+from shakecast.app.orm.objects import Event, Group
 import time
 
 from ..eventprocessing import process_shakemaps
 from ..orm import dbconnect, ShakeMap
 
+
+@dbconnect
+def assess_shakemapo(shakemap=ShakeMap(), session=None):
+    groups_affected = session.query(Group).filter(Group.point_inside(shakemap)).first()
+    if groups_affected: 
+        return True
+    
+    return False
 
 def read_shakemap_info(info_path):
     with open(info_path, 'r') as file_:
@@ -20,12 +30,23 @@ def main(message, session=None):
     shakemap = transform_info_to_shakemap(info)
 
     shakemap.override_directory = os.path.join(product_path, 'download')
-    print(f'Adding new event: {shakemap.shakemap_id}')
+    print(f'Adding new shakemap: {shakemap.shakemap_id}')
+
+    event = session.query(Event).filter(Event.event_id).first()
+    shakemap.event = event
 
     session.add(shakemap)
     session.commit()
-
-    process_shakemaps([shakemap], session=session)
+    if event:
+        try:
+            process_shakemaps([shakemap], session=session)
+        except Exception as e:
+            print(str(e))
+            shakemap.status = 'error'
+            session.commit()
+    else:
+        print(f'No event associated with shakemap: {shakemap.shakemap_id}')
+        shakemap.status = 'No event associated'
 
 @dbconnect
 def ingest_update(origin_xml_path, session=None):
@@ -37,8 +58,9 @@ def get_info_from_directory(directory):
     return info
 
 def transform_info_to_shakemap(info):
+    print(info['input'])
     shakemap = ShakeMap(
-      shakemap_id = info['input']['event_information']['event_id'],
+      shakemap_id = info['input']['event_information']['id'],
       shakemap_version = info['processing']['shakemap_versions']['map_version'],
       status = 'new',
       type = 'actual',

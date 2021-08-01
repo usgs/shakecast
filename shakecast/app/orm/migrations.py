@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, Float, PrimaryKeyConstraint
+from sqlalchemy import Column, Integer, String, Float
 
 ############### DB Migrations ################
 def migrate_1to2(engine):
@@ -184,7 +184,7 @@ def migrate_11to12(engine):
     return engine
 
 def migrate_12to13(engine):
-    dependencies = Column('dependencies', String)
+    dependencies = Column('dependencies', String(244))
     tries = Column('tries', Integer, default=0)
     try:
         add_column(engine, 'local_product_types', dependencies)
@@ -197,6 +197,29 @@ def migrate_12to13(engine):
 
     return engine
 
+def migrate_13to14(engine):
+    magnitude = Column('magnitude', Float())
+    location = Column('location', String(244))
+    lat = Column('lat', Float())
+    lon = Column('lon', Float())
+    try:
+        add_column(engine, 'shakemap', magnitude)
+    except Exception:
+        pass
+    try:
+        add_column(engine, 'shakemap', location)
+    except Exception:
+        pass
+    try:
+        add_column(engine, 'shakemap', lat)
+    except Exception:
+        pass
+    try:
+        add_column(engine, 'shakemap', lon)
+    except Exception:
+        pass
+
+    return engine
 
 def add_column(engine, table_name, column):
     '''
@@ -215,7 +238,7 @@ def add_column(engine, table_name, column):
 # List of database migrations for export
 migrations = [migrate_1to2, migrate_2to3, migrate_3to4, migrate_4to5,
         migrate_5to6, migrate_6to7, migrate_7to8, migrate_8to9, migrate_9to10,
-        migrate_10to11, migrate_11to12, migrate_12to13]
+        migrate_10to11, migrate_11to12, migrate_12to13, migrate_13to14]
 
 def migrate(engine):
     '''
