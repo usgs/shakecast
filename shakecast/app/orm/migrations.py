@@ -199,15 +199,16 @@ def migrate_12to13(engine):
 
 def migrate_13to14(engine):
     magnitude = Column('magnitude', Float())
-    location = Column('location', String(244))
+    description = Column('description', String(244))
     lat = Column('lat', Float())
     lon = Column('lon', Float())
+    event_time = Column('event_time', String(32))
     try:
         add_column(engine, 'shakemap', magnitude)
     except Exception:
         pass
     try:
-        add_column(engine, 'shakemap', location)
+        add_column(engine, 'shakemap', description)
     except Exception:
         pass
     try:
@@ -216,6 +217,10 @@ def migrate_13to14(engine):
         pass
     try:
         add_column(engine, 'shakemap', lon)
+    except Exception:
+        pass
+    try:
+        add_column(engine, 'shakemap', event_time)
     except Exception:
         pass
 

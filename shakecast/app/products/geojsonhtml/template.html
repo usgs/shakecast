@@ -223,7 +223,7 @@
         popupAnchor:  [0, 0] // point from which the popup should open relative to the iconAnchor
     });
 
-    L.marker([{{ shakemap.event.lat }}, {{ shakemap.event.lon }}],
+    L.marker([{{ shakemap.lat }}, {{ shakemap.lon }}],
             {icon: epicIcon})
             .addTo(map);
     

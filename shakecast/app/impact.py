@@ -95,8 +95,8 @@ def compute_aebm_impact(facility, shaking_point, shakemap):
     r_rup = get_gps_distance(
         facility.lat,
         facility.lon,
-        shakemap.event.lat,
-        shakemap.event.lon
+        shakemap.lat,
+        shakemap.lon
     )
 
     (damage_probabilities,
@@ -110,7 +110,7 @@ def compute_aebm_impact(facility, shaking_point, shakemap):
         capacity,
         hazard,
         shaking_point.get('URAT', .5),
-        shakemap.event.magnitude,
+        shakemap.magnitude,
         r_rup
     )
 
@@ -198,8 +198,8 @@ def compute_hazus_impact(facility, shaking_point, shakemap):
         r_rup = get_gps_distance(
             facility.lat,
             facility.lon,
-            shakemap.event.lat,
-            shakemap.event.lon
+            shakemap.lat,
+            shakemap.lon
         )
 
         fac_shake['epicentral_distance'] = round(r_rup * 100)/100

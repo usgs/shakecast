@@ -24,11 +24,6 @@ def can_process_event(event, scenario=False):
         if event.magnitude < sc.night_eq_mag_cutoff:
             return False
 
-    if ((sc.dict['Notification'].get('require_shakemap', False) is True)
-            and (scenario is False)):
-        if len(event.shakemaps) == 0:
-            return False
-
     return True
 
 
@@ -293,7 +288,7 @@ def process_shakemaps(shakemaps=None, session=None, scenario=False):
     for shakemap in shakemaps:
         print('Processing {}, version: {}'
                 .format(shakemap.shakemap_id, shakemap.shakemap_version))
-        if can_process_event(shakemap.event, scenario) is False:
+        if can_process_event(shakemap, scenario) is False:
             print('Unable to process event due to configurations.')
             continue
         shakemap.mark_processing_start()

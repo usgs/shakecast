@@ -74,16 +74,16 @@
 
         <br>
         <font size=2>
-            <b>Magnitude:</b>  {{ shakemap.event.magnitude }},
+            <b>Magnitude:</b>  {{ shakemap.magnitude }},
             <b>ShakeMap ID:</b> 
             <a target="_blank"
-                    href="https://earthquake.usgs.gov/earthquakes/eventpage/{{ shakemap.event.event_id }}">
+                    href="https://earthquake.usgs.gov/earthquakes/eventpage/{{ shakemap.shakemap_id }}">
                 {{ shakemap.shakemap_id }}-{{ shakemap.shakemap_version }}
             </a>,
-            <b>Location:</b> {{ shakemap.event.place }},
+            <b>Location:</b> {{ shakemap.description }},
             <br>
-            <b>Latitude-Longitude:</b> {{ shakemap.event.lat }}, {{ shakemap.event.lon }},
-            <b>Local Time:</b> {{ shakemap.event.timestamp() }}
+            <b>Latitude-Longitude:</b> {{ shakemap.lat }}, {{ shakemap.lon }},
+            <b>Time:</b> {{ shakemap.eventtime }}
         </font>
         <br>
         </td>

@@ -71,7 +71,7 @@ def add_header_to_pdf(pdf, shakemap, configs):
     pdf.multi_cell(pdf.w, pdf.font_size + 5, title)
 
     pdf.set_font(font, 'b', 14)
-    pdf.multi_cell(pdf.w, pdf.font_size, shakemap.event.title)
+    pdf.multi_cell(pdf.w, pdf.font_size, shakemap.description)
 
     pdf.set_font(font, style, size)
 
@@ -101,17 +101,15 @@ def add_shakemap_details_to_pdf(pdf, shakemap):
 
     pdf.set_font(font, '', 12)
     pdf.multi_cell(pdf.w, details_height, 'Epicenter Location: {}, {}'.format(
-        shakemap.event.lat, shakemap.event.lon))
+        shakemap.lat, shakemap.lon))
     pdf.multi_cell(pdf.w, details_height,
                    'Event ID: {}'.format(shakemap.shakemap_id))
     pdf.multi_cell(pdf.w, details_height,
                    'Version: {}'.format(shakemap.shakemap_version))
 
     clock = Clock()
-    event_time = clock.from_time(float(shakemap.event.time))
-    event_time_str = event_time.strftime('%H:%M %d-%b-%Y')
     pdf.multi_cell(pdf.w, details_height,
-                   'Event Time: {}'.format(event_time_str))
+                   f'Event Time: {shakemap.event_time}')
 
     datetime = clock.from_time(time.time())
     date_string = datetime.strftime('%H:%M %d-%b-%Y')

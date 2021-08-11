@@ -256,7 +256,7 @@ def inspection_notification(notification=None,
                     if user.__dict__.get(not_format, False)]
             
             if len(you) > 0:
-                subject = f'Inspection -  {shakemap.event.title}'
+                subject = f'Inspection -  {shakemap.description}'
 
                 if scenario is True:
                     subject = 'SCENARIO: ' + subject

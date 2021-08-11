@@ -26,6 +26,10 @@ class TestComputeAebmImpact(unittest.TestCase):
             lat_max=105,
             lon_min=95,
             lon_max=105,
+            lat=100,
+            lon=100,
+            magnitude=6.09,
+            description='shakemap description',
             shakecast_id=5000,
             event=event
         )

@@ -317,6 +317,11 @@ class ProductGrabber(object):
             shakemap.lat_min = shakemap_json['properties']['minimum-latitude']
             shakemap.lon_max = shakemap_json['properties']['maximum-longitude']
             shakemap.lon_min = shakemap_json['properties']['minimum-longitude']
+            shakemap.description = shakemap_json['properties'].get('event-description')
+            shakemap.magnitude = shakemap_json['properties'].get('magnitude')
+            shakemap.lat = shakemap_json['properties'].get('latitude')
+            shakemap.lon = shakemap_json['properties'].get('longitude')
+            shakemap.event_time = shakemap_json['properties'].get('eventtime')
             shakemap.generation_timestamp = shakemap_json['properties']['process-timestamp']
             shakemap.recieve_timestamp = time.time()
             shakemap.type = 'scenario' if scenario is True else 'event'
@@ -394,14 +399,14 @@ class ProductGrabber(object):
             Event.event_id == 'heartbeat').all()
         make_hb = False
         if last_hb:
-            if time.time() > (last_hb[-1].time) + 24*60*60:
+            if time.time() > (float(last_hb[-1].time) + 24*60*60):
                 make_hb = True
         else:
             make_hb = True
 
         if make_hb is True:
             e = Event(event_id='heartbeat', save=True)
-            e.time = time.time()
+            e.time = str(time.time())
             e.magnitude = 10
             e.lat = 0
             e.lon = 0
@@ -511,6 +516,10 @@ def grab_from_directory(directory, session=None):
         override_directory=directory,
         shakemap_version=proc['shakemap_versions']['map_version'],
         type='scenario',
+        lat = info['input']['event_information']['latitude'],
+        lon = info['input']['event_information']['longitude'],
+        magnitude = info['input']['event_information']['magnitude'],
+        description = info['input']['event_information']['location'],
         save=True
     )
 

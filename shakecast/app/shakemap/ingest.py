@@ -28,6 +28,7 @@ def main(message, session=None):
     product_path = message['directory']
     info = get_info_from_directory(product_path)
     shakemap = transform_info_to_shakemap(info)
+    shakemap.shakemap_id = message['eventId']
 
     shakemap.override_directory = os.path.join(product_path, 'download')
     print(f'Adding new shakemap: {shakemap.shakemap_id}')
@@ -60,7 +61,6 @@ def get_info_from_directory(directory):
 def transform_info_to_shakemap(info):
     print(info['input'])
     shakemap = ShakeMap(
-      shakemap_id = info['input']['event_information']['id'],
       shakemap_version = info['processing']['shakemap_versions']['map_version'],
       status = 'new',
       type = 'actual',
@@ -69,6 +69,10 @@ def transform_info_to_shakemap(info):
       lat_max = info['output']['map_information']['max']['latitude'],
       lon_min = info['output']['map_information']['min']['longitude'],
       lon_max = info['output']['map_information']['max']['longitude'],
+      lat = info['input']['event_information']['latitude'],
+      lon = info['input']['event_information']['longitude'],
+      magnitude = info['input']['event_information']['magnitude'],
+      description = info['input']['event_information']['location'],
       generation_timestamp = info['processing']['shakemap_versions']['process_time'],
       recieve_timestamp = str(time.time())
     )

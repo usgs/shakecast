@@ -10,6 +10,10 @@ services:
       SHAKECAST_DATA_DIR: '/data/pdl'
       SHAKECAST_DB_CONNECTION_TYPE: mysql
       SHAKECAST_DB_CONNECTION_STRING: mysql+pymysql://root:sc@mariadb:3306/pycast
+      SHAKECAST_SMTP_PORT: 25
+      SHAKECAST_SMTP_SECURITY: none
+      SHAKECAST_SMTP_SERVER: igskmncmasmxi01.gs.doi.net
+      SHAKECAST_SMTP_USERNAME: shakecast@usgs.gov
     expose:
       - "1981"
     networks:
@@ -95,6 +99,10 @@ services:
       SHAKECAST_DATA_DIR: '/data/pdl'
       SHAKECAST_DB_CONNECTION_TYPE: mysql
       SHAKECAST_DB_CONNECTION_STRING: mysql+pymysql://root:sc@mariadb:3306/pycast
+      SHAKECAST_SMTP_PORT: 25
+      SHAKECAST_SMTP_SECURITY: none
+      SHAKECAST_SMTP_SERVER: igskmncmasmxi01.gs.doi.net
+      SHAKECAST_SMTP_USERNAME: shakecast@usgs.gov
     networks:
       - sc-network
     volumes:
