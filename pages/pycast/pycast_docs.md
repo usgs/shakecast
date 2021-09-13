@@ -17,10 +17,12 @@ Run the Windows installer as an administrator. Python will automatically be inst
 Your application is ready to go! Checkout [Inventory Setup](#inventory-setup) below to learn how to prepare your inventory and configure ShakeCast.
 
 ## Linux Installation
-There are multiple ways to install pyCast on Linux, but we recommend you use the PyPI package. Installation requires python 2.7.x and root access:
+There are multiple ways to install pyCast on Linux, but we recommend you use the PyPI package. Installation requires python 3.6 or higher and root access.
 
 ~~~
-pip install usgs-shakecast
+sudo yum install epel-release python3 python3-pip
+sudo pip3 install usgs-shakecast
+sudo python -m shakecast.app.startup
 sudo python -m shakecast start &
 ~~~
 
@@ -36,10 +38,21 @@ git clone https://github.com/usgs/shakecast.git
 Install the required Python libraries and start ShakeCast. Installating within a virtual environemnt is preferred.
 ~~~
 cd shakecast
-pip install -r requirements.txt
-sudo python -m shakecast start &
+pip3 install -r requirements.txt
+sudo python3 -m shakecast.app.startup
+sudo python3 -m shakecast start &
 ~~~
 
+## Docker Installation
+Docker is our preferred method of installation ShakeCast for our internal instances. We find it to be very stable and easy to update and are leaning on containerization more and more. It's our hope more customers will adopt this method of running ShakeCast.
+
+~~~
+git clone https://github.com/usgs/shakecast.git
+cd shakecast
+git fetch origin --tags
+git checkout $(git describe --tags)
+docker-compose up
+~~~
 
 ## After Installation...
 
@@ -111,12 +124,12 @@ You will find an uninstaller for pyCast in it's installation directory (C:\Users
 ### Linux
 To stop ShakeCast:
 ~~~
-sudo python -m shakecast stop
+sudo python3 -m shakecast stop
 ~~~
 
 Then to uninstall it:
 ~~~
-pip uninstall usgs-shakecast
+pip3 uninstall usgs-shakecast
 ~~~
 
 ## Admin Changes in V4
@@ -127,13 +140,11 @@ Using the newly developed HAZUS Advanced Engineering Building Module, ShakeCast 
 
 
 ### MySQL Database Connection
-MySQL connection is a built-in feature in ShakeCast V4 and organizations with many facilities (~45,000 or more) will find that this upgrade is actually necessary. There are many ways to run a MySQL database, but the simplest is to install the database on the same server on which ShakeCast is running. The following is an example of how to do this on a CentOS/Redhat Linux server.
+MySQL connection is a built-in feature in ShakeCast V4 and organizations with many facilities (40,000 or more) will find that this upgrade is actually necessary. There are many ways to run a MySQL database, but the simplest is to install the database on the same server on which ShakeCast is running. The following is an example shows how to do this with the open source replica of MySQL, Mariadb, on CentOS.
 
 ~~~
-sudo yum install python-devel
-sudo yum install mysql mysql-devel mysql-lib
-sudo yum install MySQL-python
-sudo pip install --trusted-host pypi.python.org  mysql-python
+sudo yum install mariadb-server
+sudo pip3 install install pymysql
 ~~~
 
 You can adjust this methodology for any flavor of Linux you might have installed ShakeCast on. Once these packages are installed, you can create a new MySQL user ():
@@ -148,8 +159,21 @@ The username of your new user is "sc" and the password is "P@s$w0rd123!" if you 
 
 ~~~
 mysql -u sc -p
-CREATE DATABASE pycast
+CREATE DATABASE pycast;
 \q
+~~~
+
+The last step is to tell ShakeCast to use the new database we just created. You can do this easily using environment variables:
+
+~~~
+export SHAKECAST_DB_CONNECTION_TYPE=mysql
+export SHAKECAST_DB_CONNECTION_STRING=mysql+pymysql://sc:P@s$w0rd123!@localhost:3306/pycast
+~~~
+
+and then running ShakeCast you may need to forward the environment to sudo using the -E flag
+
+~~~
+sudo -E python3 -m shakecast start
 ~~~
 
 Your database is not ready to go! Head to your ShakeCast web interface and go to the Settings page. Select "MySQL" from the dropdown database options and enter the username and password you input into MySQL. Save those configurations and restart ShakeCast. Confirm your new configurations work by heading back to the Settings page and clicking "Run System Test."
