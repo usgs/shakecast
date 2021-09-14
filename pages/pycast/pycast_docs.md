@@ -22,8 +22,8 @@ There are multiple ways to install pyCast on Linux, but we recommend you use the
 ~~~
 sudo yum install epel-release python3 python3-pip
 sudo pip3 install usgs-shakecast
-sudo python -m shakecast.app.startup
-sudo python -m shakecast start &
+sudo python3 -m shakecast.app.startup
+sudo python3 -m shakecast start &
 ~~~
 
 
