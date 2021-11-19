@@ -129,7 +129,7 @@ class ProductGrabber(object):
 
                 reprocess = False
                 for old_event in old_events:
-                    if old_event and old_event.updated and eq['properties']['updated'] >= old_event.updated:
+                    if old_event and old_event.updated and eq['properties']['updated'] > old_event.updated:
                         reprocess = True
 
                 if reprocess is True:
