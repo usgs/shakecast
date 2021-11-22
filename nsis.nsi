@@ -26,7 +26,7 @@ functionEnd
 
 Function PythonCheck
     IfFileExists "C:\Python39\python.exe" 0 Skip
-    ExecWait '"$INSTDIR\python-3.9.7.exe" /uninstall'
+    ExecWait '"$INSTDIR\python-3.9.6.exe" /uninstall'
     ExecWait 'rmdir /sq C:\Python39'
 
     Skip:
@@ -71,45 +71,68 @@ SectionEnd
 
 Section "Python Installation"
 
+    ExecWait "del C:\Windows\System32\python39.dll"
+
+    # run the VC redistribute 2015 and wait for it to finish
+    File "..\requirements\vc_redist.x64.exe"
+    ExecWait '"$INSTDIR\vc_redist.x64.exe" InstallAllUsers=1'
+
     # run the python installer and wait for it to finish
-    File "..\requirements\python-3.9.7.exe"
-    ExecWait '"$INSTDIR\python-3.9.7.exe" /quiet TargetDir=C:\Python39 InstallAllUsers=1'
+    File "..\requirements\python-3.9.6.exe"
+    ExecWait '"$INSTDIR\python-3.9.6.exe" /quiet TargetDir=C:\Python39 InstallAllUsers=1'
+    DetailPrint "Python is ready..."
 
     # install the windows extensions
-    
-    ExecDos::exec /DETAILED "C:\Python39\python.exe -m pip install pywin32 --upgrade --no-cache-dir --trusted-host pypi.python.org --trusted-host files.pythonhosted.org --trusted-host pypi.org"
+    ExecWait "C:\Python39\python.exe -m pip install pywin32 --upgrade --no-cache-dir --trusted-host pypi.python.org --trusted-host files.pythonhosted.org --trusted-host pypi.org"
     DetailPrint "Python is ready..."
+    
+    ExecWait "mklink C:\Windows\System32\python39.dll C:\Python39\python39.dll"
+    DetailPrint "Symbolic link Python is ready..."
 SectionEnd
 
 Section "ShakeCast installation"
     DetailPrint "Installing ShakeCast"
-    ExecDos::exec /DETAILED "C:\Python39\python.exe -m pip install usgs-shakecast --upgrade --no-cache-dir --trusted-host pypi.python.org --trusted-host files.pythonhosted.org --trusted-host pypi.org"
+    ExecWait "C:\Python39\python.exe -m pip install usgs-shakecast --upgrade --no-cache-dir --trusted-host pypi.python.org --trusted-host files.pythonhosted.org --trusted-host pypi.org"
 
-    DetailPrint "Initializing ShakeCast..."
-    ExecDos::exec /DETAILED "C:\Python39\python.exe -m shakecast.app.startup"
+    DetailPrint "Initializing ShakeCast"
+    ExecWait "C:\Python39\python.exe -m shakecast.app.startup"
     DetailPrint "App init."
 
-    ExecDos::exec /DETAILED "C:\Python39\python.exe -m shakecast.app.windows.set_paths"
+    ExecWait "C:\Python39\python.exe -m shakecast.app.windows.set_paths"
     DetailPrint "Paths set."
     
-    ExecDos::exec /DETAILED "C:\Python39\python.exe -m shakecast.app.windows install"
+SectionEnd
+
+Section "ShakeCast Patch"
+    DetailPrint "Apply ShakeCast Patch"
+    SetOutPath "C:\Python39\Lib\site-packages\click"
+    File "..\requirements\utils.py"
+
+    SetOutPath "C:\Python39\Lib\site-packages\shakecast\app\windows"
+    File "shakecast\app\windows\server_service.py" 
+    File "shakecast\app\windows\web_server_service.py" 
+SectionEnd
+
+Section "Install Windows Services"
+    DetailPrint "Installing ShakeCast Services..."
+    ExecWait "C:\Python39\python.exe -m shakecast.app.windows install"
     DetailPrint "Services installed."
 
     DetailPrint "Starting ShakeCast..."
-    ExecDos::exec /DETAILED "C:\Python39\python.exe -m shakecast start"
+    ExecWait "C:\Python39\python.exe -m shakecast start"
     
     DetailPrint "Waiting..."
     Sleep 5000
 
     DetailPrint "Stopping ShakeCast..."
-    ExecDos::exec /DETAILED "net stop sc_server"
-    ExecDos::exec /DETAILED "net stop sc_web_server"
+    ExecWait "net stop sc_server"
+    ExecWait "net stop sc_web_server"
 
     DetailPrint "Waiting..."
     Sleep 10000
 
     DetailPrint "Starting ShakeCast..."
-    ExecDos::exec /DETAILED "C:\Python39\python.exe -m shakecast start"
+    ExecWait "C:\Python39\python.exe -m shakecast start"
     DetailPrint "Started"
 
     # make a link to the python package from the install directory
@@ -117,6 +140,7 @@ Section "ShakeCast installation"
     CreateShortCut "$INSTDIR\shakecast.lnk" "C:\Python39\Lib\site-packages\shakecast"
     DetailPrint "Finishing up Installation..."
 SectionEnd
+
 
 # Uninstaller
  
@@ -132,10 +156,11 @@ functionEnd
  
 section "uninstall"
 
-    ExecDos::exec /DETAILED "C:\Python39\python.exe -m shakecast stop"
-    ExecDos::exec /DETAILED "C:\Python39\python.exe -m shakecast.app.windows uninstall"
-    ExecDos::exec /DETAILED "C:\Python39\python.exe -m shakecast.app.windows.set_paths remove"
-    ExecWait '"$INSTDIR\python-3.9.7.exe" /uninstall'
+    ExecWait "C:\Python39\python.exe -m shakecast stop"
+    ExecWait "C:\Python39\python.exe -m shakecast.app.windows uninstall"
+    ExecWait "C:\Python39\python.exe -m shakecast.app.windows.set_paths remove"
+    ExecWait '"$INSTDIR\python-3.9.6.exe" /uninstall'
+    ExecWait "del C:\Windows\System32\python39.dll"
 
 	# Remove files
 	delete $INSTDIR\*
