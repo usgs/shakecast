@@ -24,23 +24,19 @@ function .onInit
 	!insertmacro VerifyUserIsAdmin
 functionEnd
 
-Function StopShakecast
-    DetailPrint "Stop ShakeCast if running..."
-    ExecWait "net stop sc_server"
-    ExecWait "net stop sc_web_server"
-FunctionEnd
-
 Function PythonCheck
-    IfFileExists "C:\Python27\python.exe" 0 Skip
-
-    ExecWait '"$SYSDIR\msiExec" /x "$INSTDIR\python-2.7.13.msi" /qb'
-    rmDir /r "C:\Python27"
+    IfFileExists "C:\Python39\python.exe" 0 Skip
+    ExecWait '"$INSTDIR\python-3.9.6.exe" /uninstall'
+    ExecWait 'rmdir /sq C:\Python39'
 
     Skip:
 FunctionEnd
 
 # start default section
 Section "Install ShakeCast" IDOK
+    # remove pythonn if it exists
+    Call PythonCheck
+
     # set the installation directory as the destination for the following actions
     SetOutPath $INSTDIR
 
@@ -51,19 +47,22 @@ Section "Install ShakeCast" IDOK
     !define env_hklm 'HKLM "SYSTEM\CurrentControlSet\Control\Session Manager\Environment"'
     !define env_hkcu 'HKCU "Environment"'
     ; set variable for local machine
-    WriteRegExpandStr ${env_hklm} SC_HOME "$PROFILE\.shakecast"
+    WriteRegExpandStr ${env_hklm} SHAKECAST_USER_DIRECTORY "$INSTDIR\user"
     ; and current user
-    WriteRegExpandStr ${env_hkcu} SC_HOME "$PROFILE\.shakecast"
+    WriteRegExpandStr ${env_hkcu} SHAKECAST_USER_DIRECTORY "$INSTDIR\user"
+
+    ; add Python paths to PATH
+    EnVar::AddValue "PATH" "C:\Python39"
+    EnVar::AddValue "PATH" "C:\Python39\Scripts"
+    EnVar::AddValue "PATH" "C:\Python39\Lib\site-packages\pywin32_system32"
+    EnVar::AddValue "PATH" "C:\Python39\Lib\site-packages\win32"
+
     ; make sure windows knows about the change
     SendMessage ${HWND_BROADCAST} ${WM_WININICHANGE} 0 "STR:Environment" /TIMEOUT=5000
 
     DetailPrint "Extracting Files into Installation Directory" 
     # specify files to go into the installation directory path
     File "*"
-    File "..\requirements\python-2.7.13.msi"
-
-    Call StopShakecast
-    Call PythonCheck
 
     # Uninstaller - See function un.onInit and section "uninstall" for configuration
 	writeUninstaller "$INSTDIR\uninstall.exe"
@@ -72,39 +71,76 @@ SectionEnd
 
 Section "Python Installation"
 
+    ExecWait "del C:\Windows\System32\python39.dll"
+
+    # run the VC redistribute 2015 and wait for it to finish
+    File "..\requirements\vc_redist.x64.exe"
+    ExecWait '"$INSTDIR\vc_redist.x64.exe" InstallAllUsers=1'
+
     # run the python installer and wait for it to finish
-    ExecWait '"$SYSDIR\msiExec" /i "$INSTDIR\python-2.7.13.msi" /qb TARGETDIR=C:\Python27 ALLUSERS=1'
+    File "..\requirements\python-3.9.6.exe"
+    ExecWait '"$INSTDIR\python-3.9.6.exe" /quiet TargetDir=C:\Python39 InstallAllUsers=1'
+    DetailPrint "Python is ready..."
 
     # install the windows extensions
-    ExecWait 'C:\Python27\Scripts\pip.exe install pywin32'
-
+    ExecWait "C:\Python39\python.exe -m pip install pywin32 --upgrade --no-cache-dir --trusted-host pypi.python.org --trusted-host files.pythonhosted.org --trusted-host pypi.org"
     DetailPrint "Python is ready..."
+    
+    ExecWait "mklink C:\Windows\System32\python39.dll C:\Python39\python39.dll"
+    DetailPrint "Symbolic link Python is ready..."
 SectionEnd
 
 Section "ShakeCast installation"
     DetailPrint "Installing ShakeCast"
-    ExecDos::exec /DETAILED "C:\Python27\python.exe -m pip install usgs-shakecast --upgrade --no-cache-dir --trusted-host pypi.python.org --trusted-host files.pythonhosted.org --trusted-host pypi.org"
+    ExecWait "C:\Python39\python.exe -m pip install usgs-shakecast --upgrade --no-cache-dir --trusted-host pypi.python.org --trusted-host files.pythonhosted.org --trusted-host pypi.org"
 
-    DetailPrint "Initializing ShakeCast..."
-    ExecDos::exec /DETAILED "C:\Python27\python.exe -m shakecast.app.startup"
-    DetailPrint "Moved config files."
+    DetailPrint "Initializing ShakeCast"
+    ExecWait "C:\Python39\python.exe -m shakecast.app.startup"
+    DetailPrint "App init."
 
-    ExecDos::exec /DETAILED "C:\Python27\python.exe -m shakecast.app.windows.set_paths"
+    ExecWait "C:\Python39\python.exe -m shakecast.app.windows.set_paths"
     DetailPrint "Paths set."
     
-    ExecDos::exec /DETAILED "C:\Python27\python.exe -m shakecast.app.windows install"
+SectionEnd
+
+Section "ShakeCast Patch"
+    DetailPrint "Apply ShakeCast Patch"
+    SetOutPath "C:\Python39\Lib\site-packages\click"
+    File "..\requirements\utils.py"
+
+    SetOutPath "C:\Python39\Lib\site-packages\shakecast\app\windows"
+    File "shakecast\app\windows\server_service.py" 
+    File "shakecast\app\windows\web_server_service.py" 
+SectionEnd
+
+Section "Install Windows Services"
+    DetailPrint "Installing ShakeCast Services..."
+    ExecWait "C:\Python39\python.exe -m shakecast.app.windows install"
     DetailPrint "Services installed."
 
     DetailPrint "Starting ShakeCast..."
-    ExecDos::exec /DETAILED "C:\Python27\python.exe -m shakecast start"
+    ExecWait "C:\Python39\python.exe -m shakecast start"
+    
+    DetailPrint "Waiting..."
+    Sleep 5000
+
+    DetailPrint "Stopping ShakeCast..."
+    ExecWait "net stop sc_server"
+    ExecWait "net stop sc_web_server"
+
+    DetailPrint "Waiting..."
+    Sleep 10000
+
+    DetailPrint "Starting ShakeCast..."
+    ExecWait "C:\Python39\python.exe -m shakecast start"
     DetailPrint "Started"
 
     # make a link to the python package from the install directory
     DetailPrint "Adding links..."
-    CreateShortCut "$INSTDIR\shakecast.lnk" "C:\Python27\Lib\site-packages\shakecast"
-    CreateShortCut "$INSTDIR\user-data.lnk" "$PROFILE\.shakecast"
+    CreateShortCut "$INSTDIR\shakecast.lnk" "C:\Python39\Lib\site-packages\shakecast"
     DetailPrint "Finishing up Installation..."
 SectionEnd
+
 
 # Uninstaller
  
@@ -120,11 +156,11 @@ functionEnd
  
 section "uninstall"
 
-    ExecDos::exec /DETAILED "C:\Python27\python.exe -m shakecast stop"
-    ExecDos::exec /DETAILED "C:\Python27\python.exe -m shakecast.app.windows uninstall"
-    ExecDos::exec /DETAILED "C:\Python27\python.exe -m shakecast.app.windows.set_paths remove"
-    ExecDos::exec /DETAILED "C:\Python27\Scripts\pip.exe uninstall pywin32 -y"
-    ExecWait '"$SYSDIR\msiExec" /x "$INSTDIR\python-2.7.13.msi"'
+    ExecWait "C:\Python39\python.exe -m shakecast stop"
+    ExecWait "C:\Python39\python.exe -m shakecast.app.windows uninstall"
+    ExecWait "C:\Python39\python.exe -m shakecast.app.windows.set_paths remove"
+    ExecWait '"$INSTDIR\python-3.9.6.exe" /uninstall'
+    ExecWait "del C:\Windows\System32\python39.dll"
 
 	# Remove files
 	delete $INSTDIR\*
@@ -133,7 +169,7 @@ section "uninstall"
     rmDir /r "$PROFILE\.shakecast"
 
     # Remove python
-    rmDir /r "C:\Python27"
+    rmDir /r "C:\Python39"
 
 	# Always delete uninstaller as the last action
 	delete $INSTDIR\uninstall.exe

@@ -7,9 +7,9 @@ import logging
 import os, sys
 import traceback
 
-from ..server import Server
-from ...ui import UI
-from ..util import get_logging_dir, SC
+from shakecast.app.server import Server
+from shakecast.ui import UI
+from shakecast.app.util import get_logging_dir, SC
 
 sc = SC()
 if sc.dict['Logging']['level'] == 'info':

@@ -1,9 +1,9 @@
 import os, sys
 
-REQUIRED_PATHS = ['C:\Python27',
-        'C:\Python27\Scripts',
-        'C:\Python27\Lib\site-packages\pywin32_system32',
-        'C:\Python27\Lib\site-packages\win32']
+REQUIRED_PATHS = ['C:\Python39',
+        'C:\Python39\Scripts',
+        'C:\Python39\Lib\site-packages\pywin32_system32',
+        'C:\Python39\Lib\site-packages\win32']
 
 def add_paths(system_path_lst):
     paths = REQUIRED_PATHS + system_path_lst

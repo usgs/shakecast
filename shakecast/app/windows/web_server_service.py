@@ -8,8 +8,8 @@ import os, sys
 import traceback
 import urllib.request, urllib.error, urllib.parse
 
-from ..util import get_logging_dir, SC
-from ...api import start as startweb
+from shakecast.app.util import get_logging_dir, SC
+from shakecast.api import start as startweb
 
 log_file = os.path.join(get_logging_dir(), 'sc-web-server.log')
 logging.basicConfig(
