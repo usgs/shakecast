@@ -37,7 +37,7 @@
         "DNS": "https://localhost", 
         "name": "ShakeCast"
     }, 
-    "map_key": "pk.eyJ1IjoiZHNsb3NreSIsImEiOiJjaXR1aHJnY3EwMDFoMnRxZWVtcm9laWJmIn0.1C3GE0kHPGOpbVV9kTxBlQ", 
+    "map_key": "pk.eyJ1Ijoia3Vvd2FubGluIiwiYSI6ImNpdWhhd2FuYzAxMnUyb2wzYTU4NzNycGkifQ.9BJUDR37C1r6QgprU0pQrA", 
     "host": "localhost", 
     "extensions": [], 
     "Proxy": {
@@ -50,7 +50,8 @@
     "timezone": 0, 
     "Services": {
         "use_geo_json": true, 
-        "ignore_nets": "at,pt", 
+        "ignore_nets": "at,pt,ew", 
+        "gsm_only": false,
         "new_eq_mag_cutoff": 3, 
         "keep_eq_for": 60, 
         "eq_req_products": [
@@ -60,6 +61,7 @@
         "check_new_int": 3, 
         "eq_pref_products": [
             "grid.xml", 
+            "uncertainty.xml",
             "stationlist.xml", 
             "intensity.jpg", 
             "ii_overlay.png", 

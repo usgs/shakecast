@@ -92,6 +92,7 @@ class SC(object):
         self.software_version = ''
         self.json = ''
         self.map_key = ''
+        self.gsm_only = False
 
         self.load()
     
@@ -126,6 +127,7 @@ class SC(object):
         self.geo_json_web = conf_json['Services']['geo_json_web']
         self.ignore_nets = conf_json['Services']['ignore_nets']
         self.eq_req_products = conf_json['Services']['eq_req_products']
+        self.gsm_only = conf_json['Services']['gsm_only']
         
         # DBConnection
         self.db_type = conf_json['DBConnection']['type']
