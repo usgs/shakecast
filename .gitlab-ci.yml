@@ -102,11 +102,11 @@ compose-test:
     - .shakecast-dev
     - .compose
   script:
-    - sed -i 's/80:5000/5000/g' docker-compose.yml
+    - sed -i 's/80:5000/6000:5000/g' docker-compose.yml
     - echo Running with user ID ${SHAKECAST_USER_ID}
     - docker-compose up -d
     - sleep 5
-    - docker exec shakecast_web-server_1 curl localhost:5000
+    - docker exec shakecast_web-server_1 curl localhost:6000
   after_script:
     - docker-compose down
 
