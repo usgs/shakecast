@@ -106,7 +106,7 @@ compose-test:
     - echo Running with user ID ${SHAKECAST_USER_ID}
     - docker-compose up -d
     - sleep 5
-    - docker exec shakecast_web-server_1 curl localhost:5000
+  #  - docker-compose run web-server_1 curl localhost:5000
   after_script:
     - docker-compose down
 
