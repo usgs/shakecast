@@ -34,7 +34,7 @@ class ProductGrabber(object):
         self.delim = ''
         self.log = ''
         self.query_period = 'day'
-        self.gsm_only = sc.gsm_only
+        self.gsm_only = sc.gsm_only 
 
         if not self.req_products:
             self.req_products = sc.eq_req_products

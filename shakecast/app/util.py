@@ -92,7 +92,7 @@ class SC(object):
         self.software_version = ''
         self.json = ''
         self.map_key = ''
-        self.gsm_only = False
+        self.gsm_only = False 
 
         self.load()
     
