@@ -34,6 +34,7 @@ class ProductGrabber(object):
         self.delim = ''
         self.log = ''
         self.query_period = 'day'
+        self.gsm_only = sc.gsm_only 
 
         if not self.req_products:
             self.req_products = sc.eq_req_products
@@ -272,11 +273,16 @@ class ProductGrabber(object):
                 sm_str = 'shakemap'
 
             # which shakemap has the highest weight
-            weight = 0
-            for idx in range(len(eq_info['properties']['products'][sm_str])):
-                if eq_info['properties']['products'][sm_str][idx]['preferredWeight'] > weight:
-                    weight = eq_info['properties']['products'][sm_str][idx]['preferredWeight']
-                    shakemap_json = eq_info['properties']['products'][sm_str][idx]
+            if self.gsm_only is True or sm_str == 'shakemap-scenario':
+                for idx in range(len(eq_info['properties']['products'][sm_str])):
+                    if eq_info['properties']['products'][sm_str][idx]['source'] == 'us':
+                        shakemap_json = eq_info['properties']['products'][sm_str][idx]
+                        break
+            else:
+                shakemap_json = eq_info['properties']['products'][sm_str][0]
+
+            if shakemap_json is None:
+                return
 
             # grab an existing shakemap
             shakemap_version = shakemap_json['properties']['version']
