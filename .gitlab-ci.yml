@@ -76,7 +76,6 @@ build-test-images:
   after_script:
     - docker rmi ${CODE_REGISTRY_IMAGE}/shakecast:${CI_PIPELINE_ID}
 
-
 # TESTING THE PYTHON APP
 app-test:
   stage: test
@@ -188,3 +187,17 @@ publish-python:
     - python3 -m pip install setuptools wheel twine
     - python3 setup.py bdist_wheel
     - twine upload dist/*
+
+job:on-schedule:
+  stage: test
+  extends:
+    - .shakecast-dev
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "schedule"
+    - when: manual
+  script:
+    - python3 -m shakecast.api &
+    - sleep 5
+    - curl localhost:5000
+#    - python3 -m shakecast.tests.bundle
+
