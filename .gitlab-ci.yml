@@ -196,8 +196,7 @@ job:on-schedule:
     - if: $CI_PIPELINE_SOURCE == "schedule"
     - when: manual
   script:
-    - docker build --build-arg "FROM_IMAGE=${DEVOPS_REGISTRY}usgs/obspy:3.8" . -t ${CODE_REGISTRY_IMAGE}/shakecast:${CI_PIPELINE_ID}
-    - docker push ${CODE_REGISTRY_IMAGE}/shakecast:${CI_PIPELINE_ID}
+    - docker build --build-arg "FROM_IMAGE=usgs/obspy:3.8" . -t usgs/shakecast:${CI_PIPELINE_ID}
   after_script:
-    - docker rmi ${CODE_REGISTRY_IMAGE}/shakecast:${CI_PIPELINE_ID}
+    - docker rmi usgs/shakecast:${CI_PIPELINE_ID}
 
