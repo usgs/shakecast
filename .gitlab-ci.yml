@@ -196,8 +196,8 @@ job:on-schedule:
     - if: $CI_PIPELINE_SOURCE == "schedule"
     - when: manual
   script:
-    - python3 -m shakecast.api &
-    - sleep 5
-    - curl localhost:5000
-#    - python3 -m shakecast.tests.bundle
+    - docker build --build-arg "FROM_IMAGE=${DEVOPS_REGISTRY}usgs/obspy:3.8" . -t ${CODE_REGISTRY_IMAGE}/shakecast:${CI_PIPELINE_ID}
+    - docker push ${CODE_REGISTRY_IMAGE}/shakecast:${CI_PIPELINE_ID}
+  after_script:
+    - docker rmi ${CODE_REGISTRY_IMAGE}/shakecast:${CI_PIPELINE_ID}
 
