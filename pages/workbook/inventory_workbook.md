@@ -7,7 +7,7 @@ sidebar: workbook_sidebar
 folder: workbook
 ---
 
-The [ShakeCast Inventory Worbook](ftp://ftpext.usgs.gov/pub/cr/co/golden/shakecast/ShakeCast_Workbook/ShakeCastInventory.xlsm) is a collection of Excel spreadsheets used to bridge the gap between users’ data and the ShakeCast application. It allows users to collect their facility, notification group, and user information in a single location. Once the data has been collected, a master XML file can be exported that contains all the information and can easily be uploaded to ShakeCast. Data is validated as it’s entered into the workbook and malformed data is not exported. This ensures that user data will fulfill the basic requirements for ShakeCast to run correctly. 
+The [ShakeCast Inventory Worbook](https://github.com/usgs/shakecast/releases/download/4.2.0/ShakeCastInventory.xlsm) is a collection of Excel spreadsheets used to bridge the gap between users’ data and the ShakeCast application. It allows users to collect their facility, notification group, and user information in a single location. Once the data has been collected, a master XML file can be exported that contains all the information and can easily be uploaded to ShakeCast. Data is validated as it’s entered into the workbook and malformed data is not exported. This ensures that user data will fulfill the basic requirements for ShakeCast to run correctly. 
 
 This workbook also serves as a stepping-stone between ShakeCast versions. This workbook will remain compatible with future versions of ShakeCast to ensure installations of new software will be hassle free.
 
