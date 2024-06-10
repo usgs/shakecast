@@ -5,5 +5,5 @@
 # ShakeCast V4
 ShakeCast, short for ShakeMap Broadcast, has a new home at the USGS GitLab site.
 
-Checkout our [GitLab repository](https://code.usgs.gov/ghsc/esi/shakecast/shakecast)).
+Checkout our [GitLab repository](https://code.usgs.gov/ghsc/esi/shakecast/shakecast).
 
